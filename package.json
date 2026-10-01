@@ -7,7 +7,8 @@
     "dev": "remotion studio src/index.ts",
     "studio": "remotion studio src/index.ts",
     "render:demo": "remotion render src/index.ts MotionDemo out/motion-demo.mp4",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "render:vertical": "remotion render src/index.ts MotionDemoVertical out/motion-demo-vertical.mp4"
   },
   "dependencies": {
     "react": "19.3.0",
