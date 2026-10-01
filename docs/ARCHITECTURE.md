@@ -4,7 +4,7 @@
 
 `ai-motion-studio` is an isolated experiment space for animation-first development.
 
-The goal is to keep motion R&D separate from the operational complexity of `ai-video-template-v2` until the workflow and visual quality are proven.
+The goal is to keep motion R&D separate from the operational complexity of `ai-video-template` until the workflow and visual quality are proven.
 
 ## Directory intent
 
@@ -52,7 +52,7 @@ Project decisions, boundaries, integration notes, and validation criteria.
    - Extract utilities only after reuse becomes real.
 
 3. **Extraction-friendly design**
-   - Stable pieces should be portable into `ai-video-template-v2`.
+   - Stable pieces should be portable into `ai-video-template`.
 
 4. **Optional 3D**
    - Three.js is an extension, not a requirement.
