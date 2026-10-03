@@ -8,9 +8,13 @@ The goal is to keep motion R&D separate from the operational complexity of `ai-v
 
 ## Directory intent
 
+### `src/free/`
+
+Current production engine: pure frame-based Canvas scenes, locked font subsets and hash-verified FFmpeg export. No account, paid renderer or network input is required at render time.
+
 ### `src/remotion/`
 
-Primary MVP path:
+Historical optional R&D path (excluded from root install/CI):
 
 - Remotion compositions
 - reusable motion components

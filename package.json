@@ -1,24 +1,22 @@
 {
   "name": "ai-motion-studio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Independent R&D sandbox for AI-assisted code animation and motion graphics.",
+  "type": "module",
+  "description": "Standalone deterministic local motion renderer without a paid engine dependency.",
+  "engines": {"node": ">=24 <25"},
   "scripts": {
-    "dev": "remotion studio src/index.ts",
-    "studio": "remotion studio src/index.ts",
-    "render:demo": "remotion render src/index.ts MotionDemo out/motion-demo.mp4",
-    "typecheck": "tsc --noEmit",
-    "render:vertical": "remotion render src/index.ts MotionDemoVertical out/motion-demo-vertical.mp4"
+    "lint": "node scripts/lint.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "typecheck": "node --check src/free/scene.mjs && node --check scripts/render.mjs",
+    "render:demo": "node scripts/render.mjs landscape",
+    "render:vertical": "node scripts/render.mjs vertical",
+    "render:smoke": "node scripts/render.mjs smoke"
   },
   "dependencies": {
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "remotion": "4.0.524"
-  },
-  "devDependencies": {
-    "@remotion/cli": "4.0.524",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "typescript": "^6.0.0"
+    "@fontsource/noto-sans-tc": "5.3.0",
+    "@napi-rs/canvas": "1.0.10",
+    "ffmpeg-static": "5.3.0",
+    "ffprobe-static": "3.1.0"
   }
 }
