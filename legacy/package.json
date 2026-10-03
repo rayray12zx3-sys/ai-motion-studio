@@ -1,0 +1,7 @@
+{
+  "name": "ai-motion-studio-remotion-r-and-d",
+  "private": true,
+  "description": "Historical optional Remotion experiment; excluded from production and root install.",
+  "dependencies": {"react": "19.3.0", "react-dom": "19.3.0", "remotion": "4.0.524"},
+  "devDependencies": {"@remotion/cli": "4.0.524", "@types/react": "^19.0.0", "@types/react-dom": "^19.0.0", "typescript": "^6.0.0"}
+}

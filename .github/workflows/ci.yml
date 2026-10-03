@@ -12,14 +12,27 @@ permissions:
   contents: read
 
 jobs:
-  typecheck:
-    runs-on: ubuntu-latest
+  offline-render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          node-version: "24"
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.19.0"
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
-      - name: TypeScript typecheck
-        run: npm run typecheck
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Provision hash-verified encoder
+        run: node scripts/setup-encoder.mjs
+      - name: Source and deterministic-input checks
+        run: npm run lint && npm run typecheck && npm test
+      - name: Synthetic render smoke
+        run: npm run render:smoke && npm run render:vertical && npm run render:demo
+      - name: Synthetic review artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: synthetic-motion-review
+          path: out/
+          retention-days: 7
