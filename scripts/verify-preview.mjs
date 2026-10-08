@@ -53,7 +53,9 @@ for(const [name,width,height] of [['landscape',640,360],['vertical',360,640]]){
     }
     const contact=readFileSync(join(dir,'contact-sheet.png'));
     assert.deepEqual(pngSize(contact),[1400,1100],'Contact sheet dimensions');
-    assert.notEqual(hashes[3],hashes[4],'Frame 89/90 should not be identical');
+    // Single-scene M6 interstitial intentionally has a stable full-cover beat.
+    // Validate changed visual states across the cut without outlawing held frames.
+    assert.notEqual(hashes[2],hashes[6],'Before/after transition must depict different beats');
     assert.equal(hashes[13],hashes[14],'Final 345/359 hold should be identical');
     console.log(JSON.stringify({verification:'PASS',profile:name,
       frames_checked:frames.length,dimensions:[width,height],

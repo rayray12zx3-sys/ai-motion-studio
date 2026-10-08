@@ -44,6 +44,24 @@ jobs:
         if: ${{ github.event_name == 'pull_request' && github.event.pull_request.number == 15 }}
         run: npm run test:preview
 
+      # One review-only PNG render for M6. No FFmpeg, no 1080p or paid API.
+      - name: M6 authored curtain PNG review
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.number == 19 }}
+        run: |
+          npm run test:preview
+          node scripts/preview-advanced.mjs landscape preview-m6-landscape
+          node scripts/preview-advanced.mjs vertical preview-m6-vertical
+      - name: M6 contact-sheet and frame samples
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.number == 19 }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: m6-png-only-review
+          path: |
+            out/preview-m6-landscape/
+            out/preview-m6-vertical/
+          retention-days: 1
+          if-no-files-found: error
+
       # A deliberate manual dispatch is the ONLY way to run the 1080p renders.
       - name: Provision hash-verified encoder
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_full_render }}

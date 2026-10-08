@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {validateAdvancedSpec,loadAdvancedArt,drawAdvancedFrame,advancedTransition} from '../src/creative/advanced.mjs';
+import {curtainState} from '../src/creative/transition-curtain.mjs';
 const location=fileURLToPath(new URL('../examples/advanced-film.json',import.meta.url));
 const original=JSON.parse(readFileSync(location,'utf8'));
 const clone=()=>structuredClone(original);
@@ -76,6 +77,47 @@ test('scene transitions never become blank frames and closing frame is deliberat
         if(data[i]>130 && data[i+1]<140 && data[i+2]<140) visibleSignal++;
       }
       assert.ok(visibleSignal>20, 'transition frame must retain the persistent signal: '+frame);
+    }
+  }
+});
+
+test('authored curtain always displays exactly one beat with full coverage at midpoint',()=>{
+  for(const boundary of [90,180,270]){
+    for(const frame of [boundary-16,boundary-8,boundary,boundary+8,boundary+15]){
+      const t=advancedTransition(original,frame);
+      const c=curtainState(t.progress,t.current,t.incoming);
+      assert.ok(c.coverage>=0&&c.coverage<=1);
+      assert.ok(c.offset>=0&&c.offset<=1);
+      assert.equal(c.scene===t.current||c.scene===t.incoming,true);
+      assert.equal(c.scene,c.phase==='cover-outgoing'?t.current:t.incoming);
+      assert.ok(c.offset+c.coverage<=1.0000000001,'Curtain must be within stage bounds');
+    }
+  }
+  for(const n of [1,2,3]){
+    assert.equal(curtainState(.35,n-1,n).coverage,1,'hold: covered before scene change');
+    assert.equal(curtainState(.65,n-1,n).coverage,1,'hold: covered after scene change');
+    assert.ok(curtainState(.2,n-1,n).coverage<1,'approach enters curtain');
+    assert.ok(curtainState(.8,n-1,n).coverage<1,'reveal exits curtain');
+    const a=curtainState(0,n-1,n),half=curtainState(.5,n-1,n),end=curtainState(1,n-1,n);
+    assert.equal(a.scene,n-1);assert.equal(a.coverage,0);
+    assert.equal(half.scene,n);assert.equal(half.coverage,1);
+    assert.equal(end.scene,n);assert.equal(end.coverage,0);
+    assert.equal(end.offset,1);
+    assert.throws(()=>curtainState(Number.NaN,n-1,n));
+  }
+});
+
+test('single-beat curtain is deterministic and preserves a visible interstitial',async()=>{
+  const art=await loadAdvancedArt(original,dirname(location));
+  for(const [width,height] of [[640,360],[360,640]]){
+    const profile={width,height,fps:30,frames:360};
+    for(const boundary of [90,180,270]){
+      const frames=[boundary-2,boundary-1,boundary,boundary+1,boundary+2];
+      const images=frames.map(frame=>drawAdvancedFrame(profile,frame,original,art).toBuffer('image/png'));
+      assert.notDeepEqual(images[0],images[4],'Transition must not freeze');
+      frames.forEach((frame,i)=>assert.deepEqual(
+        drawAdvancedFrame(profile,frame,original,art).toBuffer('image/png'),images[i],
+        'Transition must not depend on previously rendered frames'));
     }
   }
 });
