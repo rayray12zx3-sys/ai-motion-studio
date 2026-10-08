@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 import probe from 'ffprobe-static';
 import {createCanvas,loadImage} from '@napi-rs/canvas';
 import {fontManifest} from '../src/free/scene.mjs';
+import {displayFontManifest} from '../src/creative/display-font.mjs';
 import {loadAdvancedArt,drawAdvancedFrame,validateAdvancedSpec} from '../src/creative/advanced.mjs';
 import {compileMotionBrief} from '../src/creative/brief.mjs';
 
@@ -108,7 +109,7 @@ try {
     node:process.version,lockfile_sha256:sha256(readFileSync('package-lock.json')),
     ffmpeg:execFileSync(ffmpeg,['-version'],{encoding:'utf8',windowsHide:true}).split('\n')[0],
     ffmpeg_binary_sha256:sha256(readFileSync(ffmpeg)),ffprobe_binary_sha256:sha256(readFileSync(probe.path)),
-    font_files:fontManifest,asset_provenance:[art.record],
+    font_files:[...fontManifest,...displayFontManifest],asset_provenance:[art.record],
     scene_spec_sha256:sha256(Buffer.from(JSON.stringify(spec))),frame_hashes:hashes,
     output_sha256:sha256(readFileSync(output)),review_frames:samples,
     duration_ms:elapsedMs,technical_qc:'PASS',creative_qc:'PENDING_HUMAN_REVIEW',

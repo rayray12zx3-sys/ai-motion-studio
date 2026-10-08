@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 import {drawAdvancedFrame,loadAdvancedArt,validateAdvancedSpec} from '../src/creative/advanced.mjs';
 import {compileMotionBrief} from '../src/creative/brief.mjs';
 import {fontFamily} from '../src/free/scene.mjs';
+import {displayFontManifest} from '../src/creative/display-font.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const profileName=process.argv[2]??'landscape';
@@ -57,6 +58,7 @@ const report={renderer:'offline-canvas-still-preview-v1',profile,frames,
   input_sha256:sha256(Buffer.from(JSON.stringify(spec))),
   brief_id:briefFile??'baseline-advanced',
   asset_provenance:[art.record],
+  display_font_manifest:displayFontManifest,
   samples:frames.map((frame,i)=>({frame,sha256:sha256(buffers[i])})),
   duration_ms:Number((process.hrtime.bigint()-began)/1000000n),
   output_kind:'PNG samples; no MP4 encoded',

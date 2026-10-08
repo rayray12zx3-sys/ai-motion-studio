@@ -83,6 +83,27 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+      # One branch-scoped M8 visual review: 60 PNG samples total, no MP4.
+      - name: M8 two-grammar portrait-landscape samples
+        if: ${{ github.event_name == 'pull_request' && github.head_ref == 'feat/m8-visual-grammars-20261008' }}
+        run: |
+          node scripts/preview-advanced.mjs landscape preview-m8-studio-landscape examples/brief-studio.json
+          node scripts/preview-advanced.mjs vertical preview-m8-studio-vertical examples/brief-studio.json
+          node scripts/preview-advanced.mjs landscape preview-m8-learning-landscape examples/brief-learning.json
+          node scripts/preview-advanced.mjs vertical preview-m8-learning-vertical examples/brief-learning.json
+      - name: M8 four contact sheets and reports
+        if: ${{ github.event_name == 'pull_request' && github.head_ref == 'feat/m8-visual-grammars-20261008' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: m8-visual-grammar-review
+          path: |
+            out/preview-m8-studio-landscape/
+            out/preview-m8-studio-vertical/
+            out/preview-m8-learning-landscape/
+            out/preview-m8-learning-vertical/
+          retention-days: 1
+          if-no-files-found: error
+
       # A deliberate manual dispatch is the ONLY way to run the 1080p renders.
       - name: Provision hash-verified encoder
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_full_render }}

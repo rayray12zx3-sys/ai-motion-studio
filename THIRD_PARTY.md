@@ -16,3 +16,17 @@ Primary references: https://ffmpeg.org/legal.html ; https://github.com/Brooooook
 Remotion's Company License may be required for organizational use. Its old source and optional dependency declaration remain in the R&D lane (`src/remotion`, `legacy/package.json`). They are excluded from the production root dependency graph, smoke CI and production instructions. Do not execute that lane without separately resolving its license. See https://www.remotion.pro/license .
 
 No repository-wide license is invented for pre-existing code; the owner's own-code license decision remains open. This does not add a paid runtime dependency.
+
+## M8 font weight and original design assets
+
+Learning Lab uses the **700-weight** bundled WOFF2 subset files from the
+already pinned `@fontsource/noto-sans-tc@5.3.0` package, covered by the
+same SIL OFL-1.1 license as weight 400. No extra font dependency or font
+redistribution was introduced. The font subset SHA-256 hashes are recorded
+in preview and advanced-render provenance. The 700 weight is typographic
+contrast, **not a new typeface family**.
+
+All new flashcards, 3-step study flow, tile heatmap and brand typography are
+original local Canvas drawings. Fictional sample values do not substantiate
+claims of educational effectiveness. The repository-own-source LICENSE
+question remains unresolved.
