@@ -7,9 +7,19 @@ on:
       - "docs/**"
   pull_request:
   workflow_dispatch:
+    inputs:
+      confirm_full_render:
+        description: "Generate full-resolution synthetic MP4 review (uses runner minutes)"
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   offline-render:
@@ -22,17 +32,30 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "24.19.0"
+          cache: npm
       - name: Install dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
-      - name: Provision hash-verified encoder
-        run: node scripts/setup-encoder.mjs
+      # Preserve the established CI/offline-render check, but without video renders.
       - name: Source and deterministic-input checks
         run: npm run lint && npm run typecheck && npm test
+      # A deliberate manual dispatch is the ONLY way to run the 1080p renders.
+      - name: Provision hash-verified encoder
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_full_render }}
+        run: node scripts/setup-encoder.mjs
       - name: Synthetic render smoke
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_full_render }}
         run: npm run render:smoke && npm run render:vertical && npm run render:demo
+      - name: Editorial motion review renders
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_full_render }}
+        run: npm run render:editorial:landscape && npm run render:editorial:vertical
+      - name: Advanced multi-shot review renders
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_full_render }}
+        run: npm run render:advanced:landscape && npm run render:advanced:vertical
       - name: Synthetic review artifacts
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_full_render }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: synthetic-motion-review
           path: out/
           retention-days: 7
+          if-no-files-found: error

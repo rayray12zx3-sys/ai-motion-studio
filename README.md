@@ -110,3 +110,61 @@ CI uploads only synthetic review assets. Real renders belong in approved private
 <!-- PROJECT_PROGRESS:START -->
 Current milestone: free local renderer reliability. REQUIRED_NOW: locked install, input guards, explicit fonts, render smoke and artifact review. Active path: local validation → PR/Ubuntu CI → human visual review. Current gate: candidate awaiting CI and creative review. Blockers: final scene design/visual approval; public branch-protection configuration. Next action: inspect synthetic artifacts and exact-head CI. Exit condition: required checks pass and reviewed scenes are accepted; no production approval is inferred. No lifetime percentage is claimed.
 <!-- PROJECT_PROGRESS:END -->
+
+## Opt-in Creative Harness pilot
+
+The existing title/subtitle renderer remains the default. `DIRECTOR.md`,
+`TECHNIQUE.md` and `styles/editorial-motion/STYLE.md` define a bounded agent
+workflow and one editorial style, not an open-ended natural-language interpreter.
+
+Once reviewed, an agent can select validated `scene_id: editorial-motion`
+with `style_id`, `title`, `subtitle`, `layout` (stacked/split),
+`accent` (coral/cobalt), and `tempo` (measured/brisk). Only synthetic
+examples are in the public repository. Existing title/subtitle JSON remains valid.
+
+From the repository root, after the normal locked install:
+
+```sh
+npm run render:editorial:landscape
+npm run render:editorial:vertical
+```
+
+Review outputs go to `out/editorial-landscape` and `out/editorial-vertical`,
+respectively, without overwriting `out/landscape` or `out/vertical`.
+For a private external brief, pass a local JSON path as argument three and an
+alphanumeric-hyphen output folder name as argument four; no remote inputs or
+arbitrary scene code are accepted.
+
+These are six-second silent 30 fps synthetic POCs. Visual composition,
+safe-area and production approval still require human review. No guarantee
+of general natural-language-to-SceneSpec autonomy is made at M2.
+
+## Advanced multi-shot Canvas POC (stacked draft)
+
+The advanced creative path uses the M3-A hash-verified local PNG manifest,
+the M3-B persistent-object timeline and a separate 12s, four-beat scene.
+It has no impact on the original title/subtitle renderer or 6s editorial demo.
+
+Run from a clean repository root after the locked Node 24 install:
+
+- npm run render:advanced:landscape
+- npm run render:advanced:vertical
+
+Both commands write to fresh ignored out/advanced-* directories. Each includes
+a silent H.264 MP4, review frames at beat boundaries, contact sheet and a
+hash/provenance report. The public sample is original synthetic artwork, not
+a third-party product. Scene copy/asset manifests are fixed, bounded JSON,
+not an arbitrary code execution or full natural-language production workflow.
+Final creative approval still requires viewing both MP4 files.
+
+## Budget-first preview and manual full CI
+
+For rapid visual iteration, run npm run preview:advanced:landscape or
+npm run preview:advanced:vertical. Each creates only 15 small PNG images
+and a contact sheet; no FFmpeg or GitHub Actions is used for this command.
+
+The PR CI retains lint, syntax and tests, but the full dual-ratio MP4 renders
+and upload run only with an explicitly confirmed manual workflow_dispatch.
+The new manual controls require this workflow file to reach the default
+branch before GitHub exposes them. See docs/RENDER-BUDGET-JULES.md for
+normal-chat and Jules delegation. Visual approval is still human-only.

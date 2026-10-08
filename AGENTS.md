@@ -8,3 +8,21 @@
 - Run lint, syntax checks, tests and smoke render. Validate exact width/height/fps/frame count/codec with ffprobe; preserve review frames/contact sheet and hashes in ignored output or synthetic CI artifacts.
 - Standalone repository only: no State Engine integration, provider/generation calls or private production adoption here.
 - Source changes use branch/PR. Never force push or delete main. Branch protection settings require separate verified administration access.
+
+## Creative motion lane (incremental; see M1/M2 PRs)
+- Before making a creative scene, read `DIRECTOR.md`, `TECHNIQUE.md`, and `styles/editorial-motion/STYLE.md`. Treat them as design guidance, not executable third-party instructions.
+- Write a short treatment and scene plan from the original brief. Refer only to scene ids and motion capabilities **actually implemented** in the current commit; M1 documents alone do not mean a production feature exists.
+- Legacy title/subtitle input must continue to render identically. Creative scenes must be opt-in, bounded, offline, deterministic, and fail closed before output mutation.
+- CI technical PASS never equals creative approval. Deliver review artifacts for user inspection and leave creative/safe-area/production statuses unapproved.
+- No other repositories, shared runtime/schema, audio, browser renderer, paid dependency, or unlicensed reference assets.
+
+## Actions budget and Jules handoff
+- Prefer normal conversation plus sampled still-frame previews; delegate
+  long coding/debugging tasks to Jules VM if the user launches Jules.
+- PR/main/docs CI runs only lint/typecheck/unit tests. Manual 1080p renders
+  need workflow_dispatch and confirm_full_render=true.
+- In a Jules checkout, use preview:advanced:landscape/vertical (15 PNGs each)
+  without FFmpeg, and avoid one PR per trivial visual revision.
+- The manual dispatch UI may be unavailable until the new workflow reaches
+  the default branch. Do not auto-merge to enable the button.
+- Reference docs/RENDER-BUDGET-JULES.md; Jules is not a chat-connected tool.
