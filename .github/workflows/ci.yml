@@ -38,6 +38,12 @@ jobs:
       # Preserve the established CI/offline-render check, but without video renders.
       - name: Source and deterministic-input checks
         run: npm run lint && npm run typecheck && npm test
+      # One-time acceptance smoke for the M5 PNG-only preview, never full MP4.
+      # Other PRs and future main checks stay at lint/typecheck/unit tests.
+      - name: Verify 15 sampled PNG frames in both ratios (M5 acceptance)
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.number == 15 }}
+        run: npm run test:preview
+
       # A deliberate manual dispatch is the ONLY way to run the 1080p renders.
       - name: Provision hash-verified encoder
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_full_render }}
