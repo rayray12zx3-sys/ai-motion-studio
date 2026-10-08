@@ -1,0 +1,48 @@
+name: Synthetic Product UI 9x16 Visual Review
+
+on:
+  pull_request:
+    paths:
+      - 'src/creative/product-ui.mjs'
+      - 'src/creative/social-safe-area.mjs'
+      - 'scripts/preview-product-ui.mjs'
+      - 'examples/product-ui-synthetic.json'
+      - 'tests/product-ui.test.mjs'
+      - 'package.json'
+      - '.github/workflows/product-ui-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: product-ui-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288ca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.19.0"
+          cache: npm
+      - name: Install pinned tooling
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: All source and alpha safe-zone tests
+        run: npm run lint && npm run typecheck && npm test
+      - name: Verify approved encoder
+        run: node scripts/setup-encoder.mjs
+      - name: Render 9x16 synthetic UI previews
+        run: npm run preview:product-ui:synthetic
+      - name: Upload 3 review MP4s and safe-zone contact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: product-ui-synthetic-9x16-visual-review
+          path: out/product-ui-concept-review/
+          retention-days: 1
+          if-no-files-found: error
