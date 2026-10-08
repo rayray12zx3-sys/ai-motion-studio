@@ -2,6 +2,7 @@ import {createCanvas, loadImage} from '@napi-rs/canvas';
 import {evaluateMultiObjectFrame, validateMultiObjectSpec} from './composition.mjs';
 import {preciseEase} from './motion.mjs';
 import {drawDesignedStage, drawDesignedTitle} from './art-direction.mjs';
+import {curtainState, drawArtDirectedCurtain} from './transition-curtain.mjs';
 import {verifyLocalAssets} from './assets.mjs';
 import {fontFamily, validateSpec} from '../free/scene.mjs';
 
@@ -106,25 +107,14 @@ export function advancedTransition(spec, frame) {
     incoming: null, progress: 0};
 }
 
-function drawTypography(ctx, spec, frame, layout, w, h) {
-  const tr = advancedTransition(spec, frame);
-  const margin=layout.margin, titleWidth=w-2*margin;
-  const drawSlot=(index,start,width,dx)=>{
-    if(width <= 0) return;
-    ctx.save();ctx.beginPath();ctx.rect(start,h*.12,width,h*.217);ctx.clip();
-    drawDesignedTitle(ctx,spec.copy[index],index,layout,w,h,dx);
-    ctx.restore();
-  };
-  if(tr.incoming===null) drawSlot(tr.current,margin,titleWidth,0);
-  else {
-    const cut=margin+titleWidth*tr.progress;
-    drawSlot(tr.current,cut,margin+titleWidth-cut,12*tr.progress);
-    drawSlot(tr.incoming,margin,cut-margin,-12*(1-tr.progress));
-  }
+function drawTypography(ctx, spec, index, layout, w, h) {
+  const margin=layout.margin;
+  // Text is always rendered as an entire beat. A designed interstitial
+  // covers it as one object; never crop disjoint outgoing/incoming glyphs.
+  drawDesignedTitle(ctx,spec.copy[index],index,layout,w,h);
   ctx.fillStyle='#C6C3BA';
   ctx.fillRect(margin,h*.345,w*.19,Math.max(1,w*.0015));
   label(ctx,'MOTION / STUDIO',margin,h*.073,Math.min(22,w*.016),muted);
-  const index=tr.incoming===null?tr.current:(tr.progress>=.5?tr.incoming:tr.current);
   label(ctx,'0'+(index+1)+'   /   04',
     w-margin-Math.max(85,w*.1),h*.073,Math.min(20,w*.014),muted);
 }
@@ -253,20 +243,9 @@ function renderStage(ctx,area,index,frame,art) {
   drawDesignedStage(ctx,area,index,frame,art);
 }
 
-function drawGraphics(ctx, spec, frame, layout, art) {
-  const {stage} = layout, tr = advancedTransition(spec,frame);
-  if (tr.incoming === null) {
-    renderStage(ctx,stage,tr.current,frame,art);
-  } else {
-    // Spatial wipe with no empty frame: outgoing occupies right, incoming left.
-    const cut = stage.x + stage.w * tr.progress;
-    ctx.save();ctx.beginPath();ctx.rect(cut,stage.y,stage.x+stage.w-cut,stage.h);ctx.clip();
-    renderStage(ctx,stage,tr.current,frame,art);ctx.restore();
-    ctx.save();ctx.beginPath();ctx.rect(stage.x,stage.y,cut-stage.x,stage.h);ctx.clip();
-    renderStage(ctx,stage,tr.incoming,frame,art);ctx.restore();
-    ctx.fillStyle = red;
-    ctx.fillRect(cut-Math.max(1,stage.w*.002),stage.y,Math.max(2,stage.w*.004),stage.h);
-  }
+function drawGraphics(ctx,frame,layout,art,index) {
+  // Never composite two different scene contents in one transition frame.
+  renderStage(ctx,layout.stage,index,frame,art);
 }
 
 function drawSignal(ctx, state, w, h, layout) {
@@ -296,10 +275,16 @@ export function drawAdvancedFrame(profile, frame, spec, art) {
   const {width:w,height:h} = profile, canvas = createCanvas(w,h), ctx = canvas.getContext('2d');
   const layout = stageLayout(w,h);
   ctx.fillStyle = paper; ctx.fillRect(0,0,w,h);
-  // Motion and stage exchange through a common time base; static final hold.
-  drawGraphics(ctx,spec,frame,layout,art);
+  // The full scene flips only behind an opaque, original-design curtain.
+  // Old and new titles, controls and charts are never exposed simultaneously.
+  const transition=advancedTransition(spec,frame);
+  const curtain=transition.incoming===null?null:
+    curtainState(transition.progress,transition.current,transition.incoming);
+  const active=curtain?curtain.scene:transition.current;
+  drawGraphics(ctx,frame,layout,art,active);
+  drawTypography(ctx,spec,active,layout,w,h);
+  if(curtain)drawArtDirectedCurtain(ctx,layout,w,h,curtain,art);
+  // Persistent ID remains visible through the curtain and across all shots.
   drawSignal(ctx,state,w,h,layout);
-  drawTypography(ctx,spec,frame,layout,w,h);
-  // The pilot's end is a held composition, never a one-frame fade-to-nothing.
   return canvas;
 }

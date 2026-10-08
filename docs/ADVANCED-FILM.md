@@ -21,3 +21,18 @@ Visual QC gate: inspect both MP4s at full speed plus segment boundaries,
 particularly the opener's initial short masked reveal, cross-beat text reading
 and the position of the verified raster art in portrait. Technical CI PASS
 does not grant creative/safe-area/production approval.
+
+## M6 single-scene authored curtain candidate (stacked Draft)
+
+Replaces split-screen incoming/outgoing stage masks with a single chosen full
+scene behind a two-phase graphical curtain that covers before it reveals.
+The interstitial contains a section number, registered radial ornament,
+verified existing local PNG mark, diagonal grid texture, accent timing ticks,
+and a moving seam; headline/subtitle are never masked against a different
+scene. Persistent-ID signal is still displayed over the cover. Changes are
+opt-in to the M4 advanced scene only; legacy 6s outputs remain untouched.
+
+This addresses the conspicuous f89–91 and f269–270 portrait content mixture.
+Node24 15-frame previews, determinism and held-final tests are required.
+All design changes remain PENDING_HUMAN_REVIEW until viewed in motion; green
+CI is never a creative approval.
