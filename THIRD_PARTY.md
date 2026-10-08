@@ -30,3 +30,14 @@ All new flashcards, 3-step study flow, tile heatmap and brand typography are
 original local Canvas drawings. Fictional sample values do not substantiate
 claims of educational effectiveness. The repository-own-source LICENSE
 question remains unresolved.
+
+## M9 finished-film attribution policy
+
+The code differentiates final media from redistributed source/binaries.
+Noto Sans TC OFL usage in video graphics needs no final-film credit;
+redistribution of font files requires OFL. MIT/Apache source license
+notices may be required if source packages are distributed. Current
+ffmpeg-static executable includes FFmpeg/x264 GPL obligations if you
+redistribute the encoder, and H.264 patents/territory are an independent
+open issue. A CC0 asset label is not proof of legitimate upstream rights.
+See `docs/COMMERCIAL-NO-CREDIT-POLICY.md`.
