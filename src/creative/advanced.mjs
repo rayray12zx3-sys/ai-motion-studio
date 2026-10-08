@@ -129,8 +129,8 @@ function drawTypography(ctx, spec, index, layout, w, h) {
   ctx.fillStyle='#C6C3BA';
   ctx.fillRect(margin,h*.345,w*.19,Math.max(1,w*.0015));
 }
-function drawBrandHeader(ctx,index,layout,w,h) {
-  label(ctx,'MOTION / STUDIO',layout.margin,h*.073,Math.min(22,w*.016),muted);
+function drawBrandHeader(ctx,index,layout,w,h,style) {
+  label(ctx,style==='learning-lab'?'LEARNING / LAB':'MOTION / STUDIO',layout.margin,h*.073,Math.min(22,w*.016),muted);
   label(ctx,'0'+(index+1)+'   /   04',
     w-layout.margin-Math.max(85,w*.1),h*.073,Math.min(20,w*.014),muted);
 }
@@ -308,6 +308,6 @@ export function drawAdvancedFrame(profile, frame, spec, art) {
   if(curtain)drawArtDirectedCurtain(ctx,layout,w,h,curtain,art);
   // Persistent ID and brand/navigation rail stay visible during the edit.
   drawSignal(ctx,state,w,h,layout);
-  drawBrandHeader(ctx,active,layout,w,h);
+  drawBrandHeader(ctx,active,layout,w,h,spec.art_direction?.style_id);
   return canvas;
 }

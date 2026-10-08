@@ -2,6 +2,7 @@
 // system fonts, unseeded noise or background services.
 import {fontFamily} from '../free/scene.mjs';
 import {preciseEase} from './motion.mjs';
+import {drawLearningStage,drawLearningTitle} from './learning-layout.mjs';
 
 const ink='#171B26', ivory='#F3F1EB', dark='#202635', muted='#657078', blue='#3467D7', coral='#E55243',
   aqua='#45B7AC', pale='#DDE5E7', butter='#F0CE81';
@@ -218,6 +219,7 @@ function drawFinale(ctx,a,frame,art,entry,style){
   restore();
 }
 export function drawDesignedStage(ctx,area,index,frame,art,direction){
+  if(direction?.style_id==='learning-lab')return drawLearningStage(ctx,area,index,frame,art,direction);
   const entry=direction?.panels[index]??null,style=direction?.style_id??'studio';
   if(index===0)drawOpening(ctx,area,frame,art,entry,style);
   else if(index===1)drawInterface(ctx,area,frame,entry,style);
@@ -229,6 +231,7 @@ export function drawDesignedStage(ctx,area,index,frame,art,direction){
 // The top editorial headline is an explicit typographic system: filled display
 // with controlled ink stroke, legible secondary type, and a section-coded signal.
 export function drawDesignedTitle(ctx,beat,index,layout,width,height,dx=0,direction){
+  if(direction?.style_id==='learning-lab')return drawLearningTitle(ctx,beat,index,layout,width,height);
   const x=layout.margin+dx,top=height*.198;
   const accent=(direction?.style_id==='learning-lab'?['#0D8175','#D89C49','#6C8F7B','#E4BC71']:[coral,blue,aqua,butter])[index];
   const big=fit(ctx,beat.headline,width*.74,layout.titleSize*1.04,
