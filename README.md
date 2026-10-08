@@ -156,3 +156,34 @@ hash/provenance report. The public sample is original synthetic artwork, not
 a third-party product. Scene copy/asset manifests are fixed, bounded JSON,
 not an arbitrary code execution or full natural-language production workflow.
 Final creative approval still requires viewing both MP4 files.
+
+## Budget-first preview and manual full CI
+
+For rapid visual iteration, run npm run preview:advanced:landscape or
+npm run preview:advanced:vertical. Each creates only 15 small PNG images
+and a contact sheet; no FFmpeg or GitHub Actions is used for this command.
+
+The PR CI retains lint, syntax and tests, but the full dual-ratio MP4 renders
+and upload run only with an explicitly confirmed manual workflow_dispatch.
+The new manual controls require this workflow file to reach the default
+branch before GitHub exposes them. See docs/RENDER-BUDGET-JULES.md for
+normal-chat and Jules delegation. Visual approval is still human-only.
+
+### Trigger Jules directly from GitHub Issues
+
+The official Jules GitHub App is verified for this repository: issue #16
+received the \`jules\` label and Jules posted a task link, without Actions.
+For another deliberately scoped task, add label \`jules\` manually to an
+issue that specifies the correct feature branch and prohibits unwanted
+PRs, cross-repo operations and Actions invocations. See
+docs/RENDER-BUDGET-JULES.md; never put Jules API keys in code.
+
+### Jules issue-label integration limit (verified 2026-10-08)
+
+The Jules bot accepted Issue #16 but also automatically opened redundant
+PR #18 against `main` despite a read-only/no-PR instruction; that PR was
+closed without merging. **Jules label dispatch alone does not invoke Actions,
+but a resulting PR can trigger lightweight Actions CI.** For strictly
+no-PR visual verification, avoid issue-label dispatch; choose direct Jules
+UI tasks or a configured local/chat execution environment instead. Review
+all Jules PR bases, changes and evidence; see docs/RENDER-BUDGET-JULES.md.

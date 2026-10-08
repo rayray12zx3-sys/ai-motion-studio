@@ -4,18 +4,23 @@
   "private": true,
   "type": "module",
   "description": "Standalone deterministic local motion renderer without a paid engine dependency.",
-  "engines": {"node": ">=24 <25"},
+  "engines": {
+    "node": ">=24 <25"
+  },
   "scripts": {
     "lint": "node scripts/lint.mjs",
     "test": "node --test tests/*.test.mjs",
-    "typecheck": "node --check src/free/scene.mjs && node --check src/creative/motion.mjs && node --check src/creative/editorial.mjs && node --check src/creative/composition.mjs && node --check src/creative/advanced.mjs && node --check scripts/render.mjs && node --check scripts/render-advanced.mjs",
+    "typecheck": "node --check src/free/scene.mjs && node --check src/creative/motion.mjs && node --check src/creative/editorial.mjs && node --check src/creative/composition.mjs && node --check src/creative/advanced.mjs && node --check scripts/render.mjs && node --check scripts/render-advanced.mjs && node --check scripts/preview-advanced.mjs && node --check scripts/verify-preview.mjs",
     "render:demo": "node scripts/render.mjs landscape",
     "render:vertical": "node scripts/render.mjs vertical",
     "render:smoke": "node scripts/render.mjs smoke",
     "render:editorial:landscape": "node scripts/render.mjs landscape examples/editorial-measured.json editorial-landscape",
     "render:editorial:vertical": "node scripts/render.mjs vertical examples/editorial-brisk.json editorial-vertical",
     "render:advanced:landscape": "node scripts/render-advanced.mjs landscape",
-    "render:advanced:vertical": "node scripts/render-advanced.mjs vertical"
+    "render:advanced:vertical": "node scripts/render-advanced.mjs vertical",
+    "preview:advanced:landscape": "node scripts/preview-advanced.mjs landscape",
+    "preview:advanced:vertical": "node scripts/preview-advanced.mjs vertical",
+    "test:preview": "node scripts/verify-preview.mjs"
   },
   "dependencies": {
     "@fontsource/noto-sans-tc": "5.3.0",
