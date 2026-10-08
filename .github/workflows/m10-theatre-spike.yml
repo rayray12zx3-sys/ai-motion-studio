@@ -29,6 +29,8 @@ jobs:
           node-version: "24.19.0"
           cache: npm
           cache-dependency-path: package-lock.json
+      - name: Install existing pinned Canvas production dependency graph
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Install isolated pinned Theatre packages (bootstrap lock)
         run: npm install --prefix experiments/theatre --ignore-scripts --no-audit --no-fund
       - name: Actual Node Theatre Core random-access keyframe probe
