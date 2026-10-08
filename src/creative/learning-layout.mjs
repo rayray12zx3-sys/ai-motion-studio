@@ -84,11 +84,11 @@ function data(c,a,frame,entry){
   done();
 }
 function ending(c,a,frame,entry){
-  const done=stage(c,a,ink,3,'04 / KEEP BUILDING'),{x,y,w,h}=a,u=Math.min(w,h);
+  const done=stage(c,a,'#116F60',3,'04 / KEEP BUILDING'),{x,y,w,h}=a,u=Math.min(w,h);
   const portrait=h>w*.82,p=ease(Math.min(frame,329)-270,-10,42);
   for(let i=0;i<8;i++){
     const xx=x+w*(.50+i*.05);
-    line(c,xx,y+h*.22,xx,y+h*.85,'#335E59',Math.max(1,u*.003));
+    line(c,xx,y+h*.22,xx,y+h*.85,'#55A28F',Math.max(1,u*.003));
   }
   txt(c,entry.primary,x+w*.07,y+h*(portrait?.40:.52),u*(portrait?.29:.30),paper,true,w*.82);
   txt(c,entry.secondary,x+w*.07,y+h*(portrait?.56:.74),u*.073,gold,true,w*.8);
