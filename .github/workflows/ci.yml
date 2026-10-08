@@ -32,6 +32,8 @@ jobs:
         run: npm run render:smoke && npm run render:vertical && npm run render:demo
       - name: Editorial motion review renders
         run: npm run render:editorial:landscape && npm run render:editorial:vertical
+      - name: Advanced multi-shot review renders
+        run: npm run render:advanced:landscape && npm run render:advanced:vertical
       - name: Synthetic review artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

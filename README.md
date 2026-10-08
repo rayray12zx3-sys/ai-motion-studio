@@ -138,3 +138,21 @@ arbitrary scene code are accepted.
 These are six-second silent 30 fps synthetic POCs. Visual composition,
 safe-area and production approval still require human review. No guarantee
 of general natural-language-to-SceneSpec autonomy is made at M2.
+
+## Advanced multi-shot Canvas POC (stacked draft)
+
+The advanced creative path uses the M3-A hash-verified local PNG manifest,
+the M3-B persistent-object timeline and a separate 12s, four-beat scene.
+It has no impact on the original title/subtitle renderer or 6s editorial demo.
+
+Run from a clean repository root after the locked Node 24 install:
+
+- npm run render:advanced:landscape
+- npm run render:advanced:vertical
+
+Both commands write to fresh ignored out/advanced-* directories. Each includes
+a silent H.264 MP4, review frames at beat boundaries, contact sheet and a
+hash/provenance report. The public sample is original synthetic artwork, not
+a third-party product. Scene copy/asset manifests are fixed, bounded JSON,
+not an arbitrary code execution or full natural-language production workflow.
+Final creative approval still requires viewing both MP4 files.
