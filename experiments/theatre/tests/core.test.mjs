@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {getProject,types} from '@theatre/core';
+import theatre from '@theatre/core';
+const {getProject,types}=theatre;
 const state=JSON.parse(readFileSync(new URL('../fixtures/project-state.json',import.meta.url)));
 test('Theatre Core consumes keyframed state with deterministic random-access seeks in Node',async()=>{
   const project=getProject('Motion Studio M10 Node',{state});
