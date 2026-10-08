@@ -4,9 +4,14 @@ const exact=(v,k)=>v&&typeof v==='object'&&!Array.isArray(v)&&
 const sha=/^[a-f0-9]{64}$/,ident=/^[a-z][a-z0-9-]{2,63}$/;
 const modes=new Set(['cc0','original-owned','company-owned','client-provided','purchased-license']);
 const kinds=new Set(['image','video','audio','font','brand-mark']);
-const validDate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&
- !Number.isNaN(Date.parse(value+'T00:00:00Z'))&&
- new Date(value+'T00:00:00Z').toISOString().slice(0,10)===value;
+const validDate=value=>{
+ if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+ const year=Number(value.slice(0,4)),month=Number(value.slice(5,7)),day=Number(value.slice(8,10));
+ if(year===0||month<1||month>12)return false;
+ const leap=year%4===0&&(year%100!==0||year%400===0);
+ const days=[31,leap?29:28,31,30,31,30,31,31,30,31,30,31];
+ return day>=1&&day<=days[month-1];
+};
 export function validateLicensedAssetCatalog(catalog){
   if(!exact(catalog,['version','scope','assets'])||catalog.version!==1||
     !['public','private'].includes(catalog.scope)||!Array.isArray(catalog.assets)||
