@@ -106,34 +106,35 @@ export function advancedTransition(spec, frame) {
 }
 
 function drawTypography(ctx, spec, frame, layout, w, h) {
-  const transition = advancedTransition(spec, frame);
-  const slots = transition.incoming === null ?
-    [{index: transition.current, weight: 1, displacement: 0}] :
-    [{index: transition.current, weight: 1 - transition.progress, displacement: -transition.progress},
-      {index: transition.incoming, weight: transition.progress, displacement: 1 - transition.progress}];
+  const tr = advancedTransition(spec, frame);
   const {margin, titleSize, subtitleSize} = layout;
-  ctx.save();
-  ctx.beginPath(); ctx.rect(margin - 2, h * .087, w - margin * 2 + 4, h * .29); ctx.clip();
-  for (const slot of slots) {
-    if (slot.weight <= 0) continue;
-    const beat = spec.copy[slot.index];
-    const size = fitFont(ctx, beat.headline, titleSize, w * .77, Math.max(12, titleSize * .6));
-    const subsize = fitFont(ctx, beat.subtitle, subtitleSize, w * .78, Math.max(9, subtitleSize * .66));
-    const dy = slot.displacement * titleSize * 1.12;
-    ctx.save(); ctx.globalAlpha = slot.weight;
-    // Each old headline exits upward while the next rises through the same title slot.
-    label(ctx, beat.headline, margin, layout.typeY + dy, size);
-    label(ctx, beat.subtitle, margin, layout.subtitleY + dy * .62, subsize, muted);
+  const titleWidth = w - margin * 2;
+  const drawSlot = (index, x1, clipWidth, offset) => {
+    if (clipWidth <= 0) return;
+    const beat = spec.copy[index];
+    const headSize = fitFont(ctx, beat.headline, titleSize, w * .77, Math.max(12, titleSize * .6));
+    const subSize = fitFont(ctx, beat.subtitle, subtitleSize, w * .78, Math.max(9, subtitleSize * .66));
+    ctx.save();ctx.beginPath();ctx.rect(x1, h * .12, clipWidth, h * .22);ctx.clip();
+    // The same wipe that changes the visual stage replaces both text lines.
+    // Only one piece of text can occupy any horizontal pixel at a shot boundary.
+    label(ctx,beat.headline,margin+offset,layout.typeY,headSize);
+    label(ctx,beat.subtitle,margin+offset,layout.subtitleY,subSize,muted);
     ctx.restore();
+  };
+  if (tr.incoming === null) {
+    drawSlot(tr.current,margin,titleWidth,0);
+  } else {
+    const cut = margin + titleWidth * tr.progress;
+    drawSlot(tr.current,cut,margin+titleWidth-cut,12*tr.progress);
+    drawSlot(tr.incoming,margin,cut-margin,-12*(1-tr.progress));
   }
-  ctx.restore();
-  // Stable editorial rail and beat marker. No opacity drop at shot changes.
   ctx.fillStyle = '#C6C3BA';
   ctx.fillRect(margin, h * .345, w * .19, Math.max(1, w * .0015));
-  label(ctx, 'MOTION / STUDIO', margin, h * .073, Math.min(22, w * .016), muted);
-  label(ctx, '0' + (transition.incoming === null ? transition.current + 1 :
-    (transition.progress >= .5 ? transition.incoming + 1 : transition.current + 1)) +
-    '   /   04', w - margin - Math.max(85, w * .1), h * .073, Math.min(20, w * .014), muted);
+  label(ctx,'MOTION / STUDIO',margin,h * .073,Math.min(22,w * .016),muted);
+  const stageIndex = tr.incoming === null ? tr.current :
+    (tr.progress >= .5 ? tr.incoming : tr.current);
+  label(ctx,'0'+(stageIndex+1)+'   /   04',
+    w-margin-Math.max(85,w*.1),h*.073,Math.min(20,w*.014),muted);
 }
 
 function grid(ctx, area, rows = 4) {
@@ -164,8 +165,8 @@ function drawOpener(ctx, area, frame, art, staticEnd) {
   }
   ctx.restore();
   label(ctx, 'SIGNAL / 001', area.x + area.w * .08, area.y + area.h * .16, area.w * .026, muted);
-  label(ctx, 'SHAPE', area.x + area.w * .08, area.y + area.h * .72, area.w * .073);
-  label(ctx, 'BECOMES MOTION', area.x + area.w * .08, area.y + area.h * .81, area.w * .03, muted);
+  label(ctx, 'SHAPE', area.x + area.w * .08, area.y + area.h * .69, area.w * .048);
+  label(ctx, 'BECOMES MOTION', area.x + area.w * .08, area.y + area.h * .84, area.w * .022, muted);
   // This is original checked artwork rather than a fake vector-placeholder claim.
   const icon = Math.min(area.w * .095, area.h * .2);
   ctx.globalAlpha = enter;
@@ -250,8 +251,8 @@ function drawResolve(ctx, area, frame, art) {
   ctx.rotate((1 - p) * -.16); ctx.globalAlpha = p;
   ctx.drawImage(art.image,-size/2,-size/2,size,size);
   ctx.restore();
-  label(ctx, 'MAKE', area.x + area.w * .09, area.y + area.h * .46, area.w * .115, paper);
-  label(ctx, 'IT MOVE.', area.x + area.w * .09, area.y + area.h * .64, area.w * .115, paper);
+  label(ctx, 'MAKE', area.x + area.w * .09, area.y + area.h * .43, Math.min(area.w * .074,area.h * .21), paper);
+  label(ctx, 'IT MOVE.', area.x + area.w * .09, area.y + area.h * .67, Math.min(area.w * .074,area.h * .21), paper);
   label(ctx, 'DESIGN  /  MOTION  /  SYSTEM', area.x + area.w * .09,
     area.y + area.h * .83, area.w * .026, '#B6C6D7');
 }
@@ -282,27 +283,22 @@ function drawGraphics(ctx, spec, frame, layout, art) {
 }
 
 function drawSignal(ctx, state, w, h, layout) {
-  // Render the same persistent-ID object AFTER the visual system, so it stays
-  // physically connected to every state rather than getting erased by a card.
   const signal = state.objects.find(o => o.id === 'signal');
   if (!signal || signal.opacity <= 0 || signal.reveal <= 0) return;
-  ctx.save();
-  ctx.translate(w * (.5 + state.camera.x), h * (.5 + state.camera.y));
-  ctx.scale(state.camera.zoom,state.camera.zoom); ctx.translate(-w*.5,-h*.5);
-  const bx = signal.x*w, by = signal.y*h, bw = signal.width*w, bh = signal.height*h;
-  ctx.translate(bx,by);ctx.rotate(signal.rotation);
-  ctx.globalAlpha = signal.opacity;
+  // The same persistent-ID rectangle still interpolates across all four beats.
+  // It is a small, intentional accent outside the readable UI/content region,
+  // rather than a giant foreground layer covering buttons, charts or typography.
+  const area=layout.stage;
+  const bw=Math.min(area.w*.135,signal.width*w*.40);
+  const bh=Math.min(area.h*.22,signal.height*h*.40);
+  const x=area.x+area.w*(.74+signal.x*.07);
+  const y=area.y+area.h*(.12+signal.y*.09);
+  ctx.save();ctx.translate(x,y);ctx.rotate(signal.rotation);
+  ctx.globalAlpha=signal.opacity;
   ctx.beginPath();ctx.rect(0,0,bw*signal.reveal,bh);ctx.clip();
-  ctx.fillStyle = signal.color;
-  rounded(ctx,0,0,bw,bh,signal.radius*Math.min(w,h));ctx.fill();
-  ctx.restore();
-  // A tiny white locus is visible only in the control beat and tracks the object.
-  if (state.segment_id === 'control') {
-    ctx.save(); ctx.globalAlpha = smooth(state.frame,86,122);
-    const x = bx + bw*.12, y = by + bh*.5;
-    ctx.fillStyle = '#fff';ctx.beginPath();ctx.arc(x,y,Math.max(2,bh*.17),0,Math.PI*2);ctx.fill();
-    ctx.restore();
-  }
+  ctx.fillStyle=signal.color;
+  rounded(ctx,0,0,bw,bh,signal.radius*Math.min(w,h)*.4);
+  ctx.fill();ctx.restore();
 }
 
 export function drawAdvancedFrame(profile, frame, spec, art) {
