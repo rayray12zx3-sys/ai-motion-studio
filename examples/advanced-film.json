@@ -1,0 +1,228 @@
+{
+  "motion": {
+    "version": 1,
+    "fps": 30,
+    "duration_frames": 360,
+    "background": "#F3F1EB",
+    "segments": [
+      {
+        "id": "opener",
+        "start": 0,
+        "end": 90
+      },
+      {
+        "id": "control",
+        "start": 90,
+        "end": 180
+      },
+      {
+        "id": "data",
+        "start": 180,
+        "end": 270
+      },
+      {
+        "id": "resolve",
+        "start": 270,
+        "end": 360
+      }
+    ],
+    "camera": [
+      {
+        "frame": 0,
+        "x": 0,
+        "y": 0,
+        "zoom": 1,
+        "ease": "linear"
+      },
+      {
+        "frame": 180,
+        "x": -0.035,
+        "y": 0.015,
+        "zoom": 1.04,
+        "ease": "precise"
+      },
+      {
+        "frame": 359,
+        "x": 0,
+        "y": 0,
+        "zoom": 1,
+        "ease": "precise"
+      }
+    ],
+    "objects": [
+      {
+        "id": "signal",
+        "type": "rounded-rect",
+        "z": 2,
+        "color": "#CF443A",
+        "keyframes": [
+          {
+            "frame": 0,
+            "x": 0.12,
+            "y": 0.4,
+            "width": 0.17,
+            "height": 0.17,
+            "radius": 0.085,
+            "opacity": 1,
+            "rotation": 0,
+            "reveal": 0.1,
+            "ease": "precise"
+          },
+          {
+            "frame": 90,
+            "x": 0.33,
+            "y": 0.43,
+            "width": 0.34,
+            "height": 0.09,
+            "radius": 0.045,
+            "opacity": 1,
+            "rotation": 0,
+            "reveal": 1,
+            "ease": "precise"
+          },
+          {
+            "frame": 180,
+            "x": 0.58,
+            "y": 0.49,
+            "width": 0.11,
+            "height": 0.27,
+            "radius": 0.015,
+            "opacity": 1,
+            "rotation": 0,
+            "reveal": 1,
+            "ease": "precise"
+          },
+          {
+            "frame": 270,
+            "x": 0.45,
+            "y": 0.29,
+            "width": 0.32,
+            "height": 0.29,
+            "radius": 0.03,
+            "opacity": 1,
+            "rotation": 0,
+            "reveal": 1,
+            "ease": "precise"
+          },
+          {
+            "frame": 359,
+            "x": 0.12,
+            "y": 0.4,
+            "width": 0.17,
+            "height": 0.17,
+            "radius": 0.085,
+            "opacity": 1,
+            "rotation": 0,
+            "reveal": 1,
+            "ease": "precise"
+          }
+        ]
+      },
+      {
+        "id": "track",
+        "type": "rounded-rect",
+        "z": 1,
+        "color": "#17191C",
+        "keyframes": [
+          {
+            "frame": 0,
+            "x": 0.12,
+            "y": 0.65,
+            "width": 0.08,
+            "height": 0.012,
+            "radius": 0,
+            "opacity": 0,
+            "rotation": 0,
+            "reveal": 0,
+            "ease": "precise"
+          },
+          {
+            "frame": 90,
+            "x": 0.12,
+            "y": 0.65,
+            "width": 0.62,
+            "height": 0.012,
+            "radius": 0,
+            "opacity": 0.9,
+            "rotation": 0,
+            "reveal": 1,
+            "ease": "precise"
+          },
+          {
+            "frame": 180,
+            "x": 0.12,
+            "y": 0.78,
+            "width": 0.76,
+            "height": 0.012,
+            "radius": 0,
+            "opacity": 0.9,
+            "rotation": 0,
+            "reveal": 1,
+            "ease": "precise"
+          },
+          {
+            "frame": 270,
+            "x": 0.12,
+            "y": 0.72,
+            "width": 0.66,
+            "height": 0.012,
+            "radius": 0,
+            "opacity": 0.9,
+            "rotation": 0,
+            "reveal": 1,
+            "ease": "precise"
+          },
+          {
+            "frame": 359,
+            "x": 0.12,
+            "y": 0.65,
+            "width": 0.08,
+            "height": 0.012,
+            "radius": 0,
+            "opacity": 0,
+            "rotation": 0,
+            "reveal": 0,
+            "ease": "precise"
+          }
+        ]
+      }
+    ]
+  },
+  "copy": [
+    {
+      "segment_id": "opener",
+      "headline": "ONE MOTION",
+      "subtitle": "一個形狀，持續變化"
+    },
+    {
+      "segment_id": "control",
+      "headline": "INTERACT",
+      "subtitle": "從圖形延展成介面"
+    },
+    {
+      "segment_id": "data",
+      "headline": "VISUALIZE",
+      "subtitle": "讓資料成為節奏"
+    },
+    {
+      "segment_id": "resolve",
+      "headline": "CREATE",
+      "subtitle": "連續設計，完整表達"
+    }
+  ],
+  "asset_manifest": {
+    "version": 1,
+    "assets": [
+      {
+        "id": "signal-art",
+        "path": "assets/original-signal-icon.png",
+        "type": "image/png",
+        "sha256": "65d505c7392a91f3a4ac0b74147d87198578b62776e38bbe9663601c21370d9a",
+        "width": 128,
+        "height": 128,
+        "license": "CC0-1.0",
+        "source": "Original synthetic circle illustration created for this demonstration"
+      }
+    ]
+  }
+}
