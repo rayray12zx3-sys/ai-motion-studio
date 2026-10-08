@@ -7,27 +7,34 @@ import {fileURLToPath} from 'node:url';
 import probe from 'ffprobe-static';
 import {createCanvas, loadImage} from '@napi-rs/canvas';
 import {profiles, demo, drawFrame, validateSpec, fontManifest} from '../src/free/scene.mjs';
+import {drawEditorialFrame, validateEditorialSpec} from '../src/creative/editorial.mjs';
 
 const ffmpeg = join(dirname(fileURLToPath(import.meta.resolve('ffmpeg-static/package.json'))), process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg');
 const encoderHashes = {'win32-x64': '04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00',
   'linux-x64': 'e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99'};
 if (createHash('sha256').update(readFileSync(ffmpeg)).digest('hex') !== encoderHashes[`${process.platform}-${process.arch}`]) throw new Error('Encoder binary not approved');
 
+if (process.argv.length > 5) throw new Error('Unexpected render arguments');
 const profileName = process.argv[2] ?? 'smoke';
 if (!Object.hasOwn(profiles, profileName)) throw new Error('Unknown delivery profile');
 const profile = profiles[profileName];
 // Private briefs stay outside Git. No URL, media/network input or provider is accepted.
 const spec = process.argv[3] ? JSON.parse(readFileSync(process.argv[3], 'utf8')) : demo;
-validateSpec(spec);
+const creative = spec?.scene_id === 'editorial-motion';
+const renderFrame = creative ? drawEditorialFrame : drawFrame;
+if (creative) validateEditorialSpec(spec);
+else validateSpec(spec);
 // Check layout, Git provenance and environment before creating any output.
-drawFrame(profile, 0, spec);
+renderFrame(profile, 0, spec);
+const outputKey = process.argv[4] ?? profileName;
+if (!/^[a-z][a-z0-9-]{0,47}$/.test(outputKey)) throw new Error('Invalid output review directory');
 if (Number(process.versions.node.split('.')[0]) !== 24) throw new Error('Node 24 is required');
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const gitRoot = execFileSync('git', ['rev-parse', '--show-toplevel'], {encoding: 'utf8', windowsHide: true}).trim();
 if (resolve(process.cwd()) !== repoRoot || resolve(gitRoot) !== repoRoot) throw new Error('Run from the repository checkout root');
 const source = execFileSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8', windowsHide: true}).trim();
 const dirty = Boolean(execFileSync('git', ['status', '--porcelain'], {encoding: 'utf8', windowsHide: true}).trim());
-const directory = join('out', profileName);
+const directory = join('out', outputKey);
 if (existsSync(directory)) throw new Error('Output directory already exists; use a fresh review directory');
 mkdirSync(directory, {recursive: true});
 const output = join(directory, 'motion.mp4');
@@ -49,7 +56,7 @@ const selected = [0, Math.floor(profile.frames * 0.35), Math.floor(profile.frame
 const frameHashes = [];
 try {
   for (let frame = 0; frame < profile.frames; frame++) {
-    const canvas = drawFrame(profile, frame, spec);
+    const canvas = renderFrame(profile, frame, spec);
     const data = Buffer.from(canvas.getContext('2d').getImageData(0, 0, profile.width, profile.height).data);
     frameHashes.push(createHash('sha256').update(data).digest('hex'));
     if (selected.includes(frame)) writeFileSync(join(directory, `frame-${frame}.png`), canvas.toBuffer('image/png'));
