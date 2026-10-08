@@ -3,7 +3,7 @@
 import {fontFamily} from '../free/scene.mjs';
 import {preciseEase} from './motion.mjs';
 
-const ink='#171B26', ivory='#F3F1EB', dark='#202635', blue='#3467D7', coral='#E55243',
+const ink='#171B26', ivory='#F3F1EB', dark='#202635', muted='#657078', blue='#3467D7', coral='#E55243',
   aqua='#45B7AC', pale='#DDE5E7', butter='#F0CE81';
 const clamp=n=>Math.max(0,Math.min(1,n));
 const ease=(frame,start,end)=>preciseEase(clamp((frame-start)/(end-start)));
