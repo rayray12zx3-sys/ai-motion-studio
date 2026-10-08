@@ -68,8 +68,8 @@ export function drawAdvancedFrame(profile,frame,spec,art) {
   const fade=Math.min(1,local/13,remaining/12);
   ctx.save();
   ctx.globalAlpha=Math.max(0,fade);
-  const titleSize=fitFont(ctx,beat.headline,Math.round(Math.min(w*.053,h*.087)),w*(portrait?.70:.74),24);
-  const subtitleSize=fitFont(ctx,beat.subtitle,Math.round(Math.min(w*.028,h*.042)),w*(portrait?.77:.79),16);
+  const titleSize=fitFont(ctx,beat.headline,Math.round(Math.min(w*.053,h*.087)),w*(portrait?.70:.74),Math.max(12,Math.round(Math.min(w*.053,h*.087)*.65)));
+  const subtitleSize=fitFont(ctx,beat.subtitle,Math.round(Math.min(w*.028,h*.042)),w*(portrait?.77:.79),Math.max(9,Math.round(Math.min(w*.028,h*.042)*.68)));
   const titleY=Math.round(h*(portrait?.225:.205));
   const subtitleY=Math.round(h*(portrait?.282:.284));
   const titleReveal=Math.min(1,Math.max(0,(local-4)/20));
