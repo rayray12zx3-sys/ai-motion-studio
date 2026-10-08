@@ -131,7 +131,7 @@ function drawInterface(ctx,a,frame){
   ctx.arc(knobX+trackH*.5+toggle*(trackW-trackH),knobY+trackH*.5,trackH*.34,0,Math.PI*2);
   ctx.fill();
   // Cursor arrival, click pressure and outgoing ripple.
-  const cursorX=knobX-trackW*(1-toggle)*.32,cursorY=knobY+trackH*.75;
+  const cursorX=knobX-trackW*(1-toggle)*.32,cursorY=knobY-trackH*.38;
   ctx.save();ctx.translate(cursorX,cursorY);
   ctx.fillStyle=ink;ctx.beginPath();ctx.moveTo(0,0);
   ctx.lineTo(u*.046,u*.09);ctx.lineTo(u*.050,u*.055);
@@ -152,8 +152,8 @@ function drawInsights(ctx,a,frame){
   const left=x+w*.065;
   text(ctx,'84.6',left,y+h*.345,
     fit(ctx,'84.6',w*.50,u*(isPortrait?.205:.245),u*.12),ink,{heavy:true});
-  round(ctx,left+w*.33,y+h*.29,w*.23,Math.max(12,u*.069),u*.03,'#CBE5DF');
-  text(ctx,'+24.8%',left+w*.35,y+h*.29+Math.max(6,u*.034),u*.045,'#136D66',{heavy:true});
+  round(ctx,left+w*(isPortrait?.49:.33),y+h*(isPortrait?.205:.29),w*.23,Math.max(12,u*.069),u*.03,'#CBE5DF');
+  text(ctx,'+24.8%',left+w*(isPortrait?.51:.35),y+h*(isPortrait?.205:.29)+Math.max(6,u*.034),u*.045,'#136D66',{heavy:true});
   text(ctx,'LIVE PERFORMANCE',left,y+h*.505,u*.030,muted,{spacing:u*.004});
   const chart={x:x+w*.065,y:y+h*(isPortrait?.61:.55),w:w*.65,h:h*(isPortrait?.27:.31)};
   for(let i=0;i<4;i++){
@@ -202,7 +202,7 @@ function drawFinale(ctx,a,frame,art){
   text(ctx,'WHAT MATTERS',x+w*.07,y+h*(portrait?.59:.69),sub,butter,{stroke:true});
   ctx.restore();
   // Stacked stamps/identity detail and large kinetic rosette with inky shadows.
-  const cx=x+w*(portrait?.59:.81),cy=y+h*(portrait?.72:.52),r=u*(portrait?.155:.19);
+  const cx=x+w*(portrait?.76:.81),cy=y+h*(portrait?.77:.52),r=u*(portrait?.12:.19);
   ring(ctx,cx,cy,r,'#8FA7B6',Math.max(1,u*.004),-Math.PI*.5,
     -Math.PI*.5+Math.PI*1.9*p);
   for(let i=0;i<10;i++){
