@@ -276,10 +276,10 @@ function drawSignal(ctx, state, w, h, layout) {
   // It is a small, intentional accent outside the readable UI/content region,
   // rather than a giant foreground layer covering buttons, charts or typography.
   const area=layout.stage;
-  const bw=Math.min(area.w*.135,signal.width*w*.40);
-  const bh=Math.min(area.h*.22,signal.height*h*.40);
-  const x=area.x+area.w*(.74+signal.x*.07);
-  const y=area.y+area.h*(.12+signal.y*.09);
+  const bw=Math.min(area.w*.081,signal.width*w*.215);
+  const bh=Math.min(area.h*.074,signal.height*h*.215);
+  const x=area.x+area.w*(.858+signal.x*.018);
+  const y=area.y+area.h*(.185+signal.y*.014);
   ctx.save();ctx.translate(x,y);ctx.rotate(signal.rotation);
   ctx.globalAlpha=signal.opacity;
   ctx.beginPath();ctx.rect(0,0,bw*signal.reveal,bh);ctx.clip();
