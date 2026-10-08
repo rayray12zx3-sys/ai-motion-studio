@@ -30,6 +30,8 @@ jobs:
         run: npm run lint && npm run typecheck && npm test
       - name: Synthetic render smoke
         run: npm run render:smoke && npm run render:vertical && npm run render:demo
+      - name: Editorial motion review renders
+        run: npm run render:editorial:landscape && npm run render:editorial:vertical
       - name: Synthetic review artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
