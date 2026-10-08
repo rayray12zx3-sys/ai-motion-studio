@@ -77,11 +77,11 @@ function drawOpening(ctx,a,frame,art){
   pattern(ctx,x+w*.50,y+h*.19,w*.45,h*.7,Math.max(9,u*.033),'#BEC6C1');
   topRule(ctx,a,0,'/ SYSTEM OF MOTION');
   const titleSize=fit(ctx,'DESIGN',w*(isPortrait?.83:.46),u*(isPortrait?.17:.20),u*.095);
-  text(ctx,'DESIGN',x+w*.055,y+h*(isPortrait?.28:.41),titleSize,ink,{heavy:true});
+  text(ctx,'DESIGN',x+w*.055,y+h*(isPortrait?.265:.41),titleSize,ink,{heavy:true});
   const outlined=fit(ctx,'IN MOTION',w*(isPortrait?.84:.52),u*(isPortrait?.108:.122),u*.055);
-  text(ctx,'IN MOTION',x+w*.06,y+h*(isPortrait?.39:.63),outlined,coral,{stroke:true});
-  rect(ctx,x+w*.06,y+h*(isPortrait?.44:.70),w*.28*t,Math.max(2,u*.014),coral);
-  text(ctx,'01 — THE SHAPE',x+w*.06,y+h*(isPortrait?.49:.80),u*.031,ink,{spacing:u*.006});
+  text(ctx,'IN MOTION',x+w*.06,y+h*(isPortrait?.425:.63),outlined,coral,{stroke:true});
+  rect(ctx,x+w*.06,y+h*(isPortrait?.485:.70),w*.28*t,Math.max(2,u*.014),coral);
+  text(ctx,'01 — THE SHAPE',x+w*.06,y+h*(isPortrait?.54:.80),u*.031,ink,{spacing:u*.006});
   // A purpose-built diagrammatic image collage, rather than one large icon.
   const cx=x+w*(isPortrait?.53:.79),cy=y+h*(isPortrait?.72:.53),r=u*(isPortrait?.18:.28);
   for(let i=0;i<18;i++){
@@ -150,11 +150,11 @@ function drawInsights(ctx,a,frame){
   const isPortrait=h>w*.82,local=frame-180,progress=ease(local,-12,52);
   topRule(ctx,a,2,'/ MOTION INTELLIGENCE');
   const left=x+w*.065;
-  text(ctx,'84.6',left,y+h*.40,
+  text(ctx,'84.6',left,y+h*.345,
     fit(ctx,'84.6',w*.50,u*(isPortrait?.205:.245),u*.12),ink,{heavy:true});
   round(ctx,left+w*.33,y+h*.29,w*.23,Math.max(12,u*.069),u*.03,'#CBE5DF');
   text(ctx,'+24.8%',left+w*.35,y+h*.29+Math.max(6,u*.034),u*.045,'#136D66',{heavy:true});
-  text(ctx,'LIVE PERFORMANCE',left,y+h*.50,u*.030,muted,{spacing:u*.004});
+  text(ctx,'LIVE PERFORMANCE',left,y+h*.505,u*.030,muted,{spacing:u*.004});
   const chart={x:x+w*.065,y:y+h*(isPortrait?.61:.55),w:w*.65,h:h*(isPortrait?.27:.31)};
   for(let i=0;i<4;i++){
     line(ctx,chart.x,chart.y+i*chart.h/3,chart.x+chart.w,chart.y+i*chart.h/3,
@@ -197,9 +197,9 @@ function drawFinale(ctx,a,frame,art){
   const big=fit(ctx,'MOVE',w*.70,u*(portrait?.19:.22),u*.10);
   ctx.save();
   ctx.beginPath();ctx.rect(x+w*.055,y+h*.235,w*.68,h*.53);ctx.clip();
-  text(ctx,'MOVE',x+w*.07,y+h*(portrait?.40:.47),big,ivory,{heavy:true});
+  text(ctx,'MOVE',x+w*.07,y+h*(portrait?.365:.43),big,ivory,{heavy:true});
   const sub=fit(ctx,'WHAT MATTERS',w*.64,u*(portrait?.078:.093),u*.035);
-  text(ctx,'WHAT MATTERS',x+w*.07,y+h*(portrait?.51:.63),sub,butter,{stroke:true});
+  text(ctx,'WHAT MATTERS',x+w*.07,y+h*(portrait?.59:.69),sub,butter,{stroke:true});
   ctx.restore();
   // Stacked stamps/identity detail and large kinetic rosette with inky shadows.
   const cx=x+w*(portrait?.59:.81),cy=y+h*(portrait?.72:.52),r=u*(portrait?.155:.19);
