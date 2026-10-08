@@ -14,7 +14,21 @@ const smooth = (frame, start, end) => preciseEase(clamp((frame - start) / (end -
 const paper = '#F3F1EB', ink = '#17191C', muted = '#657078', red = '#CF443A', blue = '#2459C6';
 
 export function validateAdvancedSpec(spec) {
-  if (!exact(spec, ['motion', 'copy', 'asset_manifest'])) throw new Error('Unexpected advanced scene fields');
+  if (!exact(spec, ['motion', 'copy', 'asset_manifest']) &&
+      !exact(spec, ['motion', 'copy', 'asset_manifest', 'art_direction']))
+    throw new Error('Unexpected advanced scene fields');
+  if(spec.art_direction!==undefined){
+    const d=spec.art_direction;
+    if(!exact(d,['style_id','panels'])||!['studio','learning-lab'].includes(d.style_id)||
+      !Array.isArray(d.panels)||d.panels.length!==4)throw new Error('Invalid art direction');
+    d.panels.forEach(panel=>{
+      if(!exact(panel,['primary','secondary','footer']))throw new Error('Invalid panel fields');
+      for(const word of Object.values(panel))
+        if(typeof word!=='string'||!word.trim()||[...word].length>34)throw new Error('Invalid panel lettering');
+      validateSpec({title:panel.primary,subtitle:panel.secondary});
+      validateSpec({title:panel.footer,subtitle:panel.primary});
+    });
+  }
   validateMultiObjectSpec(spec.motion);
   if (!Array.isArray(spec.copy) || spec.copy.length !== spec.motion.segments.length) {
     throw new Error('Advanced film copy must match each segment');
@@ -111,7 +125,7 @@ function drawTypography(ctx, spec, index, layout, w, h) {
   const margin=layout.margin;
   // Text is always rendered as an entire beat. A designed interstitial
   // covers it as one object; never crop disjoint outgoing/incoming glyphs.
-  drawDesignedTitle(ctx,spec.copy[index],index,layout,w,h);
+  drawDesignedTitle(ctx,spec.copy[index],index,layout,w,h,0,spec.art_direction);
   ctx.fillStyle='#C6C3BA';
   ctx.fillRect(margin,h*.345,w*.19,Math.max(1,w*.0015));
 }
@@ -245,9 +259,9 @@ function renderStage(ctx,area,index,frame,art) {
   drawDesignedStage(ctx,area,index,frame,art);
 }
 
-function drawGraphics(ctx,frame,layout,art,index) {
-  // Never composite two different scene contents in one transition frame.
-  renderStage(ctx,layout.stage,index,frame,art);
+function drawGraphics(ctx,frame,layout,art,index,spec) {
+  // M7 art direction changes text and palette, never the underlying scene clock.
+  drawDesignedStage(ctx,layout.stage,index,frame,art,spec.art_direction);
 }
 
 function drawSignal(ctx, state, w, h, layout) {
@@ -276,7 +290,8 @@ export function drawAdvancedFrame(profile, frame, spec, art) {
   const state = evaluateMultiObjectFrame(spec.motion,frame);
   const {width:w,height:h} = profile, canvas = createCanvas(w,h), ctx = canvas.getContext('2d');
   const layout = stageLayout(w,h);
-  ctx.fillStyle = paper; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = spec.art_direction?.style_id==='learning-lab'?'#E9F1EA':paper;
+  ctx.fillRect(0,0,w,h);
   // The full scene flips only behind an opaque, original-design curtain.
   // Old and new titles, controls and charts are never exposed simultaneously.
   const transition=advancedTransition(spec,frame);
@@ -287,7 +302,7 @@ export function drawAdvancedFrame(profile, frame, spec, art) {
   // exposes cropped high-contrast word fragments during the early reveal.
   const sceneOpacity=curtain?Math.pow(1-curtain.coverage,1.65):1;
   ctx.save();ctx.globalAlpha=sceneOpacity;
-  drawGraphics(ctx,frame,layout,art,active);
+  drawGraphics(ctx,frame,layout,art,active,spec);
   drawTypography(ctx,spec,active,layout,w,h);
   ctx.restore();
   if(curtain)drawArtDirectedCurtain(ctx,layout,w,h,curtain,art);

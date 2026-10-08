@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "kind": "motion-brief-v1",
+  "id": "learning-progress",
+  "style_id": "learning-lab",
+  "message": "Fictional illustration of learning habits, never a measured efficacy claim",
+  "beats": [
+    {
+      "segment_id": "opener",
+      "headline": "LEARN",
+      "subtitle": "每天一點，持續前進",
+      "primary": "LEARN",
+      "secondary": "EVERY DAY",
+      "footer": "01 - FIRST STEPS"
+    },
+    {
+      "segment_id": "control",
+      "headline": "RECALL",
+      "subtitle": "主動回想，整理思路",
+      "primary": "READY",
+      "secondary": "REVIEWED",
+      "footer": "RECALL / CHECK / REPEAT"
+    },
+    {
+      "segment_id": "data",
+      "headline": "PRACTICE",
+      "subtitle": "用圖表記錄練習節奏",
+      "primary": "72.4",
+      "secondary": "+18.3%",
+      "footer": "DEMO DATA / SAMPLE"
+    },
+    {
+      "segment_id": "resolve",
+      "headline": "KEEP GOING",
+      "subtitle": "持續練習，逐步累積",
+      "primary": "GROW",
+      "secondary": "WITH PRACTICE",
+      "footer": "LEARN / RECALL / GROW"
+    }
+  ]
+}

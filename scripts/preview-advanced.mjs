@@ -6,13 +6,14 @@ import {mkdirSync,existsSync,readFileSync,writeFileSync,rmSync} from 'node:fs';
 import {resolve,join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {drawAdvancedFrame,loadAdvancedArt,validateAdvancedSpec} from '../src/creative/advanced.mjs';
+import {compileMotionBrief} from '../src/creative/brief.mjs';
 import {fontFamily} from '../src/free/scene.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const profileName=process.argv[2]??'landscape';
 const profiles={landscape:[640,360],vertical:[360,640]};
-if(process.argv.length>4 || !Object.hasOwn(profiles,profileName)){
-  throw new Error('Usage: node scripts/preview-advanced.mjs landscape|vertical [preview-label]');
+if(process.argv.length>5 || !Object.hasOwn(profiles,profileName)){
+  throw new Error('Usage: node scripts/preview-advanced.mjs landscape|vertical [preview-label] [examples/brief-*.json]');
 }
 const name=process.argv[3]??'preview-advanced-'+profileName;
 if(!/^preview-[a-z0-9][a-z0-9-]{0,45}$/.test(name)){
@@ -21,7 +22,11 @@ if(!/^preview-[a-z0-9][a-z0-9-]{0,45}$/.test(name)){
 if(resolve(process.cwd())!==root)throw new Error('Run from repository root');
 if(Number(process.versions.node.split('.')[0])!==24)throw new Error('Node 24 required');
 const specFile=join(root,'examples','advanced-film.json');
-const spec=JSON.parse(readFileSync(specFile,'utf8'));
+const template=JSON.parse(readFileSync(specFile,'utf8'));
+const briefFile=process.argv[4];
+if(briefFile&&!/^examples\/brief-[a-z0-9-]+\.json$/.test(briefFile))
+  throw new Error('Only committed examples/brief-*.json accepted');
+const spec=briefFile?compileMotionBrief(JSON.parse(readFileSync(join(root,briefFile),'utf8')),template):template;
 validateAdvancedSpec(spec);
 const art=await loadAdvancedArt(spec,dirname(specFile));
 const [width,height]=profiles[profileName];
@@ -50,6 +55,7 @@ const report={renderer:'offline-canvas-still-preview-v1',profile,frames,
   source_commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8',windowsHide:true}).trim(),
   source_dirty:Boolean(execFileSync('git',['status','--porcelain'],{encoding:'utf8',windowsHide:true}).trim()),
   input_sha256:sha256(Buffer.from(JSON.stringify(spec))),
+  brief_id:briefFile??'baseline-advanced',
   asset_provenance:[art.record],
   samples:frames.map((frame,i)=>({frame,sha256:sha256(buffers[i])})),
   duration_ms:Number((process.hrtime.bigint()-began)/1000000n),

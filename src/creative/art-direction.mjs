@@ -71,17 +71,17 @@ function stageBase(ctx,a,col=ivory){
   ctx.strokeRect(a.x+1,a.y+1,a.w-2,a.h-2);
   return ()=>ctx.restore();
 }
-function drawOpening(ctx,a,frame,art){
-  const restore=stageBase(ctx,a,'#E9E9E0'),{x,y,w,h}=a;
+function drawOpening(ctx,a,frame,art,entry,style){
+  const restore=stageBase(ctx,a,style==='learning-lab'?'#DDECE2':'#E9E9E0'),{x,y,w,h}=a;
   const u=Math.min(w,h),isPortrait=h>w*.82,t=ease(frame,0,37);
   pattern(ctx,x+w*.50,y+h*.19,w*.45,h*.7,Math.max(9,u*.033),'#BEC6C1');
-  topRule(ctx,a,0,'/ SYSTEM OF MOTION');
-  const titleSize=fit(ctx,'DESIGN',w*(isPortrait?.83:.46),u*(isPortrait?.17:.20),u*.095);
-  text(ctx,'DESIGN',x+w*.055,y+h*(isPortrait?.265:.41),titleSize,ink,{heavy:true});
-  const outlined=fit(ctx,'IN MOTION',w*(isPortrait?.84:.52),u*(isPortrait?.108:.122),u*.055);
-  text(ctx,'IN MOTION',x+w*.06,y+h*(isPortrait?.425:.63),outlined,coral,{stroke:true});
+  topRule(ctx,a,0,style==='learning-lab'?'/ THE LEARNING LOOP':'/ SYSTEM OF MOTION');
+  const titleSize=fit(ctx,entry?.primary??'DESIGN',w*(isPortrait?.83:.46),u*(isPortrait?.17:.20),u*.095);
+  text(ctx,entry?.primary??'DESIGN',x+w*.055,y+h*(isPortrait?.265:.41),titleSize,ink,{heavy:true});
+  const outlined=fit(ctx,entry?.secondary??'IN MOTION',w*(isPortrait?.84:.52),u*(isPortrait?.108:.122),u*.055);
+  text(ctx,entry?.secondary??'IN MOTION',x+w*.06,y+h*(isPortrait?.425:.63),outlined,coral,{stroke:true});
   rect(ctx,x+w*.06,y+h*(isPortrait?.485:.70),w*.28*t,Math.max(2,u*.014),coral);
-  text(ctx,'01 — THE SHAPE',x+w*.06,y+h*(isPortrait?.54:.80),u*.031,ink,{spacing:u*.006});
+  text(ctx,entry?.footer??'01 — THE SHAPE',x+w*.06,y+h*(isPortrait?.54:.80),u*.031,ink,{spacing:u*.006});
   // A purpose-built diagrammatic image collage, rather than one large icon.
   const cx=x+w*(isPortrait?.53:.79),cy=y+h*(isPortrait?.72:.53),r=u*(isPortrait?.18:.28);
   for(let i=0;i<18;i++){
@@ -99,11 +99,11 @@ function drawOpening(ctx,a,frame,art){
   line(ctx,cx+r*.94,cy,cx+r*1.12,cy,ink,1.5);
   restore();
 }
-function drawInterface(ctx,a,frame){
-  const restore=stageBase(ctx,a,'#E0E6E2'),{x,y,w,h}=a,u=Math.min(w,h);
+function drawInterface(ctx,a,frame,entry,style){
+  const restore=stageBase(ctx,a,style==='learning-lab'?'#DFEBE2':'#E0E6E2'),{x,y,w,h}=a,u=Math.min(w,h);
   const portrait=h>w*.82,local=frame-90;
   const enter=ease(local,-12,33),toggle=ease(local,19,54);
-  topRule(ctx,a,1,'/ REACTIVE OBJECT');
+  topRule(ctx,a,1,style==='learning-lab'?'/ ACTIVE PRACTICE':'/ REACTIVE OBJECT');
   const px=x+w*.075,py=y+h*.205,pw=w*.85,ph=h*.69;
   round(ctx,px,py,pw,ph,u*.024,'#202635');
   // Inner app window and chrome.
@@ -115,8 +115,8 @@ function drawInterface(ctx,a,frame){
   }
   const left=ix+iw*.06,innerY=iy+ih*.11;
   text(ctx,'ACTIONS  /  02',left,innerY,u*.037,ink,{spacing:u*.0015});
-  text(ctx,toggle>.6?'CONNECTED':'READY',left,innerY+ih*.18,
-    fit(ctx,'CONNECTED',iw*.59,u*.107,u*.063),ink,{heavy:true});
+  text(ctx,toggle>.6?(entry?.secondary??'CONNECTED'):(entry?.primary??'READY'),left,innerY+ih*.18,
+    fit(ctx,entry?.secondary??'CONNECTED',iw*.59,u*.107,u*.063),ink,{heavy:true});
   const barW=iw*(portrait?.62:.42),barY=innerY+ih*.31;
   round(ctx,left,barY,barW,Math.max(4,ih*.045),ih*.025,'#D3DCDF');
   round(ctx,left,barY,Math.max(2,barW*(.12+.84*enter)),Math.max(4,ih*.045),ih*.025,blue);
@@ -141,20 +141,20 @@ function drawInterface(ctx,a,frame){
     ring(ctx,knobX+trackW*.65,knobY+trackH*.5,trackH*(.5+toggle),coral,
       Math.max(1,u*.004));
   }
-  text(ctx,'DRAG   •   MORPH   •   CHANGE',left,iy+ih*.91,u*.028,'#67747C',
+  text(ctx,entry?.footer??'DRAG   •   MORPH   •   CHANGE',left,iy+ih*.91,u*.028,'#67747C',
     {spacing:u*.0018});
   restore();
 }
-function drawInsights(ctx,a,frame){
-  const restore=stageBase(ctx,a,'#EBEEE8'),{x,y,w,h}=a,u=Math.min(w,h);
+function drawInsights(ctx,a,frame,entry,style){
+  const restore=stageBase(ctx,a,style==='learning-lab'?'#EBF0DE':'#EBEEE8'),{x,y,w,h}=a,u=Math.min(w,h);
   const isPortrait=h>w*.82,local=frame-180,progress=ease(local,-12,52);
-  topRule(ctx,a,2,'/ MOTION INTELLIGENCE');
+  topRule(ctx,a,2,style==='learning-lab'?'/ PRACTICE SIGNALS':'/ MOTION INTELLIGENCE');
   const left=x+w*.065;
-  text(ctx,'84.6',left,y+h*.345,
-    fit(ctx,'84.6',w*.50,u*(isPortrait?.205:.245),u*.12),ink,{heavy:true});
+  text(ctx,entry?.primary??'84.6',left,y+h*.345,
+    fit(ctx,entry?.primary??'84.6',w*.50,u*(isPortrait?.205:.245),u*.12),ink,{heavy:true});
   round(ctx,left+w*(isPortrait?.49:.33),y+h*(isPortrait?.205:.29),w*.23,Math.max(12,u*.069),u*.03,'#CBE5DF');
-  text(ctx,'+24.8%',left+w*(isPortrait?.51:.35),y+h*(isPortrait?.205:.29)+Math.max(6,u*.034),u*.045,'#136D66',{heavy:true});
-  text(ctx,'LIVE PERFORMANCE',left,y+h*.505,u*.030,muted,{spacing:u*.004});
+  text(ctx,entry?.secondary??'+24.8%',left+w*(isPortrait?.51:.35),y+h*(isPortrait?.205:.29)+Math.max(6,u*.034),u*.045,'#136D66',{heavy:true});
+  text(ctx,entry?.footer??'LIVE PERFORMANCE',left,y+h*.505,u*.030,muted,{spacing:u*.004});
   const chart={x:x+w*.065,y:y+h*(isPortrait?.61:.55),w:w*.65,h:h*(isPortrait?.27:.31)};
   for(let i=0;i<4;i++){
     line(ctx,chart.x,chart.y+i*chart.h/3,chart.x+chart.w,chart.y+i*chart.h/3,
@@ -184,22 +184,22 @@ function drawInsights(ctx,a,frame){
   text(ctx,'30 FPS',rcx-rr*.58,rcy+rr*.5,u*.029,muted);
   restore();
 }
-function drawFinale(ctx,a,frame,art){
-  const restore=stageBase(ctx,a,dark),{x,y,w,h}=a,u=Math.min(w,h);
+function drawFinale(ctx,a,frame,art,entry,style){
+  const restore=stageBase(ctx,a,style==='learning-lab'?'#143D3A':dark),{x,y,w,h}=a,u=Math.min(w,h);
   const local=Math.min(frame-270,59),p=ease(local,-12,41),portrait=h>w*.82;
   for(let i=0;i<11;i++){
     const yy=y+h*(.18+i*.061);
     line(ctx,x+w*.05,yy,x+w*.95,yy,'#3B4552',Math.max(1,u*.001));
   }
-  text(ctx,'/ ART DIRECTED MOTION',x+w*.065,y+h*.10,u*.035,'#A3C4CE',
+  text(ctx,style==='learning-lab'?'/ LEARNING BY DOING':'/ ART DIRECTED MOTION',x+w*.065,y+h*.10,u*.035,'#A3C4CE',
     {spacing:u*.003});
   // Deliberately oversized but bounded, outlined typography is itself artwork.
-  const big=fit(ctx,'MOVE',w*.70,u*(portrait?.19:.22),u*.10);
+  const big=fit(ctx,entry?.primary??'MOVE',w*.70,u*(portrait?.19:.22),u*.10);
   ctx.save();
   ctx.beginPath();ctx.rect(x+w*.055,y+h*.235,w*.68,h*.53);ctx.clip();
-  text(ctx,'MOVE',x+w*.07,y+h*(portrait?.365:.43),big,ivory,{heavy:true});
-  const sub=fit(ctx,'WHAT MATTERS',w*.64,u*(portrait?.078:.093),u*.035);
-  text(ctx,'WHAT MATTERS',x+w*.07,y+h*(portrait?.59:.69),sub,butter,{stroke:true});
+  text(ctx,entry?.primary??'MOVE',x+w*.07,y+h*(portrait?.365:.43),big,ivory,{heavy:true});
+  const sub=fit(ctx,entry?.secondary??'WHAT MATTERS',w*.64,u*(portrait?.078:.093),u*.035);
+  text(ctx,entry?.secondary??'WHAT MATTERS',x+w*.07,y+h*(portrait?.59:.69),sub,butter,{stroke:true});
   ctx.restore();
   // Stacked stamps/identity detail and large kinetic rosette with inky shadows.
   const cx=x+w*(portrait?.76:.81),cy=y+h*(portrait?.77:.52),r=u*(portrait?.12:.19);
@@ -214,26 +214,27 @@ function drawFinale(ctx,a,frame,art){
   ctx.save();ctx.globalAlpha=p;
   ctx.drawImage(art.image,cx-r*.53,cy-r*.53,r*1.06,r*1.06);ctx.restore();
   rect(ctx,x+w*.065,y+h*.87,w*.37,Math.max(2,u*.012),coral);
-  text(ctx,'DESIGN / MOTION / SYSTEM',x+w*.065,y+h*.93,u*.028,'#B2CBD2',{spacing:u*.002});
+  text(ctx,entry?.footer??'DESIGN / MOTION / SYSTEM',x+w*.065,y+h*.93,u*.028,'#B2CBD2',{spacing:u*.002});
   restore();
 }
-export function drawDesignedStage(ctx,area,index,frame,art){
-  if(index===0)drawOpening(ctx,area,frame,art);
-  else if(index===1)drawInterface(ctx,area,frame);
-  else if(index===2)drawInsights(ctx,area,frame);
-  else if(index===3)drawFinale(ctx,area,frame,art);
+export function drawDesignedStage(ctx,area,index,frame,art,direction){
+  const entry=direction?.panels[index]??null,style=direction?.style_id??'studio';
+  if(index===0)drawOpening(ctx,area,frame,art,entry,style);
+  else if(index===1)drawInterface(ctx,area,frame,entry,style);
+  else if(index===2)drawInsights(ctx,area,frame,entry,style);
+  else if(index===3)drawFinale(ctx,area,frame,art,entry,style);
   else throw new Error('Unknown designed stage');
 }
 
 // The top editorial headline is an explicit typographic system: filled display
 // with controlled ink stroke, legible secondary type, and a section-coded signal.
-export function drawDesignedTitle(ctx,beat,index,layout,width,height,dx=0){
+export function drawDesignedTitle(ctx,beat,index,layout,width,height,dx=0,direction){
   const x=layout.margin+dx,top=height*.198;
-  const accent=[coral,blue,aqua,butter][index];
+  const accent=(direction?.style_id==='learning-lab'?['#0D8175','#D89C49','#6C8F7B','#E4BC71']:[coral,blue,aqua,butter])[index];
   const big=fit(ctx,beat.headline,width*.74,layout.titleSize*1.04,
     Math.max(12,layout.titleSize*.58));
   rect(ctx,x,top-big*.56,Math.max(3,width*.006),big*.92,accent);
-  text(ctx,beat.headline,x+width*.018,top,big,ink,{heavy:true,spacing:big*.009});
+  text(ctx,beat.headline,x+width*.018,top,big,direction?.style_id==='learning-lab'?'#183C3A':ink,{heavy:true,spacing:big*.009});
   const sub=fit(ctx,beat.subtitle,width*.75,layout.subtitleSize,
     Math.max(9,layout.subtitleSize*.64));
   text(ctx,beat.subtitle,x+width*.018,layout.subtitleY,sub,'#3B4552',{spacing:sub*.009});

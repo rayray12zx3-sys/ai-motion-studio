@@ -8,6 +8,7 @@ import probe from 'ffprobe-static';
 import {createCanvas,loadImage} from '@napi-rs/canvas';
 import {fontManifest} from '../src/free/scene.mjs';
 import {loadAdvancedArt,drawAdvancedFrame,validateAdvancedSpec} from '../src/creative/advanced.mjs';
+import {compileMotionBrief} from '../src/creative/brief.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 if (process.argv.length>5) throw new Error('Unexpected advanced render arguments');
@@ -15,7 +16,12 @@ const profileName=process.argv[2]??'landscape';
 const profileSizes={landscape:[1920,1080],vertical:[1080,1920]};
 if (!Object.hasOwn(profileSizes,profileName)) throw new Error('Unknown advanced render profile');
 const specPath=resolve(process.argv[3]??'examples/advanced-film.json');
-const spec=JSON.parse(readFileSync(specPath,'utf8'));
+const supplied=JSON.parse(readFileSync(specPath,'utf8'));
+const isBrief=supplied?.kind==='motion-brief-v1';
+if(isBrief&&!/^brief-[a-z0-9-]+\.json$/.test(specPath.split(/[\\/]/).at(-1)))
+  throw new Error('Invalid brief file');
+const templatePath=resolve('examples/advanced-film.json');
+const spec=isBrief?compileMotionBrief(supplied,JSON.parse(readFileSync(templatePath,'utf8'))):supplied;
 validateAdvancedSpec(spec);
 const [width,height]=profileSizes[profileName];
 const profile={width,height,fps:30,frames:spec.motion.duration_frames};
@@ -24,7 +30,7 @@ if (!/^advanced-[a-z0-9][a-z0-9-]{0,39}$/.test(outputKey)) throw new Error('Inva
 
 // Preflight: no media, output folder or encoder child is created until every
 // creative scene's layout and every local asset is known to be valid.
-const art=await loadAdvancedArt(spec,dirname(specPath));
+const art=await loadAdvancedArt(spec,isBrief?dirname(templatePath):dirname(specPath));
 for (const segment of spec.motion.segments) {
   for (const f of [segment.start,Math.min(segment.start+25,segment.end-1),segment.end-1]) {
     drawAdvancedFrame(profile,f,spec,art);
