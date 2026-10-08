@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "kind": "motion-brief-v1",
+  "id": "motion-system",
+  "style_id": "studio",
+  "message": "Original motion graphics story",
+  "beats": [
+    {
+      "segment_id": "opener",
+      "headline": "ONE MOTION",
+      "subtitle": "一個形狀，持續變化",
+      "primary": "DESIGN",
+      "secondary": "IN MOTION",
+      "footer": "01 - THE SHAPE"
+    },
+    {
+      "segment_id": "control",
+      "headline": "INTERACT",
+      "subtitle": "從圖形延展成介面",
+      "primary": "READY",
+      "secondary": "CONNECTED",
+      "footer": "DRAG / MORPH / CHANGE"
+    },
+    {
+      "segment_id": "data",
+      "headline": "VISUALIZE",
+      "subtitle": "讓資料成為節奏",
+      "primary": "84.6",
+      "secondary": "+24.8%",
+      "footer": "LIVE PERFORMANCE"
+    },
+    {
+      "segment_id": "resolve",
+      "headline": "CREATE",
+      "subtitle": "連續設計，完整表達",
+      "primary": "MOVE",
+      "secondary": "WHAT MATTERS",
+      "footer": "DESIGN / MOTION / SYSTEM"
+    }
+  ]
+}

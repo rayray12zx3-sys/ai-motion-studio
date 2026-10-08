@@ -62,6 +62,27 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+      # A one-time M7 benchmark: four small PNG contact sheets, no full MP4.
+      - name: M7 two-brief dual-aspect PNG benchmark
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.number == 20 }}
+        run: |
+          node scripts/preview-advanced.mjs landscape preview-m7-studio-landscape examples/brief-studio.json
+          node scripts/preview-advanced.mjs vertical preview-m7-studio-vertical examples/brief-studio.json
+          node scripts/preview-advanced.mjs landscape preview-m7-learning-landscape examples/brief-learning.json
+          node scripts/preview-advanced.mjs vertical preview-m7-learning-vertical examples/brief-learning.json
+      - name: Save M7 PNG-only contact sheets
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.number == 20 }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: m7-four-compositions-png-only
+          path: |
+            out/preview-m7-studio-landscape/
+            out/preview-m7-studio-vertical/
+            out/preview-m7-learning-landscape/
+            out/preview-m7-learning-vertical/
+          retention-days: 1
+          if-no-files-found: error
+
       # A deliberate manual dispatch is the ONLY way to run the 1080p renders.
       - name: Provision hash-verified encoder
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_full_render }}
