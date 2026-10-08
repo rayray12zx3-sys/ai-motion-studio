@@ -30,3 +30,14 @@ Official sources:
 https://www.theatrejs.com/docs/latest/api/core
 https://www.theatrejs.com/docs/latest/api/studio
 https://github.com/theatre-js/theatre
+
+## Lower-third Alpha compositing experiment
+
+The same tested Theatre project state can now draw to a **transparent**
+@napi-rs/canvas image (rather than a solid test background), with a
+bounded lower-third placement. This is the reusable underlying primitive
+for NLE overlays, and does not copy company text or media into public
+GitHub. Use `createKeyframedCanvasRenderer({background:'transparent',
+placement:'lower-third'})` and pass 30fps frame index. The development-only
+Studio editor still requires a real browser interaction check.
+

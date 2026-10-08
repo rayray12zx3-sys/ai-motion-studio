@@ -7,7 +7,9 @@ import {readFileSync} from 'node:fs';
 
 const {getProject,types}=theatre;
 const state=JSON.parse(readFileSync(new URL('../fixtures/project-state.json',import.meta.url)));
-export async function createKeyframedCanvasRenderer(){
+export async function createKeyframedCanvasRenderer({background='solid',placement='center'}={}){
+  if(!['solid','transparent'].includes(background)||!['center','lower-third'].includes(placement))
+    throw new Error('Unsupported overlay rendering option');
   const project=getProject('M10 Sampled Canvas Renderer',{state});
   const sheet=project.sheet('Canvas');
   const card=sheet.object('Practice Card',{
@@ -24,8 +26,10 @@ export async function createKeyframedCanvasRenderer(){
     sheet.sequence.position=frame/fps;
     const {x,opacity,rotation,scale}=card.value;
     const canvas=createCanvas(width,height),ctx=canvas.getContext('2d');
-    ctx.fillStyle='#e4f1ea';ctx.fillRect(0,0,width,height);
-    ctx.save();ctx.translate(width/2+x*width/800,height/2);ctx.rotate(rotation*Math.PI/180);
+    if(background==='solid'){
+      ctx.fillStyle='#e4f1ea';ctx.fillRect(0,0,width,height);
+    } // Transparent preserves alpha for downstream NLE overlays.
+    ctx.save();ctx.translate(width/2+x*width/800,height*(placement==='lower-third'?.68:.5));ctx.rotate(rotation*Math.PI/180);
     ctx.scale(scale,scale);ctx.globalAlpha=opacity;
     ctx.fillStyle='#15796c';
     const w=Math.min(width*.6,260),h=Math.min(height*.25,110);
