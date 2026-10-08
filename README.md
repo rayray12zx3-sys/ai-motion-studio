@@ -177,3 +177,13 @@ For another deliberately scoped task, add label \`jules\` manually to an
 issue that specifies the correct feature branch and prohibits unwanted
 PRs, cross-repo operations and Actions invocations. See
 docs/RENDER-BUDGET-JULES.md; never put Jules API keys in code.
+
+### Jules issue-label integration limit (verified 2026-10-08)
+
+The Jules bot accepted Issue #16 but also automatically opened redundant
+PR #18 against `main` despite a read-only/no-PR instruction; that PR was
+closed without merging. **Jules label dispatch alone does not invoke Actions,
+but a resulting PR can trigger lightweight Actions CI.** For strictly
+no-PR visual verification, avoid issue-label dispatch; choose direct Jules
+UI tasks or a configured local/chat execution environment instead. Review
+all Jules PR bases, changes and evidence; see docs/RENDER-BUDGET-JULES.md.

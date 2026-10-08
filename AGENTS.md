@@ -37,3 +37,15 @@
   default main, which lacks stacked Draft PR changes.
 - Do not auto-label untrusted/new issues; preserve explicit owner intent,
   branch isolation and read-only preview limitations where specified.
+
+## Jules post-task guard (Issue #16 result)
+- The Issue `jules` label started Jules but Jules unexpectedly created
+  PR #18 against `main` even when asked for read-only/no PR. Closed it;
+  never merge a Jules PR without inspecting its base and full diff.
+- An auto-created PR also triggers lightweight Actions checks; direct Jules
+  dispatch does NOT guarantee zero Actions minutes end-to-end.
+- For strictly read-only tasks with no PR or CI, **do not dispatch using the
+  Issue label**. Prefer a direct Jules UI task or an available ChatGPT
+  execution environment, with explicit review of output evidence.
+- Do not treat PR text asserting test completion as evidence without logs,
+  PNG/report hashes and image review.
