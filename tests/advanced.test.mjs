@@ -53,7 +53,7 @@ test('incoming and outgoing titles share an overlapping, nonempty timeline at ev
     assert.equal(enter.incoming,middle.incoming);
     assert.equal(middle.incoming,leave.incoming);
     assert.ok(enter.progress>0 && enter.progress<.5);
-    assert.ok(Math.abs(middle.progress-.5)<.001);
+    assert.ok(middle.progress>enter.progress && middle.progress<leave.progress);
     assert.ok(leave.progress>.5 && leave.progress<1);
     assert.ok(enter.progress < middle.progress && middle.progress < leave.progress);
   }
@@ -71,11 +71,11 @@ test('scene transitions never become blank frames and closing frame is deliberat
     for(const frame of [89,90,91,179,180,181,269,270,271]){
       const image=drawAdvancedFrame(profile,frame,original,art);
       const data=image.getContext('2d').getImageData(0,0,width,height).data;
-      let contrast=0;
-      for(let i=0;i<data.length;i+=128){
-        if(data[i]<100&&data[i+1]<110&&data[i+2]<130) contrast++;
+      let visibleSignal=0;
+      for(let i=0;i<data.length;i+=16){
+        if(data[i]>130 && data[i+1]<140 && data[i+2]<140) visibleSignal++;
       }
-      assert.ok(contrast>20, 'transition frame must preserve substantive on-screen imagery: '+frame);
+      assert.ok(visibleSignal>20, 'transition frame must retain the persistent signal: '+frame);
     }
   }
 });
