@@ -114,9 +114,11 @@ function drawTypography(ctx, spec, index, layout, w, h) {
   drawDesignedTitle(ctx,spec.copy[index],index,layout,w,h);
   ctx.fillStyle='#C6C3BA';
   ctx.fillRect(margin,h*.345,w*.19,Math.max(1,w*.0015));
-  label(ctx,'MOTION / STUDIO',margin,h*.073,Math.min(22,w*.016),muted);
+}
+function drawBrandHeader(ctx,index,layout,w,h) {
+  label(ctx,'MOTION / STUDIO',layout.margin,h*.073,Math.min(22,w*.016),muted);
   label(ctx,'0'+(index+1)+'   /   04',
-    w-margin-Math.max(85,w*.1),h*.073,Math.min(20,w*.014),muted);
+    w-layout.margin-Math.max(85,w*.1),h*.073,Math.min(20,w*.014),muted);
 }
 
 function grid(ctx, area, rows = 4) {
@@ -281,10 +283,16 @@ export function drawAdvancedFrame(profile, frame, spec, art) {
   const curtain=transition.incoming===null?null:
     curtainState(transition.progress,transition.current,transition.incoming);
   const active=curtain?curtain.scene:transition.current;
+  // Full-scene visibility moves as a single envelope. The curtain edge never
+  // exposes cropped high-contrast word fragments during the early reveal.
+  const sceneOpacity=curtain?Math.pow(1-curtain.coverage,1.65):1;
+  ctx.save();ctx.globalAlpha=sceneOpacity;
   drawGraphics(ctx,frame,layout,art,active);
   drawTypography(ctx,spec,active,layout,w,h);
+  ctx.restore();
   if(curtain)drawArtDirectedCurtain(ctx,layout,w,h,curtain,art);
-  // Persistent ID remains visible through the curtain and across all shots.
+  // Persistent ID and brand/navigation rail stay visible during the edit.
   drawSignal(ctx,state,w,h,layout);
+  drawBrandHeader(ctx,active,layout,w,h);
   return canvas;
 }
