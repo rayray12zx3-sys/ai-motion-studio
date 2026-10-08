@@ -94,6 +94,10 @@ test('authored curtain always displays exactly one beat with full coverage at mi
     }
   }
   for(const n of [1,2,3]){
+    assert.equal(curtainState(.35,n-1,n).coverage,1,'hold: covered before scene change');
+    assert.equal(curtainState(.65,n-1,n).coverage,1,'hold: covered after scene change');
+    assert.ok(curtainState(.2,n-1,n).coverage<1,'approach enters curtain');
+    assert.ok(curtainState(.8,n-1,n).coverage<1,'reveal exits curtain');
     const a=curtainState(0,n-1,n),half=curtainState(.5,n-1,n),end=curtainState(1,n-1,n);
     assert.equal(a.scene,n-1);assert.equal(a.coverage,0);
     assert.equal(half.scene,n);assert.equal(half.coverage,1);

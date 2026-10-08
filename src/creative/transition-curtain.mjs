@@ -10,13 +10,19 @@ export function curtainState(progress,current,incoming) {
      current<0||incoming!==current+1||incoming>3) {
     throw new Error('Invalid authored curtain phase');
   }
+  // Fully conceal the two compositions around the edit instead of leaving
+  // narrow slivers of cut-off headlines at the exact scene boundary.
+  // The ~0.36-wide hold gives the interstitial its own readable beat.
   const covering=progress<.5;
+  const ramp=.32;
+  const coverage=covering?Math.min(1,progress/ramp):
+    Math.min(1,(1-progress)/ramp);
   return {
     scene:covering?current:incoming,
     next:incoming,
     phase:covering?'cover-outgoing':'reveal-incoming',
-    offset:covering?0:2*progress-1,
-    coverage:covering?2*progress:2*(1-progress),
+    offset:covering?0:1-coverage,
+    coverage,
   };
 }
 function strokeLine(ctx,x1,y1,x2,y2,color,width=1) {
@@ -60,12 +66,16 @@ export function drawArtDirectedCurtain(ctx,layout,w,h,state,art) {
   const icon=Math.max(14,unit*.085);
   if(art?.image)ctx.drawImage(art.image,cx-icon*.5,cy-icon*.5,icon,icon);
   const number=String(state.next+1).padStart(2,'0');
+  // Never present a severed number or word on the moving edge. Editorial
+  // lettering belongs only to the briefly FULLY covered, stable composition.
+  const legibility=Math.max(0,Math.min(1,(state.coverage-.965)/.035));
+  ctx.save();ctx.globalAlpha=legibility;
   type(ctx,'/ TRANSITION PROTOCOL',x+ww*.055,y+hh*.12,unit*.039,blue);
   strokeLine(ctx,x+ww*.055,y+hh*.18,x+ww*.95,y+hh*.18,'#7795A9',Math.max(1,unit*.002));
-  // A large outlined section numeral and hierarchy replace clipped old/new letters.
   type(ctx,number,x+ww*.07,y+hh*.46,unit*.30,light,true);
   type(ctx,'SHIFT / '+number,x+ww*.07,y+hh*.68,unit*.079,light);
   type(ctx,'DESIGN  →  MOTION',x+ww*.075,y+hh*.78,unit*.035,'#D3DDE0');
+  ctx.restore();
   for(let i=0;i<5;i++){
     const bx=x+ww*(.07+i*.045);
     ctx.fillStyle=i===state.next?accent:'#8797A8';
