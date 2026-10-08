@@ -1,0 +1,73 @@
+name: Automatic Full Motion Regression
+# Unbilled standard GitHub-hosted runners for public repository source changes.
+# Excludes private media and paid generation services. Artifacts expire in 1 day.
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'templates/**'
+      - 'examples/**'
+      - 'assets/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/render-review.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'templates/**'
+      - 'examples/**'
+      - 'assets/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/render-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  full-video:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.19.0"
+          cache: npm
+      - name: Install pinned source tools
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Source, timeline and licensing checks
+        run: npm run lint && npm run typecheck && npm test
+      - name: Prepare and verify approved FFmpeg encoder
+        run: node scripts/setup-encoder.mjs
+      - name: Synthetic full-speed smoke and multi-aspect motion
+        run: |
+          npm run render:smoke
+          npm run render:advanced:landscape
+          npm run render:advanced:vertical
+          npm run render:template:hybrid:landscape
+          npm run render:template:hybrid:vertical
+      - name: Save MP4s and reproducibility reports
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: synthetic-full-motion-regression
+          path: |
+            out/smoke/
+            out/advanced-landscape/
+            out/advanced-vertical/
+            out/advanced-m9-hybrid-landscape/
+            out/advanced-m9-hybrid-vertical/
+          retention-days: 1
+          if-no-files-found: error
