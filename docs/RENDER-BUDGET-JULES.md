@@ -10,6 +10,47 @@ own VM and can run locked Node tests/previews without starting Actions.
 The Jules service is **not directly connected to this conversation**.
 Never add a Jules-invoking GitHub Action: it still consumes runner minutes.
 
+
+## Verified: GitHub Issue label launches Jules with zero GitHub Actions minutes
+
+**2026-10-08 live integration test:** [Issue #16](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/16)
+received the \`jules\` label and Google Labs Jules commented with an actual
+[Jules task link](https://jules.google.com/task/16512926754855591545).
+This proves label → Jules task *dispatch* for this repository, not successful
+execution of the preview commands. Review the issue's later comments for results.
+
+Reusable flow, with **no Jules GitHub Action, secret, API key or runner job**:
+
+1. Open a GitHub Issue scoped to **one bounded** work item. Specify the
+   exact intended feature branch/commit; current main is not equivalent to
+   the stacked Draft branch.
+2. Put the allowed commands, pass/fail criteria, and the restrictions
+   "do not trigger Actions", "do not push source", "do not create PR" directly
+   into the issue when it is a preview-only/diagnostic task.
+3. Only when ready to launch, add the issue label **\`jules\`**. The Google
+   Labs Jules GitHub App must be authorized for this repository.
+4. Confirm that the \`google-labs-jules[bot]\` comment gives a Jules task link.
+   No bot comment means **not yet confirmed**: check the label, app repo
+   authorization, Jules limits and GitHub issue permissions; do not claim
+   success or silently fall back to Actions.
+5. Open the Jules task to review branch selection and execution. It may
+   start from the repo default branch! If it cannot obtain the feature
+   branch, the task should stop and report BLOCKED, not modify main.
+6. Review Jules's findings and proposed patch **before** applying any change.
+   A Jules-created PR would itself trigger lightweight PR CI under PR #15.
+
+Do not automatically attach the \`jules\` label to every issue, untrusted issue,
+pull-request comment, or template. Only the repository owner/trusted maintainer
+should decide to dispatch. GitHub/Jules integration is not the same as this
+ChatGPT conversation having direct Jules session tools. No credential can be
+inferred from the public repository. A "task received" reply is not evidence
+of its completion, correctness, or creative sign-off.
+
+The alternative official
+[google-labs-code/jules-action](https://github.com/google-labs-code/jules-action)
+does invoke Jules **through GitHub Actions** and thus spends runner time;
+it is intentionally not installed in this project.
+
 ## Quick previews, no MP4 and no GitHub Actions
 
 At the repository root in Node 24.19.0 with Git and project dependencies:

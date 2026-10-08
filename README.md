@@ -168,3 +168,12 @@ and upload run only with an explicitly confirmed manual workflow_dispatch.
 The new manual controls require this workflow file to reach the default
 branch before GitHub exposes them. See docs/RENDER-BUDGET-JULES.md for
 normal-chat and Jules delegation. Visual approval is still human-only.
+
+### Trigger Jules directly from GitHub Issues
+
+The official Jules GitHub App is verified for this repository: issue #16
+received the \`jules\` label and Jules posted a task link, without Actions.
+For another deliberately scoped task, add label \`jules\` manually to an
+issue that specifies the correct feature branch and prohibits unwanted
+PRs, cross-repo operations and Actions invocations. See
+docs/RENDER-BUDGET-JULES.md; never put Jules API keys in code.

@@ -26,3 +26,14 @@
 - The manual dispatch UI may be unavailable until the new workflow reaches
   the default branch. Do not auto-merge to enable the button.
 - Reference docs/RENDER-BUDGET-JULES.md; Jules is not a chat-connected tool.
+
+## Direct GitHub → Jules dispatch (confirmed Issue #16)
+- A trusted maintainer may create a scoped GitHub Issue and add label \`jules\`
+  to start a Jules cloud task through the authorized Jules GitHub App.
+- Use the official Jules issue bot comment/task link to confirm dispatch.
+  This does NOT consume Actions minutes and needs no Jules secret or new
+  workflow. The separate Jules GitHub Action is deliberately not installed.
+- State the exact feature branch: the Jules task may otherwise start at
+  default main, which lacks stacked Draft PR changes.
+- Do not auto-label untrusted/new issues; preserve explicit owner intent,
+  branch isolation and read-only preview limitations where specified.
