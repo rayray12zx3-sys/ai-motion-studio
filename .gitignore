@@ -9,3 +9,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Private commercial media and contracts: never include in public Git
+private-media/
+company-assets/
+private-license-evidence/
+experiments/theatre/node_modules/
+experiments/theatre/public/bundle.js
