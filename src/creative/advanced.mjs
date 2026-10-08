@@ -1,6 +1,7 @@
 import {createCanvas, loadImage} from '@napi-rs/canvas';
 import {evaluateMultiObjectFrame, validateMultiObjectSpec} from './composition.mjs';
 import {preciseEase} from './motion.mjs';
+import {drawDesignedStage, drawDesignedTitle} from './art-direction.mjs';
 import {verifyLocalAssets} from './assets.mjs';
 import {fontFamily, validateSpec} from '../free/scene.mjs';
 
@@ -107,33 +108,24 @@ export function advancedTransition(spec, frame) {
 
 function drawTypography(ctx, spec, frame, layout, w, h) {
   const tr = advancedTransition(spec, frame);
-  const {margin, titleSize, subtitleSize} = layout;
-  const titleWidth = w - margin * 2;
-  const drawSlot = (index, x1, clipWidth, offset) => {
-    if (clipWidth <= 0) return;
-    const beat = spec.copy[index];
-    const headSize = fitFont(ctx, beat.headline, titleSize, w * .77, Math.max(12, titleSize * .6));
-    const subSize = fitFont(ctx, beat.subtitle, subtitleSize, w * .78, Math.max(9, subtitleSize * .66));
-    ctx.save();ctx.beginPath();ctx.rect(x1, h * .12, clipWidth, h * .22);ctx.clip();
-    // The same wipe that changes the visual stage replaces both text lines.
-    // Only one piece of text can occupy any horizontal pixel at a shot boundary.
-    label(ctx,beat.headline,margin+offset,layout.typeY,headSize);
-    label(ctx,beat.subtitle,margin+offset,layout.subtitleY,subSize,muted);
+  const margin=layout.margin, titleWidth=w-2*margin;
+  const drawSlot=(index,start,width,dx)=>{
+    if(width <= 0) return;
+    ctx.save();ctx.beginPath();ctx.rect(start,h*.12,width,h*.217);ctx.clip();
+    drawDesignedTitle(ctx,spec.copy[index],index,layout,w,h,dx);
     ctx.restore();
   };
-  if (tr.incoming === null) {
-    drawSlot(tr.current,margin,titleWidth,0);
-  } else {
-    const cut = margin + titleWidth * tr.progress;
+  if(tr.incoming===null) drawSlot(tr.current,margin,titleWidth,0);
+  else {
+    const cut=margin+titleWidth*tr.progress;
     drawSlot(tr.current,cut,margin+titleWidth-cut,12*tr.progress);
     drawSlot(tr.incoming,margin,cut-margin,-12*(1-tr.progress));
   }
-  ctx.fillStyle = '#C6C3BA';
-  ctx.fillRect(margin, h * .345, w * .19, Math.max(1, w * .0015));
-  label(ctx,'MOTION / STUDIO',margin,h * .073,Math.min(22,w * .016),muted);
-  const stageIndex = tr.incoming === null ? tr.current :
-    (tr.progress >= .5 ? tr.incoming : tr.current);
-  label(ctx,'0'+(stageIndex+1)+'   /   04',
+  ctx.fillStyle='#C6C3BA';
+  ctx.fillRect(margin,h*.345,w*.19,Math.max(1,w*.0015));
+  label(ctx,'MOTION / STUDIO',margin,h*.073,Math.min(22,w*.016),muted);
+  const index=tr.incoming===null?tr.current:(tr.progress>=.5?tr.incoming:tr.current);
+  label(ctx,'0'+(index+1)+'   /   04',
     w-margin-Math.max(85,w*.1),h*.073,Math.min(20,w*.014),muted);
 }
 
@@ -257,13 +249,8 @@ function drawResolve(ctx, area, frame, art) {
     area.y + area.h * .83, area.w * .026, '#B6C6D7');
 }
 
-function renderStage(ctx, area, index, frame, art) {
-  ctx.save();
-  if (index === 0) drawOpener(ctx, area, frame, art, false);
-  if (index === 1) drawControl(ctx, area, frame);
-  if (index === 2) drawData(ctx, area, frame);
-  if (index === 3) drawResolve(ctx, area, frame, art);
-  ctx.restore();
+function renderStage(ctx,area,index,frame,art) {
+  drawDesignedStage(ctx,area,index,frame,art);
 }
 
 function drawGraphics(ctx, spec, frame, layout, art) {
