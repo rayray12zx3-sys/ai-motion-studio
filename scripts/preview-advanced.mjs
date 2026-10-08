@@ -7,14 +7,16 @@ import {resolve,join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {drawAdvancedFrame,loadAdvancedArt,validateAdvancedSpec} from '../src/creative/advanced.mjs';
 import {compileMotionBrief} from '../src/creative/brief.mjs';
+import {compileRegisteredTemplate} from '../src/creative/template-registry.mjs';
+import {verifyNoAttributionCreativeAssets} from '../src/creative/output-rights.mjs';
 import {fontFamily} from '../src/free/scene.mjs';
 import {displayFontManifest} from '../src/creative/display-font.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const profileName=process.argv[2]??'landscape';
 const profiles={landscape:[640,360],vertical:[360,640]};
-if(process.argv.length>5 || !Object.hasOwn(profiles,profileName)){
-  throw new Error('Usage: node scripts/preview-advanced.mjs landscape|vertical [preview-label] [examples/brief-*.json]');
+if(process.argv.length>6 || !Object.hasOwn(profiles,profileName)){
+  throw new Error('Usage: node scripts/preview-advanced.mjs landscape|vertical [preview-label] [examples/brief-*.json] [registry-template-id]');
 }
 const name=process.argv[3]??'preview-advanced-'+profileName;
 if(!/^preview-[a-z0-9][a-z0-9-]{0,45}$/.test(name)){
@@ -27,8 +29,14 @@ const template=JSON.parse(readFileSync(specFile,'utf8'));
 const briefFile=process.argv[4];
 if(briefFile&&!/^examples\/brief-[a-z0-9-]+\.json$/.test(briefFile))
   throw new Error('Only committed examples/brief-*.json accepted');
-const spec=briefFile?compileMotionBrief(JSON.parse(readFileSync(join(root,briefFile),'utf8')),template):template;
+const selected=process.argv[5];
+if(selected&&!briefFile)throw new Error('Template choice requires trusted brief');
+const brief=briefFile?JSON.parse(readFileSync(join(root,briefFile),'utf8')):null;
+const spec=selected?compileRegisteredTemplate(brief,template,
+  JSON.parse(readFileSync(join(root,'templates','registry.json'),'utf8')),selected):
+  brief?compileMotionBrief(brief,template):template;
 validateAdvancedSpec(spec);
+const usage=verifyNoAttributionCreativeAssets(spec);
 const art=await loadAdvancedArt(spec,dirname(specFile));
 const [width,height]=profiles[profileName];
 const profile={width,height,fps:30,frames:spec.motion.duration_frames};
@@ -57,6 +65,8 @@ const report={renderer:'offline-canvas-still-preview-v1',profile,frames,
   source_dirty:Boolean(execFileSync('git',['status','--porcelain'],{encoding:'utf8',windowsHide:true}).trim()),
   input_sha256:sha256(Buffer.from(JSON.stringify(spec))),
   brief_id:briefFile??'baseline-advanced',
+  template_id:selected??null,
+  asset_rights:usage,
   asset_provenance:[art.record],
   display_font_manifest:displayFontManifest,
   samples:frames.map((frame,i)=>({frame,sha256:sha256(buffers[i])})),

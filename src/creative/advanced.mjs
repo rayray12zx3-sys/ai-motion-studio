@@ -19,7 +19,13 @@ export function validateAdvancedSpec(spec) {
     throw new Error('Unexpected advanced scene fields');
   if(spec.art_direction!==undefined){
     const d=spec.art_direction;
-    if(!exact(d,['style_id','panels'])||!['studio','learning-lab'].includes(d.style_id)||
+    if(!exact(d,['style_id','panels'])&&
+       !exact(d,['style_id','panels','scene_families']))throw new Error('Invalid art direction keys');
+    if(d.scene_families!==undefined&&(
+      !Array.isArray(d.scene_families)||d.scene_families.length!==4||
+      !d.scene_families.every(f=>['studio','learning-lab'].includes(f))))
+      throw new Error('Invalid scene family composition');
+    if(!['studio','learning-lab'].includes(d.style_id)||
       !Array.isArray(d.panels)||d.panels.length!==4)throw new Error('Invalid art direction');
     d.panels.forEach(panel=>{
       if(!exact(panel,['primary','secondary','footer']))throw new Error('Invalid panel fields');
@@ -125,7 +131,9 @@ function drawTypography(ctx, spec, index, layout, w, h) {
   const margin=layout.margin;
   // Text is always rendered as an entire beat. A designed interstitial
   // covers it as one object; never crop disjoint outgoing/incoming glyphs.
-  drawDesignedTitle(ctx,spec.copy[index],index,layout,w,h,0,spec.art_direction);
+  const family=spec.art_direction?.scene_families?.[index]??spec.art_direction?.style_id;
+  drawDesignedTitle(ctx,spec.copy[index],index,layout,w,h,0,
+    spec.art_direction?{...spec.art_direction,style_id:family}:undefined);
   ctx.fillStyle='#C6C3BA';
   ctx.fillRect(margin,h*.345,w*.19,Math.max(1,w*.0015));
 }
@@ -261,7 +269,9 @@ function renderStage(ctx,area,index,frame,art) {
 
 function drawGraphics(ctx,frame,layout,art,index,spec) {
   // M7 art direction changes text and palette, never the underlying scene clock.
-  drawDesignedStage(ctx,layout.stage,index,frame,art,spec.art_direction);
+  const family=spec.art_direction?.scene_families?.[index]??spec.art_direction?.style_id;
+  drawDesignedStage(ctx,layout.stage,index,frame,art,
+    spec.art_direction?{...spec.art_direction,style_id:family}:undefined);
 }
 
 function drawSignal(ctx, state, w, h, layout) {
@@ -308,6 +318,7 @@ export function drawAdvancedFrame(profile, frame, spec, art) {
   if(curtain)drawArtDirectedCurtain(ctx,layout,w,h,curtain,art);
   // Persistent ID and brand/navigation rail stay visible during the edit.
   drawSignal(ctx,state,w,h,layout);
-  drawBrandHeader(ctx,active,layout,w,h,spec.art_direction?.style_id);
+  drawBrandHeader(ctx,active,layout,w,h,
+    spec.art_direction?.scene_families?.[active]??spec.art_direction?.style_id);
   return canvas;
 }
