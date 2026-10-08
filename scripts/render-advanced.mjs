@@ -10,9 +10,11 @@ import {fontManifest} from '../src/free/scene.mjs';
 import {displayFontManifest} from '../src/creative/display-font.mjs';
 import {loadAdvancedArt,drawAdvancedFrame,validateAdvancedSpec} from '../src/creative/advanced.mjs';
 import {compileMotionBrief} from '../src/creative/brief.mjs';
+import {compileRegisteredTemplate} from '../src/creative/template-registry.mjs';
+import {verifyNoAttributionCreativeAssets} from '../src/creative/output-rights.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-if (process.argv.length>5) throw new Error('Unexpected advanced render arguments');
+if (process.argv.length>6) throw new Error('Unexpected advanced render arguments');
 const profileName=process.argv[2]??'landscape';
 const profileSizes={landscape:[1920,1080],vertical:[1080,1920]};
 if (!Object.hasOwn(profileSizes,profileName)) throw new Error('Unknown advanced render profile');
@@ -22,8 +24,14 @@ const isBrief=supplied?.kind==='motion-brief-v1';
 if(isBrief&&!/^brief-[a-z0-9-]+\.json$/.test(specPath.split(/[\\/]/).at(-1)))
   throw new Error('Invalid brief file');
 const templatePath=resolve('examples/advanced-film.json');
-const spec=isBrief?compileMotionBrief(supplied,JSON.parse(readFileSync(templatePath,'utf8'))):supplied;
+const selected=process.argv[5];
+if(selected&&!isBrief)throw new Error('Template ID requires motion brief input');
+const base=JSON.parse(readFileSync(templatePath,'utf8'));
+const spec=selected?compileRegisteredTemplate(supplied,base,
+  JSON.parse(readFileSync('templates/registry.json','utf8')),selected):
+  isBrief?compileMotionBrief(supplied,base):supplied;
 validateAdvancedSpec(spec);
+const usage=verifyNoAttributionCreativeAssets(spec);
 const [width,height]=profileSizes[profileName];
 const profile={width,height,fps:30,frames:spec.motion.duration_frames};
 const outputKey=process.argv[4]??'advanced-'+profileName;
@@ -112,7 +120,8 @@ try {
     font_files:[...fontManifest,...displayFontManifest],asset_provenance:[art.record],
     scene_spec_sha256:sha256(Buffer.from(JSON.stringify(spec))),frame_hashes:hashes,
     output_sha256:sha256(readFileSync(output)),review_frames:samples,
-    duration_ms:elapsedMs,technical_qc:'PASS',creative_qc:'PENDING_HUMAN_REVIEW',
+    duration_ms:elapsedMs,technical_qc:'PASS',asset_rights:usage,template_id:selected??null,
+    creative_qc:'PENDING_HUMAN_REVIEW',
     approval:'UNAPPROVED',external_calls:0,paid_calls:0
   },null,2)+'\n');
   console.log(JSON.stringify({profile:profileName,frames:profile.frames,duration_ms:elapsedMs,

@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "engine": "offline-canvas-advanced-v1",
+  "components": [
+    {
+      "id": "studio",
+      "category": "scene-family",
+      "render_path": "src/creative/art-direction.mjs",
+      "license": "PROJECT_ORIGINAL_UNVERIFIED",
+      "requires": [
+        "noto-sans-tc",
+        "signal-art"
+      ]
+    },
+    {
+      "id": "learning-lab",
+      "category": "scene-family",
+      "render_path": "src/creative/learning-layout.mjs",
+      "license": "PROJECT_ORIGINAL_UNVERIFIED",
+      "requires": [
+        "noto-sans-tc-700"
+      ]
+    },
+    {
+      "id": "m6-curtain",
+      "category": "transition",
+      "render_path": "src/creative/transition-curtain.mjs",
+      "license": "PROJECT_ORIGINAL_UNVERIFIED",
+      "requires": [
+        "signal-art"
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "id": "studio-identity",
+      "description": "Four-beat motion-graphics studio reel",
+      "category": "brand",
+      "style_id": "studio",
+      "scene_families": [
+        "studio",
+        "studio",
+        "studio",
+        "studio"
+      ],
+      "example_brief": "examples/brief-studio.json",
+      "fps": 30,
+      "frames": 360,
+      "profiles": [
+        "16:9",
+        "9:16"
+      ],
+      "components": [
+        "studio",
+        "m6-curtain"
+      ],
+      "creative_qc": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "id": "learning-journey",
+      "description": "Four-beat learning-practice explainer",
+      "category": "education",
+      "style_id": "learning-lab",
+      "scene_families": [
+        "learning-lab",
+        "learning-lab",
+        "learning-lab",
+        "learning-lab"
+      ],
+      "example_brief": "examples/brief-learning.json",
+      "fps": 30,
+      "frames": 360,
+      "profiles": [
+        "16:9",
+        "9:16"
+      ],
+      "components": [
+        "learning-lab",
+        "m6-curtain"
+      ],
+      "creative_qc": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "id": "hybrid-story",
+      "description": "Hybrid compilation using already-approved scene families",
+      "category": "explainer",
+      "style_id": "studio",
+      "scene_families": [
+        "studio",
+        "learning-lab",
+        "studio",
+        "learning-lab"
+      ],
+      "example_brief": "examples/brief-learning.json",
+      "fps": 30,
+      "frames": 360,
+      "profiles": [
+        "16:9",
+        "9:16"
+      ],
+      "components": [
+        "studio",
+        "learning-lab",
+        "m6-curtain"
+      ],
+      "creative_qc": "PENDING_HUMAN_REVIEW"
+    }
+  ]
+}

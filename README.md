@@ -10,9 +10,10 @@ Primary focus:
 
 - Free local Canvas + FFmpeg motion graphics
 - AI-assisted animation prototyping
-- reusable scene and timing patterns
-- future Three.js / WebGL experiments
-- clean extraction of proven modules into `ai-video-template`
+- reusable scene families and a searchable template registry
+- bounded Brief → SceneSpec composition and media rights checks
+- future Three.js / WebGL experiments only if needed
+- standalone execution: no integration into other video repositories
 
 ## Current scope
 
@@ -83,17 +84,11 @@ Output:
 out/landscape/motion.mp4
 ```
 
-## Integration principle
+## Standalone boundary
 
-Do **not** merge this repository wholesale into `ai-video-template`.
-
-The intended path is:
-
-1. validate an animation here
-2. refactor it into reusable pieces
-3. define a small prop / scene contract
-4. move only the proven subset into `ai-video-template`
-5. keep experimental animation R&D isolated here
+This project remains an independent motion-graphics engine. It does not
+automatically connect, share its schema or transfer scenes to
+`ai-video-template` or any separate AI-generated film project.
 
 ## Status
 
@@ -187,3 +182,33 @@ but a resulting PR can trigger lightweight Actions CI.** For strictly
 no-PR visual verification, avoid issue-label dispatch; choose direct Jules
 UI tasks or a configured local/chat execution environment instead. Review
 all Jules PR bases, changes and evidence; see docs/RENDER-BUDGET-JULES.md.
+
+## M9 reusable composition pilot (stacked Draft)
+
+- `templates/registry.json` catalogs 3 recipes using 2 original scene
+  families and the M6 transition. These are **review candidates**, not
+  preapproved or universally adaptable commercial templates.
+- A hybrid recipe combines Studio and Learning Lab in alternating shots
+  without rewriting the scene renderer.
+- Search and compile: `src/creative/template-registry.mjs`.
+- Media rights: `src/creative/output-rights.mjs` rejects creative raster
+  assets whose recorded licenses require credit; this is not legal sign-off.
+
+```sh
+npm run preview:template:hybrid:landscape
+npm run preview:template:hybrid:vertical
+npm run render:template:hybrid:landscape
+npm run render:template:hybrid:vertical
+```
+
+The repository is already **Public**; its standard GitHub-hosted Actions
+runner compute is unbilled. The new
+`.github/workflows/render-review.yml` automatically creates synthetic
+full-size MP4 evidence on relevant code changes, with 1-day retention.
+Large runners, artifact/storage overages, external APIs and arbitrary bulk
+video conversion are not included or permitted by this policy.
+
+See `docs/M9-REGISTRY.md`, `docs/COMMERCIAL-NO-CREDIT-POLICY.md`, and
+`docs/OPEN-SOURCE-RESEARCH-2026-10-08.md`.
+
+Creative and production commercial clearance are **not yet approved**.

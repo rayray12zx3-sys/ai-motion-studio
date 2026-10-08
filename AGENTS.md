@@ -49,3 +49,21 @@
   execution environment, with explicit review of output evidence.
 - Do not treat PR text asserting test completion as evidence without logs,
   PNG/report hashes and image review.
+
+## M9: standard-runner regression and no-credit delivery
+
+- Use the free standard GitHub-hosted runners on this public repository
+  for actual source-change tests and synthetic full-res landscape/portrait
+  MP4 regression. New `render-review.yml` does this automatically.
+- Do not spin up runner jobs solely to consume free compute. Protect Actions
+  concurrency, storage retention and public-only synthetic input boundaries.
+  Paid large runners, package registries and storage overages are separate.
+- Registry values are allowlisted scene families; no imported arbitrary
+  expressions, external assets, network media or untrusted render scripts.
+- Finished videos require commercial permission without mandatory on-screen
+  or delivery credit. Recorded CC0 visuals + OFL font rendering permit this
+  in principle; source/tool redistribution notices still apply.
+- Do not mark production license clearance complete automatically. Verify
+  actual CC0 authority, H.264 territorial patent concerns, third-party
+  trademarks/portraits, and original source ownership before commercial
+  deployment.
