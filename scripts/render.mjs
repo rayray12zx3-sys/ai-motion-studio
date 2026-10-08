@@ -12,8 +12,6 @@ import {drawEditorialFrame, validateEditorialSpec} from '../src/creative/editori
 const ffmpeg = join(dirname(fileURLToPath(import.meta.resolve('ffmpeg-static/package.json'))), process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg');
 const encoderHashes = {'win32-x64': '04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00',
   'linux-x64': 'e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99'};
-if (createHash('sha256').update(readFileSync(ffmpeg)).digest('hex') !== encoderHashes[`${process.platform}-${process.arch}`]) throw new Error('Encoder binary not approved');
-
 if (process.argv.length > 5) throw new Error('Unexpected render arguments');
 const profileName = process.argv[2] ?? 'smoke';
 if (!Object.hasOwn(profiles, profileName)) throw new Error('Unknown delivery profile');
@@ -36,6 +34,8 @@ const source = execFileSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8', win
 const dirty = Boolean(execFileSync('git', ['status', '--porcelain'], {encoding: 'utf8', windowsHide: true}).trim());
 const directory = join('out', outputKey);
 if (existsSync(directory)) throw new Error('Output directory already exists; use a fresh review directory');
+// Input/layout/provenance preflight above must fail before encoder I/O or output mutation.
+if (createHash('sha256').update(readFileSync(ffmpeg)).digest('hex') !== encoderHashes[`${process.platform}-${process.arch}`]) throw new Error('Encoder binary not approved');
 mkdirSync(directory, {recursive: true});
 const output = join(directory, 'motion.mp4');
 if (existsSync(output)) throw new Error('Output already exists; use a fresh output directory');
