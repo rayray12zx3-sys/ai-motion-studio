@@ -110,3 +110,29 @@ CI uploads only synthetic review assets. Real renders belong in approved private
 <!-- PROJECT_PROGRESS:START -->
 Current milestone: free local renderer reliability. REQUIRED_NOW: locked install, input guards, explicit fonts, render smoke and artifact review. Active path: local validation → PR/Ubuntu CI → human visual review. Current gate: candidate awaiting CI and creative review. Blockers: final scene design/visual approval; public branch-protection configuration. Next action: inspect synthetic artifacts and exact-head CI. Exit condition: required checks pass and reviewed scenes are accepted; no production approval is inferred. No lifetime percentage is claimed.
 <!-- PROJECT_PROGRESS:END -->
+
+
+## CI usage budget (independent Draft candidate)
+
+To reduce Actions minutes, CI still runs source lint, syntax checks and
+unit tests for pushes and pull requests. Full H.264 synthetic renders,
+verified encoder provisioning and 7-day review artifacts require the
+workflow_dispatch input confirm_full_render=true. Manual input defaults
+to false. Stale PR source checks cancel on newer PR changes, while
+deliberate manual rendering is not canceled.
+
+The original six-second video renderer and format remain unchanged.
+Negative input/layout preflight now runs before encoder hash validation;
+a valid render still requires the exact hash-verified encoder.
+
+This repository also integrates with Jules using trusted GitHub Issues
+tagged \`jules\`; that method does not require a Jules GitHub Action.
+The Jules GitHub App needs repository authorization; use scoped tasks,
+check branch selection carefully, and do not put API keys in issues.
+Full 1080p output and creative approval are separate human review gates.
+
+**Draft caveat:** workflow_dispatch options only become available after
+the change has been reviewed and merged into the default branch. The
+advanced motion M4/M5 PR stack maintains separate opt-in creative render
+steps and should be reconciled when its changes land. No branch merges
+are performed by this proposal.
