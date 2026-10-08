@@ -42,6 +42,13 @@
         "ease": "precise"
       },
       {
+        "frame": 329,
+        "x": 0,
+        "y": 0,
+        "zoom": 1,
+        "ease": "precise"
+      },
+      {
         "frame": 359,
         "x": 0,
         "y": 0,
@@ -99,6 +106,18 @@
             "width": 0.32,
             "height": 0.29,
             "radius": 0.03,
+            "opacity": 1,
+            "rotation": 0,
+            "reveal": 1,
+            "ease": "precise"
+          },
+          {
+            "frame": 329,
+            "x": 0.12,
+            "y": 0.4,
+            "width": 0.17,
+            "height": 0.17,
+            "radius": 0.085,
             "opacity": 1,
             "rotation": 0,
             "reveal": 1,
@@ -170,6 +189,18 @@
             "opacity": 0.9,
             "rotation": 0,
             "reveal": 1,
+            "ease": "precise"
+          },
+          {
+            "frame": 329,
+            "x": 0.12,
+            "y": 0.65,
+            "width": 0.08,
+            "height": 0.012,
+            "radius": 0,
+            "opacity": 0,
+            "rotation": 0,
+            "reveal": 0,
             "ease": "precise"
           },
           {
