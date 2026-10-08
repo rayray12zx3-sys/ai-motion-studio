@@ -156,3 +156,15 @@ hash/provenance report. The public sample is original synthetic artwork, not
 a third-party product. Scene copy/asset manifests are fixed, bounded JSON,
 not an arbitrary code execution or full natural-language production workflow.
 Final creative approval still requires viewing both MP4 files.
+
+## Budget-first preview and manual full CI
+
+For rapid visual iteration, run npm run preview:advanced:landscape or
+npm run preview:advanced:vertical. Each creates only 15 small PNG images
+and a contact sheet; no FFmpeg or GitHub Actions is used for this command.
+
+The PR CI retains lint, syntax and tests, but the full dual-ratio MP4 renders
+and upload run only with an explicitly confirmed manual workflow_dispatch.
+The new manual controls require this workflow file to reach the default
+branch before GitHub exposes them. See docs/RENDER-BUDGET-JULES.md for
+normal-chat and Jules delegation. Visual approval is still human-only.
