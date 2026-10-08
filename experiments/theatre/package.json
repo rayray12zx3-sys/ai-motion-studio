@@ -1,0 +1,20 @@
+{
+  "name": "@motion-studio/theatre-spike",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Isolated Theatre.js Core/Studio integration",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "bundle": "esbuild src/editor.mjs --bundle --format=esm --platform=browser --target=es2022 --outfile=public/bundle.js",
+    "serve": "node scripts/serve.mjs",
+    "check": "npm test && npm run bundle"
+  },
+  "dependencies": {
+    "@theatre/core": "0.7.2",
+    "@theatre/studio": "0.7.2"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}
