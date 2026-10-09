@@ -31,8 +31,10 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: Install existing pinned Canvas production dependency graph
         run: npm ci --ignore-scripts --no-audit --no-fund
-      - name: Install isolated pinned Theatre packages (bootstrap lock)
-        run: npm install --prefix experiments/theatre --ignore-scripts --no-audit --no-fund
+      - name: Install isolated pinned Theatre packages from committed lock
+        run: npm ci --prefix experiments/theatre --ignore-scripts --no-audit --no-fund
+      - name: Verify isolated lockfile remains unchanged
+        run: git diff --exit-code -- experiments/theatre/package-lock.json
       - name: Actual Node Theatre Core random-access keyframe probe
         run: npm test --prefix experiments/theatre
       - name: Compile browser-only AGPL Studio development UI
