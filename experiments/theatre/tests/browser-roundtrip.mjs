@@ -297,9 +297,12 @@ try{
   const startKey=await nativeLookup(idToMove);
   const t0=await nativeLookup('x0');
   const t1=await nativeLookup('x1');
-  assert.ok(startKey?.w>=10&&startKey?.h>=10&&t0&&t1,
+  console.log('M10_NATIVE_DRAG_COORDINATES',JSON.stringify({startKey,t0,t1}));
+  assert.ok(startKey?.w>=10&&startKey?.h>=10&&t0,
     'Native Studio x keyframes not visible');
-  const pxPerSecond=t1.x-t0.x;
+  // Compare the exported 1.5s keyframe to its own 0s anchor to avoid
+  // matching secondary handles that can share a track's presence ID.
+  const pxPerSecond=(startKey.x-t0.x)/1.5;
   assert.ok(pxPerSecond>28&&pxPerSecond<300,'Unexpected Studio timeline scale');
   const destX=startKey.x+pxPerSecond*0.35;
   assert.ok(destX<startKey.viewport[0]-35&&startKey.y<startKey.viewport[1]-10);
