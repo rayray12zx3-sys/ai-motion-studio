@@ -10,7 +10,8 @@ import {mkdirSync,existsSync,readFileSync,writeFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {fontFamily} from '../src/free/scene.mjs';
 import {drawSafeReviewGuide} from '../src/creative/social-safe-area.mjs';
-import {drawOneShapeFrame,FRAMES,FPS,BPM,BEATS} from '../src/creative/one-shape-motion.mjs';
+import {drawOneShapeFrame,FRAMES,FPS,BPM,BEATS,evaluateOneShape} from '../src/creative/one-shape-motion.mjs';
+import {easeValue,MOTION_PROFILES} from '../src/creative/motion-easing.mjs';
 
 if(process.argv.length!==2)throw Error('No private or external media inputs');
 if(Number(process.versions.node.split('.')[0])!==24)throw Error('Node 24 required');
@@ -107,10 +108,48 @@ panels.forEach((im,i)=>{
  ctx.drawImage(im,(i%cols)*cellW,Math.floor(i/cols)*cellH,cellW,cellH);
 });
 writeFileSync(join(dir,'contact-sheet.png'),sheet.toBuffer('image/png'));
+const curveChart=createCanvas(1000,660),cc=curveChart.getContext('2d');
+cc.fillStyle='#F2F0ED';cc.fillRect(0,0,1000,660);
+cc.fillStyle='#161D1B';cc.font='bold 28px '+fontFamily;
+cc.fillText('M12 / TIMING & EASING PROFILES',46,48);
+const x0=88,y0=548,w0=830,h0=398;
+cc.strokeStyle='#C2CAC4';cc.lineWidth=2;
+for(let i=0;i<=4;i++){
+ const yy=y0-h0*i/4;cc.beginPath();cc.moveTo(x0,yy);cc.lineTo(x0+w0,yy);cc.stroke();
+}
+const curves=[['ease-out-cubic','#14715E'],['ease-in-out-cubic','#2D6D9C'],
+ ['ease-in-out-sine','#D99238'],['ease-out-back','#A53F55']];
+for(const [name,color] of curves){
+ cc.strokeStyle=color;cc.lineWidth=5;cc.beginPath();
+ for(let i=0;i<=160;i++){
+  const t=i/160,v=easeValue(name,t);
+  const x=x0+w0*t,y=y0-h0*(v/1.09);
+  if(i===0)cc.moveTo(x,y);else cc.lineTo(x,y);
+ }
+ cc.stroke();
+}
+cc.font='19px '+fontFamily;
+curves.forEach(([name,color],i)=>{cc.fillStyle=color;cc.fillRect(84+i*230,595,15,15);
+ cc.fillStyle='#161D1B';cc.fillText(name,105+i*230,609,215);});
+writeFileSync(join(dir,'motion-easing-curves.png'),curveChart.toBuffer('image/png'));
+const velocityMetrics=Object.fromEntries([
+ ['button-launch',[15,27]],['tap-condense',[34,45]],
+ ['panel-expand',[60,73]],['drag',[76,89]],['reward',[90,102]],['exit',[107,119]]
+].map(([name,[a,b]])=>{
+ const points=Array.from({length:b-a+1},(_,k)=>{
+  const state=evaluateOneShape(a+k);
+  return name==='drag'?state.pointer.x:state.shape.w;
+ });
+ const speeds=points.slice(1).map((p,i)=>Math.abs(p-points[i]));
+ return [name,{start_frame:a,end_frame:b,max_units_per_frame:Math.max(...speeds),
+  min_units_per_frame:Math.min(...speeds),velocities:speeds.map(v=>Number(v.toFixed(3)))}];
+}));
+
 writeFileSync(join(dir,'review.json'),JSON.stringify({
   kind:'ORIGINAL_ONE_SHAPE_REFERENCE_LED_NOT_NATIVE_APP',
   visual_status:'PENDING_USER_REVIEW',prior_M11_creative_status:'REJECTED',
   fps:FPS,frames:FRAMES,seconds:4,bpm:BPM,beat_frames:15,beats:BEATS,
+  motion_profiles:MOTION_PROFILES,velocity_metrics:velocityMetrics,
   private_media_present:false,output_credit_requirement:'ORIGINAL_GENERATIVE_ART',
   audio_source:'ORIGINAL_SYNTHETIC_CLICK_TRACK_NOT_COMMERCIAL_SONG',
   audio_events:events,subframe_samples_per_frame:3,
