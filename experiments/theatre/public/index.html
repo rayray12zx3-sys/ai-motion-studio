@@ -18,5 +18,11 @@ properties, then export JSON. Do not load private company media here.</p>
 <div class="controls"><label for="seek">Timeline</label>
 <input id="seek" type="range" min="0" max="90" step="1" value="0">
 <output id="clock">0.00 sec</output><button id="export">Export JSON</button></div>
+<div class="controls">
+  <label for="keyframe-x">Practice Card x keyframe (-200..200)</label>
+  <input id="keyframe-x" type="number" min="-200" max="200" step="1" value="60">
+  <button id="set-keyframe">Set Theatre Keyframe</button>
+  <output id="edit-status" aria-live="polite">No edits yet</output>
+</div>
 <p>Studio is for design only. Production uses Core with the exported state.</p>
 </main><script type="module" src="/bundle.js"></script></body></html>
