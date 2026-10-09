@@ -59,7 +59,8 @@ test('all alpha pixels in both 9:16 profiles stay inside the conservative safe r
     if(x<safe.x||x>=safe.x+safe.w||y<safe.y||y>=safe.y+safe.h)blocked++;
    }
    assert.equal(blocked,0,'alpha outside safe at '+frame);
-   assert.ok(visible>5,'all graphic content unexpectedly blank at '+frame);
+   if(frame<119)assert.ok(visible>5,'all graphic content unexpectedly blank at '+frame);
+   else assert.equal(visible,0,'final frame must be clear for the next shot');
   }
  }
 });
