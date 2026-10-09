@@ -107,6 +107,34 @@ try{
     }catch{}
     throw error;
   }
+  // Inspect the actual Theatre Studio UI through Chromium's real DOM.
+  // This is a native-interface *probe*, not a claim that native dragging is proven.
+  // Do not silently count our own #set-keyframe button as a Studio UI control.
+  const nativeProbe=await evaluate(`(()=>{
+    const found=[];
+    const walk=(root,depth)=>{
+      if(depth>5)return;
+      for(const el of root.querySelectorAll('*')){
+        if(el.shadowRoot)walk(el.shadowRoot,depth+1);
+        if(el.textContent?.trim()!=='Practice Card')continue;
+        const rect=el.getBoundingClientRect();
+        if(rect.width<3||rect.height<3||rect.width>400||rect.height>100)continue;
+        const cs=getComputedStyle(el);
+        if(cs.visibility==='hidden'||cs.display==='none')continue;
+        found.push({
+          tag:el.tagName,
+          className:typeof el.className==='string'?el.className.slice(0,100):'',
+          id:el.id?.slice(0,80),
+          left:Math.round(rect.left),top:Math.round(rect.top),
+          width:Math.round(rect.width),height:Math.round(rect.height),
+          outer:el.outerHTML.slice(0,380)
+        });
+      }
+    };
+    walk(document,0);
+    return found.slice(0,30);
+  })()`);
+  console.log('M10_NATIVE_STUDIO_OUTLINE_PROBE',JSON.stringify(nativeProbe));
   await setKeyframe(15,60);
   await setKeyframe(45,-60);
   const image=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
