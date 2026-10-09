@@ -188,20 +188,14 @@
     },
     {
       "number": 33,
-      "label": "Isolated HyperFrames original HTML 9:16 moving renderer benchmark",
-      "base": "main",
+      "label": "HyperFrames synthetic HTML/CSS R&D benchmark and 1080x1920 Alpha MOV",
+      "base": "experiment/hyperframes-isolated-benchmark-20261010",
       "head_sha": "cd5c19b0965eaaec0f90eda3e3e65cddbd0fd2b9",
       "draft": true,
       "merged": false,
-      "technical_acceptance": "PASS_EXACT_HEAD_COMPLETE_30_FRAME_CROSS_RENDER_RGB_AND_ALPHA_PRORES4444",
-      "creative_acceptance": "HUMAN_REVIEW_REQUIRED",
-      "root_production_dependencies_changed": false,
-      "engine_production_adoption": false,
-      "upstream_code_license": "Apache-2.0",
-      "external_runtime": "temporary npx hyperframes@0.8.143 in GitHub-hosted runner",
-      "commercial_media_rights": "ONLY ORIGINAL SYNTHETIC_SCENE",
-      "drive_preview_delivery": "VERIFIED_PRIVATE_FOLDER_MP4_AND_ALPHA_MOV",
-      "human_editor": "NOT_TESTED"
+      "technical_acceptance": "PASS_ISOLATED_RND_1080X1920_PRORES_4444_ALPHA_MOV_VERIFIED",
+      "creative_acceptance": "NOT_EVALUATED",
+      "production_adoption": false
     }
   ],
   "milestone_runs": {
@@ -332,62 +326,28 @@
       "merged_to_main": true,
       "main_merge_sha": "a6daabc22f0f7e7774b24f98209c22a6f18c5518"
     },
-    "hyperframes_rnd": {
-      "exact_head": "cd5c19b0965eaaec0f90eda3e3e65cddbd0fd2b9",
-      "isolated_html_video_ci": 37970089086,
-      "root_ci": 37970089110,
-      "all_conclusions": "success",
-      "upstream_cli_version": "0.8.143",
-      "upstream_source_license": "Apache-2.0",
-      "lint": {
-        "errors": 0,
-        "warnings": 0
-      },
-      "opaque_mp4": {
-        "width": 360,
-        "height": 640,
-        "fps": 30,
-        "frames": 30,
-        "codec": "h264",
-        "sha256": "dfe6e06c7082d8f391dddbd40027010c2b7c1214591e75cee79551fef7df15d4",
-        "decoded_frame_hashes_equal_across_two_runs": 30,
-        "unique_moving_frames": 30
-      },
-      "transparent_mov": {
-        "width": 360,
-        "height": 640,
-        "fps": 30,
-        "frames": 30,
-        "codec": "prores",
-        "fourcc": "ap4h",
-        "decoded_pixel_format": "yuva444p10le",
-        "sha256": "c6389e06ba423f5ee89a3185e5e89d8014da7f62d4e2650bfb175ff2038bd430",
-        "bytes": 589091,
-        "decoded_alpha_visible_samples": [
-          0,
-          25186,
-          0
-        ],
-        "unexpected_upper_or_left_alpha": 0,
-        "initial_shadow_alpha_leak_blocked_then_fixed": true
-      },
-      "artifact_run": 37970089086,
-      "artifact_id": 11635940219,
-      "no_production_dependency": true,
-      "no_company_media": true,
-      "drive_preview_delivery": "CONFIRMED_BY_UPLOADER_AND_INDEPENDENT_PRIVATE_FOLDER_LISTING",
-      "google_drive_private_identifiers_intentionally_omitted": true,
-      "studio_native_editor": "NOT_TESTED",
-      "premiere_windows": "NOT_TESTED",
-      "visual_quality": "HUMAN_REVIEW_REQUIRED",
-      "production_integration": "NOT_AUTHORIZED"
+    "hyperframes_alpha_mov_1080x1920": {
+      "status": "HYPERFRAMES_ORIGINAL_ALPHA_MOV_PASS",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "frames": 30,
+      "codec": "prores",
+      "fourcc": "ap4h",
+      "decoded_pixel_format": "yuva444p10le",
+      "upper_nonzero_alpha": 0,
+      "left_margin_nonzero_alpha": 0,
+      "mov_sha256": "1c61fd598e13f8e5d9efe25410f693fec0edd7de5bd0a3d51750e21edff62292",
+      "bytes": 2338548,
+      "prod_integrated": false
     }
   },
   "evidence_docs": [
     "docs/TOOL-ADOPTION-AND-LICENSE-RESEARCH-2026-10-09.md",
     "docs/ACTIVE-WORK-2026-10-09.md",
     "experiments/theatre/README.md (on M10 PR #24 head)",
-    "docs/FOREGROUND-ALPHA-RND-2026-10-10.md (on Draft PR #30 branch)"
+    "docs/FOREGROUND-ALPHA-RND-2026-10-10.md (on Draft PR #30 branch)",
+    "experiments/hyperframes-original/README.md"
   ],
   "issue_28": {
     "state": "open",
@@ -401,11 +361,11 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "Current canonical handoff is on main. PR #33 HyperFrames (R&D Draft, NOT merged) has actual 360x640 original MP4 and transparent ProRes 4444 MOV, full 30-frame independently decoded repeatability, and successful CI. Do not promote this candidate engine without separate architecture and dependency review.",
-    "Private Google Drive preview delivery for original synthetic MP4 and MOV is now CONFIRMED by upload and folder readback; never add Drive URLs/IDs or company content to public GitHub.",
-    "Before considering HyperFrames Studio GUI keyframe editing, use a proper seekable paused GSAP timeline with local licensed script or equivalent accepted contract; the current CSS-only data-no-timeline scenes DO NOT prove Studio editing.",
-    "1080x1920 HyperFrames alpha overlay and Windows Premiere import/compositing remain untested; existing main Canvas Alpha supports full 1080x1920 6s synthetic verified output via PR #30/#31.",
-    "M12 visual rework remains frozen. Owner delegated routine CI-green docs/technical merges only, not external-engine production adoption, private assets, licensing or art approvals."
+    "Canonical CONTINUE-HERE.md and PROJECT-STATE.json were published to main via PR #27 squash 139ffb39; do not use stale draft branch as the primary source. Always query live PRs and checks.",
+    "PRs #30 and #31 are merged; optional transparent foreground and verified MOV frame-count/head-mid-tail decoder exist on main, opaque render default unchanged.",
+    "M9–M12 stacked animation features and Motion QA R&D #29 remain separate drafts. Avoid merging art/production or third-party tools without source licensing and human review.",
+    "Continue isolated benchmark-based evaluation of permissively licensed tools; prioritize actual watchable examples. M12 visually frozen until owner approval.",
+    "User delegated exact-head CI-green low-risk technical and docs merges only. No broad automatic merge or company asset/State Engine changes."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
