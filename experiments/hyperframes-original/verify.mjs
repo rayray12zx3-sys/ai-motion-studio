@@ -26,23 +26,33 @@ assert.equal(stream?.width,360);
 assert.equal(stream?.height,640);
 assert.equal(stream?.r_frame_rate,'30/1');
 assert.equal(Number(stream?.nb_frames),30);
-// Independently decode frames to prove this is *moving* rendered artwork,
-// rather than a static background placed in a 30-frame container.
-const decodedRGB=(movie,index)=>{
+// Fully decode *both* independent render outputs and compare every frame,
+// not just sampled head/middle/tail. Byte-level MP4 files need not match;
+// decoded visual output must match exactly for each seekable time index.
+const WIDTH=360,HEIGHT=640,CHANNELS=3,EXPECTED_FRAMES=30;
+const PIXELS_PER_FRAME=WIDTH*HEIGHT*CHANNELS;
+function decodedFrameHashes(movie){
   const rgb=execFileSync(ffmpeg,[
     '-nostdin','-v','error','-i',movie,
-    '-vf','select=eq(n\\,'+index+')','-frames:v','1',
+    '-map','0:v:0','-an','-vsync','0',
     '-f','rawvideo','-pix_fmt','rgb24','pipe:1'
-  ],{maxBuffer:360*640*3+65536});
-  assert.equal(rgb.length,360*640*3,'Bad decoded RGB frame '+index);
-  return createHash('sha256').update(rgb).digest('hex');
-};
-const sourceFrames=[0,15,29].map(n=>decodedRGB(path,n));
-const repeatFile=resolve('out/hyperframes-original-repeat.mp4');
-const repeatFrames=[0,15,29].map(n=>decodedRGB(repeatFile,n));
-assert.deepEqual(repeatFrames,sourceFrames,
- 'Same original authored animation must decode identical RGB frames across independent render processes');
-
+  ],{maxBuffer:PIXELS_PER_FRAME*(EXPECTED_FRAMES+1)});
+  assert.equal(rgb.length,PIXELS_PER_FRAME*EXPECTED_FRAMES,
+    'Decoded full-frame stream has wrong length: '+movie);
+  return Array.from({length:EXPECTED_FRAMES},(_,frame)=>{
+    const offset=frame*PIXELS_PER_FRAME;
+    return createHash('sha256').update(
+      rgb.subarray(offset,offset+PIXELS_PER_FRAME)).digest('hex');
+  });
+}
+const firstHashes=decodedFrameHashes(path);
+const secondHashes=decodedFrameHashes(resolve('out/hyperframes-original-repeat.mp4'));
+assert.deepEqual(secondHashes,firstHashes,
+ 'All thirty independently rendered decoded RGB frames must match, frame by frame');
+const uniqueFrameCount=new Set(firstHashes).size;
+assert.ok(uniqueFrameCount>=10,
+ 'Motion is unexpectedly static: '+uniqueFrameCount+'/30 distinct decoded frames');
+const sourceFrames=[0,15,29].map(i=>firstHashes[i]);
 assert.notEqual(sourceFrames[0],sourceFrames[1],
  'Head-to-middle contains no visual motion');
 assert.notEqual(sourceFrames[1],sourceFrames[2],
@@ -55,7 +65,11 @@ const result={
  engine:'hyperframes',engine_npm_version:'0.8.143',
  width:360,height:640,fps:30,frames:30,
  codec:'h264',decoded_rgb_keyframe_sha256:sourceFrames,
- moving_pixels_verified:true, independent_second_render_matching_rgb_frames:true,output_sha256:createHash('sha256').update(payload).digest('hex'),
+ moving_pixels_verified:true, independent_second_render_matching_rgb_frames:true,
+ all_decoded_frames_matched_across_two_renders:true,
+ decoded_frames_compared:30,unique_decoded_frame_hashes:uniqueFrameCount,
+ decoded_full_sequence_hash_sha256:createHash('sha256').update(firstHashes.join('\\n')).digest('hex'),
+ output_sha256:createHash('sha256').update(payload).digest('hex'),
  output_bytes:statSync(path).size,
  private_asset_used:false,
  installed_to_production:false,
