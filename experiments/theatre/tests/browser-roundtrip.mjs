@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {existsSync,readFileSync,mkdirSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
+import {existsSync,readFileSync,mkdirSync,writeFileSync,mkdtempSync,rmSync,unlinkSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -270,10 +270,96 @@ try{
     return {viewport:[innerWidth,innerHeight],hits};
   })()`);
   console.log('M10_NATIVE_TIMELINE_HIT_TEST',JSON.stringify(nativeTimelineHit));
+
+  // This is a NATIVE Studio drag: only Chromium mouse events modify the keyframe.
+  // Resolve the target through Theatre's own exported keyframe ID and Studio DOM.
+  const idToMove=xTrack.keyframes.find(k=>Math.abs(k.position-1.5)<1e-6&&k.value===-60)?.id;
+  assert.ok(idToMove,'Missing original 1.5s / x=-60 keyframe');
+  const nativeLookup=async id=>{
+    const finder=function(keyId){
+      const roots=[document];
+      for(let i=0;i<roots.length;i++)for(const node of roots[i].querySelectorAll('*'))
+        if(node.shadowRoot)roots.push(node.shadowRoot);
+      for(const root of roots)for(const node of root.querySelectorAll('[data-pi-key]')){
+        let key;try{key=JSON.parse(node.getAttribute('data-pi-key'));}catch{continue;}
+        if(key.k!==keyId||key.o!=='Practice Card'||key.t!=='track-x')continue;
+        const r=node.getBoundingClientRect();
+        return {x:r.x+r.width/2,y:r.y+r.height/2,w:r.width,h:r.height,
+          viewport:[innerWidth,innerHeight]};
+      }
+      return null;
+    };
+    return evaluate('('+finder.toString()+')('+JSON.stringify(id)+')');
+  };
+  const startKey=await nativeLookup(idToMove);
+  const t0=await nativeLookup('x0');
+  const t1=await nativeLookup('x1');
+  assert.ok(startKey?.w>=8&&startKey?.h>=8&&t0&&t1,
+    'Native Studio x keyframes not visible');
+  const pxPerSecond=t1.x-t0.x;
+  assert.ok(pxPerSecond>28&&pxPerSecond<300,'Unexpected Studio timeline scale');
+  const destX=startKey.x+pxPerSecond*0.35;
+  assert.ok(destX<startKey.viewport[0]-35&&startKey.y<startKey.viewport[1]-10);
+  await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:startKey.x,y:startKey.y});
+  await send('Input.dispatchMouseEvent',{type:'mousePressed',x:startKey.x,y:startKey.y,
+    button:'left',buttons:1,clickCount:1});
+  for(let i=1;i<=12;i++){
+    await send('Input.dispatchMouseEvent',{type:'mouseMoved',
+      x:startKey.x+(destX-startKey.x)*i/12,y:startKey.y,button:'left',buttons:1});
+    await sleep(25);
+  }
+  await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:destX,y:startKey.y,
+    button:'left',buttons:0,clickCount:1});
+  await sleep(160);
+  const dragShot=await send('Page.captureScreenshot',{format:'png',
+    captureBeyondViewport:false});
+  writeFileSync(join(outputDir,'native-studio-keyframe-drag.png'),
+    Buffer.from(dragShot.data,'base64'));
+  // The export control may be visually overlapped by Studio's inspector.
+  // Trigger only the page's normal export button, not Theatre's mutation APIs.
+  unlinkSync(exportPath);
+  await evaluate("document.getElementById('export').click()");
+  await waitFor(()=>existsSync(exportPath)&&readFileSync(exportPath).length>100,
+    'Native drag exported JSON');
+  const draggedState=JSON.parse(readFileSync(exportPath,'utf8'));
+  const obj=draggedState?.sheetsById?.Canvas?.sequence?.tracksByObject?.['Practice Card'];
+  assert.ok(obj,'Drag export missing Studio object');
+  const draggedTrack=obj.trackData?.[obj.trackIdByPropPath?.['["x"]']];
+  const changed=draggedTrack?.keyframes?.find(k=>k.id===idToMove);
+  assert.ok(changed,'Native dragged keyframe ID not retained');
+  assert.equal(changed.value,-60,'Native drag changed value unexpectedly');
+  assert.ok(changed.position>1.65&&changed.position<1.95,
+    'Native pointer drag did not change exported time: '+changed.position);
+  const nativeProject=theatre.getProject('M10 Native Timeline Drag',{state:draggedState});
+  const nativeSheet=nativeProject.sheet('Canvas');
+  const nativeCard=nativeSheet.object('Practice Card',{
+    x:theatre.types.number(0,{range:[-200,200]}),
+    opacity:theatre.types.number(1,{range:[0,1]}),
+    rotation:theatre.types.number(0,{range:[-180,180]}),
+    scale:theatre.types.number(1,{range:[.5,2]})
+  });
+  await nativeProject.ready;
+  nativeSheet.sequence.position=changed.position;
+  assert.equal(nativeCard.value.x,-60,'Theatre Core cannot seek to dragged native keyframe');
+  const afterRenderer=await createKeyframedCanvasRenderer({
+    state:draggedState,projectId:'M10 Native Timeline Canvas',
+    background:'transparent',placement:'lower-third'
+  });
+  const oldPNG=render(profile,55).toBuffer('image/png');
+  const newPNG=afterRenderer(profile,55).toBuffer('image/png');
+  assert.notDeepEqual(newPNG,oldPNG,'Native drag has no visual Canvas effect');
+  afterRenderer(profile,75);
+  assert.deepEqual(afterRenderer(profile,55).toBuffer('image/png'),newPNG,
+    'Canvas rendering after native drag must be deterministic');
+  console.log('M10_NATIVE_DRAG_PASS',JSON.stringify({
+    original_seconds:1.5,new_seconds:changed.position,keyframe_id:idToMove,
+    value:-60,core_canvas_verified:true
+  }));
   const report={
     result:'PASS',test:'Actual headless Chromium edit+export -> Core -> Canvas',
     edited_keyframes:[{frame:15,x:60},{frame:45,x:-60}],
-    imported_export:true,native_studio_outline_selected:true,alpha_upper_nonzero:upper,alpha_lower_nonzero:lower,
+    imported_export:true,native_studio_outline_selected:true,native_timeline_drag_verified:true,
+    dragged_time_seconds:changed.position,alpha_upper_nonzero:upper,alpha_lower_nonzero:lower,
     deterministic_random_access:true,
     export_sha256:createHash('sha256').update(readFileSync(exportPath)).digest('hex')
   };
