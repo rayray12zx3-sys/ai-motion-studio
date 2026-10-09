@@ -87,3 +87,16 @@ test('pointer touches progress rail and final score clears before geometric exit
   assert.equal(s.shape.w,535,'result should hold before exit at '+f);
  }
 });
+
+test('verification-to-card reveal is readable, with a purposeful soft exit',()=>{
+ const a=f=>evaluateOneShape(f);
+ assert.ok(a(67).check>0,'the check remains visible before the swap');
+ assert.equal(a(68).check,0,'the check clears before summary type appears');
+ assert.ok(a(68).summary>0,'card copy begins as soon as the check clears');
+ for(let f=70;f<=76;f++)assert.equal(a(f).summary,1,'summary must hold at '+f);
+ assert.equal(a(78).summary,0,'the label clears before the scrub UI appears');
+ assert.equal(a(109).combo,0,'the result clears before the shape-only outro');
+ assert.equal(a(109).fade,1);
+ assert.ok(a(112).fade<1&&a(112).fade>0,'capsule dissolves throughout the retreat');
+ assert.equal(a(119).fade,0);
+});
