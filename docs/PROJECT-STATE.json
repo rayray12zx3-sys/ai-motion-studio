@@ -60,6 +60,23 @@
       "head_sha": "SNAPSHOT_CHANGES_DURING_DOCS_UPDATES__FETCH_LIVE",
       "mergeable_at_snapshot": true,
       "technical_acceptance": "DOCS_ONLY"
+    },
+    {
+      "number": 29,
+      "label": "Isolated synthetic motion QA (new independent R&D)",
+      "base": "main",
+      "head_sha": "97fe92f12fe9b052d8434eab7a7b7faef4001d31",
+      "draft": true,
+      "merged": false,
+      "technical_acceptance": "PASS_EXACT_HEAD_SYNTHETIC_ONLY",
+      "creative_acceptance": "HUMAN_REQUIRED_ALWAYS",
+      "tests": [
+        "ALPHA_OUTSIDE_DECLARED_SAFE_RECT",
+        "UNEXPECTED_EMPTY_FRAME",
+        "UNEXPECTED_FREEZE",
+        "CENTROID_JUMP"
+      ],
+      "root_production_dependencies_changed": false
     }
   ],
   "milestone_runs": {
@@ -86,6 +103,14 @@
       "all_conclusions": "success",
       "native_studio_drag_on_combined_tree": true,
       "technical_scope_only": true
+    },
+    "motion_qa": {
+      "head": "97fe92f12fe9b052d8434eab7a7b7faef4001d31",
+      "isolated_qa": 37948814359,
+      "root_ci": 37948814308,
+      "all_conclusions": "success",
+      "report_retains_source_media": false,
+      "not_aesthetic_approval": true
     }
   },
   "evidence_docs": [
@@ -105,9 +130,10 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "Trial permitted agent-oriented open-source animation QA methods on original synthetic inputs, keeping tools isolated from production.",
-    "Review actually playable high-quality motion reference videos and log verified licensing; M12 artwork changes require human approval.",
-    "Keep each source change tied to exact-head CI, update PR/Issue and this continuation entry. No automatic merges."
+    "Advance independent motion QA R&D (#29) only after proving synthetic checks; evaluate representative *original* motion samples and quality benchmark before promotion.",
+    "Evaluate Motion Designer, Motion Video Kit, HTML Animation and HyperFrames from upstream terms in isolated sandbox; do not copy source media or adopt noncommercial tool for company ads.",
+    "Obtain actually playable Product-UI motion reference clips; M12 art stays frozen until operator approval.",
+    "Every new chat reads CONTINUE-HERE and PROJECT-STATE, then fetches live GitHub PR heads, issues and exact-head CI. Update PR and these docs after changes."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
