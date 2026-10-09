@@ -449,7 +449,7 @@
     "Current canonical handoff is on main. PR #33 HyperFrames (R&D Draft, NOT merged) has actual 360x640 original MP4 and transparent ProRes 4444 MOV, full 30-frame independently decoded repeatability, and successful CI. Do not promote this candidate engine without separate architecture and dependency review.",
     "Private Google Drive preview delivery for original synthetic MP4 and MOV is now CONFIRMED by upload and folder readback; never add Drive URLs/IDs or company content to public GitHub.",
     "Before considering HyperFrames Studio GUI keyframe editing, use a proper seekable paused GSAP timeline with local licensed script or equivalent accepted contract; the current CSS-only data-no-timeline scenes DO NOT prove Studio editing.",
-    "1080x1920 HyperFrames alpha overlay and Windows Premiere import/compositing remain untested; existing main Canvas Alpha supports full 1080x1920 6s synthetic verified output via PR #30/#31.",
+    "1080x1920 HyperFrames *synthetic* Alpha overlay is now verified in Draft #39 at HEAD 1639103d with both exact-head CI green; Windows Premiere app-level import/compositing remains untested and engine is NOT adopted.",
     "M12 visual rework remains frozen. Owner delegated routine CI-green docs/technical merges only, not external-engine production adoption, private assets, licensing or art approvals."
   ],
   "forbidden_identifiers_in_public_status": [
@@ -519,5 +519,27 @@
     ],
     "current_main_unchanged": true,
     "live_refresh_required": true
-  }
+  },
+  "active_rnd_tasks": [
+    {
+      "issue": 40,
+      "topic": "hyperframes_native_studio_gui_edit_persist_render",
+      "state": "OPEN_JULES_ACKNOWLEDGED",
+      "implementation": "NOT_YET_VERIFIED",
+      "merge_authorized": false,
+      "related_drafts": [
+        33,
+        39
+      ],
+      "requires_native_gui_pointer_test": true
+    },
+    {
+      "issue": 41,
+      "topic": "hyperframes_0_8_143_commercial_runtime_license_audit",
+      "state": "OPEN_JULES_LABEL_NOT_COMPLETION",
+      "implementation": "NOT_YET_VERIFIED",
+      "merge_authorized": false,
+      "legal_clearance": "NOT_GRANTED"
+    }
+  ]
 }
