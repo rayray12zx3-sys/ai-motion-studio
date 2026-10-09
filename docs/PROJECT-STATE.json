@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "checkpoint_date": "2026-10-09",
+  "timezone": "Asia/Taipei",
+  "repo": "rayray12zx3-sys/ai-motion-studio",
+  "entrypoint": "docs/CONTINUE-HERE.md",
+  "entrypoint_branch": "docs/coordination-pre-reference-20261009",
+  "scope": "Personal tool for creating videos that may be commercial advertisements; code/tool/media/output licenses separate.",
+  "live_verification_required": true,
+  "priority_rule": "On every continuation fetch current GitHub PR metadata, exact PR-head Actions and Issues before acting. This JSON is a snapshot, not live state.",
+  "guardrails": {
+    "no_main_merge_without_approval": true,
+    "no_rebase_or_force_push_without_approval": true,
+    "no_company_private_assets_in_public_github": true,
+    "no_private_drive_ids_in_public_github": true,
+    "no_private_advertisement_state_engine_changes": true,
+    "m12_art_status": "REJECTED_OR_UNAPPROVED__FROZEN",
+    "candidate_tools_are_not_installed_by_documenting_them": true
+  },
+  "pull_requests": [
+    {
+      "number": 24,
+      "label": "M10",
+      "base": "feat/m9-template-registry-license-gates-20261008",
+      "head_sha": "8b09dbe046fe75253f0751603d0fafe722212053",
+      "draft": true,
+      "merged": false,
+      "mergeable_at_snapshot": true,
+      "technical_acceptance": "PASS_SYNTHETIC_ONLY",
+      "creative_acceptance": "NOT_APPLICABLE"
+    },
+    {
+      "number": 25,
+      "label": "M11",
+      "base": "feat/m10-theatre-private-assets-20261008",
+      "head_sha": "e6b285abedc90b0e83560ecb9984f8b389f2822c",
+      "draft": true,
+      "merged": false,
+      "mergeable_at_snapshot": true,
+      "technical_acceptance": "PASS_ON_OWN_HEAD__COMBINED_BASE_NOT_RETESTED",
+      "creative_acceptance": "REJECTED"
+    },
+    {
+      "number": 26,
+      "label": "M12",
+      "base": "feat/m11-product-ui-safe-overlays-20261009",
+      "head_sha": "062497fda846cfd93a7319f6197d104292c71ba2",
+      "draft": true,
+      "merged": false,
+      "mergeable_at_snapshot": true,
+      "technical_acceptance": "PASS_ON_OWN_HEAD",
+      "creative_acceptance": "NOT_APPROVED_FROZEN"
+    },
+    {
+      "number": 27,
+      "label": "Coordination and licenses",
+      "base": "main",
+      "draft": true,
+      "merged": false,
+      "head_sha": "SNAPSHOT_CHANGES_DURING_DOCS_UPDATES__FETCH_LIVE",
+      "mergeable_at_snapshot": true,
+      "technical_acceptance": "DOCS_ONLY"
+    }
+  ],
+  "milestone_runs": {
+    "m10_verified_head": "8b09dbe046fe75253f0751603d0fafe722212053",
+    "node_ci": 37946136986,
+    "theatre_native_studio": 37946137013,
+    "prores_alpha": 37946137010,
+    "full_motion_regression": 37946137105,
+    "all_conclusions_at_checkpoint": "success",
+    "studio_native_drag": {
+      "from_seconds": 1.5,
+      "to_seconds": 1.833,
+      "export_json_diff": true,
+      "core_reads_export": true,
+      "canvas_changes": true,
+      "reverse_seek_deterministic": true
+    }
+  },
+  "evidence_docs": [
+    "docs/TOOL-ADOPTION-AND-LICENSE-RESEARCH-2026-10-09.md",
+    "docs/ACTIVE-WORK-2026-10-09.md",
+    "experiments/theatre/README.md (on M10 PR #24 head)"
+  ],
+  "issue_28": {
+    "state": "open",
+    "engineering_checklist": "6 of 6 checked",
+    "premiere_windows": "NOT_TESTED",
+    "real_private_source": "NOT_CONNECTED",
+    "ci_to_drive": "NOT_AUTOMATED"
+  },
+  "blocker_review": [
+    "M11 #25 mergeability was false in an old snapshot and true at the latest 2026-10-09 query; fetch live state, don't auto-merge.",
+    "M11 CI is not proof of integration with the most recent M10 base; verify the combined branch tree.",
+    "M12 artistic approval and viewable reference footage remain outstanding."
+  ],
+  "next_work": [
+    "Verify stacked M10->M11 integration with synthetic tests in isolation, no M12 art changes.",
+    "Evaluate open-source motion tools with a reproducible synthetic benchmark and explicit license gates.",
+    "Record exact-head CI and any blockers in affected PR/Issue and this handoff entry."
+  ],
+  "forbidden_identifiers_in_public_status": [
+    "company source paths",
+    "rights receipts",
+    "unpublished company scripts",
+    "private Drive file identifiers",
+    "credentials"
+  ],
+  "verified_external_media": "Only synthetic preview and Alpha MOV delivered to approved private Drive; no automatic continuous delivery.",
+  "snapshot_is_not_production_release": true
+}
