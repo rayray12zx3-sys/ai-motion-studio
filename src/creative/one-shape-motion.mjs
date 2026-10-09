@@ -13,9 +13,11 @@ const lerp=(a,b,t)=>a+(b-a)*t;
 const smooth=t=>{let v=clamp(t);return v*v*(3-2*v);};
 function damped(t){
  const v=clamp(t);if(v===0||v===1)return v;
- const d=11,w=3.6;
- const f=x=>1-Math.exp(-d*x)*(Math.cos(w*x)+(d/w)*Math.sin(w*x));
- return Math.min(1.012,Math.max(0,f(v)/f(1)));
+ // Critical damping: zero overshoot and zero start velocity; unlike
+ // underdamped springs, rapid button collapse cannot jump between frames.
+ const d=5;
+ const f=x=>1-(1+d*x)*Math.exp(-d*x);
+ return Math.min(1,Math.max(0,f(v)/f(1)));
 }
 const interp=(f,a,b)=>damped((f-a)/(b-a));
 const enter=(f,a,b)=>smooth((f-a)/(b-a));
