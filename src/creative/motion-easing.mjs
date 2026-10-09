@@ -10,7 +10,7 @@ export const MOTION_PROFILES=Object.freeze({
   expand:'ease-in-out-back',
   directManipulation:'ease-in-out-sine',
   reward:'ease-out-back',
-  exit:'ease-in-out-cubic'
+  exit:'ease-in-out-quad'
 });
 const clamp=t=>Math.max(0,Math.min(1,t));
 export function easeValue(name,t){
