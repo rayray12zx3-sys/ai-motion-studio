@@ -55,15 +55,16 @@ function wrappedText(ctx, text, x, y, width, size) {
   lines.forEach((s, i) => ctx.fillText(s, x, y + (i - (lines.length - 1) / 2) * size * 1.25));
 }
 
-export function drawFrame(profile, frame, spec = demo) {
+// Foreground painter is shared by both delivery modes; the legacy opaque
+// renderer still draws directly onto the *same* background canvas (no second
+// composite or pixel conversion) to preserve byte-for-byte RGBA compatibility.
+function checkFrame(profile,frame,spec){
   validateSpec(spec);
-  if (!profile || !Number.isInteger(frame) || frame < 0 || frame >= profile.frames) throw new Error('Invalid frame');
-  const {width: w, height: h, fps, frames} = profile;
-  const canvas = createCanvas(w, h);
-  const ctx = canvas.getContext('2d');
-  const g = ctx.createLinearGradient(0, 0, w, h);
-  g.addColorStop(0, '#071326'); g.addColorStop(1, '#18365a');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  if(!profile||!Number.isInteger(frame)||frame<0||frame>=profile.frames)
+    throw new Error('Invalid frame');
+}
+function paintForeground(ctx,profile,frame,spec){
+  const {width:w,height:h,fps,frames}=profile;
   const t = frame / fps;
   const show = ease(t / 0.65) * Math.min(1, (frames - 1 - frame) / Math.max(1, fps * 0.4));
   ctx.globalAlpha = Math.max(0, show);
@@ -75,5 +76,25 @@ export function drawFrame(profile, frame, spec = demo) {
   ctx.fillStyle = '#43d8de';
   const length = unit * 0.42 * ease((t - 0.35) / 0.6);
   ctx.fillRect((w - length) / 2, h * 0.61, length, Math.max(2, unit * 0.004));
+}
+
+// Explicit opt-in: transparent RGBA foreground only. This is an in-memory
+// Canvas and does not alter the existing render CLI or opaque MP4 outputs.
+export function drawForegroundFrame(profile,frame,spec=demo){
+  checkFrame(profile,frame,spec);
+  const canvas=createCanvas(profile.width,profile.height);
+  paintForeground(canvas.getContext('2d'),profile,frame,spec);
+  return canvas;
+}
+
+export function drawFrame(profile,frame,spec=demo){
+  checkFrame(profile,frame,spec);
+  const {width:w,height:h}=profile;
+  const canvas=createCanvas(w,h);
+  const ctx=canvas.getContext('2d');
+  const g=ctx.createLinearGradient(0,0,w,h);
+  g.addColorStop(0,'#071326');g.addColorStop(1,'#18365a');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  paintForeground(ctx,profile,frame,spec);
   return canvas;
 }
