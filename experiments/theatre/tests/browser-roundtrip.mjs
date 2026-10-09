@@ -248,6 +248,28 @@ try{
     return inspected.slice(0,90);
   })()`);
   console.log('M10_NATIVE_TIMELINE_GEOMETRY',JSON.stringify(nativeTimelineGeometry));
+  const nativeTimelineHit=await evaluate(`(()=>{
+    const hits=[];
+    for(const [x,y] of [[344,350],[344,322],[312,350],[376,350],[248,350]]){
+      const chain=[];let root=document;let node;
+      for(let level=0;level<8;level++){
+        node=root.elementFromPoint?.(x,y);
+        if(!node)break;
+        const bbox=node.getBoundingClientRect();
+        chain.push({tag:node.tagName,cls:typeof node.className==='string'?node.className:node.className?.baseVal,
+          text:node.textContent?.trim().slice(0,55),
+          box:[Math.round(bbox.x),Math.round(bbox.y),Math.round(bbox.width),Math.round(bbox.height)],
+          html:node.outerHTML.slice(0,400)});
+        if(!node.shadowRoot)break;root=node.shadowRoot;
+      }
+      const ancestors=[];
+      for(let p=node,n=0;p&&n<4;p=p.parentElement,n++)ancestors.push({tag:p.tagName,
+         cls:typeof p.className==='string'?p.className:p.className?.baseVal,html:p.outerHTML.slice(0,200)});
+      hits.push({x,y,chain,ancestors});
+    }
+    return {viewport:[innerWidth,innerHeight],hits};
+  })()`);
+  console.log('M10_NATIVE_TIMELINE_HIT_TEST',JSON.stringify(nativeTimelineHit));
   const report={
     result:'PASS',test:'Actual headless Chromium edit+export -> Core -> Canvas',
     edited_keyframes:[{frame:15,x:60},{frame:45,x:-60}],
