@@ -17,7 +17,7 @@ concurrency:
 jobs:
   synthetic-metrics:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -27,8 +27,24 @@ jobs:
           node-version: "24.19.0"
       - name: Syntax check original RGBA metrics
         run: node --check experiments/motion-qa/frame-metrics.mjs
-      - name: Execute synthetic-only acceptance tests
-        run: node --test experiments/motion-qa/tests/frame-metrics.test.mjs
+      - name: Install existing pinned Canvas dependencies only
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Check original synthetic benchmark syntax
+        run: |
+          node --check experiments/motion-qa/render-benchmark.mjs
+          node --check experiments/motion-qa/run-benchmark.mjs
+      - name: Execute both unit and real Canvas-frame acceptance tests
+        run: node --test experiments/motion-qa/tests/*.test.mjs
+      - name: Render 400 original synthetic Canvas frames and verify QA findings
+        run: node experiments/motion-qa/run-benchmark.mjs
+      - name: Save sanitized synthetic QA report only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: motion-qa-synthetic-report
+          path: out/motion-qa-synthetic-benchmark/benchmark.json
+          retention-days: 2
+          if-no-files-found: error
       - name: Record R&D-only scope
         run: |
-          echo 'Technical sample QA only. NOT production-ready or artist-approved.' >> "$GITHUB_STEP_SUMMARY"
+          echo '400 original synthetic Canvas frames checked across 5 cases. NO company media or raw frames saved.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Technical motion diagnosis only: NOT production-ready or artist-approved.' >> "$GITHUB_STEP_SUMMARY"
