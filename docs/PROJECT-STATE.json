@@ -1,0 +1,370 @@
+{
+  "schema_version": 1,
+  "checkpoint_date": "2026-10-10",
+  "timezone": "Asia/Taipei",
+  "repo": "rayray12zx3-sys/ai-motion-studio",
+  "entrypoint": "docs/CONTINUE-HERE.md",
+  "entrypoint_branch": "docs/coordination-pre-reference-20261009",
+  "scope": "Personal tool for creating videos that may be commercial advertisements; code/tool/media/output licenses separate.",
+  "live_verification_required": true,
+  "priority_rule": "On every continuation fetch current GitHub PR metadata, exact PR-head Actions and Issues before acting. This JSON is a snapshot, not live state.",
+  "guardrails": {
+    "no_main_merge_without_approval": "Require explicit approval for architecture changes, creative direction, private-company data, license/cost impact, destructive migrations and high-risk merges. User delegated routine low-risk, exact-head-green, backwards-compatible technical/documentation merges; recheck PR and scope before each merge.",
+    "no_rebase_or_force_push_without_approval": true,
+    "no_company_private_assets_in_public_github": true,
+    "no_private_drive_ids_in_public_github": true,
+    "no_private_advertisement_state_engine_changes": true,
+    "m12_art_status": "REJECTED_OR_UNAPPROVED__FROZEN",
+    "candidate_tools_are_not_installed_by_documenting_them": true,
+    "routine_merge_delegation": {
+      "source": "2026-10-10 user's explicit direction",
+      "allow_when_all": [
+        "technical/documentation change is narrow and clearly within approved project",
+        "exact-head CI passing",
+        "diff/file list reviewed",
+        "no source asset, secrets, license addition, pricing, new production dependencies or behavior regression",
+        "same issue scope, not a stacked artistic PR",
+        "merge target and expected SHA freshly checked"
+      ],
+      "require_explicit_approval_for": [
+        "major engine architecture",
+        "M11/M12 artistic adoption or visual changes",
+        "restricted/paid or noncommercial tools and licenses",
+        "private advertising State Engine and real company media",
+        "broad stacked PR merges/rebases",
+        "security or privacy risk, destructive migration, uncertain backward compatibility"
+      ],
+      "no_automatic_mass_merges": true
+    }
+  },
+  "pull_requests": [
+    {
+      "number": 24,
+      "label": "M10",
+      "base": "feat/m9-template-registry-license-gates-20261008",
+      "head_sha": "8b09dbe046fe75253f0751603d0fafe722212053",
+      "draft": true,
+      "merged": false,
+      "mergeable_at_snapshot": true,
+      "technical_acceptance": "PASS_SYNTHETIC_ONLY",
+      "creative_acceptance": "NOT_APPLICABLE"
+    },
+    {
+      "number": 25,
+      "label": "M11",
+      "base": "feat/m10-theatre-private-assets-20261008",
+      "head_sha": "722dca32f2a3604116009b81bfa30326d3736be8",
+      "draft": true,
+      "merged": false,
+      "mergeable_at_snapshot": true,
+      "technical_acceptance": "PASS_LATEST_M10_HEAD_PLUS_M11_COMBINED_TREE__NOT_ART_APPROVED",
+      "creative_acceptance": "REJECTED"
+    },
+    {
+      "number": 26,
+      "label": "M12",
+      "base": "feat/m11-product-ui-safe-overlays-20261009",
+      "head_sha": "062497fda846cfd93a7319f6197d104292c71ba2",
+      "draft": true,
+      "merged": false,
+      "mergeable_at_snapshot": true,
+      "technical_acceptance": "PASS_ON_OWN_HEAD",
+      "creative_acceptance": "NOT_APPROVED_FROZEN"
+    },
+    {
+      "number": 27,
+      "label": "Coordination and licenses",
+      "base": "main",
+      "draft": true,
+      "merged": false,
+      "head_sha": "SNAPSHOT_CHANGES_DURING_DOCS_UPDATES__FETCH_LIVE",
+      "mergeable_at_snapshot": true,
+      "technical_acceptance": "DOCS_ONLY"
+    },
+    {
+      "number": 29,
+      "label": "Isolated synthetic motion QA (new independent R&D)",
+      "base": "main",
+      "head_sha": "af047b50cc0de9ec13bfd72ef65e9f43df716334",
+      "draft": true,
+      "merged": false,
+      "technical_acceptance": "PASS_EXACT_HEAD_940_ORIGINAL_CANVAS_FRAMES_24_UNIT_TESTS_PLUS_VIDEO",
+      "creative_acceptance": "HUMAN_REQUIRED_ALWAYS",
+      "tests": [
+        "ALPHA_OUTSIDE_DECLARED_SAFE_RECT",
+        "UNEXPECTED_EMPTY_FRAME",
+        "UNEXPECTED_FREEZE",
+        "CENTROID_JUMP"
+      ],
+      "root_production_dependencies_changed": false,
+      "benchmark": {
+        "original_frame_count": 80,
+        "original_scenario_count": 5,
+        "second_frame_count": 90,
+        "second_scenario_count": 6,
+        "total_generated_frames": 940,
+        "total_scenarios": 11,
+        "unit_tests_passed": 24,
+        "second_storyboard_cut_frame": 45,
+        "second_declared_mid_hold": {
+          "from": 14,
+          "to": 23
+        },
+        "scenarios": {
+          "first": [
+            "baseline:PASS",
+            "blank:BLOCKED",
+            "alpha-leak:BLOCKED",
+            "teleport:REVIEW",
+            "freeze:REVIEW"
+          ],
+          "second": [
+            "approved-edit:PASS",
+            "undeclared-cut:REVIEW",
+            "undeclared-hold:REVIEW",
+            "blank-at-cut:BLOCKED",
+            "alpha-leak-at-cut:BLOCKED",
+            "midscene-freeze:REVIEW"
+          ]
+        },
+        "report_format": "JSON_METRICS_ONLY_NO_MEDIA",
+        "human_creative_approval": "REQUIRED",
+        "video_preview": {
+          "status": "ENCODED_VERIFIED_DELIVERED_TO_APPROVED_PRIVATE_DRIVE",
+          "sha256": "f3b62d50f22bca4ff25b9368f74379e7304b98df43deddd307dbe1b9df3c6add",
+          "codec": "h264",
+          "width": 540,
+          "height": 960,
+          "fps": 30,
+          "frames": 90,
+          "seconds": 3,
+          "artifact_id": 11629000249,
+          "google_drive_delivery": "CONFIRMED_BY_UPLOADER_AND_FOLDER_LISTING"
+        },
+        "opaque_main_renderer_integration": "NOT_IMPLEMENTED__FOREGROUND_MASK_REQUIRED",
+        "prod_integrated": false
+      },
+      "editor_intent": {
+        "allowed_cut_frames": true,
+        "allowed_hold_frame_ranges": true,
+        "cannot_override_alpha_or_blank_blockers": true
+      }
+    },
+    {
+      "number": 30,
+      "label": "Opt-in transparent Canvas foreground and independent Motion QA bridge",
+      "base": "main",
+      "head_sha": "2a2eb0244062d15d4a2e3382f0322d450352f712",
+      "draft": false,
+      "merged": true,
+      "mergeable_at_snapshot": "MERGED",
+      "technical_acceptance": "PASSED_AND_MERGED_TO_MAIN_WITH_EXPLICIT_USER_APPROVAL",
+      "creative_acceptance": "HUMAN_REQUIRED",
+      "production_adoption": true,
+      "source_modifications": [
+        "src/free/scene.mjs",
+        "scripts/render-foreground.mjs",
+        "tests/foreground-compat.test.mjs",
+        "experiments/foreground-qa/check.mjs"
+      ],
+      "pinned_qa_rnd_sha": "af047b50cc0de9ec13bfd72ef65e9f43df716334",
+      "merge_commit_sha": "9199a20640137cc259c76c1e41a05c8c684370ee"
+    },
+    {
+      "number": 31,
+      "label": "Post-merge full-alpha QuickTime frame-count and decoded head/mid/tail validation",
+      "base": "main",
+      "head_sha": "6ff11090d7199f12938adab49e4e605b2d74ca89",
+      "draft": false,
+      "merged": true,
+      "mergeable_at_snapshot": "MERGED",
+      "technical_acceptance": "PASSED_AND_SQUASH_MERGED",
+      "creative_acceptance": "NOT_APPLICABLE",
+      "video_bit_exact_to_PR30": true,
+      "owner_merge_approval": "USER_DELEGATED_ROUTINE_TECHNICAL_MERGES",
+      "production_adoption": true,
+      "merge_commit_sha": "a6daabc22f0f7e7774b24f98209c22a6f18c5518"
+    }
+  ],
+  "milestone_runs": {
+    "m10_verified_head": "8b09dbe046fe75253f0751603d0fafe722212053",
+    "node_ci": 37946136986,
+    "theatre_native_studio": 37946137013,
+    "prores_alpha": 37946137010,
+    "full_motion_regression": 37946137105,
+    "all_conclusions_at_checkpoint": "success",
+    "studio_native_drag": {
+      "from_seconds": 1.5,
+      "to_seconds": 1.833,
+      "export_json_diff": true,
+      "core_reads_export": true,
+      "canvas_changes": true,
+      "reverse_seek_deterministic": true
+    },
+    "m11_combined": {
+      "m11_head": "722dca32f2a3604116009b81bfa30326d3736be8",
+      "live_m10_head": "8b09dbe046fe75253f0751603d0fafe722212053",
+      "synthetic_product_ui": 37947659914,
+      "node_ci": 37947660143,
+      "full_motion_regression": 37947659922,
+      "all_conclusions": "success",
+      "native_studio_drag_on_combined_tree": true,
+      "technical_scope_only": true
+    },
+    "motion_qa": {
+      "head": "af047b50cc0de9ec13bfd72ef65e9f43df716334",
+      "isolated_qa": 37957156700,
+      "root_ci": 37957156574,
+      "all_conclusions": "success",
+      "first_benchmark": 37956352386,
+      "second_benchmark": 37956352386,
+      "preview_encoder": 37956665856,
+      "preview_root_ci": 37956665880,
+      "original_rendered_frames": 940,
+      "unit_tests_passed": 24,
+      "second_metrics_sha256": "33d2a919f9a6fabb667238468eb2300cb279cf59da3624afff573856047f8e34",
+      "first_metrics_sha256": "061959007d53fc29dd38422c28bfe3470063a90c8901ce3d4fb6d213cc7f058d",
+      "preview_mp4_sha256": "f3b62d50f22bca4ff25b9368f74379e7304b98df43deddd307dbe1b9df3c6add",
+      "preview_gdrive": "CONFIRMED_PRIVATE_PROVIDER_UPLOAD_AND_FOLDER_LISTING__10330_BYTES",
+      "report_retains_source_media": false,
+      "not_aesthetic_approval": true
+    },
+    "foreground_alpha": {
+      "head": "2a2eb0244062d15d4a2e3382f0322d450352f712",
+      "original_opaque_pixel_baseline": 37958631192,
+      "exact_head_foreground_and_qa": 37960260054,
+      "exact_head_root_ci": 37960260069,
+      "all_conclusions": "success",
+      "report_artifact_id": 11630438600,
+      "opaque_samples_pixel_identical": 5,
+      "motion_qa_real_canvas_frames": 30,
+      "motion_qa_baseline": "PASS",
+      "injected_blank": "BLOCKED",
+      "injected_alpha_leak": "BLOCKED",
+      "smoke_alpha_prores": {
+        "width": 360,
+        "height": 640,
+        "frames": 30,
+        "fps": 30,
+        "decoded_upper_alpha_nonzero": 0
+      },
+      "vertical_smoke_alpha_prores": {
+        "width": 1080,
+        "height": 1920,
+        "frames": 30,
+        "fps": 30,
+        "decoded_upper_alpha_nonzero": 0
+      },
+      "full_vertical_alpha_prores": {
+        "width": 1080,
+        "height": 1920,
+        "frames": 180,
+        "fps": 30,
+        "decoded_upper_alpha_nonzero": 0,
+        "decoded_sample_foreground_pixels": 19734,
+        "sha256": "60b4760115aceccbc940b8502d7f0a045d2ce5e8871f4dc6a5b56fd5b6d031af",
+        "byte_length": 27283200
+      },
+      "private_media_used": false,
+      "public_artifact_contains_raw_media": false,
+      "premiere_windows": "NOT_TESTED",
+      "artistic_approval": "REQUIRED",
+      "production_renderer_default_changed": false,
+      "merged_to_main": true,
+      "main_merge_sha": "9199a20640137cc259c76c1e41a05c8c684370ee",
+      "main_default_render_stays_opaque": true
+    },
+    "foreground_alpha_hardening": {
+      "head": "6ff11090d7199f12938adab49e4e605b2d74ca89",
+      "root_ci": 37962178777,
+      "foreground_ci": 37962178798,
+      "all_conclusions": "success",
+      "container_frame_counts": [
+        30,
+        30,
+        180
+      ],
+      "profiles": [
+        "360x640-smoke",
+        "1080x1920-smoke",
+        "1080x1920-6s"
+      ],
+      "decoded_sample_foreground_pixels": [
+        [
+          0,
+          2648,
+          0
+        ],
+        [
+          0,
+          17994,
+          0
+        ],
+        [
+          0,
+          19734,
+          0
+        ]
+      ],
+      "upper_alpha_nonzero_all_samples": 0,
+      "full_video_sha256_unchanged": "60b4760115aceccbc940b8502d7f0a045d2ce5e8871f4dc6a5b56fd5b6d031af",
+      "new_dependencies": false,
+      "video_output_changed": false,
+      "main_merge_approval_required": true,
+      "merged_to_main": true,
+      "main_merge_sha": "a6daabc22f0f7e7774b24f98209c22a6f18c5518"
+    }
+  },
+  "evidence_docs": [
+    "docs/TOOL-ADOPTION-AND-LICENSE-RESEARCH-2026-10-09.md",
+    "docs/ACTIVE-WORK-2026-10-09.md",
+    "experiments/theatre/README.md (on M10 PR #24 head)",
+    "docs/FOREGROUND-ALPHA-RND-2026-10-10.md (on Draft PR #30 branch)"
+  ],
+  "issue_28": {
+    "state": "open",
+    "engineering_checklist": "6 of 6 checked",
+    "premiere_windows": "NOT_TESTED",
+    "real_private_source": "NOT_CONNECTED",
+    "ci_to_drive": "NOT_AUTOMATED"
+  },
+  "blocker_review": [
+    "2026-10-09: M11 #25's fresh combined-tree CI with live M10 base passed. M11 and M12 creative approval remain blocked; live PR mergeability must always be rechecked.",
+    "M12 artistic approval and viewable reference footage remain outstanding."
+  ],
+  "next_work": [
+    "PR #31 is squash-merged into main a6daabc following delegated approval for routine narrow backward-compatible tested changes. Do not ask for permission for every comparable low-risk merge; log preflight and outcome.",
+    "PR #27 docs-only handoff currently marked GitHub mergeable:false after main advanced; do NOT force merge. Preserve canonical docs-branch links and re-evaluate later. Update this state on every milestone.",
+    "Motion QA PR #29 remains Draft; do not silently adopt a standalone R&D quality judge into production. Try isolated benchmarks and tools, obtain actual watchable references before M12 art.",
+    "All merge actions must recheck actual PR diff, up-to-date status, exact-head CI and permissions; risky or artistic decisions still need user input."
+  ],
+  "forbidden_identifiers_in_public_status": [
+    "company source paths",
+    "rights receipts",
+    "unpublished company scripts",
+    "private Drive file identifiers",
+    "credentials"
+  ],
+  "verified_external_media": "Only synthetic preview and Alpha MOV delivered to approved private Drive; no automatic continuous delivery.",
+  "snapshot_is_not_production_release": true,
+  "main_approved_milestones": [
+    {
+      "pr": 30,
+      "feature": "optional_transparent_canvas_foreground",
+      "merge_method": "squash",
+      "merge_commit_sha": "9199a20640137cc259c76c1e41a05c8c684370ee",
+      "user_approved": true,
+      "opaque_h264_default_unchanged": true,
+      "private_ad_state_engine_changed": false
+    },
+    {
+      "pr": 31,
+      "feature": "strict_mov_frame_count_and_head_mid_tail_alpha_decoding",
+      "merge_method": "squash",
+      "merge_commit_sha": "a6daabc22f0f7e7774b24f98209c22a6f18c5518",
+      "user_delegated_routine_approval": true,
+      "opaque_h264_default_unchanged": true,
+      "private_ad_state_engine_changed": false
+    }
+  ]
+}
