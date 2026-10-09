@@ -14,8 +14,8 @@ import {drawForegroundFrame,profiles} from '../src/free/scene.mjs';
 import probe from 'ffprobe-static';
 
 const selection=process.argv[2];
-if(!['smoke','vertical'].includes(selection)||process.argv.length!==3)
-  throw new Error('Only synthetic smoke or vertical foreground profiles are permitted');
+if(!['smoke','vertical','vertical-smoke'].includes(selection)||process.argv.length!==3)
+  throw new Error('Only synthetic smoke, vertical-smoke or vertical foreground profiles are permitted');
 if(Number(process.versions.node.split('.')[0])!==24)
   throw new Error('Node 24 required');
 const ffmpeg=join(dirname(fileURLToPath(import.meta.resolve('ffmpeg-static/package.json'))),
@@ -28,7 +28,7 @@ const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 assert.ok(existsSync(ffmpeg)&&existsSync(probe.path),'Encoder/FFprobe missing');
 assert.equal(sha(readFileSync(ffmpeg)),approved[process.platform+'-'+process.arch],
   'FFmpeg is not the approved pinned encoder');
-const profile=profiles[selection];
+const profile=selection==='vertical-smoke'?{...profiles.vertical,frames:30}:profiles[selection];
 const dest=resolve('out/foreground-'+selection);
 assert.ok(!existsSync(dest),'Refusing to overwrite existing synthetic foreground');
 mkdirSync(dest,{recursive:true});
@@ -66,7 +66,7 @@ assert.equal(info.height,profile.height);
 assert.equal(info.r_frame_rate,profile.fps+'/1');
 assert.ok(info.pix_fmt?.startsWith('yuva444p'),
   'Foreground decoder does not expose an Alpha plane');
-const sampleIndex=selection==='smoke'?12:42;
+const sampleIndex=selection==='vertical'?42:12;
 const pixelData=execFileSync(ffmpeg,[
   '-nostdin','-hide_banner','-loglevel','error','-i',mov,
   '-vf','select=eq(n\\,'+sampleIndex+')','-frames:v','1',
