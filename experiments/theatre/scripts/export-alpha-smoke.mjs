@@ -47,12 +47,13 @@ const [exit]=await once(process,'close');
 assert.equal(exit,0,'ProRes encoder failed: '+stderr.slice(-1800));
 const show=file=>JSON.parse(execFileSync(ffprobe,[
   '-v','error','-select_streams','v:0',
-  '-show_entries','stream=codec_name,profile,width,height,pix_fmt,r_frame_rate,nb_frames',
+  '-show_entries','stream=codec_name,profile,codec_tag_string,width,height,pix_fmt,r_frame_rate,nb_frames',
   '-of','json',file
 ],{maxBuffer:1024*1024}).toString()).streams[0];
 const info=show(mov);
 assert.equal(info.codec_name,'prores');
-assert.equal(info.profile,'4444');
+assert.ok(info.profile==='4444'||info.codec_tag_string==='ap4h',
+  'ProRes 4444 profile/fourcc not verified');
 assert.equal(info.width,1080);
 assert.equal(info.height,1920);
 assert.equal(info.r_frame_rate,'30/1');
@@ -89,7 +90,7 @@ const sha=file=>createHash('sha256').update(readFileSync(file)).digest('hex');
 const report={
   status:'SYNTHETIC_ALPHA_TECHNICAL_PASS',
   fps:30,width:1080,height:1920,encoded_frames:requiredFrames,
-  mov:{codec:info.codec_name,profile:info.profile,pix_fmt:info.pix_fmt,
+  mov:{codec:info.codec_name,profile:info.profile||'fourcc-ap4h',fourcc:info.codec_tag_string||null,pix_fmt:info.pix_fmt,
     bytes:statSync(mov).size,sha256:sha(mov)},
   decoded_alpha:{top_nonzero:topNonzero,lower_nonzero:lowerNonzero},
   preview:{codec:preview.codec_name,bytes:statSync(mp4).size,sha256:sha(mp4)},
