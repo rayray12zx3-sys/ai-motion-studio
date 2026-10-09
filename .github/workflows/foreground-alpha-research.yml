@@ -1,0 +1,61 @@
+name: Isolated Foreground Alpha and Motion QA
+
+on:
+  pull_request:
+    paths:
+      - 'src/free/scene.mjs'
+      - 'tests/foreground-compat.test.mjs'
+      - 'experiments/foreground-qa/**'
+      - 'scripts/render-foreground.mjs'
+      - '.github/workflows/foreground-alpha-research.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: foreground-alpha-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  foreground:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.19.0"
+          cache: npm
+      - name: Install existing locked Canvas and codec wrappers
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify opaque baseline fingerprints and foreground Alpha
+        run: node --test tests/foreground-compat.test.mjs
+      - name: Checkout exactly verified QA research source outside production tree
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: rayray12zx3-sys/ai-motion-studio
+          ref: af047b50cc0de9ec13bfd72ef65e9f43df716334
+          path: qa-reference
+          persist-credentials: false
+      - name: Pin QA source and test actual Canvas foreground samples
+        run: |
+          test "$(git -C qa-reference rev-parse HEAD)" = "af047b50cc0de9ec13bfd72ef65e9f43df716334"
+          node experiments/foreground-qa/check.mjs
+      - name: Hash-verify existing FFmpeg encoder
+        run: node scripts/setup-encoder.mjs
+      - name: Export and decode synthetic ProRes 4444 Alpha
+        run: node scripts/render-foreground.mjs smoke
+      - name: Save metadata-only foreground acceptance report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: synthetic-foreground-alpha-report
+          path: out/foreground-smoke/report.json
+          retention-days: 2
+          if-no-files-found: error
+      - name: Confirm no production renderer/tool dependency was changed
+        run: |
+          echo 'Opaque RGBA historical hashes exact; Motion QA pinned R&D source checks; synthetic ProRes alpha decoded.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Only metadata uploaded. No company assets or private source paths; creative review still required.' >> "$GITHUB_STEP_SUMMARY"
