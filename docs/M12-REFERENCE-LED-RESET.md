@@ -31,3 +31,30 @@ are generated procedurally, not licensed music.
 
 **Current creative QC: prior M11 REJECTED; M12 PENDING USER REVIEW.**
 Technical CI pass does not upgrade creative QC.
+## M12 motion-dynamics V2 — responding to editor feedback (2026-10-09)
+
+The editor rejected the apparent **single-speed transformations**. Earlier M12
+used a single critically damped response for every shape transition, even when
+changing type, press, loader, progress or exit. Technically non-linear does
+NOT mean visually distinct easing.
+
+Now `src/creative/motion-easing.mjs` provides named, bounded, deterministic
+curves, and `evaluateOneShape()` assigns a different motion signature:
+
+| Section | Gesture | Motion profile |
+| --- | --- | --- |
+| Type reveal | Fast reveal, softer landing | ease-out-cubic |
+| Underline → Button | Energetic open, ~3% overshoot | ease-out-back |
+| Tap | Brief pre-press squash/stretch | 4f anticipation |
+| Button → Spinner | Tight, quick middle acceleration | ease-in-out-cubic |
+| Verification | Short decaying check-mark bounce | damped-bounce |
+| Loader → Card | Snap then settle | ease-out-back |
+| Slider | Direct cursor-following acceleration and deceleration | ease-in-out-sine |
+| COMBO | Separate reward pop + capsule elastic settle | ease-out-back + damped-bounce |
+| Exit | Held label clears, then deliberate fast collapse | ease-in-out-cubic |
+
+Distinct motion speed/overshoot is now validated with quantitative tests
+and a review artifact. Bounce is used selectively on interaction feedback,
+not globally on every morph. Same shape identity, no UI-native claim, no
+change to private advertising footage or production timing. Always require
+user's actual design review before promotion.

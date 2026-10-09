@@ -3,6 +3,7 @@
 import {createCanvas} from '@napi-rs/canvas';
 import {fontFamily} from '../free/scene.mjs';
 import {socialSafeRect} from './social-safe-area.mjs';
+import {MOTION_PROFILES,easeBetween,bouncePulse} from './motion-easing.mjs';
 export const FRAMES=120,FPS=30,BPM=120,BEAT_FRAMES=15;
 export const BEATS=Object.freeze(['masked hero','underline to button','tap and condense',
  'loader to check','shape to summary','direct-manipulated slider',
@@ -11,15 +12,8 @@ const C={dark:'#161D1B',paper:'#F2F0ED',green:'#40B99A',white:'#FFFFFF'};
 const clamp=x=>Math.max(0,Math.min(1,x));
 const lerp=(a,b,t)=>a+(b-a)*t;
 const smooth=t=>{let v=clamp(t);return v*v*(3-2*v);};
-function damped(t){
- const v=clamp(t);if(v===0||v===1)return v;
- // Critical damping: zero overshoot and zero start velocity; unlike
- // underdamped springs, rapid button collapse cannot jump between frames.
- const d=5;
- const f=x=>1-(1+d*x)*Math.exp(-d*x);
- return Math.min(1,Math.max(0,f(v)/f(1)));
-}
-const interp=(f,a,b)=>damped((f-a)/(b-a));
+// Distinct, intentional transitions replace the previous single damped curve.
+const interp=(f,a,b,curve)=>easeBetween(f,a,b,curve);
 const enter=(f,a,b)=>smooth((f-a)/(b-a));
 const leave=(f,a,b)=>1-enter(f,a,b);
 const nodes=[
@@ -41,19 +35,41 @@ const color=(a,b,t)=>{
 export function evaluateOneShape(frame){
  if(!Number.isFinite(frame)||frame<0||frame>=FRAMES)throw Error('Invalid choreography frame');
  const beat=Math.floor(frame/BEAT_FRAMES);
- const s=beat===7?interp(frame,107,120):interp(frame,beat*15,(beat+1)*15);
- const geom=nodes[beat].map((v,i)=>lerp(v,nodes[beat+1][i],s));
-
+ // Beats still lock to 120 BPM. However the *motion inside each beat*
+ // has independent animation windows: punchy expansion, brief hold/tap,
+ // controlled compression, a soft spring settle, and deliberate exit.
+ const windows=[
+  {a:0,b:15,curve:'linear'},
+  {a:15,b:27,curve:MOTION_PROFILES.affordance},
+  {a:34,b:45,curve:MOTION_PROFILES.condense},
+  {a:45,b:60,curve:'linear'},
+  {a:60,b:73,curve:MOTION_PROFILES.expand},
+  {a:75,b:90,curve:'linear'},
+  {a:90,b:102,curve:MOTION_PROFILES.reward},
+  {a:107,b:120,curve:MOTION_PROFILES.exit}
+ ];
+ const cue=windows[beat],progress=interp(frame,cue.a,cue.b,cue.curve);
+ const geom=nodes[beat].map((v,i)=>lerp(v,nodes[beat+1][i],progress));
+ // A short anticipation impulse before the second-beat TAP compression.
+ if(beat===2&&frame>=30&&frame<34){
+  const scale=1-.043*Math.sin(Math.PI*(frame-30)/4);
+  geom[2]*=scale;geom[3]*=1+.052*Math.sin(Math.PI*(frame-30)/4);
+ }
  const [x,y,w,h,r]=geom;
- const drag=enter(frame,76,89);
+ const drag=interp(frame,76,89,MOTION_PROFILES.directManipulation);
+ const checkBounce=bouncePulse(frame,57,13,.15);
+ const rewardBounce=bouncePulse(frame,93,17,.12);
  const pointerAlpha=enter(frame,19,25)*leave(frame,39,45)+
    enter(frame,72,78)*leave(frame,91,98);
  return {
   beat,shape:{x,y,w,h,r},
-  camera:1+.024*enter(frame,15,60)-.024*enter(frame,95,119),
-  fill:color(C.dark,C.green,enter(frame,90,98)),
+  timing:{profile:cue.curve,progress,checkBounce,rewardBounce,
+   tapAnticipation:beat===2&&frame>=30&&frame<34},
+  camera:1+.024*interp(frame,15,58,MOTION_PROFILES.intro)
+   -.024*interp(frame,98,119,MOTION_PROFILES.exit),
+  fill:color(C.dark,C.green,interp(frame,90,100,MOTION_PROFILES.reward)),
   hook:enter(frame,0,10)*leave(frame,17,23),
-  hookReveal:enter(frame,0,13),
+  hookReveal:interp(frame,0,11,MOTION_PROFILES.intro),
   button:enter(frame,24,27)*leave(frame,32,39),
   spinner:enter(frame,44,48)*leave(frame,53,57),
   check:enter(frame,57,60)*leave(frame,64,68),
@@ -113,6 +129,8 @@ function artwork(ctx,s,f){
  if(s.check>0){
   ctx.save();ctx.globalAlpha=s.check;ctx.strokeStyle=C.white;
   ctx.lineWidth=9;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
+   const z=1+s.timing.checkBounce;
+  ctx.translate(g.x,g.y);ctx.scale(z,z);ctx.translate(-g.x,-g.y);
   ctx.moveTo(g.x-26,g.y);ctx.lineTo(g.x-5,g.y+20);
   ctx.lineTo(g.x+30,g.y-22);ctx.stroke();ctx.restore();
  }
@@ -124,7 +142,11 @@ function artwork(ctx,s,f){
   shape(ctx,g.x-174+amount/2,g.y-29,Math.max(2,amount),13,7,C.white);
   typography(ctx,'SCRUB',g.x,g.y+40,38,C.white);ctx.restore();
  }
- typography(ctx,'COMBO 02',g.x,g.y,82,C.dark,s.combo);
+ if(s.combo>0){
+  ctx.save();ctx.translate(g.x,g.y);const z=1+s.timing.rewardBounce;
+  ctx.scale(z,z);ctx.translate(-g.x,-g.y);
+  typography(ctx,'COMBO 02',g.x,g.y,82,C.dark,s.combo);ctx.restore();
+ }
  ctx.restore();
  pointer(ctx,s.pointer);
  ctx.restore();
