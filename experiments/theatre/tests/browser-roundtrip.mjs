@@ -300,6 +300,7 @@ try{
   assert.ok(pxPerSecond>28&&pxPerSecond<300,'Unexpected Studio timeline scale');
   const destX=startKey.x+pxPerSecond*0.35;
   assert.ok(destX<startKey.viewport[0]-35&&startKey.y<startKey.viewport[1]-10);
+  await evaluate("(()=>{window.__m10PointerTrace=[];for(const kind of ['mousedown','mousemove','mouseup'])document.addEventListener(kind,event=>{if(window.__m10PointerTrace.length>=36)return;window.__m10PointerTrace.push({kind,clientX:event.clientX,screenX:event.screenX,movementX:event.movementX,buttons:event.buttons,button:event.button,target:event.composedPath().slice(0,2).map(x=>x?.getAttribute?.('data-pi-key')||x?.tagName)});},{capture:true});})()");
   await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:startKey.x,y:startKey.y});
   await send('Input.dispatchMouseEvent',{type:'mousePressed',x:startKey.x,y:startKey.y,
     button:'left',buttons:1,clickCount:1});
@@ -311,6 +312,9 @@ try{
   await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:destX,y:startKey.y,
     button:'left',buttons:0,clickCount:1});
   await sleep(160);
+  const pointerTrace=await evaluate("window.__m10PointerTrace");
+  console.log('M10_NATIVE_POINTER_TRACE',JSON.stringify(pointerTrace));
+  console.log('M10_NATIVE_KEYFRAME_AFTER_POINTER',JSON.stringify(await nativeLookup(idToMove)));
   const dragShot=await send('Page.captureScreenshot',{format:'png',
     captureBeyondViewport:false});
   writeFileSync(join(outputDir,'native-studio-keyframe-drag.png'),
