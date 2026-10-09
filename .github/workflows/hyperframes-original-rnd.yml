@@ -50,6 +50,14 @@ jobs:
           npx --yes hyperframes@0.8.143 render -c ./index.html -o ../../out/hyperframes-original-repeat.mp4 --fps 30 --quality draft
       - name: FFprobe video and content-ownership evidence
         run: node experiments/hyperframes-original/verify.mjs
+      - name: Lint original transparent overlay composition
+        run: npx --yes hyperframes@0.8.143 lint experiments/hyperframes-original/overlay.html --json
+      - name: Render original synthetic ProRes 4444 alpha MOV
+        run: |
+          cd experiments/hyperframes-original
+          npx --yes hyperframes@0.8.143 render -c ./overlay.html -o ../../out/hyperframes-original-alpha.mov --format mov --fps 30
+      - name: Verify decoded real alpha and complete QuickTime stream
+        run: node experiments/hyperframes-original/verify-alpha.mjs
       - name: Save original synthetic MP4 + metadata, short retention
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -57,6 +65,8 @@ jobs:
           path: |
             out/hyperframes-original.mp4
             out/hyperframes-original-report.json
+            out/hyperframes-original-alpha.mov
+            out/hyperframes-original-alpha-report.json
           retention-days: 2
           if-no-files-found: error
       - name: Non-production limitation
