@@ -49,11 +49,15 @@ jobs:
         run: node scripts/setup-encoder.mjs
       - name: Export and decode synthetic ProRes 4444 Alpha
         run: node scripts/render-foreground.mjs smoke
+      - name: Export and decode 1080x1920 full-resolution synthetic Alpha
+        run: node scripts/render-foreground.mjs vertical-smoke
       - name: Save metadata-only foreground acceptance report
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: synthetic-foreground-alpha-report
-          path: out/foreground-smoke/report.json
+          path: |
+            out/foreground-smoke/report.json
+            out/foreground-vertical-smoke/report.json
           retention-days: 2
           if-no-files-found: error
       - name: Confirm no production renderer/tool dependency was changed
