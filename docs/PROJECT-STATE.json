@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "checkpoint_date": "2026-10-09",
+  "checkpoint_date": "2026-10-10",
   "timezone": "Asia/Taipei",
   "repo": "rayray12zx3-sys/ai-motion-studio",
   "entrypoint": "docs/CONTINUE-HERE.md",
@@ -129,6 +129,25 @@
         "allowed_hold_frame_ranges": true,
         "cannot_override_alpha_or_blank_blockers": true
       }
+    },
+    {
+      "number": 30,
+      "label": "Opt-in transparent Canvas foreground and independent Motion QA bridge",
+      "base": "main",
+      "head_sha": "2a2eb0244062d15d4a2e3382f0322d450352f712",
+      "draft": true,
+      "merged": false,
+      "mergeable_at_snapshot": "REQUERY_LIVE",
+      "technical_acceptance": "PASS_EXACT_HEAD_OPAQUE_HASH_PARITY_MOTION_QA_NATIVE_1080P_PRORES_ALPHA",
+      "creative_acceptance": "HUMAN_REQUIRED",
+      "production_adoption": false,
+      "source_modifications": [
+        "src/free/scene.mjs",
+        "scripts/render-foreground.mjs",
+        "tests/foreground-compat.test.mjs",
+        "experiments/foreground-qa/check.mjs"
+      ],
+      "pinned_qa_rnd_sha": "af047b50cc0de9ec13bfd72ef65e9f43df716334"
     }
   ],
   "milestone_runs": {
@@ -173,12 +192,55 @@
       "preview_gdrive": "CONFIRMED_PRIVATE_PROVIDER_UPLOAD_AND_FOLDER_LISTING__10330_BYTES",
       "report_retains_source_media": false,
       "not_aesthetic_approval": true
+    },
+    "foreground_alpha": {
+      "head": "2a2eb0244062d15d4a2e3382f0322d450352f712",
+      "original_opaque_pixel_baseline": 37958631192,
+      "exact_head_foreground_and_qa": 37960260054,
+      "exact_head_root_ci": 37960260069,
+      "all_conclusions": "success",
+      "report_artifact_id": 11630438600,
+      "opaque_samples_pixel_identical": 5,
+      "motion_qa_real_canvas_frames": 30,
+      "motion_qa_baseline": "PASS",
+      "injected_blank": "BLOCKED",
+      "injected_alpha_leak": "BLOCKED",
+      "smoke_alpha_prores": {
+        "width": 360,
+        "height": 640,
+        "frames": 30,
+        "fps": 30,
+        "decoded_upper_alpha_nonzero": 0
+      },
+      "vertical_smoke_alpha_prores": {
+        "width": 1080,
+        "height": 1920,
+        "frames": 30,
+        "fps": 30,
+        "decoded_upper_alpha_nonzero": 0
+      },
+      "full_vertical_alpha_prores": {
+        "width": 1080,
+        "height": 1920,
+        "frames": 180,
+        "fps": 30,
+        "decoded_upper_alpha_nonzero": 0,
+        "decoded_sample_foreground_pixels": 19734,
+        "sha256": "60b4760115aceccbc940b8502d7f0a045d2ce5e8871f4dc6a5b56fd5b6d031af",
+        "byte_length": 27283200
+      },
+      "private_media_used": false,
+      "public_artifact_contains_raw_media": false,
+      "premiere_windows": "NOT_TESTED",
+      "artistic_approval": "REQUIRED",
+      "production_renderer_default_changed": false
     }
   },
   "evidence_docs": [
     "docs/TOOL-ADOPTION-AND-LICENSE-RESEARCH-2026-10-09.md",
     "docs/ACTIVE-WORK-2026-10-09.md",
-    "experiments/theatre/README.md (on M10 PR #24 head)"
+    "experiments/theatre/README.md (on M10 PR #24 head)",
+    "docs/FOREGROUND-ALPHA-RND-2026-10-10.md (on Draft PR #30 branch)"
   ],
   "issue_28": {
     "state": "open",
@@ -192,10 +254,10 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "3-second 540x960 H264 original synthetic preview is delivered to the approved private Google Drive review folder (provider upload + folder listing confirmed; private ID withheld from public GitHub). Request aesthetic feedback only when the video is intentionally being evaluated; this QA test is not M12 direction approval.",
-    "Before promoting Motion QA into the opaque Canvas+FFmpeg main renderer, design a foreground-only alpha/mask view or other validated separation. Current final MP4 has a fully opaque gradient and naive Alpha-safe checks would falsely flag the plate.",
-    "Review professional *watchable* Product UI motion references with source/right checks and compare permissive external frameworks in isolated lanes. M12 visual edits remain frozen until human creative direction.",
-    "Every conversation begins with CONTINUE-HERE + PROJECT-STATE, then fetches current GitHub PR heads and exact-head CI. Preserve status changes on PR #29 and coordination Draft #27."
+    "Foreground Alpha #30 is technically complete in a Draft R&D branch with unchanged opaque output and real 6s full-resolution alpha encode/decode. Do NOT merge main or adopt into real ads without user approval.",
+    "Continue independent Motion QA + renderer interoperability testing and performance/cost checks if needed, using synthetic-only data and explicit source rights.",
+    "Review actually watchable professional Product-UI animation references and user-facing previews before resuming M12 art; no unauthorized creative rework.",
+    "Every new conversation first reads CONTINUE-HERE and PROJECT-STATE, then fetches live GitHub PR heads and exact-head CI, and updates these records."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
