@@ -167,5 +167,11 @@ try{
 }finally{
   if(ws){try{ws.close();}catch{}}
   for(const child of [chrome,server]){if(child&&child.exitCode===null)child.kill('SIGTERM');}
-  rmSync(privateDir,{recursive:true,force:true});
+  try{
+    rmSync(privateDir,{recursive:true,force:true,maxRetries:8,retryDelay:200});
+  }catch(cleanupError){
+    // Do not hide the original browser failure with an asynchronous Chromium
+    // profile cleanup race on a GitHub-hosted runner.
+    console.warn('Chrome temporary profile cleanup deferred:',String(cleanupError));
+  }
 }
