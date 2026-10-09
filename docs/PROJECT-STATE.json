@@ -9,13 +9,33 @@
   "live_verification_required": true,
   "priority_rule": "On every continuation fetch current GitHub PR metadata, exact PR-head Actions and Issues before acting. This JSON is a snapshot, not live state.",
   "guardrails": {
-    "no_main_merge_without_approval": true,
+    "no_main_merge_without_approval": "Require explicit approval for architecture changes, creative direction, private-company data, license/cost impact, destructive migrations and high-risk merges. User delegated routine low-risk, exact-head-green, backwards-compatible technical/documentation merges; recheck PR and scope before each merge.",
     "no_rebase_or_force_push_without_approval": true,
     "no_company_private_assets_in_public_github": true,
     "no_private_drive_ids_in_public_github": true,
     "no_private_advertisement_state_engine_changes": true,
     "m12_art_status": "REJECTED_OR_UNAPPROVED__FROZEN",
-    "candidate_tools_are_not_installed_by_documenting_them": true
+    "candidate_tools_are_not_installed_by_documenting_them": true,
+    "routine_merge_delegation": {
+      "source": "2026-10-10 user's explicit direction",
+      "allow_when_all": [
+        "technical/documentation change is narrow and clearly within approved project",
+        "exact-head CI passing",
+        "diff/file list reviewed",
+        "no source asset, secrets, license addition, pricing, new production dependencies or behavior regression",
+        "same issue scope, not a stacked artistic PR",
+        "merge target and expected SHA freshly checked"
+      ],
+      "require_explicit_approval_for": [
+        "major engine architecture",
+        "M11/M12 artistic adoption or visual changes",
+        "restricted/paid or noncommercial tools and licenses",
+        "private advertising State Engine and real company media",
+        "broad stacked PR merges/rebases",
+        "security or privacy risk, destructive migration, uncertain backward compatibility"
+      ],
+      "no_automatic_mass_merges": true
+    }
   },
   "pull_requests": [
     {
@@ -155,14 +175,15 @@
       "label": "Post-merge full-alpha QuickTime frame-count and decoded head/mid/tail validation",
       "base": "main",
       "head_sha": "6ff11090d7199f12938adab49e4e605b2d74ca89",
-      "draft": true,
-      "merged": false,
-      "mergeable_at_snapshot": "FETCH_LIVE",
-      "technical_acceptance": "PASS_EXACT_HEAD_CONTAINER_FRAME_COUNT_ALPHA_3_SAMPLES",
+      "draft": false,
+      "merged": true,
+      "mergeable_at_snapshot": "MERGED",
+      "technical_acceptance": "PASSED_AND_SQUASH_MERGED",
       "creative_acceptance": "NOT_APPLICABLE",
       "video_bit_exact_to_PR30": true,
-      "owner_merge_approval": "NOT_GRANTED",
-      "production_adoption": false
+      "owner_merge_approval": "USER_DELEGATED_ROUTINE_TECHNICAL_MERGES",
+      "production_adoption": true,
+      "merge_commit_sha": "a6daabc22f0f7e7774b24f98209c22a6f18c5518"
     }
   ],
   "milestone_runs": {
@@ -289,7 +310,9 @@
       "full_video_sha256_unchanged": "60b4760115aceccbc940b8502d7f0a045d2ce5e8871f4dc6a5b56fd5b6d031af",
       "new_dependencies": false,
       "video_output_changed": false,
-      "main_merge_approval_required": true
+      "main_merge_approval_required": true,
+      "merged_to_main": true,
+      "main_merge_sha": "a6daabc22f0f7e7774b24f98209c22a6f18c5518"
     }
   },
   "evidence_docs": [
@@ -310,10 +333,10 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "PR #30 was owner-approved and successfully squash-merged to main at 9199a206. Default opaque MP4 path unchanged.",
-    "Post-merge verification hardening is ready on Draft PR #31: FFprobe nb_frames and decoded head/middle/tail Alpha, with both CI green and MOV bytes unchanged. Explicit owner approval required for any merge into main.",
-    "Do not merge Motion QA PR #29 or the M11/M12 stacks; they remain creative/licensing gates and Draft.",
-    "Before a new chat work starts, fetch CONTINUE-HERE + PROJECT-STATE, then live PR heads and exact-head CI, never trust this dated snapshot alone."
+    "PR #31 is squash-merged into main a6daabc following delegated approval for routine narrow backward-compatible tested changes. Do not ask for permission for every comparable low-risk merge; log preflight and outcome.",
+    "PR #27 docs-only handoff currently marked GitHub mergeable:false after main advanced; do NOT force merge. Preserve canonical docs-branch links and re-evaluate later. Update this state on every milestone.",
+    "Motion QA PR #29 remains Draft; do not silently adopt a standalone R&D quality judge into production. Try isolated benchmarks and tools, obtain actual watchable references before M12 art.",
+    "All merge actions must recheck actual PR diff, up-to-date status, exact-head CI and permissions; risky or artistic decisions still need user input."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
@@ -331,6 +354,15 @@
       "merge_method": "squash",
       "merge_commit_sha": "9199a20640137cc259c76c1e41a05c8c684370ee",
       "user_approved": true,
+      "opaque_h264_default_unchanged": true,
+      "private_ad_state_engine_changed": false
+    },
+    {
+      "pr": 31,
+      "feature": "strict_mov_frame_count_and_head_mid_tail_alpha_decoding",
+      "merge_method": "squash",
+      "merge_commit_sha": "a6daabc22f0f7e7774b24f98209c22a6f18c5518",
+      "user_delegated_routine_approval": true,
       "opaque_h264_default_unchanged": true,
       "private_ad_state_engine_changed": false
     }
