@@ -5,6 +5,7 @@ on:
     paths:
       - 'experiments/hyperframes-original/**'
       - 'experiments/hyperframes-overlay/**'
+      - 'experiments/hyperframes-fullhd-overlay/**'
       - '.github/workflows/hyperframes-original-rnd.yml'
   workflow_dispatch:
 
@@ -59,6 +60,14 @@ jobs:
           npx --yes hyperframes@0.8.143 render -c ./index.html -o ../../out/hyperframes-original-alpha.mov --format mov --fps 30
       - name: Verify decoded real alpha and complete QuickTime stream
         run: node experiments/hyperframes-original/verify-alpha.mjs
+      - name: Lint separate original 1080x1920 Alpha overlay composition
+        run: npx --yes hyperframes@0.8.143 lint experiments/hyperframes-fullhd-overlay --json
+      - name: Render isolated portrait-HD 30-frame synthetic ProRes Alpha
+        run: |
+          cd experiments/hyperframes-fullhd-overlay
+          npx --yes hyperframes@0.8.143 render -c ./index.html -o ../../out/hyperframes-fullhd-alpha.mov --format mov --fps 30
+      - name: Decode and verify portrait-HD synthetic ProRes Alpha
+        run: node experiments/hyperframes-original/verify-alpha-fullhd.mjs
       - name: Save original synthetic MP4 + metadata, short retention
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -68,6 +77,8 @@ jobs:
             out/hyperframes-original-report.json
             out/hyperframes-original-alpha.mov
             out/hyperframes-original-alpha-report.json
+            out/hyperframes-fullhd-alpha.mov
+            out/hyperframes-fullhd-alpha-report.json
           retention-days: 2
           if-no-files-found: error
       - name: Non-production limitation
