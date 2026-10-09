@@ -71,3 +71,53 @@ test('malformed frame buffers, unsafe crop rectangles and overly broad samples a
   assert.throws(()=>analyzeMotionFrames({frames:[frameAt(5,12),frameAt(6,12)],
     width:W,height:H,allowedBlankFrameIndices:[999]}),/thresholds/);
 });
+
+
+test('a declared hard cut only exempts centroid-jump review, never Alpha or blank blockers',()=>{
+  const cutFrame=frameAt(15,23);
+  const old=frameAt(2,8);
+  const run=(approved)=>analyzeMotionFrames({width:W,height:H,
+    frames:[old,cutFrame],safeRect:{x:2,y:3,width:16,height:24},
+    maxCentroidJumpFraction:.2,
+    allowedCutFrameIndices:approved?[1]:[]});
+  assert.equal(run(false).status,'REVIEW');
+  assert.equal(run(true).status,'PASS');
+  assert.deepEqual(run(true).declared_editor_intent.cut_frames,[1]);
+  const unsafe=analyzeMotionFrames({width:W,height:H,frames:[old,frameAt(0,0)],
+    safeRect:{x:2,y:3,width:16,height:24},allowedCutFrameIndices:[1]});
+  assert.equal(unsafe.status,'BLOCKED');
+  assert.ok(unsafe.findings.some(x=>x.code==='ALPHA_OUTSIDE_DECLARED_SAFE_RECT'));
+  const blank=analyzeMotionFrames({width:W,height:H,frames:[old,new Uint8Array(W*H*4)],
+    allowedCutFrameIndices:[1]});
+  assert.equal(blank.status,'BLOCKED');
+  assert.ok(blank.findings.some(x=>x.code==='UNEXPECTED_EMPTY_FRAME'));
+});
+
+test('explicit intentional middle hold suppresses only its own freeze, not another freeze',()=>{
+  const moving=frameAt(8,12),next=frameAt(9,12);
+  const frames=[moving,moving,moving,moving,next,next,next,next];
+  const base={width:W,height:H,frames,maxInternalRepeatedTransitions:1};
+  assert.ok(analyzeMotionFrames(base).findings.filter(x=>x.code==='UNEXPECTED_FREEZE').length>=2);
+  const out=analyzeMotionFrames({...base,allowedHoldFrameRanges:[{from:0,to:3}]});
+  assert.equal(out.status,'REVIEW');
+  assert.deepEqual(out.declared_editor_intent.hold_ranges,[{from:0,to:3}]);
+  assert.deepEqual(out.findings.filter(x=>x.code==='UNEXPECTED_FREEZE').map(x=>x.from_frame),[4]);
+});
+
+test('intentional cut and hold exemptions reject malformed, duplicate and out-of-range positions',()=>{
+  const frames=[frameAt(5,12),frameAt(6,12),frameAt(7,12)];
+  for(const extras of [
+    {allowedCutFrameIndices:[0]},
+    {allowedCutFrameIndices:[2,2]},
+    {allowedCutFrameIndices:[3]},
+    {allowedHoldFrameRanges:[{from:1,to:1}]},
+    {allowedHoldFrameRanges:[{from:2,to:3}]},
+    {allowedHoldFrameRanges:[{}]},
+    {allowedHoldFrameRanges:[null]},
+    {allowedHoldFrameRanges:'1..2'}
+  ]){
+    assert.throws(()=>analyzeMotionFrames({
+      width:W,height:H,frames,...extras
+    }),/thresholds/);
+  }
+});
