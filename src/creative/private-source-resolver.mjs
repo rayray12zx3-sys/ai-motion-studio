@@ -1,8 +1,8 @@
 // Local-only, read-only private source verifier. Never logs or returns source paths or bytes.
 // Rights metadata is still a precheck, NOT final proof of the underlying license.
-import {constants,closeSync,existsSync,fstatSync,lstatSync,openSync,readSync,realpathSync} from 'node:fs';
+import {constants,closeSync,fstatSync,lstatSync,openSync,readSync,realpathSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {dirname,isAbsolute,join,relative,resolve,sep} from 'node:path';
+import {isAbsolute,join,relative,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {authorizeCommercialNoCredit} from './asset-authorization.mjs';
 
