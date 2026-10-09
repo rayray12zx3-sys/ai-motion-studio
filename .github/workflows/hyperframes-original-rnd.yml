@@ -1,0 +1,56 @@
+name: Isolated HyperFrames Synthetic R&D
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/hyperframes-original/**'
+      - '.github/workflows/hyperframes-original-rnd.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hyperframes-synthetic-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  html-render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Install original repository dependencies without changing lock
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify upstream R&D CLI package version
+        run: |
+          npm view hyperframes@0.8.143 version
+          node --check experiments/hyperframes-original/verify.mjs
+      - name: Static lint of new synthetic HTML
+        run: npx --yes hyperframes@0.8.143 lint experiments/hyperframes-original --json
+      - name: Render entirely original one-second 9:16 HTML animation
+        run: |
+          mkdir -p out
+          cd experiments/hyperframes-original
+          npx --yes hyperframes@0.8.143 render -c ./index.html -o ../../out/hyperframes-original.mp4 --fps 30 --quality draft
+      - name: FFprobe video and content-ownership evidence
+        run: node experiments/hyperframes-original/verify.mjs
+      - name: Save original synthetic MP4 + metadata, short retention
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: original-hyperframes-engine-comparison
+          path: |
+            out/hyperframes-original.mp4
+            out/hyperframes-original-report.json
+          retention-days: 2
+          if-no-files-found: error
+      - name: Non-production limitation
+        run: |
+          echo 'Isolated third-party renderer benchmark only: NO new production npm dependency, proprietary media or company assets.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Technical success never implies artistic acceptability, asset rights clearance or default renderer migration.' >> "$GITHUB_STEP_SUMMARY"
