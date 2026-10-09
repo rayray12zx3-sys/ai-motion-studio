@@ -135,6 +135,34 @@ try{
     return found.slice(0,30);
   })()`);
   console.log('M10_NATIVE_STUDIO_OUTLINE_PROBE',JSON.stringify(nativeProbe));
+  // Select an actual Theatre Studio Outline row through Chromium pointer events,
+  // not through the synthetic #set-keyframe control or direct Studio API.
+  const nativeRow=await evaluate(`(()=>{
+    const rows=[...document.querySelectorAll('[data-header="true"]')];
+    const row=rows.find(el=>el.textContent?.trim()==='Practice Card');
+    if(!row)return null;
+    const rect=row.getBoundingClientRect();
+    return {x:rect.x+rect.width/2,y:rect.y+rect.height/2,
+      width:rect.width,height:rect.height};
+  })()`);
+  assert.ok(nativeRow?.width>5&&nativeRow?.height>5,
+    'The native Theatre Studio Outline object row is absent');
+  await send('Input.dispatchMouseEvent',{type:'mouseMoved',
+    x:nativeRow.x,y:nativeRow.y});
+  await send('Input.dispatchMouseEvent',{type:'mousePressed',
+    x:nativeRow.x,y:nativeRow.y,button:'left',clickCount:1});
+  await send('Input.dispatchMouseEvent',{type:'mouseReleased',
+    x:nativeRow.x,y:nativeRow.y,button:'left',clickCount:1});
+  const nativeSelected=await waitFor(async()=>await evaluate(`(()=>{
+    const row=[...document.querySelectorAll('[data-header="true"]')]
+      .find(el=>el.textContent?.trim()==='Practice Card');
+    return !!row&&!row.classList.contains('not-selected');
+  })()`),'Theatre native Outline selection');
+  assert.equal(nativeSelected,true);
+  const selectedImage=await send('Page.captureScreenshot',{format:'png',
+    captureBeyondViewport:false});
+  writeFileSync(join(outputDir,'native-studio-outline-selected.png'),
+    Buffer.from(selectedImage.data,'base64'));
   await setKeyframe(15,60);
   await setKeyframe(45,-60);
   const image=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
@@ -186,7 +214,7 @@ try{
   const report={
     result:'PASS',test:'Actual headless Chromium edit+export -> Core -> Canvas',
     edited_keyframes:[{frame:15,x:60},{frame:45,x:-60}],
-    imported_export:true,alpha_upper_nonzero:upper,alpha_lower_nonzero:lower,
+    imported_export:true,native_studio_outline_selected:true,alpha_upper_nonzero:upper,alpha_lower_nonzero:lower,
     deterministic_random_access:true,
     export_sha256:createHash('sha256').update(readFileSync(exportPath)).digest('hex')
   };
