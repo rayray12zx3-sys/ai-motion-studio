@@ -2,7 +2,13 @@ import studio from '@theatre/studio';
 import {getProject,types} from '@theatre/core';
 import initialState from '../fixtures/project-state.json';
 
-studio.initialize();
+// Theatre 0.7.2 ships CJS/ESM interop variants; esbuild may expose a nested
+// default export in browser mode. Resolve the actual Studio API explicitly.
+const studioApi=studio?.initialize ? studio :
+  studio?.default?.initialize ? studio.default :
+  studio?.studio?.initialize ? studio.studio : null;
+if(!studioApi)throw new Error('Theatre Studio API unavailable; keys: '+Object.keys(studio||{}).join(','));
+studioApi.initialize();
 const project=getProject('Motion Studio M10 Editor',{state:initialState});
 const sheet=project.sheet('Canvas');
 const card=sheet.object('Practice Card',{
@@ -32,11 +38,11 @@ document.getElementById('set-keyframe').addEventListener('click',()=>{
     editStatus.textContent='Invalid x: expected -200..200';
     return;
   }
-  studio.transaction(({set})=>set(card.props.x,next));
+  studioApi.transaction(({set})=>set(card.props.x,next));
   editStatus.textContent='Keyframe x='+next+' @ frame '+range.value;
 });
 document.getElementById('export').addEventListener('click',()=>{
-  const snapshot=studio.createContentOfSaveFile('Motion Studio M10 Editor');
+  const snapshot=studioApi.createContentOfSaveFile('Motion Studio M10 Editor');
   const url=URL.createObjectURL(new Blob([JSON.stringify(snapshot,null,2)],{type:'application/json'}));
   const a=document.createElement('a');
   a.href=url;a.download='m10-state.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
