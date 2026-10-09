@@ -7,7 +7,7 @@ export const MOTION_PROFILES=Object.freeze({
   tap:'anticipation-squash',
   condense:'ease-in-out-quad',
   verify:'damped-bounce',
-  expand:'ease-out-back',
+  expand:'ease-in-out-back',
   directManipulation:'ease-in-out-sine',
   reward:'ease-out-back',
   exit:'ease-in-out-cubic'
@@ -23,6 +23,11 @@ export function easeValue(name,t){
  case 'ease-in-out-cubic':return x<.5?4*x**3:1-(-2*x+2)**3/2;
  case 'ease-in-out-quad':return x<.5?2*x*x:1-(-2*x+2)**2/2;
  case 'ease-in-out-sine':return -(Math.cos(Math.PI*x)-1)/2;
+ case 'ease-in-out-back':{
+   // Slow launch + soft elastic settle; more stable for large UI card expansion.
+   const t=-(Math.cos(Math.PI*x)-1)/2;
+   return 1+1.9*(t-1)**3+.9*(t-1)**2;
+ }
  case 'ease-out-back':{
    // Restrained 3% geometric overshoot; settles exactly on its keyframe.
    const c1=.9,c3=c1+1;

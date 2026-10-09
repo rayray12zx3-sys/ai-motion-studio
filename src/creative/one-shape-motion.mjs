@@ -43,7 +43,7 @@ export function evaluateOneShape(frame){
   {a:15,b:27,curve:MOTION_PROFILES.affordance},
   {a:34,b:45,curve:MOTION_PROFILES.condense},
   {a:45,b:60,curve:'linear'},
-  {a:60,b:73,curve:MOTION_PROFILES.expand},
+  {a:60,b:75,curve:MOTION_PROFILES.expand},
   {a:75,b:90,curve:'linear'},
   {a:90,b:102,curve:MOTION_PROFILES.reward},
   {a:107,b:120,curve:MOTION_PROFILES.exit}
