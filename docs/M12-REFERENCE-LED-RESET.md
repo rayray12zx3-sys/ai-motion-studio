@@ -10,7 +10,9 @@ Original one-shape rendering: one rounded rectangular object held through eight
 summary → slider → success → collapsing exit. Big masked MATCH type first;
 no scaffolding panels, extra text, showy effects, copied original media, or
 disconnected cards. Shared shape/cursor transforms are analytic per frame.
-Text windows are non-overlapping, spring overshoot max 1.2%.
+Text windows are non-overlapping, the V2 selective spring overshoot is approximately 3% on affordance/reward,
+with separate bounded checkmark/Combo bounce impulses. Do not infer visual
+acceptance from the magnitude alone.
 
 Beat sequence:
 1 0–14 masked hero
@@ -46,7 +48,7 @@ curves, and `evaluateOneShape()` assigns a different motion signature:
 | Type reveal | Fast reveal, softer landing | ease-out-cubic |
 | Underline → Button | Energetic open, ~3% overshoot | ease-out-back |
 | Tap | Brief pre-press squash/stretch | 4f anticipation |
-| Button → Spinner | Tight, quick middle acceleration | ease-in-out-cubic |
+| Button → Spinner | Tight, quick middle acceleration | ease-in-out-quad |
 | Verification | Short decaying check-mark bounce | damped-bounce |
 | Loader → Card | Smooth launch, settle with subtle overshoot | ease-in-out-back |
 | Slider | Direct cursor-following acceleration and deceleration | ease-in-out-sine |
