@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'experiments/hyperframes-original/**'
+      - 'experiments/hyperframes-overlay/**'
       - '.github/workflows/hyperframes-original-rnd.yml'
   workflow_dispatch:
 
@@ -51,11 +52,11 @@ jobs:
       - name: FFprobe video and content-ownership evidence
         run: node experiments/hyperframes-original/verify.mjs
       - name: Lint original transparent overlay composition
-        run: npx --yes hyperframes@0.8.143 lint experiments/hyperframes-original/overlay.html --json
+        run: npx --yes hyperframes@0.8.143 lint experiments/hyperframes-overlay --json
       - name: Render original synthetic ProRes 4444 alpha MOV
         run: |
-          cd experiments/hyperframes-original
-          npx --yes hyperframes@0.8.143 render -c ./overlay.html -o ../../out/hyperframes-original-alpha.mov --format mov --fps 30
+          cd experiments/hyperframes-overlay
+          npx --yes hyperframes@0.8.143 render -c ./index.html -o ../../out/hyperframes-original-alpha.mov --format mov --fps 30
       - name: Verify decoded real alpha and complete QuickTime stream
         run: node experiments/hyperframes-original/verify-alpha.mjs
       - name: Save original synthetic MP4 + metadata, short retention
