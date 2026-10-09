@@ -219,7 +219,7 @@ try{
     Buffer.from(selectedImage.data,'base64'));
   // Locate the native time-sequence elements before attempting real drag.
   // Diagnostics are synthetic-only and deliberately avoid recording browser storage.
-  const nativeTimelineGeometry=await evaluate(\`(()=>{
+  const nativeTimelineGeometry=await evaluate(`(()=>{
     const roots=[document];const inspected=[];
     for(let i=0;i<roots.length;i++){
       for(const el of roots[i].querySelectorAll('*'))
@@ -246,7 +246,7 @@ try{
       });
     }
     return inspected.slice(0,90);
-  })()\`);
+  })()`);
   console.log('M10_NATIVE_TIMELINE_GEOMETRY',JSON.stringify(nativeTimelineGeometry));
   const report={
     result:'PASS',test:'Actual headless Chromium edit+export -> Core -> Canvas',
