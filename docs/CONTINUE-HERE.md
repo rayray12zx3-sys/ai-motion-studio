@@ -47,6 +47,20 @@ The operator explicitly authorized continued implementation and delegated **rout
 
 ## Immediate next work — keep independent lanes independent
 
+**2026-10-10 HyperFrames Alpha/MOV and full-frame checkpoint:**
+
+[R&D Draft PR #33](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/33) has exact verified HEAD cd5c19b0965eaaec0f90eda3e3e65cddbd0fd2b9, [isolated Actions #37970089086](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37970089086) and [root CI #37970089110](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37970089110) **PASS**.
+
+The original 360×640 / 30fps MP4 is genuine moving output; two independent CLI renders produce **30/30 byte-identical decoded RGB frames** with **30 distinct frames** within the clip.
+
+A separate completely original transparent lower-third produces **ProRes 4444 Alpha MOV** (ap4h / yuva444p10le), 360×640 / 30 frames; decoded first/middle/last foreground Alpha visible pixels **0 / 25,186 / 0** with **zero upper and left safe-margin leaks**. A first failed run exposed 904 edge Alpha pixels from the test composition's blur shadow; the artwork was corrected without relaxing the blocker.
+
+**Both original MP4 and Alpha MOV were uploaded to the existing PRIVATE Google Drive preview folder and independently listed with verified byte sizes.** Never place folder paths, file IDs or private links in public GitHub.
+
+HyperFrames remains a **Draft R&D candidate**, with no production dependency or Canvas replacement. Native Studio GUI keyframe editing, full-HD HyperFrames Alpha rendering, transitive commercial licensing and actual Premiere-on-Windows import remain untested. M12 art remains frozen.
+
+
+
 **2026-10-10 verified HyperFrames R&D:** [Draft #33](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/33), head `2d520489c907992827b8434b799d3ea59c68622c`, used temporary npm `hyperframes@0.8.143` (upstream Apache-2.0) to render an original 1-second **360×640, 30fps/30-frame H.264 MP4**; five flat/named tracks with **0 lint errors and 0 warnings**, and separately decoded frame **0/15/29 RGB hashes all distinct**. [Engine Actions #37965928853](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37965928853) + [root CI #37965928812](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37965928812) **PASS**. Only short-lived original synthetic video artifact is on Actions. A Drive upload attempt failed due to transfer-runtime expiration: **do not claim Drive delivery**. No new root production package/dependency, studio editor test, visual acceptance or permission to replace Canvas. See [experiment README](https://github.com/rayray12zx3-sys/ai-motion-studio/blob/experiment/hyperframes-isolated-benchmark-20261010/experiments/hyperframes-original/README.md).
 
 **2026-10-10 canonical-entry migration:** [Documentation PR #27](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/27) passed docs-only exact-head [CI #37963701178](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37963701178), contained four public documentation files with no detected credential/private Drive URL patterns, and was [squash-merged into main](https://github.com/rayray12zx3-sys/ai-motion-studio/commit/139ffb39a4cc96ea0809f7cb902cf9786037d4b4) under the standing narrow CI-green delegation. **Use main for handoff, not the old docs branch**; previously pasted branch links are historical. Remaining M9–M12 and QA R&D PR #29 are still separate Drafts.

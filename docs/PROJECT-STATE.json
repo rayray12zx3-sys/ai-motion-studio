@@ -190,16 +190,18 @@
       "number": 33,
       "label": "Isolated HyperFrames original HTML 9:16 moving renderer benchmark",
       "base": "main",
-      "head_sha": "2d520489c907992827b8434b799d3ea59c68622c",
+      "head_sha": "cd5c19b0965eaaec0f90eda3e3e65cddbd0fd2b9",
       "draft": true,
       "merged": false,
-      "technical_acceptance": "PASS_EXACT_HEAD_ZERO_LINT_WARNINGS_H264_30_FRAMES_MOVING_PIXELS",
-      "creative_acceptance": "NOT_REVIEWED",
+      "technical_acceptance": "PASS_EXACT_HEAD_COMPLETE_30_FRAME_CROSS_RENDER_RGB_AND_ALPHA_PRORES4444",
+      "creative_acceptance": "HUMAN_REVIEW_REQUIRED",
       "root_production_dependencies_changed": false,
       "engine_production_adoption": false,
       "upstream_code_license": "Apache-2.0",
       "external_runtime": "temporary npx hyperframes@0.8.143 in GitHub-hosted runner",
-      "commercial_media_rights": "ONLY ORIGINAL SYNTHETIC_SCENE"
+      "commercial_media_rights": "ONLY ORIGINAL SYNTHETIC_SCENE",
+      "drive_preview_delivery": "VERIFIED_PRIVATE_FOLDER_MP4_AND_ALPHA_MOV",
+      "human_editor": "NOT_TESTED"
     }
   ],
   "milestone_runs": {
@@ -331,9 +333,9 @@
       "main_merge_sha": "a6daabc22f0f7e7774b24f98209c22a6f18c5518"
     },
     "hyperframes_rnd": {
-      "exact_head": "2d520489c907992827b8434b799d3ea59c68622c",
-      "isolated_html_video_ci": 37965928853,
-      "root_ci": 37965928812,
+      "exact_head": "cd5c19b0965eaaec0f90eda3e3e65cddbd0fd2b9",
+      "isolated_html_video_ci": 37970089086,
+      "root_ci": 37970089110,
       "all_conclusions": "success",
       "upstream_cli_version": "0.8.143",
       "upstream_source_license": "Apache-2.0",
@@ -341,26 +343,42 @@
         "errors": 0,
         "warnings": 0
       },
-      "scene": {
+      "opaque_mp4": {
         "width": 360,
         "height": 640,
         "fps": 30,
-        "frames": 30
+        "frames": 30,
+        "codec": "h264",
+        "sha256": "dfe6e06c7082d8f391dddbd40027010c2b7c1214591e75cee79551fef7df15d4",
+        "decoded_frame_hashes_equal_across_two_runs": 30,
+        "unique_moving_frames": 30
       },
-      "codec": "h264",
-      "mp4_sha256": "dfe6e06c7082d8f391dddbd40027010c2b7c1214591e75cee79551fef7df15d4",
-      "decoded_frames_sampled": [
-        0,
-        15,
-        29
-      ],
-      "pixel_hashes_distinct": true,
-      "artifact_run": 37965928853,
-      "artifact_id": 11633835946,
+      "transparent_mov": {
+        "width": 360,
+        "height": 640,
+        "fps": 30,
+        "frames": 30,
+        "codec": "prores",
+        "fourcc": "ap4h",
+        "decoded_pixel_format": "yuva444p10le",
+        "sha256": "c6389e06ba423f5ee89a3185e5e89d8014da7f62d4e2650bfb175ff2038bd430",
+        "bytes": 589091,
+        "decoded_alpha_visible_samples": [
+          0,
+          25186,
+          0
+        ],
+        "unexpected_upper_or_left_alpha": 0,
+        "initial_shadow_alpha_leak_blocked_then_fixed": true
+      },
+      "artifact_run": 37970089086,
+      "artifact_id": 11635940219,
       "no_production_dependency": true,
       "no_company_media": true,
-      "drive_preview_delivery": "NOT_VERIFIED__TRANSFER_RUNTIME_ERROR",
+      "drive_preview_delivery": "CONFIRMED_BY_UPLOADER_AND_INDEPENDENT_PRIVATE_FOLDER_LISTING",
+      "google_drive_private_identifiers_intentionally_omitted": true,
       "studio_native_editor": "NOT_TESTED",
+      "premiere_windows": "NOT_TESTED",
       "visual_quality": "HUMAN_REVIEW_REQUIRED",
       "production_integration": "NOT_AUTHORIZED"
     }
@@ -383,11 +401,11 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "Main handoff and README are canonical after docs merges #27 and #32; exact-head test evidence should always be refreshed against GitHub.",
-    "HyperFrames R&D Draft #33: original 1s 360x640 30fps CSS animation rendered with npm CLI 0.8.143; lint 0 errors/warnings; RGB at 0/15/29 changed; CI success. No main adoption, Studio editing or quality claim. Compare with matching Canvas case and actual watchable professional references before asking to change renderer.",
-    "R&D artifact original MP4 available from short-lived Actions; attempted Google Drive upload blocked by file runtime/session, do not claim delivered.",
-    "Motion QA #29 and stacked art M11/M12 still Draft/unapproved. Production renderer default Canvas+FFmpeg and approved optional foreground Alpha remain unchanged.",
-    "User delegated only low-risk exact-head-green technical/docs merges. Larger architecture/licensing/art choices require explicit approval; keep private advertising State Engine and company assets untouched."
+    "Current canonical handoff is on main. PR #33 HyperFrames (R&D Draft, NOT merged) has actual 360x640 original MP4 and transparent ProRes 4444 MOV, full 30-frame independently decoded repeatability, and successful CI. Do not promote this candidate engine without separate architecture and dependency review.",
+    "Private Google Drive preview delivery for original synthetic MP4 and MOV is now CONFIRMED by upload and folder readback; never add Drive URLs/IDs or company content to public GitHub.",
+    "Before considering HyperFrames Studio GUI keyframe editing, use a proper seekable paused GSAP timeline with local licensed script or equivalent accepted contract; the current CSS-only data-no-timeline scenes DO NOT prove Studio editing.",
+    "1080x1920 HyperFrames alpha overlay and Windows Premiere import/compositing remain untested; existing main Canvas Alpha supports full 1080x1920 6s synthetic verified output via PR #30/#31.",
+    "M12 visual rework remains frozen. Owner delegated routine CI-green docs/technical merges only, not external-engine production adoption, private assets, licensing or art approvals."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
