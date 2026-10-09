@@ -44,6 +44,10 @@ jobs:
           mkdir -p out
           cd experiments/hyperframes-original
           npx --yes hyperframes@0.8.143 render -c ./index.html -o ../../out/hyperframes-original.mp4 --fps 30 --quality draft
+      - name: Render a second independent run for pixel-level repeatability
+        run: |
+          cd experiments/hyperframes-original
+          npx --yes hyperframes@0.8.143 render -c ./index.html -o ../../out/hyperframes-original-repeat.mp4 --fps 30 --quality draft
       - name: FFprobe video and content-ownership evidence
         run: node experiments/hyperframes-original/verify.mjs
       - name: Save original synthetic MP4 + metadata, short retention
