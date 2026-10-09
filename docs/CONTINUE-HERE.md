@@ -4,6 +4,12 @@
 
 > This file is the **entry point**, not an authoritative live API snapshot. In every new conversation: **read this document and [PROJECT-STATE.json](PROJECT-STATE.json), then query GitHub's live PRs, issues and exact-head Actions before claiming progress or editing**. Historical text in [ACTIVE-WORK-2026-10-09.md](ACTIVE-WORK-2026-10-09.md) is append-only; later checkpoints supersede earlier claims.
 
+## Active independent R&D tasks — 2026-10-10
+
+- [Issue #40](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/40): **HyperFrames Studio native GUI edit → persisted source → render**. Issued to Jules; `google-labs-jules[bot]` acknowledged. **No completed PR, exact-head browser test or production adoption confirmed at this checkpoint**. Must test real pointer interactions and preserve all #33/#39 renderer regressions; an API-only/DOM simulation is not native Studio editing.
+- [Issue #41](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/41): **pinned HyperFrames 0.8.143 runtime/transitive license audit**, including GSAP/Studio, software distribution versus rendering a commercial company advertisement. Added with `jules` label, but a label alone does not establish that Jules has started. Evidence-only Draft; no license clearance granted.
+- These are **independent tasks**, not replacements for GitHub Actions. Jules is used for bounded repository implementation/research; Actions still verifies exact PR heads. Do not simultaneously implement on the same branches. All M11/M12 art and company content remain outside the tasks.
+
 ## Verified isolated follow-up — 2026-10-10
 
 - **[Issue #36](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/36) closed as completed for its bounded Draft R&D deliverable.** Jules initially created [PR #37](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/37), whose 1080p CI passed but whose base was `main` and which replaced the original 360p Alpha checks. It was reviewed and **closed unmerged**.
