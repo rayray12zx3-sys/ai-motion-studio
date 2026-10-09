@@ -73,10 +73,12 @@ export function evaluateOneShape(frame){
   button:enter(frame,24,27)*leave(frame,32,39),
   spinner:enter(frame,44,48)*leave(frame,53,57),
   check:enter(frame,57,60)*leave(frame,64,68),
-  summary:enter(frame,69,72)*leave(frame,74,79),
+  // Bridge the check-to-summary gap and give the result readable hold time.
+  summary:enter(frame,67,70)*leave(frame,76,78),
   slider:enter(frame,78,81)*leave(frame,88,92),
   combo:enter(frame,93,96)*leave(frame,107,109),
-  fade:leave(frame,114,119),
+  // Begin the capsule dissolve once the result label has cleared.
+  fade:leave(frame,109,119),
   drag,
   pointer:{x:frame>=75?lerp(190,515,drag):lerp(610,365,enter(frame,17,31)),
    y:frame>=75?y-h*.15:y+h*.12,
