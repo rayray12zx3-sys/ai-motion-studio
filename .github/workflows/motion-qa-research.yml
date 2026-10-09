@@ -33,18 +33,24 @@ jobs:
         run: |
           node --check experiments/motion-qa/render-benchmark.mjs
           node --check experiments/motion-qa/run-benchmark.mjs
+          node --check experiments/motion-qa/render-second-benchmark.mjs
+          node --check experiments/motion-qa/run-second-benchmark.mjs
       - name: Execute both unit and real Canvas-frame acceptance tests
         run: node --test experiments/motion-qa/tests/*.test.mjs
       - name: Render 400 original synthetic Canvas frames and verify QA findings
         run: node experiments/motion-qa/run-benchmark.mjs
+      - name: Render second original 540-frame scene-cut and hold benchmark
+        run: node experiments/motion-qa/run-second-benchmark.mjs
       - name: Save sanitized synthetic QA report only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: motion-qa-synthetic-report
-          path: out/motion-qa-synthetic-benchmark/benchmark.json
+          path: |
+            out/motion-qa-synthetic-benchmark/benchmark.json
+            out/motion-qa-synthetic-benchmark/secondary-benchmark.json
           retention-days: 2
           if-no-files-found: error
       - name: Record R&D-only scope
         run: |
-          echo '400 original synthetic Canvas frames checked across 5 cases. NO company media or raw frames saved.' >> "$GITHUB_STEP_SUMMARY"
+          echo '940 original synthetic Canvas frames checked across 11 cases (including declared cuts/holds). NO company media or raw frames saved.' >> "$GITHUB_STEP_SUMMARY"
           echo 'Technical motion diagnosis only: NOT production-ready or artist-approved.' >> "$GITHUB_STEP_SUMMARY"
