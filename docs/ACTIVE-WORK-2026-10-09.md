@@ -79,3 +79,10 @@ This section supersedes only **the historical pending-status descriptions** from
 - [M10 Draft PR #24](../pull/24) and [coordination Draft #27](../pull/27) remain unmerged. M12 [Draft #26](../pull/26) stays frozen/not art-approved; do not search/rebuild from unviewed X references before the independent work's remaining gates are closed.
 
 **Remaining gates:** actual Windows Premiere Pro testing with the synthetic Alpha MOV and plate composite; confirm source/contract authorization and restricted local runtime with actual approved company assets (only when authorized); consider a separately scoped secure CI→Drive automation if required. M10 passing technical tests does not imply a creative M12 acceptance or commercial advert adoption.
+
+
+## Tool/license research register — 2026-10-09
+
+The standalone personal motion-tool / commercial-video output decision and an evidence-linked inventory of permitted, conditional, and excluded third-party animation tools are now recorded in [TOOL-ADOPTION-AND-LICENSE-RESEARCH-2026-10-09.md](TOOL-ADOPTION-AND-LICENSE-RESEARCH-2026-10-09.md) (Draft coordination PR #27). Includes HyperFrames, Motion Designer, Motion Video Kit, HTML Animation, Video Shotcraft, Motion Canvas, ThreeUI, Remotion, Theatre.js, GSAP, OpenMontage, OneTake and Video Talkcraft, with separate attribution rules for distributed code vs finished ads. **Research registration is not an installed tool, runtime integration or creative acceptance.**
+
+Separate M10 native Studio UI inspection (non-passing/diagnostic until verified) is under Draft PR #24. M12 art remains paused until viable moving-image references are inspected and explicitly approved by the operator.
