@@ -138,7 +138,10 @@ try{
   // Select an actual Theatre Studio Outline row through Chromium pointer events,
   // not through the synthetic #set-keyframe control or direct Studio API.
   const nativeRow=await evaluate(`(()=>{
-    const rows=[...document.querySelectorAll('[data-header="true"]')];
+    const roots=[document];
+    for(let i=0;i<roots.length;i++)for(const el of roots[i].querySelectorAll('*'))
+      if(el.shadowRoot)roots.push(el.shadowRoot);
+    const rows=roots.flatMap(root=>[...root.querySelectorAll('[data-header="true"]')]);
     const row=rows.find(el=>el.textContent?.trim()==='Practice Card');
     if(!row)return null;
     const rect=row.getBoundingClientRect();
@@ -154,7 +157,10 @@ try{
   await send('Input.dispatchMouseEvent',{type:'mouseReleased',
     x:nativeRow.x,y:nativeRow.y,button:'left',clickCount:1});
   const nativeSelected=await waitFor(async()=>await evaluate(`(()=>{
-    const row=[...document.querySelectorAll('[data-header="true"]')]
+    const roots=[document];
+    for(let i=0;i<roots.length;i++)for(const el of roots[i].querySelectorAll('*'))
+      if(el.shadowRoot)roots.push(el.shadowRoot);
+    const row=roots.flatMap(root=>[...root.querySelectorAll('[data-header="true"]')])
       .find(el=>el.textContent?.trim()==='Practice Card');
     return !!row&&!row.classList.contains('not-selected');
   })()`),'Theatre native Outline selection');
