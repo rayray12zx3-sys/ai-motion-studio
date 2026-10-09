@@ -41,7 +41,7 @@ const color=(a,b,t)=>{
 export function evaluateOneShape(frame){
  if(!Number.isFinite(frame)||frame<0||frame>=FRAMES)throw Error('Invalid choreography frame');
  const beat=Math.floor(frame/BEAT_FRAMES);
- const s=beat===7?interp(frame,109,120):interp(frame,beat*15,(beat+1)*15);
+ const s=beat===7?interp(frame,107,120):interp(frame,beat*15,(beat+1)*15);
  const geom=nodes[beat].map((v,i)=>lerp(v,nodes[beat+1][i],s));
 
  const [x,y,w,h,r]=geom;
