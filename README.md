@@ -1,5 +1,11 @@
 # AI Motion Studio
 
+## Continue development / 換對話接續
+
+**Canonical project handoff (on `main`):** [CONTINUE-HERE.md](docs/CONTINUE-HERE.md) · [machine-readable progress](docs/PROJECT-STATE.json) · [append-only work log](docs/ACTIVE-WORK-2026-10-09.md) · [commercial output and tool-license research](docs/TOOL-ADOPTION-AND-LICENSE-RESEARCH-2026-10-09.md).
+
+Start every new agent/Codex/ChatGPT session from those files **and refresh GitHub's live PR heads, issue state and exact-head Actions**. Saved JSON is a dated checkpoint, not a substitute for remote verification. The operator delegated limited, backwards-compatible CI-green technical/docs merges; major architecture/licensing, private company assets and M11/M12 artistic decisions remain human-owned.
+
 Standalone local motion graphics renderer with an isolated historical R&D lane.
 
 ## Goal
