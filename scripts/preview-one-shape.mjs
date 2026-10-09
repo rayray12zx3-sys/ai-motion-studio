@@ -104,6 +104,7 @@ for(let i=0;i<FRAMES;i++){
 child.stdin.end();await done;
 const cols=4,cellW=270,cellH=480;
 const sheet=createCanvas(cellW*cols,cellH*4),ctx=sheet.getContext('2d');
+ctx.fillStyle='#F2F0ED';ctx.fillRect(0,0,sheet.width,sheet.height);
 panels.forEach((im,i)=>{
  ctx.drawImage(im,(i%cols)*cellW,Math.floor(i/cols)*cellH,cellW,cellH);
 });
@@ -117,8 +118,9 @@ cc.strokeStyle='#C2CAC4';cc.lineWidth=2;
 for(let i=0;i<=4;i++){
  const yy=y0-h0*i/4;cc.beginPath();cc.moveTo(x0,yy);cc.lineTo(x0+w0,yy);cc.stroke();
 }
-const curves=[['ease-out-cubic','#14715E'],['ease-in-out-cubic','#2D6D9C'],
- ['ease-in-out-sine','#D99238'],['ease-out-back','#A53F55']];
+const curves=[['ease-out-cubic','#14715E'],['ease-in-out-quad','#2D6D9C'],
+ ['ease-in-out-sine','#D99238'],['ease-out-back','#A53F55'],
+ ['ease-in-out-back','#765FA7']];
 for(const [name,color] of curves){
  cc.strokeStyle=color;cc.lineWidth=5;cc.beginPath();
  for(let i=0;i<=160;i++){
@@ -129,8 +131,11 @@ for(const [name,color] of curves){
  cc.stroke();
 }
 cc.font='19px '+fontFamily;
-curves.forEach(([name,color],i)=>{cc.fillStyle=color;cc.fillRect(84+i*230,595,15,15);
- cc.fillStyle='#161D1B';cc.fillText(name,105+i*230,609,215);});
+curves.forEach(([name,color],i)=>{
+ const x=84+(i%3)*303,y=586+Math.floor(i/3)*38;
+ cc.fillStyle=color;cc.fillRect(x,y,15,15);
+ cc.fillStyle='#161D1B';cc.fillText(name,x+23,y+13,270);
+});
 writeFileSync(join(dir,'motion-easing-curves.png'),curveChart.toBuffer('image/png'));
 const velocityMetrics=Object.fromEntries([
  ['button-launch',[15,27]],['tap-condense',[34,45]],

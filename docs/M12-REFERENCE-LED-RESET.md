@@ -48,10 +48,10 @@ curves, and `evaluateOneShape()` assigns a different motion signature:
 | Tap | Brief pre-press squash/stretch | 4f anticipation |
 | Button → Spinner | Tight, quick middle acceleration | ease-in-out-cubic |
 | Verification | Short decaying check-mark bounce | damped-bounce |
-| Loader → Card | Snap then settle | ease-out-back |
+| Loader → Card | Smooth launch, settle with subtle overshoot | ease-in-out-back |
 | Slider | Direct cursor-following acceleration and deceleration | ease-in-out-sine |
 | COMBO | Separate reward pop + capsule elastic settle | ease-out-back + damped-bounce |
-| Exit | Held label clears, then deliberate fast collapse | ease-in-out-cubic |
+| Exit | Held label clears, controlled accelerated retreat | ease-in-out-quad |
 
 Distinct motion speed/overshoot is now validated with quantitative tests
 and a review artifact. Bounce is used selectively on interaction feedback,
