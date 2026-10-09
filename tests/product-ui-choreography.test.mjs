@@ -68,3 +68,12 @@ test('deterministic order-independent PNGs, actual 9:16 transparency, final hold
    assert.ok(inside>250,'Frame is invisible');
  }
 });
+
+test('old and new interface lettering are never simultaneously drawn over each other',()=>{
+ for(let frame=0;frame<CHOREOGRAPHY_FRAMES;frame++){
+   const s=evaluateProductUIChoreography(frame);
+   assert.equal(s.headerOldAlpha*s.headerNewAlpha,0,'hero labels overlap at '+frame);
+   assert.ok(s.cardTextAlpha>=0&&s.cardTextAlpha<=1);
+   if(frame>=83)assert.equal(s.cardTextAlpha,0,'card labels must clear before Combo reveal');
+ }
+});
