@@ -7,6 +7,7 @@ import {readFileSync,statSync,writeFileSync,mkdirSync} from 'node:fs';
 import {resolve,dirname} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import ffprobe from 'ffprobe-static';
+import ffmpeg from 'ffmpeg-static';
 const html=readFileSync(new URL('./index.html',import.meta.url),'utf8');
 assert.match(html,/data-composition-id="original-synthetic-motion"/);
 assert.match(html,/data-duration="1"/);
@@ -25,6 +26,22 @@ assert.equal(stream?.width,360);
 assert.equal(stream?.height,640);
 assert.equal(stream?.r_frame_rate,'30/1');
 assert.equal(Number(stream?.nb_frames),30);
+// Independently decode frames to prove this is *moving* rendered artwork,
+// rather than a static background placed in a 30-frame container.
+const decodedRGB=(index)=>{
+  const rgb=execFileSync(ffmpeg,[
+    '-nostdin','-v','error','-i',path,
+    '-vf','select=eq(n\\,'+index+')','-frames:v','1',
+    '-f','rawvideo','-pix_fmt','rgb24','pipe:1'
+  ],{maxBuffer:360*640*3+65536});
+  assert.equal(rgb.length,360*640*3,'Bad decoded RGB frame '+index);
+  return createHash('sha256').update(rgb).digest('hex');
+};
+const sourceFrames=[0,15,29].map(decodedRGB);
+assert.notEqual(sourceFrames[0],sourceFrames[1],
+ 'Head-to-middle contains no visual motion');
+assert.notEqual(sourceFrames[1],sourceFrames[2],
+ 'Middle-to-tail contains no visual motion');
 const payload=readFileSync(path);
 assert.ok(payload.length>6000,'MP4 is unexpectedly tiny');
 const result={
@@ -32,7 +49,8 @@ const result={
  source:'ORIGINAL_HTML_CSS_ONLY',
  engine:'hyperframes',engine_npm_version:'0.8.143',
  width:360,height:640,fps:30,frames:30,
- codec:'h264',output_sha256:createHash('sha256').update(payload).digest('hex'),
+ codec:'h264',decoded_rgb_keyframe_sha256:sourceFrames,
+ moving_pixels_verified:true,output_sha256:createHash('sha256').update(payload).digest('hex'),
  output_bytes:statSync(path).size,
  private_asset_used:false,
  installed_to_production:false,
