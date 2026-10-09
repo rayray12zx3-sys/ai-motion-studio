@@ -19,7 +19,7 @@
 | Production baseline | `main` | — | **Re-read GitHub** | Narrow Canvas + FFmpeg technical renderer |
 | M9 template / asset licenses | [#23](../pull/23) | Prior stacked branch | Re-read GitHub | Templates, commercial output/asset gates |
 | M10 Theatre / private-source preflight / alpha | [#24](../pull/24) | M9 | `8b09dbe046fe75253f0751603d0fafe722212053` | **All 4 exact-head CI workflows PASS**; synthetic-only |
-| M11 generic Product UI | [#25](../pull/25) | M10 | `e6b285abedc90b0e83560ecb9984f8b389f2822c` | Technical CI PASS on its own head; **art rejected** |
+| M11 generic Product UI | [#25](../pull/25) | M10 | `722dca32f2a3604116009b81bfa30326d3736be8` | **Live M10+M11 combined CI PASS**, **art rejected** |
 | M12 continuous one-shape art study | [#26](../pull/26) | M11 | `062497fda846cfd93a7319f6197d104292c71ba2` | Technical CI PASS; **human art NOT APPROVED / frozen** |
 | Coordination, handoff, license decisions | [#27](../pull/27) | main | **Re-read GitHub** | Docs-only Draft; this entry lives here |
 | M10 checklist | [Issue #28](../issues/28) | — | Open | Engineering checks documented complete; owner review / future gates separate |
@@ -40,7 +40,7 @@ Source usage: [M10 experiment README](../experiments/theatre/README.md) is on PR
 ## Immediate next work — keep independent lanes independent
 
 1. **Protect continuity:** Every source change should be followed by exact-head CI and updates to the affected PR/Issue. Refresh this file/JSON on meaningful milestones. Avoid overwriting prior checkpoints silently: retain traceable links in [active work log](ACTIVE-WORK-2026-10-09.md).
-2. **Validate stacked integration:** M11 #25 currently reports mergeable with M10, but its last known CI ran on M11 head before recent M10 head changes. Where useful, test the **combined tree** with synthetic tests without touching M12 or asserting human art approval. Do not imply #25's historical green run proves today's stacked integration.
+2. **Validate stacked integration:** **Combined-tree acceptance is complete:** [M11 synthetic integration CI #37947659914](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37947659914) at M11 HEAD `722dca3` fetched live M10 `8b09dbe`, then passed M10 native Studio drag, root tests and M11 previews. [CI #37947660143](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37947660143) and [full regression #37947659922](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37947659922) passed as well. **Art is still rejected.** GitHub PR event's old base SHA `7894390` is not sufficient evidence of current-base testing; the workflow explicitly fetches the live base in a disposable runner.
 3. **Tool evaluation, isolated:** Study Motion Designer, Motion Video Kit, HTML Animation and HyperFrames from the [license register](TOOL-ADOPTION-AND-LICENSE-RESEARCH-2026-10-09.md). Build a small, *original*, deterministic Product UI brief; compare actual playable output and reviewer QA. No runtime merge before evidence. Treat Video Shotcraft as ideas/metadata first (Remotion eligibility separate), exclude OneTake and Video Talkcraft from commercial-ad tooling without additional license.
 4. Only after unrelated engineering is stable: obtain **watchable** high-quality motion reference clips, perform real frame/timing inspection, then seek operator approval before any M12 creative changes.
 
