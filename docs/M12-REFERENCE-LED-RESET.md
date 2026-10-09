@@ -20,7 +20,7 @@ Beat sequence:
 5 60–74 summary expansion
 6 75–89 progress scrub directly follows cursor
 7 90–104 success capsule
-8 105–119 shape exit
+8 105–108 result hold, 109–119 shape exit
 
 Public original synthetic demo; all app branding, real screens and proprietary
 scripts remain private. Use existing conservative 9:16 clip and private

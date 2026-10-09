@@ -72,3 +72,18 @@ test('random-access playback and fractional subframes are exact and composable',
  frames.slice().reverse().forEach(f=>drawOneShapeFrame(p,f));
  assert.deepEqual(frames.map(f=>digest(drawOneShapeFrame(p,f).toBuffer('image/png'))),snapshots);
 });
+
+test('pointer touches progress rail and final score clears before geometric exit',()=>{
+ for(let frame=78;frame<=89;frame++){
+  const s=evaluateOneShape(frame);
+  assert.ok(Math.abs(s.pointer.y-(s.shape.y-29))<4,'cursor misses rail at '+frame);
+ }
+ for(let f=109;f<120;f++){
+  const s=evaluateOneShape(f);
+  assert.equal(s.combo,0,'result label still visible during capsule exit at '+f);
+ }
+ for(let f=105;f<=109;f++){
+  const s=evaluateOneShape(f);
+  assert.equal(s.shape.w,535,'result should hold before exit at '+f);
+ }
+});
