@@ -7,10 +7,17 @@ import {readFileSync} from 'node:fs';
 
 const {getProject,types}=theatre;
 const state=JSON.parse(readFileSync(new URL('../fixtures/project-state.json',import.meta.url)));
-export async function createKeyframedCanvasRenderer({background='solid',placement='center'}={}){
+export async function createKeyframedCanvasRenderer({
+  background='solid',placement='center',
+  state:projectState=state,
+  projectId='M10 Sampled Canvas Renderer'
+}={}){
   if(!['solid','transparent'].includes(background)||!['center','lower-third'].includes(placement))
     throw new Error('Unsupported overlay rendering option');
-  const project=getProject('M10 Sampled Canvas Renderer',{state});
+  if(typeof projectId!=='string'||!/^M10 [a-zA-Z0-9 -]{1,90}$/.test(projectId)||
+    projectState===null||typeof projectState!=='object'||Array.isArray(projectState))
+    throw new Error('Invalid synthetic Theatre project state');
+  const project=getProject(projectId,{state:projectState});
   const sheet=project.sheet('Canvas');
   const card=sheet.object('Practice Card',{
     x:types.number(0,{range:[-200,200]}),
