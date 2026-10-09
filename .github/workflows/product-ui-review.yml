@@ -5,12 +5,15 @@ on:
     paths:
       - 'src/creative/product-ui.mjs'
       - 'src/creative/product-ui-choreography.mjs'
+      - 'src/creative/one-shape-motion.mjs'
       - 'src/creative/social-safe-area.mjs'
       - 'scripts/preview-product-ui.mjs'
       - 'scripts/preview-product-ui-choreography.mjs'
+      - 'scripts/preview-one-shape.mjs'
       - 'examples/product-ui-synthetic.json'
       - 'tests/product-ui.test.mjs'
       - 'tests/product-ui-choreography.test.mjs'
+      - 'tests/one-shape-motion.test.mjs'
       - 'package.json'
       - '.github/workflows/product-ui-review.yml'
   workflow_dispatch:
@@ -44,6 +47,8 @@ jobs:
         run: npm run preview:product-ui:synthetic
       - name: Render connected UI choreography 4-second video
         run: npm run preview:product-ui:choreography
+      - name: Render M12 reference-led one-shape reset with original metronome
+        run: npm run preview:product-ui:reference-reset
       - name: Upload 3 review MP4s and safe-zone contact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -51,5 +56,6 @@ jobs:
           path: |
             out/product-ui-concept-review/
             out/product-ui-choreography-review/
+            out/one-shape-reference-review/
           retention-days: 1
           if-no-files-found: error
