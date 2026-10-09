@@ -4,10 +4,13 @@ on:
   pull_request:
     paths:
       - 'src/creative/product-ui.mjs'
+      - 'src/creative/product-ui-choreography.mjs'
       - 'src/creative/social-safe-area.mjs'
       - 'scripts/preview-product-ui.mjs'
+      - 'scripts/preview-product-ui-choreography.mjs'
       - 'examples/product-ui-synthetic.json'
       - 'tests/product-ui.test.mjs'
+      - 'tests/product-ui-choreography.test.mjs'
       - 'package.json'
       - '.github/workflows/product-ui-review.yml'
   workflow_dispatch:
@@ -39,10 +42,14 @@ jobs:
         run: node scripts/setup-encoder.mjs
       - name: Render 9x16 synthetic UI previews
         run: npm run preview:product-ui:synthetic
+      - name: Render connected UI choreography 4-second video
+        run: npm run preview:product-ui:choreography
       - name: Upload 3 review MP4s and safe-zone contact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: product-ui-synthetic-9x16-visual-review
-          path: out/product-ui-concept-review/
+          path: |
+            out/product-ui-concept-review/
+            out/product-ui-choreography-review/
           retention-days: 1
           if-no-files-found: error
