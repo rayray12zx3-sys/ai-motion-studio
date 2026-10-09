@@ -149,6 +149,20 @@
       ],
       "pinned_qa_rnd_sha": "af047b50cc0de9ec13bfd72ef65e9f43df716334",
       "merge_commit_sha": "9199a20640137cc259c76c1e41a05c8c684370ee"
+    },
+    {
+      "number": 31,
+      "label": "Post-merge full-alpha QuickTime frame-count and decoded head/mid/tail validation",
+      "base": "main",
+      "head_sha": "6ff11090d7199f12938adab49e4e605b2d74ca89",
+      "draft": true,
+      "merged": false,
+      "mergeable_at_snapshot": "FETCH_LIVE",
+      "technical_acceptance": "PASS_EXACT_HEAD_CONTAINER_FRAME_COUNT_ALPHA_3_SAMPLES",
+      "creative_acceptance": "NOT_APPLICABLE",
+      "video_bit_exact_to_PR30": true,
+      "owner_merge_approval": "NOT_GRANTED",
+      "production_adoption": false
     }
   ],
   "milestone_runs": {
@@ -238,6 +252,44 @@
       "merged_to_main": true,
       "main_merge_sha": "9199a20640137cc259c76c1e41a05c8c684370ee",
       "main_default_render_stays_opaque": true
+    },
+    "foreground_alpha_hardening": {
+      "head": "6ff11090d7199f12938adab49e4e605b2d74ca89",
+      "root_ci": 37962178777,
+      "foreground_ci": 37962178798,
+      "all_conclusions": "success",
+      "container_frame_counts": [
+        30,
+        30,
+        180
+      ],
+      "profiles": [
+        "360x640-smoke",
+        "1080x1920-smoke",
+        "1080x1920-6s"
+      ],
+      "decoded_sample_foreground_pixels": [
+        [
+          0,
+          2648,
+          0
+        ],
+        [
+          0,
+          17994,
+          0
+        ],
+        [
+          0,
+          19734,
+          0
+        ]
+      ],
+      "upper_alpha_nonzero_all_samples": 0,
+      "full_video_sha256_unchanged": "60b4760115aceccbc940b8502d7f0a045d2ce5e8871f4dc6a5b56fd5b6d031af",
+      "new_dependencies": false,
+      "video_output_changed": false,
+      "main_merge_approval_required": true
     }
   },
   "evidence_docs": [
@@ -258,11 +310,10 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "PR #30 is merged and validated as present on main (squash 9199a206). Do not treat it as Draft or pending user signoff; do not merge other PRs without specific approval.",
-    "Harden exported foreground MOV frame-count, seek/alpha sampling and CI cost handling with a separate Draft proposal; preserve exact opaque RGBA compatibility.",
-    "Keep Motion QA PR #29 independent until its scope/licensing and creative-review semantics are explicitly accepted; no auto merge.",
-    "Find truly watchable Product-UI references and evaluate permissive tooling in isolated lanes; M12 art frozen without approval.",
-    "On each new conversation read CONTINUE-HERE and PROJECT-STATE, then verify live GitHub and record source/CI evidence."
+    "PR #30 was owner-approved and successfully squash-merged to main at 9199a206. Default opaque MP4 path unchanged.",
+    "Post-merge verification hardening is ready on Draft PR #31: FFprobe nb_frames and decoded head/middle/tail Alpha, with both CI green and MOV bytes unchanged. Explicit owner approval required for any merge into main.",
+    "Do not merge Motion QA PR #29 or the M11/M12 stacks; they remain creative/licensing gates and Draft.",
+    "Before a new chat work starts, fetch CONTINUE-HERE + PROJECT-STATE, then live PR heads and exact-head CI, never trust this dated snapshot alone."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
