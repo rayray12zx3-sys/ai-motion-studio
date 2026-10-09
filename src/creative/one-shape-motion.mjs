@@ -41,7 +41,7 @@ const color=(a,b,t)=>{
 export function evaluateOneShape(frame){
  if(!Number.isFinite(frame)||frame<0||frame>=FRAMES)throw Error('Invalid choreography frame');
  const beat=Math.floor(frame/BEAT_FRAMES);
- const s=interp(frame,beat*15,(beat+1)*15);
+ const s=beat===7?interp(frame,109,120):interp(frame,beat*15,(beat+1)*15);
  const geom=nodes[beat].map((v,i)=>lerp(v,nodes[beat+1][i],s));
 
  const [x,y,w,h,r]=geom;
@@ -59,11 +59,11 @@ export function evaluateOneShape(frame){
   check:enter(frame,57,60)*leave(frame,64,68),
   summary:enter(frame,69,72)*leave(frame,74,79),
   slider:enter(frame,78,81)*leave(frame,88,92),
-  combo:enter(frame,93,96)*leave(frame,105,112),
+  combo:enter(frame,93,96)*leave(frame,107,109),
   fade:leave(frame,114,119),
   drag,
   pointer:{x:frame>=75?lerp(190,515,drag):lerp(610,365,enter(frame,17,31)),
-   y:frame>=75?y+h*.19:y+h*.12,
+   y:frame>=75?y-h*.15:y+h*.12,
    alpha:Math.min(1,pointerAlpha),
    down:frame<45?Math.max(0,1-Math.abs(frame-33)/5):0}
  };
@@ -104,7 +104,7 @@ function artwork(ctx,s,f){
  shape(ctx,g.x,g.y,g.w,g.h,g.r,s.fill);ctx.restore();
  ctx.save();ctx.beginPath();ctx.roundRect(g.x-g.w/2,g.y-g.h/2,g.w,g.h,
   Math.min(g.r,g.h/2));ctx.clip();
- typography(ctx,'TAP TO MATCH',g.x,g.y,42,C.white,s.button);
+ typography(ctx,'TAP',g.x,g.y,68,C.white,s.button);
  if(s.spinner>0){
   ctx.save();ctx.globalAlpha=s.spinner;ctx.strokeStyle=C.white;ctx.lineWidth=7;
   ctx.beginPath();ctx.arc(g.x,g.y,27,-Math.PI/2,
