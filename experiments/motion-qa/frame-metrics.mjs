@@ -22,7 +22,7 @@ export function analyzeMotionFrames({
   alphaThreshold=8,colorDeltaThreshold=20,
   minVisiblePixels=1,maxCentroidJumpFraction=0.30,
   maxInternalRepeatedTransitions=2,allowedEndingRepeatedTransitions=0,
-  allowedBlankFrameIndices=[]
+  allowedBlankFrameIndices=[],allowedCutFrameIndices=[],allowedHoldFrameRanges=[]
 }={}){
   if(!int(width,2,4096)||!int(height,2,4096)||
     !Array.isArray(frames)||frames.length<2||frames.length>300||
@@ -34,10 +34,24 @@ export function analyzeMotionFrames({
     !int(maxInternalRepeatedTransitions,0,300)||
     !int(allowedEndingRepeatedTransitions,0,frames.length-1)||
     !Array.isArray(allowedBlankFrameIndices)||
-    allowedBlankFrameIndices.some(f=>!int(f,0,frames.length-1)))
+    allowedBlankFrameIndices.some(f=>!int(f,0,frames.length-1))||
+    !Array.isArray(allowedCutFrameIndices)||
+    allowedCutFrameIndices.length>30||
+    allowedCutFrameIndices.some(f=>!int(f,1,frames.length-1))||
+    new Set(allowedCutFrameIndices).size!==allowedCutFrameIndices.length||
+    !Array.isArray(allowedHoldFrameRanges)||
+    allowedHoldFrameRanges.length>20||
+    allowedHoldFrameRanges.some(r=>!r||!int(r.from,0,frames.length-2)||
+      !int(r.to,r.from+1,frames.length-1)))
     throw new TypeError('Invalid motion QA thresholds or exemptions');
   const safe=validateSafeRect(safeRect,width,height);
   const blanks=new Set(allowedBlankFrameIndices);
+  // Intent is declared by the editor, never inferred from a suspicious frame.
+  // These exemptions suppress review warnings only; empty/unsafe alpha
+  // remain hard blockers even on an approved cut or hold.
+  const cuts=new Set(allowedCutFrameIndices);
+  const holds=allowedHoldFrameRanges.map(r=>({from:r.from,to:r.to}));
+  const isExpectedHold=(frame)=>holds.some(r=>frame>r.from&&frame<=r.to);
   const pixels=width*height;
   const report=[];
   const findings=[];
@@ -87,7 +101,7 @@ export function analyzeMotionFrames({
     if(old?.centroid&&item.centroid){
       const jump=Math.hypot(item.centroid.x-old.centroid.x,
         item.centroid.y-old.centroid.y)/diagonal;
-      if(jump>maxCentroidJumpFraction)
+      if(jump>maxCentroidJumpFraction&&!cuts.has(frame))
         findings.push({severity:'review',code:'CENTROID_JUMP',frame,
           normalized_jump:Number(jump.toFixed(5))});
     }
@@ -97,7 +111,8 @@ export function analyzeMotionFrames({
   let repeatStart=null;
   const lastTransition=frames.length-1-allowedEndingRepeatedTransitions;
   for(let i=1;i<=lastTransition+1;i++){
-    const repeating=i<=lastTransition&&report[i].changed_pixels_from_previous===0;
+    const repeating=i<=lastTransition&&report[i].changed_pixels_from_previous===0&&
+      !cuts.has(i)&&!isExpectedHold(i);
     if(repeating&&repeatStart===null)repeatStart=i;
     if(!repeating&&repeatStart!==null){
       const repeats=i-repeatStart;
@@ -113,6 +128,7 @@ export function analyzeMotionFrames({
     version:1,status,creative_approval:'HUMAN_REVIEW_REQUIRED',
     source_media_retained:false,
     sampled_frames:frames.length,profile:{width,height},safe_rect:safe,
+    declared_editor_intent:{cut_frames:[...cuts].sort((a,b)=>a-b),hold_ranges:holds},
     metrics:report,findings
   };
 }
