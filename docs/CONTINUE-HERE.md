@@ -4,6 +4,12 @@
 
 > This file is the **entry point**, not an authoritative live API snapshot. In every new conversation: **read this document and [PROJECT-STATE.json](PROJECT-STATE.json), then query GitHub's live PRs, issues and exact-head Actions before claiming progress or editing**. Historical text in [ACTIVE-WORK-2026-10-09.md](ACTIVE-WORK-2026-10-09.md) is append-only; later checkpoints supersede earlier claims.
 
+## Active execution checkpoint — 2026-10-10
+
+- **[Issue #36](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/36)** is the current isolated **1080×1920, 30fps, 30-frame HyperFrames ProRes 4444 Alpha** follow-up to [Draft PR #33](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/33). It has a `jules` label and Jules bot's acknowledgement. This means **accepted for execution only**, not implemented, CI-verified, merged or production-approved. Verify the actual resulting PR head/Actions before updating this status.
+- The follow-up must retain the existing Canvas+FFmpeg baseline and 360×640 R&D benchmarks; no root production dependencies, licensed reference media or private-company artifacts. Avoid creating a competing implementation while Jules handles #36. HyperFrames remains an isolated Draft requiring separate architecture/license approval before production adoption.
+- **Independent pending gates:** HyperFrames Studio native GUI editability, commercial/transitive license audit, Windows Premiere import/composite, and human art review. M11 direction rejected; M12 art frozen. This checkpoint does not grant additional merge authority.
+
 ## Project boundaries — never silently violate
 
 1. `rayray12zx3-sys/ai-motion-studio` is the operator's **personally owned tool**. Its rendered ads may be used **commercially by a company**. Personal ownership of code does **not** automatically make commercial ad-production use permitted under a tool's *Noncommercial* license.

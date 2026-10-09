@@ -401,6 +401,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "Issue #36 is acknowledged by Jules to verify original synthetic HyperFrames 1080x1920 Alpha MOV; no implementation or CI success should be inferred until a live follow-up PR and exact-head Actions are checked. Keep PR #33 and related R&D Draft, without production adoption.",
     "Current canonical handoff is on main. PR #33 HyperFrames (R&D Draft, NOT merged) has actual 360x640 original MP4 and transparent ProRes 4444 MOV, full 30-frame independently decoded repeatability, and successful CI. Do not promote this candidate engine without separate architecture and dependency review.",
     "Private Google Drive preview delivery for original synthetic MP4 and MOV is now CONFIRMED by upload and folder readback; never add Drive URLs/IDs or company content to public GitHub.",
     "Before considering HyperFrames Studio GUI keyframe editing, use a proper seekable paused GSAP timeline with local licensed script or equivalent accepted contract; the current CSS-only data-no-timeline scenes DO NOT prove Studio editing.",
@@ -443,5 +444,26 @@
       "user_delegated_routine_approval": true,
       "docs_only": true
     }
-  ]
+  ],
+  "active_execution": {
+    "checkpoint_date": "2026-10-10",
+    "issue": 36,
+    "issue_url": "https://github.com/rayray12zx3-sys/ai-motion-studio/issues/36",
+    "related_draft_pr": 33,
+    "executor": "jules",
+    "issue_acknowledged": true,
+    "execution_status": "ACKNOWLEDGED_NOT_CODE_VERIFIED",
+    "target": "synthetic_only_hyperframes_1080x1920_30fps_30_frames_prores4444_alpha",
+    "verification_required": "EXACT_HEAD_PR_CI_FFPROBE_DECODED_ALPHA",
+    "production_adoption": false,
+    "creative_approval": false,
+    "unverified": [
+      "studio_editor",
+      "commercial_transitive_rights",
+      "premiere_windows",
+      "full_hd_output_pending_Jules_PR"
+    ],
+    "no_duplicate_implementation_while_in_progress": true,
+    "live_refresh_required": true
+  }
 }
