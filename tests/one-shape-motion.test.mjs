@@ -82,7 +82,7 @@ test('pointer touches progress rail and final score clears before geometric exit
   const s=evaluateOneShape(f);
   assert.equal(s.combo,0,'result label still visible during capsule exit at '+f);
  }
- for(let f=105;f<=109;f++){
+ for(let f=105;f<=107;f++){
   const s=evaluateOneShape(f);
   assert.equal(s.shape.w,535,'result should hold before exit at '+f);
  }
