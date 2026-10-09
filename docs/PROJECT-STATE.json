@@ -185,6 +185,21 @@
       "owner_merge_approval": "USER_DELEGATED_ROUTINE_TECHNICAL_MERGES",
       "production_adoption": true,
       "merge_commit_sha": "a6daabc22f0f7e7774b24f98209c22a6f18c5518"
+    },
+    {
+      "number": 33,
+      "label": "Isolated HyperFrames original HTML 9:16 moving renderer benchmark",
+      "base": "main",
+      "head_sha": "2d520489c907992827b8434b799d3ea59c68622c",
+      "draft": true,
+      "merged": false,
+      "technical_acceptance": "PASS_EXACT_HEAD_ZERO_LINT_WARNINGS_H264_30_FRAMES_MOVING_PIXELS",
+      "creative_acceptance": "NOT_REVIEWED",
+      "root_production_dependencies_changed": false,
+      "engine_production_adoption": false,
+      "upstream_code_license": "Apache-2.0",
+      "external_runtime": "temporary npx hyperframes@0.8.143 in GitHub-hosted runner",
+      "commercial_media_rights": "ONLY ORIGINAL SYNTHETIC_SCENE"
     }
   ],
   "milestone_runs": {
@@ -314,6 +329,40 @@
       "main_merge_approval_required": true,
       "merged_to_main": true,
       "main_merge_sha": "a6daabc22f0f7e7774b24f98209c22a6f18c5518"
+    },
+    "hyperframes_rnd": {
+      "exact_head": "2d520489c907992827b8434b799d3ea59c68622c",
+      "isolated_html_video_ci": 37965928853,
+      "root_ci": 37965928812,
+      "all_conclusions": "success",
+      "upstream_cli_version": "0.8.143",
+      "upstream_source_license": "Apache-2.0",
+      "lint": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "scene": {
+        "width": 360,
+        "height": 640,
+        "fps": 30,
+        "frames": 30
+      },
+      "codec": "h264",
+      "mp4_sha256": "dfe6e06c7082d8f391dddbd40027010c2b7c1214591e75cee79551fef7df15d4",
+      "decoded_frames_sampled": [
+        0,
+        15,
+        29
+      ],
+      "pixel_hashes_distinct": true,
+      "artifact_run": 37965928853,
+      "artifact_id": 11633835946,
+      "no_production_dependency": true,
+      "no_company_media": true,
+      "drive_preview_delivery": "NOT_VERIFIED__TRANSFER_RUNTIME_ERROR",
+      "studio_native_editor": "NOT_TESTED",
+      "visual_quality": "HUMAN_REVIEW_REQUIRED",
+      "production_integration": "NOT_AUTHORIZED"
     }
   },
   "evidence_docs": [
@@ -334,11 +383,11 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "Canonical CONTINUE-HERE.md and PROJECT-STATE.json were published to main via PR #27 squash 139ffb39; do not use stale draft branch as the primary source. Always query live PRs and checks.",
-    "PRs #30 and #31 are merged; optional transparent foreground and verified MOV frame-count/head-mid-tail decoder exist on main, opaque render default unchanged.",
-    "M9–M12 stacked animation features and Motion QA R&D #29 remain separate drafts. Avoid merging art/production or third-party tools without source licensing and human review.",
-    "Continue isolated benchmark-based evaluation of permissively licensed tools; prioritize actual watchable examples. M12 visually frozen until owner approval.",
-    "User delegated exact-head CI-green low-risk technical and docs merges only. No broad automatic merge or company asset/State Engine changes."
+    "Main handoff and README are canonical after docs merges #27 and #32; exact-head test evidence should always be refreshed against GitHub.",
+    "HyperFrames R&D Draft #33: original 1s 360x640 30fps CSS animation rendered with npm CLI 0.8.143; lint 0 errors/warnings; RGB at 0/15/29 changed; CI success. No main adoption, Studio editing or quality claim. Compare with matching Canvas case and actual watchable professional references before asking to change renderer.",
+    "R&D artifact original MP4 available from short-lived Actions; attempted Google Drive upload blocked by file runtime/session, do not claim delivered.",
+    "Motion QA #29 and stacked art M11/M12 still Draft/unapproved. Production renderer default Canvas+FFmpeg and approved optional foreground Alpha remain unchanged.",
+    "User delegated only low-risk exact-head-green technical/docs merges. Larger architecture/licensing/art choices require explicit approval; keep private advertising State Engine and company assets untouched."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
