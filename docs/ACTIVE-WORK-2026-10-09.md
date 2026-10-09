@@ -44,3 +44,23 @@ M11 visual direction is **REJECTED**. M12 is **NOT APPROVED / PENDING NEW REFERE
 - Reproducibility/alpha/frames/permissions test failure: stop promotion, record the exact failed gate.
 - No modifications to `ai-video-template`, private production State Engine or its `main` as a side effect.
 - No unapproved PR merges, force pushes, main rewrites or new paid dependencies.
+
+
+## Conversation close-out — 2026-10-09 20:20 Taiwan
+
+This checkpoint is a **handoff to a different ChatGPT conversation**; do not assume ephemeral conversation files/tool working directories, including any downloaded ZIP, are available in the new execution.
+
+**Exact verified GitHub state at close-out:**
+
+- `main` remains `ee7ac06df83f1531d48ca7d5486e2268ca6ce65b`.
+- [M10 Draft #24](../pull/24) head `789439070a8258ca29fae1051add8cd717763a4f`; its nested `experiments/theatre/package-lock.json` **does not yet exist in the branch**. Real-browser Studio acceptance remains open.
+- [M12 Draft #26](../pull/26) head `062497fda846cfd93a7319f6197d104292c71ba2`, technically passing, **not creatively approved**. No style rework until actual accessible reference videos have been watched, and only after pre-reference engineering work.
+- This coordination [Draft #27](../pull/27) is docs-only, based on `main`, **not merged**. It does not supersede any creative PR or production state.
+- [Issue #28](../issues/28) remains OPEN and is the **immediate engineering task**. The M10 lock from artifact `11568483390` (run `37820068205`) was parsed earlier but an attempted cross-tool text transfer did not pass length verification. **No incomplete lock was written.** Next executor must obtain the actual full bytes via a reliable environment, validate manifest/lock, commit them to Draft #24, switch isolated workflow `npm install` → `npm ci`, run exact-head checks, and then exercise browser keyframe edit/export→Core rendering. Do not reuse a truncated transfer or report success without readback.
+- [Issue #5 alpha smoke note](../issues/5#issuecomment-6079647454) records a **local synthetic** 1080×1920 30fps ProRes 4444 Alpha export/decode PASS. Not automated in CI; not checked in Premiere on Windows, not approved for client delivery. The original 120-frame M12 alpha/private static IG/FB guide collision check was zero collisions; the private mask is still **outside this public repo**.
+- Human-review MP4s go to the operator's **private Google Drive preview workflow**, not public GitHub; one-off upload already demonstrated, fully automated Actions→Drive handoff not established. Do not include Drive IDs/URLs or company artifacts in public docs.
+- No changes were made to the private advertisement production repository or to any repo `main` during this close-out.
+
+**Next-chat order:** start from repo HEAD/Issue #28; execute and verify M10 nested lock + isolated `npm ci`; then Studio real browser GUI / export → Core/Canvas bridge; then remaining private-source boundary, synthetic formal alpha/Premiere validation, and review pipeline. Only **after** these independent tasks, find and inspect actual watchable alternative reference videos, define objective M12 art targets and resume creative work. Keep creative and technical PASS separate; no PR merges without explicit approval.
+
+**Stop conditions:** expired/missing artifacts, inconsistent dependency graph, unavailable real GUI, unverified license or private source, failed tests, source leak, or user approval gate. Record blocker precisely and stop; no fabricated success, no fallback to publicizing private content.
