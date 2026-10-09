@@ -284,6 +284,9 @@ try{
         let key;try{key=JSON.parse(node.getAttribute('data-pi-key'));}catch{continue;}
         if(key.k!==keyId||key.o!=='Practice Card'||key.t!=='track-x')continue;
         const r=node.getBoundingClientRect();
+        // Inspector displays the same presence key; require the native Dope Sheet
+        // diamond's 12px hit zone in the lower timeline, not its 8px inspector icon.
+        if(r.top<innerHeight*0.55||r.width<10||r.width>18||r.height<10||r.height>18)continue;
         return {x:r.x+r.width/2,y:r.y+r.height/2,w:r.width,h:r.height,
           viewport:[innerWidth,innerHeight]};
       }
@@ -294,7 +297,7 @@ try{
   const startKey=await nativeLookup(idToMove);
   const t0=await nativeLookup('x0');
   const t1=await nativeLookup('x1');
-  assert.ok(startKey?.w>=8&&startKey?.h>=8&&t0&&t1,
+  assert.ok(startKey?.w>=10&&startKey?.h>=10&&t0&&t1,
     'Native Studio x keyframes not visible');
   const pxPerSecond=t1.x-t0.x;
   assert.ok(pxPerSecond>28&&pxPerSecond<300,'Unexpected Studio timeline scale');
