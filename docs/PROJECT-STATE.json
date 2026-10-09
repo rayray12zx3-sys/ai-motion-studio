@@ -135,19 +135,20 @@
       "label": "Opt-in transparent Canvas foreground and independent Motion QA bridge",
       "base": "main",
       "head_sha": "2a2eb0244062d15d4a2e3382f0322d450352f712",
-      "draft": true,
-      "merged": false,
-      "mergeable_at_snapshot": "REQUERY_LIVE",
-      "technical_acceptance": "PASS_EXACT_HEAD_OPAQUE_HASH_PARITY_MOTION_QA_NATIVE_1080P_PRORES_ALPHA",
+      "draft": false,
+      "merged": true,
+      "mergeable_at_snapshot": "MERGED",
+      "technical_acceptance": "PASSED_AND_MERGED_TO_MAIN_WITH_EXPLICIT_USER_APPROVAL",
       "creative_acceptance": "HUMAN_REQUIRED",
-      "production_adoption": false,
+      "production_adoption": true,
       "source_modifications": [
         "src/free/scene.mjs",
         "scripts/render-foreground.mjs",
         "tests/foreground-compat.test.mjs",
         "experiments/foreground-qa/check.mjs"
       ],
-      "pinned_qa_rnd_sha": "af047b50cc0de9ec13bfd72ef65e9f43df716334"
+      "pinned_qa_rnd_sha": "af047b50cc0de9ec13bfd72ef65e9f43df716334",
+      "merge_commit_sha": "9199a20640137cc259c76c1e41a05c8c684370ee"
     }
   ],
   "milestone_runs": {
@@ -233,7 +234,10 @@
       "public_artifact_contains_raw_media": false,
       "premiere_windows": "NOT_TESTED",
       "artistic_approval": "REQUIRED",
-      "production_renderer_default_changed": false
+      "production_renderer_default_changed": false,
+      "merged_to_main": true,
+      "main_merge_sha": "9199a20640137cc259c76c1e41a05c8c684370ee",
+      "main_default_render_stays_opaque": true
     }
   },
   "evidence_docs": [
@@ -254,10 +258,11 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "Foreground Alpha #30 is technically complete in a Draft R&D branch with unchanged opaque output and real 6s full-resolution alpha encode/decode. Do NOT merge main or adopt into real ads without user approval.",
-    "Continue independent Motion QA + renderer interoperability testing and performance/cost checks if needed, using synthetic-only data and explicit source rights.",
-    "Review actually watchable professional Product-UI animation references and user-facing previews before resuming M12 art; no unauthorized creative rework.",
-    "Every new conversation first reads CONTINUE-HERE and PROJECT-STATE, then fetches live GitHub PR heads and exact-head CI, and updates these records."
+    "PR #30 is merged and validated as present on main (squash 9199a206). Do not treat it as Draft or pending user signoff; do not merge other PRs without specific approval.",
+    "Harden exported foreground MOV frame-count, seek/alpha sampling and CI cost handling with a separate Draft proposal; preserve exact opaque RGBA compatibility.",
+    "Keep Motion QA PR #29 independent until its scope/licensing and creative-review semantics are explicitly accepted; no auto merge.",
+    "Find truly watchable Product-UI references and evaluate permissive tooling in isolated lanes; M12 art frozen without approval.",
+    "On each new conversation read CONTINUE-HERE and PROJECT-STATE, then verify live GitHub and record source/CI evidence."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
@@ -267,5 +272,16 @@
     "credentials"
   ],
   "verified_external_media": "Only synthetic preview and Alpha MOV delivered to approved private Drive; no automatic continuous delivery.",
-  "snapshot_is_not_production_release": true
+  "snapshot_is_not_production_release": true,
+  "main_approved_milestones": [
+    {
+      "pr": 30,
+      "feature": "optional_transparent_canvas_foreground",
+      "merge_method": "squash",
+      "merge_commit_sha": "9199a20640137cc259c76c1e41a05c8c684370ee",
+      "user_approved": true,
+      "opaque_h264_default_unchanged": true,
+      "private_ad_state_engine_changed": false
+    }
+  ]
 }
