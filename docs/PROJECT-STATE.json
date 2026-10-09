@@ -65,10 +65,10 @@
       "number": 29,
       "label": "Isolated synthetic motion QA (new independent R&D)",
       "base": "main",
-      "head_sha": "58eff62dac7db9a2d181537e62ac649980600c2c",
+      "head_sha": "af047b50cc0de9ec13bfd72ef65e9f43df716334",
       "draft": true,
       "merged": false,
-      "technical_acceptance": "PASS_EXACT_HEAD_400_RENDERED_ORIGINAL_CANVAS_FRAMES",
+      "technical_acceptance": "PASS_EXACT_HEAD_940_ORIGINAL_CANVAS_FRAMES_24_UNIT_TESTS_PLUS_VIDEO",
       "creative_acceptance": "HUMAN_REQUIRED_ALWAYS",
       "tests": [
         "ALPHA_OUTSIDE_DECLARED_SAFE_RECT",
@@ -78,24 +78,56 @@
       ],
       "root_production_dependencies_changed": false,
       "benchmark": {
-        "frame_count": 80,
-        "scenario_count": 5,
-        "total_generated_frames": 400,
-        "profile": {
-          "width": 180,
-          "height": 320,
-          "fps": 30
+        "original_frame_count": 80,
+        "original_scenario_count": 5,
+        "second_frame_count": 90,
+        "second_scenario_count": 6,
+        "total_generated_frames": 940,
+        "total_scenarios": 11,
+        "unit_tests_passed": 24,
+        "second_storyboard_cut_frame": 45,
+        "second_declared_mid_hold": {
+          "from": 14,
+          "to": 23
         },
-        "expected": {
-          "baseline": "PASS",
-          "blank": "BLOCKED",
-          "alpha-leak": "BLOCKED",
-          "teleport": "REVIEW",
-          "freeze": "REVIEW"
+        "scenarios": {
+          "first": [
+            "baseline:PASS",
+            "blank:BLOCKED",
+            "alpha-leak:BLOCKED",
+            "teleport:REVIEW",
+            "freeze:REVIEW"
+          ],
+          "second": [
+            "approved-edit:PASS",
+            "undeclared-cut:REVIEW",
+            "undeclared-hold:REVIEW",
+            "blank-at-cut:BLOCKED",
+            "alpha-leak-at-cut:BLOCKED",
+            "midscene-freeze:REVIEW"
+          ]
         },
-        "report_format": "JSON_METRICS_ONLY",
+        "report_format": "JSON_METRICS_ONLY_NO_MEDIA",
         "human_creative_approval": "REQUIRED",
+        "video_preview": {
+          "status": "ENCODED_VERIFIED_ARTIFACT_ONLY",
+          "sha256": "f3b62d50f22bca4ff25b9368f74379e7304b98df43deddd307dbe1b9df3c6add",
+          "codec": "h264",
+          "width": 540,
+          "height": 960,
+          "fps": 30,
+          "frames": 90,
+          "seconds": 3,
+          "artifact_id": 11629000249,
+          "google_drive_delivery": "NOT_CONFIRMED"
+        },
+        "opaque_main_renderer_integration": "NOT_IMPLEMENTED__FOREGROUND_MASK_REQUIRED",
         "prod_integrated": false
+      },
+      "editor_intent": {
+        "allowed_cut_frames": true,
+        "allowed_hold_frame_ranges": true,
+        "cannot_override_alpha_or_blank_blockers": true
       }
     }
   ],
@@ -125,16 +157,20 @@
       "technical_scope_only": true
     },
     "motion_qa": {
-      "head": "58eff62dac7db9a2d181537e62ac649980600c2c",
-      "isolated_qa": 37951387748,
-      "root_ci": 37951387392,
+      "head": "af047b50cc0de9ec13bfd72ef65e9f43df716334",
+      "isolated_qa": 37957156700,
+      "root_ci": 37957156574,
       "all_conclusions": "success",
-      "benchmark_reference_run": 37951143429,
-      "benchmark_report_artifact_id": 11625758270,
-      "benchmark_report_sha256": "061959007d53fc29dd38422c28bfe3470063a90c8901ce3d4fb6d213cc7f058d",
-      "rendered_synthetic_frames": 400,
-      "intentional_hold_no_false_alarm": true,
-      "alpha_blank_jump_freeze_defects_detected": true,
+      "first_benchmark": 37956352386,
+      "second_benchmark": 37956352386,
+      "preview_encoder": 37956665856,
+      "preview_root_ci": 37956665880,
+      "original_rendered_frames": 940,
+      "unit_tests_passed": 24,
+      "second_metrics_sha256": "33d2a919f9a6fabb667238468eb2300cb279cf59da3624afff573856047f8e34",
+      "first_metrics_sha256": "061959007d53fc29dd38422c28bfe3470063a90c8901ce3d4fb6d213cc7f058d",
+      "preview_mp4_sha256": "f3b62d50f22bca4ff25b9368f74379e7304b98df43deddd307dbe1b9df3c6add",
+      "preview_gdrive": "UPLOAD_FAILED_CONTAINER_SESSION_EXPIRED__NO_PROVIDER_ID",
       "report_retains_source_media": false,
       "not_aesthetic_approval": true
     }
@@ -156,10 +192,10 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "Benchmark Motion QA Draft PR #29 on another independent original animated composition or user-reviewed synthetic clip; keep technical alerts separate from human art signoff.",
-    "Isolate and compare permitted open-source Motion Designer, Motion Video Kit, HTML Animation and HyperFrames to existing Canvas renderer only after license/media review.",
-    "Obtain actually playable Product-UI motion reference clips; do not rework M12 until operator aesthetic direction is approved.",
-    "Every new chat starts from CONTINUE-HERE + PROJECT-STATE then queries live GitHub PR heads, Issues and exact-head Actions; record every passing milestone to PR/Issue and these files."
+    "Obtain operator-accessible 3-second second-original preview in the approved private Google Drive folder using a verified connector file reference. The first upload attempt failed with container_session_expired; no success/Drive URL should be claimed.",
+    "Before promoting Motion QA into the opaque Canvas+FFmpeg main renderer, design a foreground-only alpha/mask view or other validated separation. Current final MP4 has a fully opaque gradient and naive Alpha-safe checks would falsely flag the plate.",
+    "Review professional *watchable* Product UI motion references with source/right checks and compare permissive external frameworks in isolated lanes. M12 visual edits remain frozen until human creative direction.",
+    "Every conversation begins with CONTINUE-HERE + PROJECT-STATE, then fetches current GitHub PR heads and exact-head CI. Preserve status changes on PR #29 and coordination Draft #27."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
