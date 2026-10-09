@@ -1,0 +1,34 @@
+name: Isolated Synthetic Motion QA Research
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/motion-qa/**'
+      - '.github/workflows/motion-qa-research.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: motion-qa-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-metrics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.19.0"
+      - name: Syntax check original RGBA metrics
+        run: node --check experiments/motion-qa/frame-metrics.mjs
+      - name: Execute synthetic-only acceptance tests
+        run: node --test experiments/motion-qa/tests/frame-metrics.test.mjs
+      - name: Record R&D-only scope
+        run: |
+          echo 'Technical sample QA only. NOT production-ready or artist-approved.' >> "$GITHUB_STEP_SUMMARY"
