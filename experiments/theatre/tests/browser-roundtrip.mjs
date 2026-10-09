@@ -27,6 +27,7 @@ async function waitFor(fn,label,timeout=18000){
   throw new Error('Timed out: '+label);
 }
 let chrome,server,ws;
+const browserFaults=[];
 const pending=new Map();
 let nextId=0;
 async function send(method,params={}){
@@ -81,6 +82,10 @@ try{
   });
   ws.addEventListener('message',event=>{
     const message=JSON.parse(event.data);
+    if(message.method==='Runtime.exceptionThrown')
+      browserFaults.push(JSON.stringify(message.params?.exceptionDetails||{}).slice(0,1800));
+    if(message.method==='Runtime.consoleAPICalled'&&message.params?.type==='error')
+      browserFaults.push(JSON.stringify(message.params?.args||[]).slice(0,1800));
     if(!message.id)return;
     const task=pending.get(message.id);if(!task)return;
     pending.delete(message.id);clearTimeout(task.timeout);
@@ -91,7 +96,17 @@ try{
   await send('Runtime.enable');
   await send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloadDir,eventsEnabled:true});
   await send('Page.navigate',{url:'http://127.0.0.1:4178/'});
-  await waitFor(async()=>await evaluate("document.body?.dataset?.theatreReady==='true'"),'Theatre Studio page readiness');
+  try{
+    await waitFor(async()=>await evaluate("document.body?.dataset?.theatreReady==='true'"),'Theatre Studio page readiness');
+  }catch(error){
+    const details=await evaluate("({url:location.href,readyState:document.readyState,bodyLoaded:!!document.body,hasButton:!!document.querySelector('#set-keyframe'),theatreReady:document.body?.dataset?.theatreReady,card:document.querySelector('#card')?.outerHTML})").catch(e=>({evaluationError:String(e)}));
+    console.error('M10_BROWSER_STARTUP_DIAGNOSTICS',JSON.stringify({details,browserFaults}));
+    try{
+      const failedShot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+      writeFileSync(join(outputDir,'startup-failure.png'),Buffer.from(failedShot.data,'base64'));
+    }catch{}
+    throw error;
+  }
   await setKeyframe(15,60);
   await setKeyframe(45,-60);
   const image=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
