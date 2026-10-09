@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=360,initial-scale=1"/>
+<title>Original synthetic transparent lower-third overlay</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:transparent!important}
+#alpha-stage{position:relative;width:360px;height:640px;background:transparent;overflow:hidden}
+.lower-third{position:absolute;left:42px;top:455px;width:276px;height:92px;border-radius:17px;background:#23505b;border:2px solid #8dd4bf;
+ box-shadow:0 15px 38px #0003;animation:appear 1s linear both}
+.accent{position:absolute;left:64px;top:479px;width:145px;height:12px;border-radius:6px;background:#b6f2de;animation:appear 1s linear both}
+.detail{position:absolute;left:64px;top:509px;width:99px;height:8px;border-radius:4px;background:#edc588;animation:appear 1s linear both}
+@keyframes appear{0%{opacity:0;transform:translateY(36px)}10%{opacity:1;transform:translateY(5px)}
+ 25%{opacity:1;transform:translateY(0)}65%{opacity:1;transform:translateY(0)}
+ 78%{opacity:1;transform:translateY(-4px)}90%{opacity:0;transform:translateY(-26px)}100%{opacity:0;transform:translateY(-26px)}}
+</style>
+</head>
+<body>
+<div id="alpha-stage" data-composition-id="original-alpha-overlay" data-no-timeline data-start="0" data-duration="1" data-width="360" data-height="640" data-fps="30">
+  <div id="lower-third-plate" class="clip lower-third" data-start="0" data-duration="1" data-track-index="1"></div>
+  <div id="lower-third-accent" class="clip accent" data-start="0" data-duration="1" data-track-index="2"></div>
+  <div id="lower-third-detail" class="clip detail" data-start="0" data-duration="1" data-track-index="3"></div>
+</div>
+</body>
+</html>
