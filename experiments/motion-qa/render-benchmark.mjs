@@ -20,7 +20,7 @@ export function renderOriginalSample(frame,{scenario='baseline'}={}){
   const ctx=createCanvas(width,height).getContext('2d');
   const animationFrame=Math.min(frame,59);
   let cardX=40+animationFrame;
-  if(scenario==='teleport'&&frame===20)cardX=108;
+  if(scenario==='teleport'&&frame===20)cardX=106; // large jump, but still inside safe rectangle
   // This little floating title/card/progress unit is an original synthetic
   // design. The initial frames contain no empty/transparent transition.
   if(!(scenario==='blank'&&frame===30)){
