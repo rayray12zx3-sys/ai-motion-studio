@@ -1,0 +1,87 @@
+name: Synthetic Product UI 9x16 Visual Review
+
+on:
+  pull_request:
+    paths:
+      - 'src/creative/product-ui.mjs'
+      - 'src/creative/product-ui-choreography.mjs'
+      - 'src/creative/social-safe-area.mjs'
+      - 'scripts/preview-product-ui.mjs'
+      - 'scripts/preview-product-ui-choreography.mjs'
+      - 'examples/product-ui-synthetic.json'
+      - 'tests/product-ui.test.mjs'
+      - 'tests/product-ui-choreography.test.mjs'
+      - 'package.json'
+      - '.github/workflows/product-ui-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: product-ui-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # needed for a disposable exact-latest-base merge
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.19.0"
+          cache: npm
+      - name: Install pinned tooling
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: All source and alpha safe-zone tests
+        run: npm run lint && npm run typecheck && npm test
+      # PR event merge refs can be stale when the M10 base branch advances.
+      # Fetch the live M10 branch and merge only in this disposable runner.
+      # Never push, rewrite the M11 branch, touch main or claim art approval.
+      - name: Test exactly the latest M10 base combined with M11
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_BRANCH: ${{ github.base_ref }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$BASE_BRANCH" = "feat/m10-theatre-private-assets-20261008"
+          test -n "$PR_HEAD"
+          git fetch --no-tags origin "refs/heads/$BASE_BRANCH:refs/remotes/origin/$BASE_BRANCH"
+          latest="$(git rev-parse "refs/remotes/origin/$BASE_BRANCH")"
+          test -n "$latest"
+          echo "Fetched current M10 base SHA: $latest"
+          echo "M11 PR head in event: $PR_HEAD"
+          git merge --no-commit --no-ff "$latest"
+          test "$(git hash-object experiments/theatre/tests/browser-roundtrip.mjs)" = "$(git rev-parse "$latest:experiments/theatre/tests/browser-roundtrip.mjs")"
+          echo "Latest M10 native browser test source matches actual fetched base."
+          echo "Integration tree = event PR merge ref + latest M10 $latest" >> "$GITHUB_STEP_SUMMARY"
+      - name: Verify newest M10 Core and isolated lock on combined tree
+        run: |
+          test -f experiments/theatre/package-lock.json
+          test -f experiments/theatre/tests/browser-roundtrip.mjs
+          npm ci --prefix experiments/theatre --ignore-scripts --no-audit --no-fund
+          git diff --exit-code -- experiments/theatre/package-lock.json
+          npm test --prefix experiments/theatre
+          npm run bundle --prefix experiments/theatre
+      - name: Validate actual M10 native Studio drag in M11 merged test tree
+        run: node experiments/theatre/tests/browser-roundtrip.mjs
+      - name: Verify approved encoder
+        run: node scripts/setup-encoder.mjs
+      - name: Render 9x16 synthetic UI previews
+        run: npm run preview:product-ui:synthetic
+      - name: Render connected UI choreography 4-second video
+        run: npm run preview:product-ui:choreography
+      - name: Upload 3 review MP4s and safe-zone contact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: product-ui-synthetic-9x16-visual-review
+          path: |
+            out/product-ui-concept-review/
+            out/product-ui-choreography-review/
+          retention-days: 1
+          if-no-files-found: error

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "origin": "SYNTHETIC_CONCEPT_NOT_APP_RECORDING",
+  "aspect": "9:16",
+  "fps": 30,
+  "scenes": [
+    {
+      "mode": "match",
+      "frames": 30,
+      "hero": "MATCH",
+      "sub": "INTERACTION STUDY"
+    },
+    {
+      "mode": "practice",
+      "frames": 95,
+      "hero": "PRACTICE",
+      "sub": "PROGRESS STUDY"
+    },
+    {
+      "mode": "challenge",
+      "frames": 107,
+      "hero": "CHALLENGE",
+      "sub": "SCORE STUDY"
+    }
+  ]
+}
