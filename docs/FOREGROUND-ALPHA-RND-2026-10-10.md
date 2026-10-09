@@ -6,7 +6,7 @@ Checkpoint: 2026-10-10 (Asia/Taipei) · **Draft PR #30** · branch `feat/foregro
 
 - `src/free/scene.mjs` exports an **opt-in** `drawForegroundFrame(profile,frame,spec)` which draws only typography/progress artwork to a transparent RGBA Canvas. The old `drawFrame()` continues filling the existing gradient and runs **the exact same foreground painter directly on the same background Canvas**, without an intermediate composite.
 - The original `scripts/render.mjs`, root `package.json`, `package-lock.json` and the H.264 default CLI are **untouched**. This experiment does not install an engine, import third-party artwork or change MP4 output settings.
-- `scripts/render-foreground.mjs` is an **opt-in separate CLI**, supports only synthetic demo presets (`smoke` 360×640/30 frames; `vertical` 1080×1920/180 frames). Rejects arbitrary file/URL inputs and existing output folders. It verifies the pinned FFmpeg binary hash, streams RGBA to ProRes 4444 (`ap4h`), probes dimensions and Alpha-capable pixel format, decodes a sample and asserts top-row Alpha=0 and visible foreground pixels. Output is `out/foreground-<profile>/synthetic-foreground-alpha.mov` plus `report.json` in ignored local `out/`.
+- `scripts/render-foreground.mjs` is an **opt-in separate CLI**, supports only synthetic demo presets (`smoke` 360×640/30 frames; `vertical-smoke` 1080×1920/30 frames; `vertical` 1080×1920/180 frames). Rejects arbitrary file/URL inputs and existing output folders. It verifies the pinned FFmpeg binary hash, streams RGBA to ProRes 4444 (`ap4h`), probes dimensions and Alpha-capable pixel format, decodes a sample and asserts top-row Alpha=0 and visible foreground pixels. Output is `out/foreground-<profile>/synthetic-foreground-alpha.mov` plus `report.json` in ignored local `out/`.
 - No actual company footage, mask, script, brand/logo, rights receipt or private Google Drive identifier was read or uploaded.
 
 ## Run locally (Node 24 and existing pinned dependencies)
@@ -16,9 +16,10 @@ npm ci --ignore-scripts --no-audit --no-fund
 node --test tests/foreground-compat.test.mjs
 node scripts/setup-encoder.mjs
 node scripts/render-foreground.mjs smoke
+node scripts/render-foreground.mjs vertical-smoke
 ```
 
-The opt-in vertical command is `node scripts/render-foreground.mjs vertical`; it can require substantial memory/disk/CPU and is not part of routine automated CI. `out/` cannot exist for the same selected foreground profile or the script refuses to overwrite it. Do not treat this synthetic MOV as a company deliverable. Existing `npm run render:vertical` and `npm run render:smoke` still mean **opaque H.264 video**.
+The opt-in 6-second vertical command is `node scripts/render-foreground.mjs vertical`; it can require substantial memory/disk/CPU and is not part of routine automated CI. The `vertical-smoke` option exercises full 1080×1920 resolution over only 30 frames, minimizing continuous Actions cost. `out/` cannot exist for the same selected foreground profile or the script refuses to overwrite it. Do not treat this synthetic MOV as a company deliverable. Existing `npm run render:vertical` and `npm run render:smoke` still mean **opaque H.264 video**.
 
 ## Exact compatibility and QA evidence
 
@@ -31,7 +32,7 @@ Before changing `src/free/scene.mjs`, [GitHub CI #37958631192](https://github.co
 
 ## Separate gates — do not overstate
 
-- Actual 1080×1920 **end-to-end foreground MOV output** is *supported by code* but **not verified in CI** here; earlier M10 ProRes Alpha research was an independent renderer/scene.
+- **1080×1920 / 30fps / 30-frame (one-second) Alpha MOV is verified in CI** at [run #37959790271](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37959790271) on implementation HEAD `49280a06fecf154403da97aceae677ed461b5540`: `ap4h` ProRes 4444, decoded `yuva444p10le`, upper alpha nonzero=0, foreground sample positive-alpha pixels=17,994; MOV SHA-256 `2c20a3135063dade372f42b89020cbd7ebdca145ea887eaa0931990d3ad790ae`, file length 4,384,851 bytes. **Full 180-frame six-second vertical** output remains available as a local opt-in but has not been CI-tested. Root [CI #37959790269](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37959790269) also passed. Only metadata reports were uploaded, not source MOVs.
 - Windows Premiere-specific import, composite and export remain untested. Absence of Premiere should not block independent R&D.
 - Production adoption, rights to company assets, private NAS access, product UI animation art approval and safe zones for particular social platforms remain separate.
 - Human creative review is **always required**, especially on M11 (rejected) and M12 (frozen). Do not merge Draft PRs, change private advertisement State Engine or publish company media.
