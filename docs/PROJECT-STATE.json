@@ -190,10 +190,10 @@
       "number": 33,
       "label": "Isolated HyperFrames original HTML 9:16 moving renderer benchmark",
       "base": "main",
-      "head_sha": "2d520489c907992827b8434b799d3ea59c68622c",
+      "head_sha": "3873f6dbb1661c9cdfbd12c340b65dd8807550e2",
       "draft": true,
       "merged": false,
-      "technical_acceptance": "PASS_EXACT_HEAD_ZERO_LINT_WARNINGS_H264_30_FRAMES_MOVING_PIXELS",
+      "technical_acceptance": "PASS_EXACT_HEAD_ZERO_LINT_MOVING_PIXELS_TWO_INDEPENDENT_RENDER_RGB_MATCH",
       "creative_acceptance": "NOT_REVIEWED",
       "root_production_dependencies_changed": false,
       "engine_production_adoption": false,
@@ -331,9 +331,9 @@
       "main_merge_sha": "a6daabc22f0f7e7774b24f98209c22a6f18c5518"
     },
     "hyperframes_rnd": {
-      "exact_head": "2d520489c907992827b8434b799d3ea59c68622c",
-      "isolated_html_video_ci": 37965928853,
-      "root_ci": 37965928812,
+      "exact_head": "3873f6dbb1661c9cdfbd12c340b65dd8807550e2",
+      "isolated_html_video_ci": 37966633133,
+      "root_ci": 37966633129,
       "all_conclusions": "success",
       "upstream_cli_version": "0.8.143",
       "upstream_source_license": "Apache-2.0",
@@ -362,7 +362,14 @@
       "drive_preview_delivery": "NOT_VERIFIED__TRANSFER_RUNTIME_ERROR",
       "studio_native_editor": "NOT_TESTED",
       "visual_quality": "HUMAN_REVIEW_REQUIRED",
-      "production_integration": "NOT_AUTHORIZED"
+      "production_integration": "NOT_AUTHORIZED",
+      "sampled_cross_render_determinism": true,
+      "independent_render_count": 2,
+      "rerender_rgb_frame_checks": [
+        0,
+        15,
+        29
+      ]
     }
   },
   "evidence_docs": [
@@ -383,11 +390,10 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "Main handoff and README are canonical after docs merges #27 and #32; exact-head test evidence should always be refreshed against GitHub.",
-    "HyperFrames R&D Draft #33: original 1s 360x640 30fps CSS animation rendered with npm CLI 0.8.143; lint 0 errors/warnings; RGB at 0/15/29 changed; CI success. No main adoption, Studio editing or quality claim. Compare with matching Canvas case and actual watchable professional references before asking to change renderer.",
-    "R&D artifact original MP4 available from short-lived Actions; attempted Google Drive upload blocked by file runtime/session, do not claim delivered.",
-    "Motion QA #29 and stacked art M11/M12 still Draft/unapproved. Production renderer default Canvas+FFmpeg and approved optional foreground Alpha remain unchanged.",
-    "User delegated only low-risk exact-head-green technical/docs merges. Larger architecture/licensing/art choices require explicit approval; keep private advertising State Engine and company assets untouched."
+    "HyperFrames Draft #33 has real H264 original moving render and two independent runs matching RGB at frames 0/15/29 (CI 37966633133 / 37966633129); remains isolated and not approved for production. Native editor/large-scene/art review still needed.",
+    "Candidate original M12 visual direction references are registered in PRODUCT-UI-MOTION-REFERENCE-CANDIDATES-2026-10-10.md. Three public Vimeo pages verified by metadata, but footage was NOT played/frame-inspected. OWNER must verify playback and select or reject visual direction before M12 modification.",
+    "All other M11/M12 artistic Draft PRs remain frozen/rejected, private commercial State Engine and company assets untouched.",
+    "Main is the canonical handoff entrypoint. Low-risk CI-verified docs/test merges delegated, major engine/rights/art decisions still require approval."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
@@ -425,5 +431,20 @@
       "user_delegated_routine_approval": true,
       "docs_only": true
     }
-  ]
+  ],
+  "reference_candidates": {
+    "scope": "PRODUCT_UI_M12_ART_DIRECTION",
+    "document": "docs/PRODUCT-UI-MOTION-REFERENCE-CANDIDATES-2026-10-10.md",
+    "urls": [
+      "https://vimeo.com/1121391157",
+      "https://vimeo.com/978489092",
+      "https://vimeo.com/1197944203"
+    ],
+    "page_metadata_verified": true,
+    "full_videos_played_by_assistant": false,
+    "owner_video_playback_confirmed": false,
+    "media_reuse_rights": "NOT_GRANTED",
+    "m12_status": "FROZEN_UNAPPROVED",
+    "next_human_gate": "Owner watch A/B/C video pages; choose preferred motion direction or reject all. Do not recreate reference media."
+  }
 }
