@@ -9,7 +9,7 @@ import ffmpeg from 'ffmpeg-static';
 import ffprobe from 'ffprobe-static';
 
 const W=360,H=640,FPS=30,FRAME_COUNT=30;
-const html=readFileSync(new URL('./overlay.html',import.meta.url),'utf8');
+const html=readFileSync(new URL('../hyperframes-overlay/index.html',import.meta.url),'utf8');
 assert.match(html,/data-composition-id="original-alpha-overlay"/);
 assert.match(html,/background:transparent/);
 assert.ok(!/<(?:video|audio|iframe|script)|src\s*=|url\s*\(/i.test(html),
