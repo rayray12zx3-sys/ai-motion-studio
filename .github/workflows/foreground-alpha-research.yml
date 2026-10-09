@@ -7,6 +7,7 @@ on:
       - 'tests/foreground-compat.test.mjs'
       - 'experiments/foreground-qa/**'
       - 'scripts/render-foreground.mjs'
+      - 'docs/FOREGROUND-ALPHA-RND-2026-10-10.md'
       - '.github/workflows/foreground-alpha-research.yml'
   workflow_dispatch:
 
