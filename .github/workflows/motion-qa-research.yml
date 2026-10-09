@@ -35,12 +35,26 @@ jobs:
           node --check experiments/motion-qa/run-benchmark.mjs
           node --check experiments/motion-qa/render-second-benchmark.mjs
           node --check experiments/motion-qa/run-second-benchmark.mjs
+          node --check experiments/motion-qa/export-second-preview.mjs
       - name: Execute both unit and real Canvas-frame acceptance tests
         run: node --test experiments/motion-qa/tests/*.test.mjs
       - name: Render 400 original synthetic Canvas frames and verify QA findings
         run: node experiments/motion-qa/run-benchmark.mjs
       - name: Render second original 540-frame scene-cut and hold benchmark
         run: node experiments/motion-qa/run-second-benchmark.mjs
+      - name: Provision existing hash-verified FFmpeg for synthetic review clip
+        run: node scripts/setup-encoder.mjs
+      - name: Encode and verify second original 3-second preview
+        run: node experiments/motion-qa/export-second-preview.mjs
+      - name: Save playable second-original synthetic review clip
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: motion-qa-second-original-preview
+          path: |
+            out/motion-qa-synthetic-benchmark/second-original-preview-540x960.mp4
+            out/motion-qa-synthetic-benchmark/second-original-preview-info.json
+          retention-days: 2
+          if-no-files-found: error
       - name: Save sanitized synthetic QA report only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
