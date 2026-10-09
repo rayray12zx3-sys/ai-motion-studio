@@ -64,30 +64,54 @@ assert.ok(info.codec_tag_string==='ap4h'||info.profile==='4444',
 assert.equal(info.width,profile.width);
 assert.equal(info.height,profile.height);
 assert.equal(info.r_frame_rate,profile.fps+'/1');
+assert.equal(Number(info.nb_frames),profile.frames,
+  'ProRes container did not retain the exact expected frame count');
 assert.ok(info.pix_fmt?.startsWith('yuva444p'),
   'Foreground decoder does not expose an Alpha plane');
 const sampleIndex=selection==='vertical'?42:12;
-const pixelData=execFileSync(ffmpeg,[
-  '-nostdin','-hide_banner','-loglevel','error','-i',mov,
-  '-vf','select=eq(n\\,'+sampleIndex+')','-frames:v','1',
-  '-f','rawvideo','-pix_fmt','rgba','pipe:1'
-],{maxBuffer:profile.width*profile.height*4+1024*1024});
-assert.equal(pixelData.length,profile.width*profile.height*4);
-let top=0,visible=0;
-const topRows=Math.floor(profile.height*.20);
-for(let y=0;y<profile.height;y++)for(let x=0;x<profile.width;x++){
-  const a=pixelData[(y*profile.width+x)*4+3];
-  if(a>8)visible++;
-  if(y<topRows&&a!==0)top++;
+// Verify the *encoded and independently decoded* head/middle/tail alpha,
+// not just the source Canvas. This detects truncated streams, bad fades and
+// loss of transparency in the actual QuickTime/ProRes deliverable.
+function decodeMovFrame(index){
+  const decoded=execFileSync(ffmpeg,[
+    '-nostdin','-hide_banner','-loglevel','error','-i',mov,
+    '-vf','select=eq(n\\,'+index+')','-frames:v','1',
+    '-f','rawvideo','-pix_fmt','rgba','pipe:1'
+  ],{maxBuffer:profile.width*profile.height*4+1024*1024});
+  assert.equal(decoded.length,profile.width*profile.height*4,
+    'Incorrect decoded RGBA frame size at index '+index);
+  let top=0,visible=0;
+  const topRows=Math.floor(profile.height*.20);
+  for(let y=0;y<profile.height;y++)for(let x=0;x<profile.width;x++){
+    const a=decoded[(y*profile.width+x)*4+3];
+    if(a>8)visible++;
+    if(y<topRows&&a!==0)top++;
+  }
+  return {index,visible_alpha_pixels:visible,top_nonzero_alpha_pixels:top};
 }
-assert.equal(top,0,'Actual decoded MOV foreground upper area is not transparent');
-assert.ok(visible>150,'Actual decoded MOV contains no visible foreground');
+const samples=[
+  decodeMovFrame(0),
+  decodeMovFrame(sampleIndex),
+  decodeMovFrame(profile.frames-1)
+];
+for(const sample of samples)assert.equal(sample.top_nonzero_alpha_pixels,0,
+  'Upper stage lost transparency in decoded frame '+sample.index);
+assert.equal(samples[0].visible_alpha_pixels,0,
+  'First synthetic foreground frame is not empty/transparent');
+assert.ok(samples[1].visible_alpha_pixels>150,
+  'Actual decoded MOV contains no visible foreground at motion sample');
+assert.equal(samples[2].visible_alpha_pixels,0,
+  'Final synthetic foreground frame should fade fully transparent');
+const top=samples[1].top_nonzero_alpha_pixels;
+const visible=samples[1].visible_alpha_pixels;
 const report={
   status:'SYNTHETIC_CANVAS_FOREGROUND_PRORES4444_ALPHA_PASS',
   codec:info.codec_name,fourcc:info.codec_tag_string||null,
   decoder_pixel_format:info.pix_fmt,
   frame_count:profile.frames,
+  probed_frame_count:Number(info.nb_frames),
   sample_frame:sampleIndex,
+  decoded_alpha_samples:samples,
   width:profile.width,height:profile.height,fps:profile.fps,
   decoded_top_nonzero_alpha_pixels:top,
   decoded_visible_foreground_pixels:visible,
