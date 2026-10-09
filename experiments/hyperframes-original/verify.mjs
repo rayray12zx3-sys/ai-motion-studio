@@ -28,16 +28,21 @@ assert.equal(stream?.r_frame_rate,'30/1');
 assert.equal(Number(stream?.nb_frames),30);
 // Independently decode frames to prove this is *moving* rendered artwork,
 // rather than a static background placed in a 30-frame container.
-const decodedRGB=(index)=>{
+const decodedRGB=(movie,index)=>{
   const rgb=execFileSync(ffmpeg,[
-    '-nostdin','-v','error','-i',path,
+    '-nostdin','-v','error','-i',movie,
     '-vf','select=eq(n\\,'+index+')','-frames:v','1',
     '-f','rawvideo','-pix_fmt','rgb24','pipe:1'
   ],{maxBuffer:360*640*3+65536});
   assert.equal(rgb.length,360*640*3,'Bad decoded RGB frame '+index);
   return createHash('sha256').update(rgb).digest('hex');
 };
-const sourceFrames=[0,15,29].map(decodedRGB);
+const sourceFrames=[0,15,29].map(n=>decodedRGB(path,n));
+const repeatFile=resolve('out/hyperframes-original-repeat.mp4');
+const repeatFrames=[0,15,29].map(n=>decodedRGB(repeatFile,n));
+assert.deepEqual(repeatFrames,sourceFrames,
+ 'Same original authored animation must decode identical RGB frames across independent render processes');
+
 assert.notEqual(sourceFrames[0],sourceFrames[1],
  'Head-to-middle contains no visual motion');
 assert.notEqual(sourceFrames[1],sourceFrames[2],
@@ -50,7 +55,7 @@ const result={
  engine:'hyperframes',engine_npm_version:'0.8.143',
  width:360,height:640,fps:30,frames:30,
  codec:'h264',decoded_rgb_keyframe_sha256:sourceFrames,
- moving_pixels_verified:true,output_sha256:createHash('sha256').update(payload).digest('hex'),
+ moving_pixels_verified:true, independent_second_render_matching_rgb_frames:true,output_sha256:createHash('sha256').update(payload).digest('hex'),
  output_bytes:statSync(path).size,
  private_asset_used:false,
  installed_to_production:false,
