@@ -65,10 +65,10 @@
       "number": 29,
       "label": "Isolated synthetic motion QA (new independent R&D)",
       "base": "main",
-      "head_sha": "97fe92f12fe9b052d8434eab7a7b7faef4001d31",
+      "head_sha": "58eff62dac7db9a2d181537e62ac649980600c2c",
       "draft": true,
       "merged": false,
-      "technical_acceptance": "PASS_EXACT_HEAD_SYNTHETIC_ONLY",
+      "technical_acceptance": "PASS_EXACT_HEAD_400_RENDERED_ORIGINAL_CANVAS_FRAMES",
       "creative_acceptance": "HUMAN_REQUIRED_ALWAYS",
       "tests": [
         "ALPHA_OUTSIDE_DECLARED_SAFE_RECT",
@@ -76,7 +76,27 @@
         "UNEXPECTED_FREEZE",
         "CENTROID_JUMP"
       ],
-      "root_production_dependencies_changed": false
+      "root_production_dependencies_changed": false,
+      "benchmark": {
+        "frame_count": 80,
+        "scenario_count": 5,
+        "total_generated_frames": 400,
+        "profile": {
+          "width": 180,
+          "height": 320,
+          "fps": 30
+        },
+        "expected": {
+          "baseline": "PASS",
+          "blank": "BLOCKED",
+          "alpha-leak": "BLOCKED",
+          "teleport": "REVIEW",
+          "freeze": "REVIEW"
+        },
+        "report_format": "JSON_METRICS_ONLY",
+        "human_creative_approval": "REQUIRED",
+        "prod_integrated": false
+      }
     }
   ],
   "milestone_runs": {
@@ -105,10 +125,16 @@
       "technical_scope_only": true
     },
     "motion_qa": {
-      "head": "97fe92f12fe9b052d8434eab7a7b7faef4001d31",
-      "isolated_qa": 37948814359,
-      "root_ci": 37948814308,
+      "head": "58eff62dac7db9a2d181537e62ac649980600c2c",
+      "isolated_qa": 37951387748,
+      "root_ci": 37951387392,
       "all_conclusions": "success",
+      "benchmark_reference_run": 37951143429,
+      "benchmark_report_artifact_id": 11625758270,
+      "benchmark_report_sha256": "061959007d53fc29dd38422c28bfe3470063a90c8901ce3d4fb6d213cc7f058d",
+      "rendered_synthetic_frames": 400,
+      "intentional_hold_no_false_alarm": true,
+      "alpha_blank_jump_freeze_defects_detected": true,
       "report_retains_source_media": false,
       "not_aesthetic_approval": true
     }
@@ -130,10 +156,10 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "Advance independent motion QA R&D (#29) only after proving synthetic checks; evaluate representative *original* motion samples and quality benchmark before promotion.",
-    "Evaluate Motion Designer, Motion Video Kit, HTML Animation and HyperFrames from upstream terms in isolated sandbox; do not copy source media or adopt noncommercial tool for company ads.",
-    "Obtain actually playable Product-UI motion reference clips; M12 art stays frozen until operator approval.",
-    "Every new chat reads CONTINUE-HERE and PROJECT-STATE, then fetches live GitHub PR heads, issues and exact-head CI. Update PR and these docs after changes."
+    "Benchmark Motion QA Draft PR #29 on another independent original animated composition or user-reviewed synthetic clip; keep technical alerts separate from human art signoff.",
+    "Isolate and compare permitted open-source Motion Designer, Motion Video Kit, HTML Animation and HyperFrames to existing Canvas renderer only after license/media review.",
+    "Obtain actually playable Product-UI motion reference clips; do not rework M12 until operator aesthetic direction is approved.",
+    "Every new chat starts from CONTINUE-HERE + PROJECT-STATE then queries live GitHub PR heads, Issues and exact-head Actions; record every passing milestone to PR/Issue and these files."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
