@@ -217,6 +217,37 @@ try{
     captureBeyondViewport:false});
   writeFileSync(join(outputDir,'native-studio-outline-selected.png'),
     Buffer.from(selectedImage.data,'base64'));
+  // Locate the native time-sequence elements before attempting real drag.
+  // Diagnostics are synthetic-only and deliberately avoid recording browser storage.
+  const nativeTimelineGeometry=await evaluate(\`(()=>{
+    const roots=[document];const inspected=[];
+    for(let i=0;i<roots.length;i++){
+      for(const el of roots[i].querySelectorAll('*'))
+        if(el.shadowRoot)roots.push(el.shadowRoot);
+    }
+    const selectors=[
+      '[class*="keyframe" i]','[data-testid*="keyframe" i]',
+      '[aria-label*="keyframe" i]','[title*="keyframe" i]',
+      '[data-testid*="timeline" i]','[class*="timeline" i]',
+      '[data-testid*="sequence" i]','[class*="sequence" i]'
+    ];
+    for(const root of roots)for(const el of root.querySelectorAll(selectors.join(','))){
+      const rect=el.getBoundingClientRect();
+      if(rect.width<2||rect.height<2||rect.bottom<0||rect.top>innerHeight)continue;
+      inspected.push({
+        tag:el.tagName,
+        className:typeof el.className==='string'?el.className.slice(0,110):'',
+        role:el.getAttribute('role'),
+        aria:el.getAttribute('aria-label'),
+        title:el.getAttribute('title'),
+        testid:el.getAttribute('data-testid'),
+        rect:[Math.round(rect.x),Math.round(rect.y),Math.round(rect.width),Math.round(rect.height)],
+        outer:el.outerHTML.slice(0,330)
+      });
+    }
+    return inspected.slice(0,90);
+  })()\`);
+  console.log('M10_NATIVE_TIMELINE_GEOMETRY',JSON.stringify(nativeTimelineGeometry));
   const report={
     result:'PASS',test:'Actual headless Chromium edit+export -> Core -> Canvas',
     edited_keyframes:[{frame:15,x:60},{frame:45,x:-60}],
