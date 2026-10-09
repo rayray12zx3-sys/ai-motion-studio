@@ -53,6 +53,9 @@ export function evaluateProductUIChoreography(frame){
     cursor:{x:cursor[0],y:cursor[1],visible:1-fade(frame,72,88)},
     clickA,clickB,cardA:a,cardB:b,hero,
     cardBAlpha:1-fade(frame,75,88),
+    cardTextAlpha:1-fade(frame,67,83),
+    headerOldAlpha:1-fade(frame,79,92),
+    headerNewAlpha:fade(frame,94,107),
     matchLabelAlpha:1-fade(frame,78,94),
     resultAlpha:fade(frame,82,101),
     stageScale:1+.015*Math.sin(clamp((frame-65)/20)*Math.PI)*merge,
@@ -96,7 +99,7 @@ function cursor(ctx,s){
   }
   ctx.restore();
 }
-function drawCard(ctx,node,label,{active=0,alpha=1,highlight=0}={}){
+function drawCard(ctx,node,label,{active=0,alpha=1,highlight=0,textAlpha=1}={}){
   if(alpha<=0)return;
   ctx.save();ctx.globalAlpha=alpha;
   round(ctx,node.x,node.y,node.w,node.h,node.r,
@@ -104,7 +107,7 @@ function drawCard(ctx,node,label,{active=0,alpha=1,highlight=0}={}){
   // Small mark travels WITH the card during its shape morph.
   round(ctx,node.x+21,node.y+21,39,10,5,C.mint);
   text(ctx,label,node.x+node.w*.5,node.y+node.h*.54,
-    lerp(59,47,highlight),C.charcoal,{bold:true,align:'center',max:node.w*.8});
+    lerp(59,47,highlight),C.charcoal,{bold:true,align:'center',max:node.w*.8,alpha:textAlpha});
   ctx.restore();
 }
 function draw(ctx,s){
@@ -117,20 +120,21 @@ function draw(ctx,s){
   text(ctx,'01  /  INTERACTION',655,165,27,C.gray,{align:'right'});
   round(ctx,s.hero.x,s.hero.y,s.hero.w,s.hero.h,s.hero.r,C.charcoal);
   text(ctx,'TAP  TO  MATCH',72,296,68,C.off,
-    {bold:true,alpha:1-s.reveal,max:563});
+    {bold:true,alpha:s.headerOldAlpha,max:563});
   text(ctx,'CONNECTED',73,296,74,C.off,
-    {bold:true,alpha:s.reveal,max:555});
+    {bold:true,alpha:s.headerNewAlpha,max:555});
   text(ctx,'TWO STEPS / ONE MOTION',75,381,30,C.gray,
-    {alpha:1-s.reveal,max:540});
+    {alpha:s.headerOldAlpha,max:540});
   text(ctx,'MATCH COMPLETE',75,382,31,C.mint,
-    {bold:true,alpha:s.reveal,max:555});
+    {bold:true,alpha:s.headerNewAlpha,max:555});
   line(ctx,58,437,661,437,C.line,3);
   // The connector starts from the selection and grows into the merge.
   const link=s.pickA*s.pickB;
   line(ctx,201,617,lerp(201,524,link),617,C.amber,Math.max(1,7*link));
   // Two identical UI node objects converge to ONE shared shape.
-  drawCard(ctx,s.cardA,'A / 01',{active:s.pickA,highlight:s.merge});
-  drawCard(ctx,s.cardB,'B / 02',{active:s.pickB,alpha:s.cardBAlpha,highlight:s.merge});
+  drawCard(ctx,s.cardA,'A / 01',{active:s.pickA,highlight:s.merge,textAlpha:s.cardTextAlpha});
+  drawCard(ctx,s.cardB,'B / 02',{active:s.pickB,alpha:s.cardBAlpha,
+    highlight:s.merge,textAlpha:s.cardTextAlpha});
   text(ctx,'PAIR SELECTED',70,827,47,C.charcoal,
     {bold:true,alpha:s.matchLabelAlpha});
   // Retains the geometry of the morphed card to become result badge.
