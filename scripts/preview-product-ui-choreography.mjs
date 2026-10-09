@@ -17,6 +17,8 @@ const p={width:540,height:960,fps:30,frames:CHOREOGRAPHY_FRAMES};
 const folder=resolve('out/product-ui-choreography-review');
 if(existsSync(folder))throw new Error('Do not overwrite an existing visual review');
 mkdirSync(folder,{recursive:true});
+const alphaDir=join(folder,'transparent-frames');
+mkdirSync(alphaDir,{recursive:true});
 const dig=x=>createHash('sha256').update(x).digest('hex');
 function composite(alpha,{guide=false}={}){
  const canvas=createCanvas(p.width,p.height),ctx=canvas.getContext('2d');
@@ -43,10 +45,11 @@ const frames=[0,12,24,33,45,55,63,74,86,98,108,119];
 const tiles=[],hashes=[];
 for(let f=0;f<CHOREOGRAPHY_FRAMES;f++){
  const rendered=drawProductUIChoreographyFrame(p,f);
+ const original=rendered.toBuffer('image/png');
+ writeFileSync(join(alphaDir,'frame-'+String(f).padStart(3,'0')+'.png'),original);
  if(frames.includes(f)){
-   const png=rendered.toBuffer('image/png');
-   writeFileSync(join(folder,'frame-'+String(f).padStart(3,'0')+'.png'),png);
-   hashes.push({frame:f,sha256:dig(png)});
+   writeFileSync(join(folder,'frame-'+String(f).padStart(3,'0')+'.png'),original);
+   hashes.push({frame:f,sha256:dig(original)});
    tiles.push(composite(rendered,{guide:true}));
  }
  const canvas=composite(rendered);
@@ -64,6 +67,7 @@ writeFileSync(join(folder,'review-report.json'),JSON.stringify({
  duration_frames:CHOREOGRAPHY_FRAMES,seconds:4,video_profile:p,
  app_source_used:false,script_brand_copy_used:false,private_assets_used:false,
  platform_mask:'GENERIC_SAFE_RECT_ONLY_PRIVATE_RGBA_AUDIT_PENDING',
+ source_alpha_png_frames:CHOREOGRAPHY_FRAMES,
  creative_qc:'PENDING_HUMAN_REVIEW',commercial_release:'NOT_APPROVED',
  mp4_sha256:dig(readFileSync(outfile)),frame_hashes:hashes
 },null,2)+'\n');

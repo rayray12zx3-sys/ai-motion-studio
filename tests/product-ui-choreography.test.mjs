@@ -77,3 +77,10 @@ test('old and new interface lettering are never simultaneously drawn over each o
    if(frame>=83)assert.equal(s.cardTextAlpha,0,'card labels must clear before Combo reveal');
  }
 });
+
+test('old status tagline clears before new editorial result takes over',()=>{
+ for(let f=0;f<CHOREOGRAPHY_FRAMES;f++){
+   const s=evaluateProductUIChoreography(f);
+   assert.equal(s.matchLabelAlpha*s.resultAlpha,0,'status overlap at '+f);
+ }
+});
