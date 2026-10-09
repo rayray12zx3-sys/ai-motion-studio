@@ -33,11 +33,11 @@
       "number": 25,
       "label": "M11",
       "base": "feat/m10-theatre-private-assets-20261008",
-      "head_sha": "e6b285abedc90b0e83560ecb9984f8b389f2822c",
+      "head_sha": "722dca32f2a3604116009b81bfa30326d3736be8",
       "draft": true,
       "merged": false,
       "mergeable_at_snapshot": true,
-      "technical_acceptance": "PASS_ON_OWN_HEAD__COMBINED_BASE_NOT_RETESTED",
+      "technical_acceptance": "PASS_LATEST_M10_HEAD_PLUS_M11_COMBINED_TREE__NOT_ART_APPROVED",
       "creative_acceptance": "REJECTED"
     },
     {
@@ -76,6 +76,16 @@
       "core_reads_export": true,
       "canvas_changes": true,
       "reverse_seek_deterministic": true
+    },
+    "m11_combined": {
+      "m11_head": "722dca32f2a3604116009b81bfa30326d3736be8",
+      "live_m10_head": "8b09dbe046fe75253f0751603d0fafe722212053",
+      "synthetic_product_ui": 37947659914,
+      "node_ci": 37947660143,
+      "full_motion_regression": 37947659922,
+      "all_conclusions": "success",
+      "native_studio_drag_on_combined_tree": true,
+      "technical_scope_only": true
     }
   },
   "evidence_docs": [
@@ -91,14 +101,13 @@
     "ci_to_drive": "NOT_AUTOMATED"
   },
   "blocker_review": [
-    "M11 #25 mergeability was false in an old snapshot and true at the latest 2026-10-09 query; fetch live state, don't auto-merge.",
-    "M11 CI is not proof of integration with the most recent M10 base; verify the combined branch tree.",
+    "2026-10-09: M11 #25's fresh combined-tree CI with live M10 base passed. M11 and M12 creative approval remain blocked; live PR mergeability must always be rechecked.",
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "Verify stacked M10->M11 integration with synthetic tests in isolation, no M12 art changes.",
-    "Evaluate open-source motion tools with a reproducible synthetic benchmark and explicit license gates.",
-    "Record exact-head CI and any blockers in affected PR/Issue and this handoff entry."
+    "Trial permitted agent-oriented open-source animation QA methods on original synthetic inputs, keeping tools isolated from production.",
+    "Review actually playable high-quality motion reference videos and log verified licensing; M12 artwork changes require human approval.",
+    "Keep each source change tied to exact-head CI, update PR/Issue and this continuation entry. No automatic merges."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
