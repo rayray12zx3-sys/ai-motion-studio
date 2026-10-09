@@ -18,7 +18,8 @@ const spring=t=>{
   const v=clamp(t);
   const response=1-Math.exp(-8*v)*(Math.cos(11*v)+(8/11)*Math.sin(11*v));
   const norm=1-Math.exp(-8)*(Math.cos(11)+(8/11)*Math.sin(11));
-  return clamp(response/norm)*1.022;
+  // Normalize exact endpoint, allowing at most 2.2% transient overshoot.
+  return v===1?1:Math.min(1.022,Math.max(0,response/norm));
 };
 const range=(f,start,end)=>spring((f-start)/(end-start));
 const fade=(f,start,end)=>between(f,start,end);
