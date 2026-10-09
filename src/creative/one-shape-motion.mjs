@@ -23,10 +23,15 @@ const interp=(f,a,b)=>damped((f-a)/(b-a));
 const enter=(f,a,b)=>smooth((f-a)/(b-a));
 const leave=(f,a,b)=>1-enter(f,a,b);
 const nodes=[
- [350,630,280,8,4],[350,630,280,8,4],[350,630,470,116,55],
- [350,630,460,116,55],[350,630,108,108,54],
- [350,630,108,108,54],[350,630,512,208,39],
- [350,630,512,208,39],[350,630,535,140,69]
+ [350,630,280,8,4],       // beat 1: one underline
+ [350,630,280,8,4],       // beat 2: grow into button
+ [350,630,470,116,55],    // beat 3: press to loader
+ [350,630,108,108,54],    // beat 4: spinner -> check
+ [350,630,108,108,54],    // beat 5: grow into summary
+ [350,630,512,208,39],    // beat 6: direct slider interaction
+ [350,630,512,208,39],    // beat 7: become Combo
+ [350,630,535,140,69],    // beat 8: deliberate exit
+ [350,639,16,7,3]
 ];
 const color=(a,b,t)=>{
  const components=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));
@@ -38,11 +43,7 @@ export function evaluateOneShape(frame){
  const beat=Math.floor(frame/BEAT_FRAMES);
  const s=interp(frame,beat*15,(beat+1)*15);
  const geom=nodes[beat].map((v,i)=>lerp(v,nodes[beat+1][i],s));
- if(frame>=105){
-   const x=interp(frame,105,120);
-   geom[2]=lerp(535,16,x);geom[3]=lerp(140,7,x);
-   geom[4]=lerp(69,3,x);
- }
+
  const [x,y,w,h,r]=geom;
  const drag=enter(frame,76,89);
  const pointerAlpha=enter(frame,19,25)*leave(frame,39,45)+
