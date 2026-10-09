@@ -28,6 +28,11 @@ jobs:
           cache: npm
       - name: Install original repository dependencies without changing lock
         run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Expose existing pin-verified FFmpeg and FFprobe to isolated CLI
+        run: |
+          node scripts/setup-encoder.mjs
+          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
+          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
       - name: Verify upstream R&D CLI package version
         run: |
           npm view hyperframes@0.8.143 version
