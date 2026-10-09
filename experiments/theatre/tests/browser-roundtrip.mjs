@@ -1,0 +1,156 @@
+// Public synthetic-only M10 acceptance: real Chromium DOM edit/export -> Theatre Core -> Canvas.
+// Uses Node 24's built-in WebSocket and the verified Ubuntu hosted-runner Chrome.
+// No Playwright download, secret, company asset, external HTTP source or paid runtime.
+import assert from 'node:assert/strict';
+import {spawn} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {existsSync,readFileSync,mkdirSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import theatre from '@theatre/core';
+import {createKeyframedCanvasRenderer} from '../src/canvas-renderer.mjs';
+
+const root=dirname(dirname(fileURLToPath(import.meta.url)));
+const privateDir=mkdtempSync(join(tmpdir(),'m10-chromium-'));
+const downloadDir=join(privateDir,'downloads');
+mkdirSync(downloadDir);
+const outputDir=join(root,'out','browser-qa');
+mkdirSync(outputDir,{recursive:true});
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function waitFor(fn,label,timeout=18000){
+  const deadline=Date.now()+timeout;
+  while(Date.now()<deadline){
+    try{const value=await fn();if(value)return value;}catch{}
+    await sleep(150);
+  }
+  throw new Error('Timed out: '+label);
+}
+let chrome,server,ws;
+const pending=new Map();
+let nextId=0;
+async function send(method,params={}){
+  const id=++nextId;
+  return new Promise((resolve,reject)=>{
+    const timeout=setTimeout(()=>{pending.delete(id);reject(new Error('CDP timed out: '+method));},15000);
+    pending.set(id,{resolve,reject,timeout});
+    ws.send(JSON.stringify({id,method,params}));
+  });
+}
+async function evaluate(expression){
+  const result=await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});
+  if(result.exceptionDetails)throw new Error('Browser JS error: '+JSON.stringify(result.exceptionDetails));
+  return result.result?.value;
+}
+async function click(selector){
+  const coords=await evaluate("(()=>{const e=document.querySelector("+JSON.stringify(selector)+");if(!e)throw Error('Missing control');e.scrollIntoView({block:'center'});const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()");
+  assert.ok(Number.isFinite(coords.x)&&Number.isFinite(coords.y));
+  await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:coords.x,y:coords.y});
+  await send('Input.dispatchMouseEvent',{type:'mousePressed',x:coords.x,y:coords.y,button:'left',clickCount:1});
+  await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:coords.x,y:coords.y,button:'left',clickCount:1});
+}
+async function setKeyframe(frame,value){
+  await evaluate("(()=>{const seek=document.querySelector('#seek');seek.value="+JSON.stringify(String(frame))+";seek.dispatchEvent(new Event('input',{bubbles:true}));const x=document.querySelector('#keyframe-x');x.value="+JSON.stringify(String(value))+";x.dispatchEvent(new Event('input',{bubbles:true}));})()");
+  await click('#set-keyframe');
+  const status=await evaluate("document.querySelector('#edit-status').textContent");
+  assert.ok(status.includes('Keyframe x='+value+' @ frame '+frame),status);
+}
+try{
+  const chromeBinary=process.env.CHROME_BIN||'/usr/bin/google-chrome';
+  server=spawn(process.execPath,[join(root,'scripts','serve.mjs')],{cwd:root,stdio:'pipe'});
+  await waitFor(async()=>{
+    const response=await fetch('http://127.0.0.1:4178/');
+    return response.ok;
+  },'local editor HTTP server');
+  chrome=spawn(chromeBinary,[
+    '--headless=new','--no-sandbox','--disable-dev-shm-usage',
+    '--remote-allow-origins=*','--remote-debugging-port=0',
+    '--user-data-dir='+privateDir,'about:blank'
+  ],{stdio:'pipe'});
+  const activePort=join(privateDir,'DevToolsActivePort');
+  await waitFor(()=>existsSync(activePort),'Chrome DevTools port');
+  const port=Number(readFileSync(activePort,'utf8').split('\n')[0]);
+  assert.ok(port>0&&port<65536);
+  const targets=await(await fetch('http://127.0.0.1:'+port+'/json/list')).json();
+  const page=targets.find(item=>item.type==='page');
+  assert.ok(page?.webSocketDebuggerUrl,'Browser page CDP endpoint missing');
+  ws=new WebSocket(page.webSocketDebuggerUrl);
+  await new Promise((resolve,reject)=>{
+    ws.addEventListener('open',resolve,{once:true});
+    ws.addEventListener('error',reject,{once:true});
+  });
+  ws.addEventListener('message',event=>{
+    const message=JSON.parse(event.data);
+    if(!message.id)return;
+    const task=pending.get(message.id);if(!task)return;
+    pending.delete(message.id);clearTimeout(task.timeout);
+    if(message.error)task.reject(new Error('CDP '+message.error.message));
+    else task.resolve(message.result||{});
+  });
+  await send('Page.enable');
+  await send('Runtime.enable');
+  await send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloadDir,eventsEnabled:true});
+  await send('Page.navigate',{url:'http://127.0.0.1:4178/'});
+  await waitFor(async()=>await evaluate("document.body?.dataset?.theatreReady==='true'"),'Theatre Studio page readiness');
+  await setKeyframe(15,60);
+  await setKeyframe(45,-60);
+  const image=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+  writeFileSync(join(outputDir,'theatre-browser.png'),Buffer.from(image.data,'base64'));
+  await click('#export');
+  const exportPath=join(downloadDir,'m10-state.json');
+  await waitFor(()=>existsSync(exportPath)&&readFileSync(exportPath).length>100,'Studio Export JSON download');
+  const state=JSON.parse(readFileSync(exportPath,'utf8'));
+  const track=state?.sheetsById?.Canvas?.sequence?.tracksByObject?.['Practice Card'];
+  assert.ok(track?.trackIdByPropPath?.['["x"]'],'Studio export lacks x track');
+  const xTrack=track.trackData[track.trackIdByPropPath['["x"]']];
+  for(const [position,value] of [[0.5,60],[1.5,-60]]){
+    assert.ok(xTrack.keyframes.some(k=>Math.abs(k.position-position)<1e-6&&k.value===value),
+      'Missing genuine exported keyframe at '+position+'s');
+  }
+  const project=theatre.getProject('M10 Browser Export Core Probe',{state});
+  const sheet=project.sheet('Canvas');
+  const card=sheet.object('Practice Card',{
+    x:theatre.types.number(0,{range:[-200,200]}),
+    opacity:theatre.types.number(1,{range:[0,1]}),
+    rotation:theatre.types.number(0,{range:[-180,180]}),
+    scale:theatre.types.number(1,{range:[0.5,2]})
+  });
+  await project.ready;
+  for(const [frame,value] of [[15,60],[45,-60]]){
+    sheet.sequence.position=frame/30;
+    assert.equal(card.value.x,value,'Core did not read Studio exported keyframe '+frame);
+  }
+  const render=await createKeyframedCanvasRenderer({
+    state,projectId:'M10 Exported Browser Canvas',
+    background:'transparent',placement:'lower-third'
+  });
+  const profile={width:360,height:640,fps:30,frames:91};
+  const f15=render(profile,15).toBuffer('image/png');
+  const f45=render(profile,45).toBuffer('image/png');
+  assert.notDeepEqual(f15,f45,'Edited frames must differ');
+  render(profile,75);
+  assert.deepEqual(render(profile,15).toBuffer('image/png'),f15,'Random access must be deterministic');
+  const canvas=render(profile,15);
+  const pixels=canvas.getContext('2d').getImageData(0,0,360,640).data;
+  let upper=0,lower=0;
+  for(let y=0;y<640;y++)for(let x=0;x<360;x++){
+    const alpha=pixels[(y*360+x)*4+3];
+    if(y<270&&alpha>0)upper++;
+    if(y>320&&alpha>0)lower++;
+  }
+  assert.equal(upper,0,'Non-overlay top area must stay transparent');
+  assert.ok(lower>500,'Lower-third alpha was blank');
+  const report={
+    result:'PASS',test:'Actual headless Chromium edit+export -> Core -> Canvas',
+    edited_keyframes:[{frame:15,x:60},{frame:45,x:-60}],
+    imported_export:true,alpha_upper_nonzero:upper,alpha_lower_nonzero:lower,
+    deterministic_random_access:true,
+    export_sha256:createHash('sha256').update(readFileSync(exportPath)).digest('hex')
+  };
+  writeFileSync(join(outputDir,'browser-qa.json'),JSON.stringify(report,null,2)+'\n');
+  console.log('M10_REAL_BROWSER_ROUNDTRIP_PASS '+JSON.stringify(report));
+}finally{
+  if(ws){try{ws.close();}catch{}}
+  for(const child of [chrome,server]){if(child&&child.exitCode===null)child.kill('SIGTERM');}
+  rmSync(privateDir,{recursive:true,force:true});
+}
