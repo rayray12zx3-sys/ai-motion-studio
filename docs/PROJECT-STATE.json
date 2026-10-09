@@ -4,7 +4,7 @@
   "timezone": "Asia/Taipei",
   "repo": "rayray12zx3-sys/ai-motion-studio",
   "entrypoint": "docs/CONTINUE-HERE.md",
-  "entrypoint_branch": "docs/coordination-pre-reference-20261009",
+  "entrypoint_branch": "main",
   "scope": "Personal tool for creating videos that may be commercial advertisements; code/tool/media/output licenses separate.",
   "live_verification_required": true,
   "priority_rule": "On every continuation fetch current GitHub PR metadata, exact PR-head Actions and Issues before acting. This JSON is a snapshot, not live state.",
@@ -75,11 +75,12 @@
       "number": 27,
       "label": "Coordination and licenses",
       "base": "main",
-      "draft": true,
-      "merged": false,
-      "head_sha": "SNAPSHOT_CHANGES_DURING_DOCS_UPDATES__FETCH_LIVE",
-      "mergeable_at_snapshot": true,
-      "technical_acceptance": "DOCS_ONLY"
+      "draft": false,
+      "merged": true,
+      "head_sha": "e46fb08decd61cfc9398e672f99389ecc775a8b6",
+      "mergeable_at_snapshot": "MERGED",
+      "technical_acceptance": "MERGED_DOCS_ONLY_VERIFIED_CI",
+      "merge_commit_sha": "139ffb39a4cc96ea0809f7cb902cf9786037d4b"
     },
     {
       "number": 29,
@@ -333,10 +334,11 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "PR #31 is squash-merged into main a6daabc following delegated approval for routine narrow backward-compatible tested changes. Do not ask for permission for every comparable low-risk merge; log preflight and outcome.",
-    "PR #27 docs-only handoff currently marked GitHub mergeable:false after main advanced; do NOT force merge. Preserve canonical docs-branch links and re-evaluate later. Update this state on every milestone.",
-    "Motion QA PR #29 remains Draft; do not silently adopt a standalone R&D quality judge into production. Try isolated benchmarks and tools, obtain actual watchable references before M12 art.",
-    "All merge actions must recheck actual PR diff, up-to-date status, exact-head CI and permissions; risky or artistic decisions still need user input."
+    "Canonical CONTINUE-HERE.md and PROJECT-STATE.json were published to main via PR #27 squash 139ffb39; do not use stale draft branch as the primary source. Always query live PRs and checks.",
+    "PRs #30 and #31 are merged; optional transparent foreground and verified MOV frame-count/head-mid-tail decoder exist on main, opaque render default unchanged.",
+    "M9–M12 stacked animation features and Motion QA R&D #29 remain separate drafts. Avoid merging art/production or third-party tools without source licensing and human review.",
+    "Continue isolated benchmark-based evaluation of permissively licensed tools; prioritize actual watchable examples. M12 visually frozen until owner approval.",
+    "User delegated exact-head CI-green low-risk technical and docs merges only. No broad automatic merge or company asset/State Engine changes."
   ],
   "forbidden_identifiers_in_public_status": [
     "company source paths",
@@ -365,6 +367,14 @@
       "user_delegated_routine_approval": true,
       "opaque_h264_default_unchanged": true,
       "private_ad_state_engine_changed": false
+    },
+    {
+      "pr": 27,
+      "feature": "canonical_handoff_and_license_register",
+      "merge_method": "squash",
+      "merge_commit_sha": "139ffb39a4cc96ea0809f7cb902cf9786037d4b",
+      "user_delegated_routine_approval": true,
+      "docs_only": true
     }
   ]
 }
