@@ -110,7 +110,7 @@
         "report_format": "JSON_METRICS_ONLY_NO_MEDIA",
         "human_creative_approval": "REQUIRED",
         "video_preview": {
-          "status": "ENCODED_VERIFIED_ARTIFACT_ONLY",
+          "status": "ENCODED_VERIFIED_DELIVERED_TO_APPROVED_PRIVATE_DRIVE",
           "sha256": "f3b62d50f22bca4ff25b9368f74379e7304b98df43deddd307dbe1b9df3c6add",
           "codec": "h264",
           "width": 540,
@@ -119,7 +119,7 @@
           "frames": 90,
           "seconds": 3,
           "artifact_id": 11629000249,
-          "google_drive_delivery": "NOT_CONFIRMED"
+          "google_drive_delivery": "CONFIRMED_BY_UPLOADER_AND_FOLDER_LISTING"
         },
         "opaque_main_renderer_integration": "NOT_IMPLEMENTED__FOREGROUND_MASK_REQUIRED",
         "prod_integrated": false
@@ -170,7 +170,7 @@
       "second_metrics_sha256": "33d2a919f9a6fabb667238468eb2300cb279cf59da3624afff573856047f8e34",
       "first_metrics_sha256": "061959007d53fc29dd38422c28bfe3470063a90c8901ce3d4fb6d213cc7f058d",
       "preview_mp4_sha256": "f3b62d50f22bca4ff25b9368f74379e7304b98df43deddd307dbe1b9df3c6add",
-      "preview_gdrive": "UPLOAD_FAILED_CONTAINER_SESSION_EXPIRED__NO_PROVIDER_ID",
+      "preview_gdrive": "CONFIRMED_PRIVATE_PROVIDER_UPLOAD_AND_FOLDER_LISTING__10330_BYTES",
       "report_retains_source_media": false,
       "not_aesthetic_approval": true
     }
@@ -192,7 +192,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
-    "Obtain operator-accessible 3-second second-original preview in the approved private Google Drive folder using a verified connector file reference. The first upload attempt failed with container_session_expired; no success/Drive URL should be claimed.",
+    "3-second 540x960 H264 original synthetic preview is delivered to the approved private Google Drive review folder (provider upload + folder listing confirmed; private ID withheld from public GitHub). Request aesthetic feedback only when the video is intentionally being evaluated; this QA test is not M12 direction approval.",
     "Before promoting Motion QA into the opaque Canvas+FFmpeg main renderer, design a foreground-only alpha/mask view or other validated separation. Current final MP4 has a fully opaque gradient and naive Alpha-safe checks would falsely flag the plate.",
     "Review professional *watchable* Product UI motion references with source/right checks and compare permissive external frameworks in isolated lanes. M12 visual edits remain frozen until human creative direction.",
     "Every conversation begins with CONTINUE-HERE + PROJECT-STATE, then fetches current GitHub PR heads and exact-head CI. Preserve status changes on PR #29 and coordination Draft #27."
