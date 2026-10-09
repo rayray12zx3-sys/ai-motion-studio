@@ -30,6 +30,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+          fetch-depth: 0 # needed for a disposable exact-latest-base merge
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "24.19.0"
@@ -38,21 +39,27 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: All source and alpha safe-zone tests
         run: npm run lint && npm run typecheck && npm test
-      # GitHub checks out the pull_request merge ref, not just the old M11
-      # branch HEAD. These assertions prevent a stale-green M11 status from
-      # substituting for the latest M10->M11 combined-tree acceptance.
-      - name: Confirm live M10-base and M11-head merge checkout
+      # PR event merge refs can be stale when the M10 base branch advances.
+      # Fetch the live M10 branch and merge only in this disposable runner.
+      # Never push, rewrite the M11 branch, touch main or claim art approval.
+      - name: Test exactly the latest M10 base combined with M11
         if: github.event_name == 'pull_request'
         env:
-          EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
-          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          BASE_BRANCH: ${{ github.base_ref }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
-          parents="$(git show -s --format=%P HEAD)"
-          set -- $parents
-          test "$#" -eq 2
-          test "$1" = "$EXPECTED_BASE"
-          test "$2" = "$EXPECTED_HEAD"
-          echo "Verified stacked merge checkout: base=$EXPECTED_BASE head=$EXPECTED_HEAD"
+          set -euo pipefail
+          test "$BASE_BRANCH" = "feat/m10-theatre-private-assets-20261008"
+          test -n "$PR_HEAD"
+          git fetch --no-tags origin "refs/heads/$BASE_BRANCH:refs/remotes/origin/$BASE_BRANCH"
+          latest="$(git rev-parse "refs/remotes/origin/$BASE_BRANCH")"
+          test -n "$latest"
+          echo "Fetched current M10 base SHA: $latest"
+          echo "M11 PR head in event: $PR_HEAD"
+          git merge --no-commit --no-ff "$latest"
+          test "$(git hash-object experiments/theatre/tests/browser-roundtrip.mjs)" = "$(git rev-parse "$latest:experiments/theatre/tests/browser-roundtrip.mjs")"
+          echo "Latest M10 native browser test source matches actual fetched base."
+          echo "Integration tree = event PR merge ref + latest M10 $latest" >> "$GITHUB_STEP_SUMMARY"
       - name: Verify newest M10 Core and isolated lock on combined tree
         run: |
           test -f experiments/theatre/package-lock.json
