@@ -17,11 +17,6 @@ function validateSafeRect(s,width,height){
 function boundingBox(minX,minY,maxX,maxY){
   return maxX<0?null:{left:minX,top:minY,right:maxX,bottom:maxY};
 }
-const hiddenRgbIgnored=(a,b,alphaThreshold)=>{
-  const av=a[3]>alphaThreshold,bv=b[3]>alphaThreshold;
-  if(!av&&!bv)return true;
-  return false;
-}
 export function analyzeMotionFrames({
   frames,width,height,safeRect,
   alphaThreshold=8,colorDeltaThreshold=20,
@@ -66,9 +61,8 @@ export function analyzeMotionFrames({
       }
       if(previous){
         const prevAlpha=previous[offset+3];
-        if(hiddenRgbIgnored(
-          [0,0,0,prevAlpha],[0,0,0,a],alphaThreshold
-        ))continue;
+        // Avoid reading invisible RGB matte and per-pixel allocations.
+        if(prevAlpha<=alphaThreshold&&!isVisible)continue;
         const alphaChanged=Math.abs(a-prevAlpha)>alphaThreshold;
         const rgbChanged=isVisible&&prevAlpha>alphaThreshold&&(
           Math.abs(data[offset]-previous[offset])>colorDeltaThreshold||
