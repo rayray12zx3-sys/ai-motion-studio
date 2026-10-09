@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M10 Theatre.js Studio test</title>
+<style>
+body{margin:0;background:#14262b;color:#faf9ec;font:16px system-ui,sans-serif}
+main{max-width:900px;margin:32px auto;padding:18px}
+p{color:#bcd0c9;line-height:1.5}
+.stage{display:grid;place-items:center;height:310px;background:#e7f0e8;border-radius:12px;overflow:hidden}
+#card{display:grid;place-items:center;width:190px;height:96px;background:#167d6b;color:white;border-radius:16px;font-weight:800}
+.controls{display:flex;align-items:center;gap:15px;margin-top:20px}
+#seek{flex:1}button{padding:10px}
+</style></head><body><main>
+<h1>Motion Studio / Theatre.js Editing Test</h1>
+<p>Public synthetic animation. Use Theatre.js Studio to edit keyframes and
+properties, then export JSON. Do not load private company media here.</p>
+<section class="stage"><div id="card">PRACTICE / 01</div></section>
+<div class="controls"><label for="seek">Timeline</label>
+<input id="seek" type="range" min="0" max="90" step="1" value="0">
+<output id="clock">0.00 sec</output><button id="export">Export JSON</button></div>
+<div class="controls">
+  <label for="keyframe-x">Practice Card x keyframe (-200..200)</label>
+  <input id="keyframe-x" type="number" min="-200" max="200" step="1" value="60">
+  <button id="set-keyframe">Set Theatre Keyframe</button>
+  <output id="edit-status" aria-live="polite">No edits yet</output>
+</div>
+<p>Studio is for design only. Production uses Core with the exported state.</p>
+</main><script type="module" src="/bundle.js"></script></body></html>

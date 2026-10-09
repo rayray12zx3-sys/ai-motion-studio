@@ -1,0 +1,58 @@
+name: M10 Theatre Core and Studio Integration Spike
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/theatre/**'
+      - 'src/creative/asset-authorization.mjs'
+      - 'tests/asset-authorization.test.mjs'
+      - '.github/workflows/m10-theatre-spike.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: m10-theatre-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  theatre-spike:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.19.0"
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install existing pinned Canvas production dependency graph
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install isolated pinned Theatre packages from committed lock
+        run: npm ci --prefix experiments/theatre --ignore-scripts --no-audit --no-fund
+      - name: Verify isolated lockfile remains unchanged
+        run: git diff --exit-code -- experiments/theatre/package-lock.json
+      - name: Actual Node Theatre Core random-access keyframe probe
+        run: npm test --prefix experiments/theatre
+      - name: Compile browser-only AGPL Studio development UI
+        run: npm run bundle --prefix experiments/theatre
+      - name: Real Chromium Studio keyframe edit export and Core Canvas roundtrip
+        run: node experiments/theatre/tests/browser-roundtrip.mjs
+      - name: Preserve synthetic browser QA report and screenshot
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: m10-browser-qa
+          path: experiments/theatre/out/browser-qa/
+          retention-days: 2
+          if-no-files-found: warn
+      - name: Save reproducible nested package-lock for PR adoption
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: m10-isolated-dependency-lock
+          path: experiments/theatre/package-lock.json
+          retention-days: 1
+          if-no-files-found: error
