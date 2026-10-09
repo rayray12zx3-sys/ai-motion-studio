@@ -107,34 +107,6 @@ try{
     }catch{}
     throw error;
   }
-  // Inspect the actual Theatre Studio UI through Chromium's real DOM.
-  // This is a native-interface *probe*, not a claim that native dragging is proven.
-  // Do not silently count our own #set-keyframe button as a Studio UI control.
-  const nativeProbe=await evaluate(`(()=>{
-    const found=[];
-    const walk=(root,depth)=>{
-      if(depth>5)return;
-      for(const el of root.querySelectorAll('*')){
-        if(el.shadowRoot)walk(el.shadowRoot,depth+1);
-        if(el.textContent?.trim()!=='Practice Card')continue;
-        const rect=el.getBoundingClientRect();
-        if(rect.width<3||rect.height<3||rect.width>400||rect.height>100)continue;
-        const cs=getComputedStyle(el);
-        if(cs.visibility==='hidden'||cs.display==='none')continue;
-        found.push({
-          tag:el.tagName,
-          className:typeof el.className==='string'?el.className.slice(0,100):'',
-          id:el.id?.slice(0,80),
-          left:Math.round(rect.left),top:Math.round(rect.top),
-          width:Math.round(rect.width),height:Math.round(rect.height),
-          outer:el.outerHTML.slice(0,380)
-        });
-      }
-    };
-    walk(document,0);
-    return found.slice(0,30);
-  })()`);
-  console.log('M10_NATIVE_STUDIO_OUTLINE_PROBE',JSON.stringify(nativeProbe));
   await setKeyframe(15,60);
   await setKeyframe(45,-60);
   const image=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
@@ -217,60 +189,6 @@ try{
     captureBeyondViewport:false});
   writeFileSync(join(outputDir,'native-studio-outline-selected.png'),
     Buffer.from(selectedImage.data,'base64'));
-  // Locate the native time-sequence elements before attempting real drag.
-  // Diagnostics are synthetic-only and deliberately avoid recording browser storage.
-  const nativeTimelineGeometry=await evaluate(`(()=>{
-    const roots=[document];const inspected=[];
-    for(let i=0;i<roots.length;i++){
-      for(const el of roots[i].querySelectorAll('*'))
-        if(el.shadowRoot)roots.push(el.shadowRoot);
-    }
-    const selectors=[
-      '[class*="keyframe" i]','[data-testid*="keyframe" i]',
-      '[aria-label*="keyframe" i]','[title*="keyframe" i]',
-      '[data-testid*="timeline" i]','[class*="timeline" i]',
-      '[data-testid*="sequence" i]','[class*="sequence" i]'
-    ];
-    for(const root of roots)for(const el of root.querySelectorAll(selectors.join(','))){
-      const rect=el.getBoundingClientRect();
-      if(rect.width<2||rect.height<2||rect.bottom<0||rect.top>innerHeight)continue;
-      inspected.push({
-        tag:el.tagName,
-        className:typeof el.className==='string'?el.className.slice(0,110):'',
-        role:el.getAttribute('role'),
-        aria:el.getAttribute('aria-label'),
-        title:el.getAttribute('title'),
-        testid:el.getAttribute('data-testid'),
-        rect:[Math.round(rect.x),Math.round(rect.y),Math.round(rect.width),Math.round(rect.height)],
-        outer:el.outerHTML.slice(0,330)
-      });
-    }
-    return inspected.slice(0,90);
-  })()`);
-  console.log('M10_NATIVE_TIMELINE_GEOMETRY',JSON.stringify(nativeTimelineGeometry));
-  const nativeTimelineHit=await evaluate(`(()=>{
-    const hits=[];
-    for(const [x,y] of [[344,350],[344,322],[312,350],[376,350],[248,350]]){
-      const chain=[];let root=document;let node;
-      for(let level=0;level<8;level++){
-        node=root.elementFromPoint?.(x,y);
-        if(!node)break;
-        const bbox=node.getBoundingClientRect();
-        chain.push({tag:node.tagName,cls:typeof node.className==='string'?node.className:node.className?.baseVal,
-          text:node.textContent?.trim().slice(0,55),
-          box:[Math.round(bbox.x),Math.round(bbox.y),Math.round(bbox.width),Math.round(bbox.height)],
-          html:node.outerHTML.slice(0,400)});
-        if(!node.shadowRoot)break;root=node.shadowRoot;
-      }
-      const ancestors=[];
-      for(let p=node,n=0;p&&n<4;p=p.parentElement,n++)ancestors.push({tag:p.tagName,
-         cls:typeof p.className==='string'?p.className:p.className?.baseVal,html:p.outerHTML.slice(0,200)});
-      hits.push({x,y,chain,ancestors});
-    }
-    return {viewport:[innerWidth,innerHeight],hits};
-  })()`);
-  console.log('M10_NATIVE_TIMELINE_HIT_TEST',JSON.stringify(nativeTimelineHit));
-
   // This is a NATIVE Studio drag: only Chromium mouse events modify the keyframe.
   // Resolve the target through Theatre's own exported keyframe ID and Studio DOM.
   const idToMove=xTrack.keyframes.find(k=>Math.abs(k.position-1.5)<1e-6&&k.value===-60)?.id;
@@ -296,8 +214,7 @@ try{
   };
   const startKey=await nativeLookup(idToMove);
   const t0=await nativeLookup('x0');
-  const t1=await nativeLookup('x1');
-  console.log('M10_NATIVE_DRAG_COORDINATES',JSON.stringify({startKey,t0,t1}));
+  console.log('M10_NATIVE_DRAG_COORDINATES',JSON.stringify({startKey,t0}));
   assert.ok(startKey?.w>=10&&startKey?.h>=10&&t0,
     'Native Studio x keyframes not visible');
   // Compare the exported 1.5s keyframe to its own 0s anchor to avoid
@@ -306,7 +223,6 @@ try{
   assert.ok(pxPerSecond>28&&pxPerSecond<300,'Unexpected Studio timeline scale');
   const destX=startKey.x+pxPerSecond*0.35;
   assert.ok(destX<startKey.viewport[0]-35&&startKey.y<startKey.viewport[1]-10);
-  await evaluate("(()=>{window.__m10PointerTrace=[];for(const kind of ['mousedown','mousemove','mouseup'])document.addEventListener(kind,event=>{if(window.__m10PointerTrace.length>=36)return;window.__m10PointerTrace.push({kind,clientX:event.clientX,screenX:event.screenX,movementX:event.movementX,buttons:event.buttons,button:event.button,target:event.composedPath().slice(0,2).map(x=>x?.getAttribute?.('data-pi-key')||x?.tagName)});},{capture:true});})()");
   await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:startKey.x,y:startKey.y});
   await send('Input.dispatchMouseEvent',{type:'mousePressed',x:startKey.x,y:startKey.y,
     button:'left',buttons:1,clickCount:1});
@@ -318,9 +234,6 @@ try{
   await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:destX,y:startKey.y,
     button:'left',buttons:0,clickCount:1});
   await sleep(160);
-  const pointerTrace=await evaluate("window.__m10PointerTrace");
-  console.log('M10_NATIVE_POINTER_TRACE',JSON.stringify(pointerTrace));
-  console.log('M10_NATIVE_KEYFRAME_AFTER_POINTER',JSON.stringify(await nativeLookup(idToMove)));
   const dragShot=await send('Page.captureScreenshot',{format:'png',
     captureBeyondViewport:false});
   writeFileSync(join(outputDir,'native-studio-keyframe-drag.png'),
