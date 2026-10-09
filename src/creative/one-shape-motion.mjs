@@ -53,7 +53,7 @@ export function evaluateOneShape(frame){
   hookReveal:enter(frame,0,13),
   button:enter(frame,24,27)*leave(frame,32,39),
   spinner:enter(frame,44,48)*leave(frame,53,57),
-  check:enter(frame,57,60)*leave(frame,65,70),
+  check:enter(frame,57,60)*leave(frame,64,68),
   summary:enter(frame,69,72)*leave(frame,74,79),
   slider:enter(frame,78,81)*leave(frame,88,92),
   combo:enter(frame,93,96)*leave(frame,105,112),
