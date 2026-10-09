@@ -5,7 +5,7 @@ export const MOTION_PROFILES=Object.freeze({
   intro:'ease-out-cubic',
   affordance:'ease-out-back',
   tap:'anticipation-squash',
-  condense:'ease-in-out-cubic',
+  condense:'ease-in-out-quad',
   verify:'damped-bounce',
   expand:'ease-out-back',
   directManipulation:'ease-in-out-sine',
@@ -21,6 +21,7 @@ export function easeValue(name,t){
  case 'linear':return x;
  case 'ease-out-cubic':return 1-(1-x)**3;
  case 'ease-in-out-cubic':return x<.5?4*x**3:1-(-2*x+2)**3/2;
+ case 'ease-in-out-quad':return x<.5?2*x*x:1-(-2*x+2)**2/2;
  case 'ease-in-out-sine':return -(Math.cos(Math.PI*x)-1)/2;
  case 'ease-out-back':{
    // Restrained 3% geometric overshoot; settles exactly on its keyframe.
