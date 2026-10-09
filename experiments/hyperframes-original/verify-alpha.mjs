@@ -51,6 +51,7 @@ function sample(index){
   };
 }
 const samples=[sample(0),sample(15),sample(29)];
+console.log('HYPERFRAMES_ALPHA_DECODE_DIAGNOSTICS',JSON.stringify(samples.map(x=>({index:x.index,visible:x.visible_alpha_pixels,upper:x.upper_nonzero_alpha_pixels,left:x.left_margin_nonzero_alpha_pixels}))));
 for(const value of samples){
   assert.equal(value.upper_nonzero_alpha_pixels,0,
     'Upper transparent stage was painted after encoding');
