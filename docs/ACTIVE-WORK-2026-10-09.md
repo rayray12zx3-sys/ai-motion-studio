@@ -91,3 +91,15 @@ Separate M10 native Studio UI inspection (non-passing/diagnostic until verified)
 ## M10 native Theatre Studio timeline drag — verified 2026-10-09
 
 This is a later verified checkpoint and **supersedes any historical 'native Studio drag still pending' note above**. [M10 Chromium Studio run #37945912339](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37945912339) passed on source `61fc8868bd883a93ef6299446244462886042089`. Chromium's native mouse events moved the Theatre Studio Dope Sheet's genuine x-track keyframe from 1.500s to 1.833s. Exported JSON, Core evaluation, changed transparent Canvas frames and random-access consistency were independently asserted. Real Outline selection and the earlier Studio control/JSON/Core test remain PASS. Earlier attempts targeting the inspector icon or unstable timeline reference were diagnosed and corrected; exploratory instrumentation was removed. M10 experiment README updated on `8b09dbe` (new exact-head checks separately tracked). This is **not production adoption, actual company license clearance, Windows Premiere acceptance or art approval**. All PRs stay Draft; M12 remains paused.
+
+
+## Downstream stacked-PR mergeability check — 2026-10-09
+
+After M10 native drag acceptance, a fresh GitHub PR read returned:
+
+- [M10 #24](../pull/24): head `8b09dbe046fe75253f0751603d0fafe722212053`, base M9, `mergeable: true`, **Draft, not merged**.
+- [M11 #25](../pull/25): head `e6b285abedc90b0e83560ecb9984f8b389f2822c`, base M10, `mergeable: false`. **A downstream merge-conflict / eligibility review is required before any promotion**; do not infer when or why this arose without comparing exact base/diff. No rebase or code change attempted.
+- [M12 #26](../pull/26): head `062497fda846cfd93a7319f6197d104292c71ba2`, base M11, `mergeable: true`, Draft **art unapproved / frozen**. This does not waive the dependency on #25 or human art review.
+- [Coordination #27](../pull/27): docs-only Draft based on main, mergeable true, not merged.
+
+Do not auto-resolve #25 by overwriting M10 or M11; first inspect the exact conflicting paths and preserve the M10 verified editor/alpha/rights gates and M11/M12 visual artifacts. No permission to merge main was granted.
