@@ -202,6 +202,16 @@
       "commercial_media_rights": "ONLY ORIGINAL SYNTHETIC_SCENE",
       "drive_preview_delivery": "VERIFIED_PRIVATE_FOLDER_MP4_AND_ALPHA_MOV",
       "human_editor": "NOT_TESTED"
+    },
+    {
+      "number": 39,
+      "label": "HyperFrames separate full-HD Alpha R&D follow-up",
+      "base": "experiment/hyperframes-isolated-benchmark-20261010",
+      "head_sha": "1639103d2f8abbee81f08d3712ced85776bca13f",
+      "draft": true,
+      "merged": false,
+      "technical_acceptance": "PASS_EXACT_HEAD_360P_RETENTION_AND_1080P_ALPHA_SYNTHETIC",
+      "production_adoption": false
     }
   ],
   "milestone_runs": {
@@ -381,6 +391,40 @@
       "premiere_windows": "NOT_TESTED",
       "visual_quality": "HUMAN_REVIEW_REQUIRED",
       "production_integration": "NOT_AUTHORIZED"
+    },
+    "hyperframes_fullhd_rnd": {
+      "head": "1639103d2f8abbee81f08d3712ced85776bca13f",
+      "isolated_run": 37974222938,
+      "root_ci": 37974222932,
+      "all_conclusions": "success",
+      "original_360p_rgb_parity": 30,
+      "original_360p_alpha_visible_samples": [
+        0,
+        25186,
+        0
+      ],
+      "new_fullhd": {
+        "width": 1080,
+        "height": 1920,
+        "fps": 30,
+        "frames": 30,
+        "codec": "prores",
+        "fourcc": "ap4h",
+        "decoded_pixel_format": "yuva444p10le",
+        "decoded_visible_alpha_samples": [
+          0,
+          226434,
+          0
+        ],
+        "upper_left_sample_leaks": 0,
+        "mov_sha256": "1c61fd598e13f8e5d9efe25410f693fec0edd7de5bd0a3d51750e21edff62292",
+        "bytes": 2338548
+      },
+      "artifact_id": 11636779488,
+      "private_media": false,
+      "merged_to_main": false,
+      "creative_approval": "NOT_GRANTED",
+      "production_adoption": "NOT_AUTHORIZED"
     }
   },
   "evidence_docs": [
@@ -401,6 +445,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "Issue #36 bounded engineering verification complete in corrected isolated Draft PR #39, exact-head both workflows PASS; original 360p tests intact. PR #37 closed unmerged. Recheck PR #39 live state before further work; do not merge R&D into main without separate architecture/commercial-license approval.",
     "Current canonical handoff is on main. PR #33 HyperFrames (R&D Draft, NOT merged) has actual 360x640 original MP4 and transparent ProRes 4444 MOV, full 30-frame independently decoded repeatability, and successful CI. Do not promote this candidate engine without separate architecture and dependency review.",
     "Private Google Drive preview delivery for original synthetic MP4 and MOV is now CONFIRMED by upload and folder readback; never add Drive URLs/IDs or company content to public GitHub.",
     "Before considering HyperFrames Studio GUI keyframe editing, use a proper seekable paused GSAP timeline with local licensed script or equivalent accepted contract; the current CSS-only data-no-timeline scenes DO NOT prove Studio editing.",
@@ -443,5 +488,36 @@
       "user_delegated_routine_approval": true,
       "docs_only": true
     }
-  ]
+  ],
+  "active_execution": {
+    "checkpoint_date": "2026-10-10",
+    "issue": 36,
+    "issue_url": "https://github.com/rayray12zx3-sys/ai-motion-studio/issues/36",
+    "issue_state": "closed",
+    "issue_resolution": "COMPLETED_RND_DRAFT_DELIVERABLE_ONLY",
+    "initial_jules_pr": {
+      "number": 37,
+      "state": "closed",
+      "merged": false,
+      "reason": "wrong_base_main_and_replaced_360p_alpha"
+    },
+    "corrected_pr": {
+      "number": 39,
+      "state": "open",
+      "draft": true,
+      "base": "experiment/hyperframes-isolated-benchmark-20261010",
+      "head_sha": "1639103d2f8abbee81f08d3712ced85776bca13f",
+      "production_adoption": false
+    },
+    "original_hyperframes_pr": 33,
+    "technical_status": "EXACT_HEAD_CI_PASS_SYNTHETIC_ONLY",
+    "remaining_gates": [
+      "studio_native_editor",
+      "transitive_commercial_rights",
+      "premiere_windows",
+      "human_art_approval"
+    ],
+    "current_main_unchanged": true,
+    "live_refresh_required": true
+  }
 }

@@ -4,6 +4,12 @@
 
 > This file is the **entry point**, not an authoritative live API snapshot. In every new conversation: **read this document and [PROJECT-STATE.json](PROJECT-STATE.json), then query GitHub's live PRs, issues and exact-head Actions before claiming progress or editing**. Historical text in [ACTIVE-WORK-2026-10-09.md](ACTIVE-WORK-2026-10-09.md) is append-only; later checkpoints supersede earlier claims.
 
+## Verified isolated follow-up — 2026-10-10
+
+- **[Issue #36](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/36) closed as completed for its bounded Draft R&D deliverable.** Jules initially created [PR #37](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/37), whose 1080p CI passed but whose base was `main` and which replaced the original 360p Alpha checks. It was reviewed and **closed unmerged**.
+- **[Corrected Draft PR #39](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/39)** branches from [HyperFrames Draft #33](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/33), preserving original 360×640 H.264 (30/30 independently decoded RGB parity) and original 360×640 Alpha MOV while adding a **separate** original synthetic 1080×1920 / 30fps / 30-frame ProRes 4444 Alpha. At exact HEAD `1639103d2f8abbee81f08d3712ced85776bca13f`, [HyperFrames CI #37974222938](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37974222938) and [root CI #37974222932](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/37974222932) **PASS**. The decoded full-HD Alpha samples at frames 0/15/29 have 0/226,434/0 visible pixels with no declared upper/left leaks. The synthetic video artifact is short-lived.
+- **No HyperFrames adoption or merge into `main` has been authorized.** Keep #33/#39 R&D Draft, unchanged Canvas+FFmpeg default, M11 rejected and M12 art frozen. Pending separate gates: native Studio GUI editing, transitive licensing for commercial ad-production, actual Premiere Pro Windows import/export and human creative approval. Never include private company/Drive identifiers or assets in public GitHub.
+
 ## Project boundaries — never silently violate
 
 1. `rayray12zx3-sys/ai-motion-studio` is the operator's **personally owned tool**. Its rendered ads may be used **commercially by a company**. Personal ownership of code does **not** automatically make commercial ad-production use permitted under a tool's *Noncommercial* license.
