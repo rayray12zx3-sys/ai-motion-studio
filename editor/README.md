@@ -58,7 +58,7 @@ The installed **Chrome and Edge** run in headed mode with real browser mouse eve
 Playwright Core 1.55.0 is a temporary test driver outside both product dependency graphs.
 No browser or material download occurs during the editor interaction.
 
-The same verifier runs on Linux. It checks canvas drag, clip move and both trim handles,
+The same verifier runs on Linux. Additionally it checks real browser mouse drag, viewport proportions and persisted JSON/reload for S1 640×360, 1080×1920 and 1920×1080 profiles; S1 360×640 remains the baseline. It checks canvas drag, clip move and both trim handles,
 five numeric keyframe properties and the two existing easing presets, persisted Undo/Redo,
 reopened JSON after recreating the server, rejected external-material POST (400), and a
 stale second window (409) with unchanged scene/history/disk. Artifacts contain only
