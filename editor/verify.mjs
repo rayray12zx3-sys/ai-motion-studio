@@ -36,8 +36,18 @@ async function main(){
   browser=await chromium.launch({headless:true,executablePath:'/usr/bin/google-chrome',
    args:['--no-sandbox','--disable-dev-shm-usage']});
   const page=await browser.newPage({viewport:{width:1280,height:1350},deviceScaleFactor:1});
+  const browserErrors=[];
+  page.on('pageerror',error=>browserErrors.push('pageerror '+String(error)));
+  page.on('console',message=>{if(message.type()==='error')browserErrors.push('console '+message.text());});
+  page.on('response',response=>{if(response.status()>=400)browserErrors.push('HTTP '+response.status()+' '+response.url());});
+  page.on('requestfailed',req=>browserErrors.push('requestfailed '+req.url()+' '+req.failure()?.errorText));
   page.setDefaultTimeout(25000);await page.goto(service.url,{waitUntil:'load'});
-  await page.waitForFunction(()=>window.__motionEditor?.ready===true);
+  try{await page.waitForFunction(()=>window.__motionEditor?.ready===true);}
+  catch(error){
+   const appState=await page.evaluate(()=>({probe:window.__motionEditor||null,status:document.getElementById('status')?.textContent,html:document.title}));
+   console.error('EDITOR_INIT_DIAGNOSTIC',JSON.stringify({appState,browserErrors}));
+   throw error;
+  }
   const first=await page.evaluate(()=>window.__motionEditor);
   assert.equal(first.selected,'headline');
   assert.equal(first.frame,12);assert.equal(first.scene.layers.length,3);
