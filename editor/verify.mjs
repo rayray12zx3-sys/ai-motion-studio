@@ -173,6 +173,30 @@ async function main(){
    assert.match((await page.evaluate(()=>window.__motionEditor.exportVideo.message)),/503/);
    assert.equal((await page.evaluate(()=>window.__motionEditor)).commits,0);
   }
+  // Feature workflows must verify their own real Chrome/Edge interaction, but
+  // must not repeat the complete editor gesture suite on the SAME headed browser.
+  // The comprehensive timeline/drag/undo/reopen regression continues independently
+  // in editor-app and editor-windows-smoke CI without either feature flag.
+  if(process.env.MOTION_TEST_GUI_EXPORT==='1'||process.env.MOTION_TEST_CANVAS_STILL==='1'){
+   assert.equal((await page.evaluate(()=>window.__motionEditor)).commits,0,
+    'Read-only preview and opt-in output buttons must not edit the saved scene');
+   assert.deepEqual(outboundRequests,[],'Dedicated feature workflow must not open external URLs');
+   assert.equal(browserErrors.filter(x=>x.startsWith('pageerror')).length,0,JSON.stringify(browserErrors));
+   const proof={
+    status:'PASS_FOCUSED_REAL_BROWSER_S1_CANVAS_FEATURES',
+    browser:channel,
+    commit:testedCommit,
+    guided_video_exports:process.env.MOTION_TEST_GUI_EXPORT==='1'?['mp4','alpha']:[],
+    read_only_canvas_still:process.env.MOTION_TEST_CANVAS_STILL==='1',
+    saved_scene_commits:0,
+    external_requests:outboundRequests.length,
+    full_editor_regression:'SEPARATELY_RUN_BY_EDITOR_APP_AND_WINDOWS_SMOKE',
+    unverified:['Windows Premiere on user PC','commercial media rights','human art approval','Konva WYSIWYG']
+   };
+   await writeFile(join(out,'konva-editor-focused-canvas-features-report.json'),JSON.stringify(proof,null,2)+'\n');
+   console.log('FOCUSED_CANVAS_FEATURE_BROWSER_PROOF',JSON.stringify(proof));
+   return;
+  }
   await page.locator('#ease').selectOption('ease-out-cubic');
   await page.locator('#save-ease').click();
   await page.waitForFunction(()=>window.__motionEditor?.easeChanges===1);
