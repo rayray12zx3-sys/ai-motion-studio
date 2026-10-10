@@ -118,7 +118,7 @@ async function main(){
    renderer:'EXPERIMENTAL_NEUTRAL_PREVIEW_NOT_PRODUCTION',
    encoder_sha256:sha(readFileSync(encoder)),scene_kind:original.kind,
    resolution:[w,h],fps,frames,metadata,
-   lossless_rgb_exact:true,original_rgba_sha256:sha(first),edited_rgba_sha256:sha(next),
+   lossless_rgb_exact:true,original_rgb_sha256:sha(first),edited_rgb_sha256:sha(next),
    mp4_distortion:errors,original_h264_sha256:sha(readFileSync(originalMP4)),
    edited_h264_sha256:sha(readFileSync(editedMP4)),
    official_canvas_smoke_frame_unchanged:true,media:'ORIGINAL_SYNTHETIC_ONLY',
