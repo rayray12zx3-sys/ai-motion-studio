@@ -1,0 +1,59 @@
+name: Approved opt-in Konva editor app
+
+on:
+  pull_request:
+    paths:
+      - 'editor/**'
+      - 'tests/editor-local-app.test.mjs'
+      - '.github/workflows/editor-app.yml'
+      - '.gitignore'
+      - 'AGENTS.md'
+      - 'docs/EDITOR-KONVA-ADOPTION-DECISION-2026-10-10.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: approved-editor-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-editor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Install exact editor-only Konva pin
+        run: npm ci --prefix editor --ignore-scripts --no-audit --no-fund
+      - name: Audit frontend license and dependency closure
+        run: |
+          node --input-type=module -e "import{readFileSync}from'node:fs';import assert from'node:assert/strict';const x=JSON.parse(readFileSync('editor/node_modules/konva/package.json'));assert.equal(x.version,'10.7.1');assert.equal(x.license,'MIT');assert.deepEqual(Object.keys(x.dependencies||{}),[]);const license=readFileSync('editor/node_modules/konva/LICENSE','utf8');assert.match(license,/MIT License|Permission is hereby granted/);const root=JSON.parse(readFileSync('package.json'));assert.equal(root.dependencies?.konva,undefined)"
+          npm ls --prefix editor --omit=dev --all
+      - name: Syntax checks (product remains untouched)
+        run: |
+          node --check editor/server.mjs
+          node --check editor/operations.mjs
+          node --check editor/app.mjs
+          node --check editor/verify.mjs
+      - name: Run local server, license and scene-safety tests
+        run: node --test tests/editor-local-app.test.mjs
+      - name: Real Chrome original synthetic editor edit and save
+        run: node editor/verify.mjs
+      - name: Synthetic screenshot and audit report only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: approved-konva-editor-synthetic
+          path: |
+            out/konva-editor-approved-synthetic.png
+            out/konva-editor-approved-synthetic-report.json
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Approval boundary
+        run: echo 'Operator approved opt-in Konva editor only; official Canvas+FFmpeg renderer, media rights, Bezier v2, Windows Premiere and M11/M12 remain gated.' >> "$GITHUB_STEP_SUMMARY"

@@ -54,6 +54,17 @@ src/
 docs/           # Architecture and future integration notes
 ```
 
+## Opt-in local Konva editor (approved frontend integration)
+
+The standalone, localhost-only scene editor is installed **separately from the official Canvas+FFmpeg renderer**:
+
+```sh
+npm ci --prefix editor --ignore-scripts --no-audit --no-fund
+node editor/server.mjs
+```
+
+Open the printed `127.0.0.1` URL. The editor supports an S1 neutral scene with interactive Konva proxies, timeline/keyframes, Undo/Redo and local JSON saves. This is **not pixel-accurate official render preview or commercial asset/Windows Premiere approval**. See [editor setup](editor/README.md), [approved scope](docs/EDITOR-KONVA-ADOPTION-DECISION-2026-10-10.md) and [editor license inventory](editor/THIRD_PARTY.md).
+
 ## Local usage
 
 Requirements:
