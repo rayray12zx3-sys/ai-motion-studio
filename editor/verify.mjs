@@ -150,7 +150,7 @@ async function main(){
     await page.locator('#export-mode').selectOption(format);
     await page.locator('#export-video').click();
     await page.waitForFunction(()=>window.__motionEditor?.exportVideo?.status==='DONE',
-      {timeout:120000});
+      null,{timeout:120000});
     const product=await page.evaluate(()=>window.__motionEditor.exportVideo);
     assert.equal(product.mode,format);
     assert.equal(product.frames,30);
