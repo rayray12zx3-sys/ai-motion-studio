@@ -16,6 +16,7 @@ function localFixture(){
 test('S2 synthetic audit metadata checks exact archive bytes and optional peer boundary',()=>{
  const f=localFixture();
  const result=validatePackageMetadata(f.metadata,f.packageJson,f.bytes,f.entries);
+ console.log('KONVA_NPM_PACKAGE_PIN '+JSON.stringify({sha1:result.archive_sha1,integrity:result.archive_integrity,license_files:result.license_files,optional_peers:result.optional_peers}));
  assert.equal(result.version,'10.7.1');
  assert.equal(result.license,'MIT');
  assert.equal(result.runtime_dependency_count,0);
