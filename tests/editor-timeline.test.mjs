@@ -85,7 +85,7 @@ test('S3 serializable bounded undo/redo, redo invalidation, and reverse seek det
  assert.deepEqual(baseline,evaluateEditableFrame(branched.present,14));
  assert.equal(initial.layers[1].start_frame,4);
  assert.deepEqual(makeTimelineHistory(initial).past,[]);
- const frozen=makeTimelineHistory(initial);
+ let frozen=makeTimelineHistory(initial);
  for(let i=0;i<25;i++)frozen=commitTimelineEdit(frozen,{type:'set-key',layerId:'headline',frame:4,property:'x',value:i%2?.24:.25});
  assert.equal(frozen.past.length,20);
  assert.ok(frozen.future.length===0);
