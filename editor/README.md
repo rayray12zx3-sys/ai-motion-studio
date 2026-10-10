@@ -11,6 +11,16 @@ npm ci --prefix editor --ignore-scripts --no-audit --no-fund
 node editor/server.mjs
 ```
 
+In Windows PowerShell, from the repository root, use the command shim explicitly:
+
+```powershell
+Push-Location editor
+npm.cmd ci --ignore-scripts --no-audit --no-fund
+node server.mjs
+# After stopping the server with Ctrl+C:
+Pop-Location
+```
+
 Open the **127.0.0.1** URL printed in the terminal. The app is local and does not call external services after installing its exact-version npm package. No administrator permissions or cloud account are required for normal startup. **Do not expose the port through a tunnel or reverse proxy.**
 
 Only the editor has `konva@10.7.1` under its own `editor/package.json` and immutable `editor/package-lock.json`; root `package.json`, root `package-lock.json`, `src/free/` and `scripts/render.mjs` remain untouched. This is the actual pinned editor package install, not the old ephemeral R&D `npm pack` runtime.
@@ -39,3 +49,25 @@ Run unit tests: `node --test tests/editor-local-app.test.mjs` (requires no Konva
 CI, on original synthetic scenes only: `node editor/verify.mjs` after the editor-only `npm ci`, with temporary Playwright Core browser-driver package. GitHub Actions emits only a 7-day screenshot and JSON report; it does **not** store user files or private assets. Read [editor/THIRD_PARTY.md](THIRD_PARTY.md) before distribution.
 
 Any adoption of a new neutral scene schema, full Bezier semantics, company assets, Windows Premiere validation or renderer changes requires a **separate operator decision**.
+
+## Automated Windows browser validation
+
+`.github/workflows/editor-windows-smoke.yml` runs Node 24.19.0 on Windows Server 2022,
+installs in `editor/` with `npm.cmd`, then starts the local service from `node verify.mjs`.
+The installed **Chrome and Edge** run in headed mode with real browser mouse events;
+Playwright Core 1.55.0 is a temporary test driver outside both product dependency graphs.
+No browser or material download occurs during the editor interaction.
+
+The same verifier runs on Linux. It checks canvas drag, clip move and both trim handles,
+five numeric keyframe properties and the two existing easing presets, persisted Undo/Redo,
+reopened JSON after recreating the server, rejected external-material POST (400), and a
+stale second window (409) with unchanged scene/history/disk. Artifacts contain only
+original synthetic screenshots, browser trace and a JSON report identifying platform,
+browser version, Node version and CI commit. Browser executable override
+`MOTION_EDITOR_BROWSER_PATH` is available for a Cloud precheck; CI uses installed
+`chrome` / `msedge` channels without an override.
+
+These checks automate technical Windows browser interaction, not personal acceptance.
+Only an operator can judge comfort/readability and real mouse/touch/display behavior on
+their own PC, or approve creative output. Windows Premiere integration and production
+pixel parity remain separate, unverified gates; no company/private materials are used.

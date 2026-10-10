@@ -15,7 +15,11 @@ async function main(){
  const temp=await mkdtemp(join(tmpdir(),'motion-editor-release-test-'));
  const store=join(temp,'scene.json'),out=join(here,'../out');
  await mkdir(out,{recursive:true});
- let service,browser;
+ let service,browser,context,page;
+ const channel=process.env.MOTION_EDITOR_BROWSER_CHANNEL||'chrome';
+ assert.ok(['chrome','msedge'].includes(channel),'Supported installed browser channel required');
+ const headless=process.env.MOTION_EDITOR_HEADED!=='1';
+ const artifacts=[];
  try{
   const manifest=JSON.parse(await readFile(join(here,'node_modules/konva/package.json'),'utf8'));
   assert.equal(manifest.version,'10.7.1');assert.equal(manifest.license,'MIT');
@@ -24,8 +28,13 @@ async function main(){
   assert.equal(lock.packages['node_modules/konva'].integrity,
    'sha512-z/JyXPaT6tWBSEcaT70mdfN3oNQ6U6rDxlH9OkRdxlJaf23DOqfMPGptQWVvXlWfKMJQWEa+PNe9ru3zQR7ifw==');
   // Browser driver is a temporary CI-only tool, never an editor dependency.
-  execFileSync('npm',['install','--prefix',temp,'--no-save','--no-package-lock','--ignore-scripts',
-   '--no-audit','--no-fund','playwright-core@1.55.0'],{timeout:120000,encoding:'utf8'});
+  const installArgs=['install','--no-save','--no-package-lock','--ignore-scripts',
+   '--no-audit','--no-fund','playwright-core@1.55.0'];
+  // .cmd files require cmd.exe on Windows; do not shell-interpolate paths or user input.
+  if(process.platform==='win32')
+   execFileSync(process.env.ComSpec||'cmd.exe',['/d','/s','/c','npm.cmd '+installArgs.join(' ')],
+    {cwd:temp,timeout:120000,encoding:'utf8'});
+  else execFileSync('npm',installArgs,{cwd:temp,timeout:120000,encoding:'utf8'});
   const playwrightManifest=JSON.parse(await readFile(join(temp,'node_modules/playwright-core/package.json'),'utf8'));
   assert.equal(playwrightManifest.version,'1.55.0');
   assert.equal(playwrightManifest.license,'Apache-2.0');
@@ -33,11 +42,25 @@ async function main(){
   const chromium=core.chromium??core.default?.chromium;
   assert.equal(typeof chromium?.launch,'function');
   service=await startEditorServer({port:0,sceneFile:store});
-  browser=await chromium.launch({headless:true,executablePath:'/usr/bin/google-chrome',
-   args:['--no-sandbox','--disable-dev-shm-usage']});
-  const page=await browser.newPage({viewport:{width:1280,height:1350},deviceScaleFactor:1});
+  browser=await chromium.launch({headless,
+   ...(process.env.MOTION_EDITOR_BROWSER_PATH?{executablePath:process.env.MOTION_EDITOR_BROWSER_PATH}:{channel}),
+   args:process.platform==='linux'?['--no-sandbox','--disable-dev-shm-usage']:[]});
+  context=await browser.newContext({viewport:{width:1280,height:1350},deviceScaleFactor:1});
+  await context.tracing.start({screenshots:true,snapshots:true,sources:true});
+  const outboundRequests=[];
+  context.on('request',request=>{
+   if(new URL(request.url()).hostname!=='127.0.0.1')outboundRequests.push(request.url());
+  });
   const browserErrors=[];
-  page.on('pageerror',error=>browserErrors.push('pageerror '+String(error)));
+  context.on('page',tab=>{
+   tab.setDefaultTimeout(25000);
+   tab.on('pageerror',error=>browserErrors.push('pageerror '+String(error)));
+  });
+  page=await context.newPage();
+  async function screenshot(name,target=page){
+   const path=join(out,'konva-editor-'+name+'.png');
+   await target.screenshot({path,fullPage:true});artifacts.push(path);
+  }
   page.on('console',message=>{if(message.type()==='error')browserErrors.push('console '+message.text());});
   page.on('response',response=>{if(response.status()>=400)browserErrors.push('HTTP '+response.status()+' '+response.url());});
   page.on('requestfailed',req=>browserErrors.push('requestfailed '+req.url()+' '+req.failure()?.errorText));
@@ -52,6 +75,7 @@ async function main(){
   assert.equal(first.selected,'headline');
   assert.equal(first.frame,12);assert.equal(first.scene.layers.length,3);
   assert.equal(first.scene.layers.find(l=>l.id==='headline').text,'Original Title');
+  await screenshot('initial-synthetic');
   await page.locator('#ease').selectOption('ease-out-cubic');
   await page.locator('#save-ease').click();
   await page.waitForFunction(()=>window.__motionEditor?.easeChanges===1);
@@ -65,19 +89,26 @@ async function main(){
   await page.locator('#redo').click();await page.waitForFunction(()=>window.__motionEditor?.redo===1);
   state=await page.evaluate(()=>window.__motionEditor);
   assert.equal(state.sample.x,easedSample);
+  assert.ok(easedSample>first.sample.x,'Easing must change actual interpolated frame x');
   await page.locator('#layer-text').fill('New Synthetic Headline');
   await page.locator('#save-appearance').click();
   await page.waitForFunction(()=>window.__motionEditor?.commits===4);
   state=await page.evaluate(()=>window.__motionEditor);
   assert.equal(state.scene.layers.find(l=>l.id==='headline').text,'New Synthetic Headline');
-  // Individual end-key x and scale are edited together as one saved undo item.
+  // Five end-key numeric properties are edited together as one saved undo item.
   await page.locator('#key-x').fill('0.64');
+  await page.locator('#key-y').fill('0.72');
   await page.locator('#key-scale').fill('1.2');
+  await page.locator('#key-rotation').fill('0.1');
+  await page.locator('#key-opacity').fill('0.9');
   await page.locator('#save-values').click();
   await page.waitForFunction(()=>window.__motionEditor?.commits===5);
   state=await page.evaluate(()=>window.__motionEditor);
   assert.equal(state.scene.layers.find(l=>l.id==='headline').keys.at(-1).x,.64);
   assert.equal(state.scene.layers.find(l=>l.id==='headline').keys.at(-1).scale,1.2);
+  assert.equal(state.scene.layers.find(l=>l.id==='headline').keys.at(-1).y,.72);
+  assert.equal(state.scene.layers.find(l=>l.id==='headline').keys.at(-1).rotation,.1);
+  assert.equal(state.scene.layers.find(l=>l.id==='headline').keys.at(-1).opacity,.9);
   assert.equal(state.history.undo,3); // Undo then Redo does not create a fifth history snapshot.
   const before=state.timeline.find(l=>l.id==='headline');
   async function drag(selector,dx,dy,predicate){
@@ -94,6 +125,7 @@ async function main(){
   assert.equal(shifted.start,before.start+2);
   assert.equal(shifted.end,before.end+2);
   const beforeXY=state.sample;
+  const dataBeforeCanvas=state.scene;
   const stage=await page.locator('#stage').boundingBox();
   assert.ok(stage);
   // Center of the original-synthetic proxy shape, anchored to normalized frame x/y.
@@ -104,6 +136,32 @@ async function main(){
   state=await page.evaluate(()=>window.__motionEditor);
   assert.ok(state.sample.x>beforeXY.x+.07);
   assert.ok(state.sample.y>beforeXY.y+.018);
+  await screenshot('edited-synthetic');
+  const movedScene=serializeEditableScene(state.scene);
+  await page.locator('#undo').click();
+  await page.waitForFunction(()=>window.__motionEditor?.undo===2);
+  assert.equal(serializeEditableScene((await page.evaluate(()=>window.__motionEditor)).scene),
+   serializeEditableScene(dataBeforeCanvas));
+  await page.locator('#redo').click();
+  await page.waitForFunction(()=>window.__motionEditor?.redo===2);
+  assert.equal(serializeEditableScene((await page.evaluate(()=>window.__motionEditor)).scene),movedScene);
+  // Trim both real pointer handles on the linear accent track.
+  await drag('.clip[data-layer="accent"] .handle[data-edge="start"]',14,0,
+   ()=>window.__motionEditor?.timelineActions===2);
+  await drag('.clip[data-layer="accent"] .handle[data-edge="end"]',-14,0,
+   ()=>window.__motionEditor?.timelineActions===3);
+  state=await page.evaluate(()=>window.__motionEditor);
+  assert.deepEqual(state.timeline.find(l=>l.id==='accent'),{id:'accent',start:11,end:19,keys:[11,18]});
+  const trimmedScene=serializeEditableScene(state.scene);
+  await page.locator('#undo').click();
+  await page.waitForFunction(()=>window.__motionEditor?.undo===3);
+  state=await page.evaluate(()=>window.__motionEditor);
+  assert.equal(state.timeline.find(l=>l.id==='accent').end,20);
+  await page.locator('#redo').click();
+  await page.waitForFunction(()=>window.__motionEditor?.redo===3);
+  assert.equal(serializeEditableScene((await page.evaluate(()=>window.__motionEditor)).scene),trimmedScene);
+  await screenshot('trimmed-synthetic');
+  await page.locator('.layer-button[data-layer="headline"]').click();
   // Existing nonlinear segment cannot be silently bisected by a new keyframe.
   await page.locator('#add-key').click();
   await page.waitForFunction(()=>window.__motionEditor?.blocked>=1);
@@ -113,18 +171,45 @@ async function main(){
   const data=parseEditableScene(await readFile(store,'utf8'));
   assert.equal(sha(serializeEditableScene(data)),afterRejectSha);
   assert.equal(data.assets.length,0);
+  // Browser-origin forged external material never leaves loopback or mutates disk.
+  const rejectedMedia=await page.evaluate(async()=>{
+   const scene=structuredClone(window.__motionEditor.scene);
+   scene.assets=[{url:'https://example.invalid/synthetic-denied.png'}];
+   const response=await fetch('/scene.json',{method:'POST',headers:{
+    'Content-Type':'application/json','If-Match':window.__motionEditor.etag},body:JSON.stringify(scene)});
+   return {status:response.status,body:await response.json()};
+  });
+  assert.equal(rejectedMedia.status,400);
+  assert.equal(sha(await readFile(store)),afterRejectSha);
   // Another stale editor window must not overwrite newer scene state.
-  const stale=await browser.newPage({viewport:{width:1280,height:900}});
+  const stale=await context.newPage();
   await stale.goto(service.url,{waitUntil:'load'});
   await stale.waitForFunction(()=>window.__motionEditor?.ready===true);
+  const staleBefore=await stale.evaluate(()=>window.__motionEditor);
   await page.locator('#add-rect').click();
   await page.waitForFunction(()=>window.__motionEditor?.scene.layers.length===4);
-  await stale.locator('#save-ease').click();
+  const winnerRaw=await readFile(store,'utf8');
+  const winner=await page.evaluate(()=>window.__motionEditor);
+  const conflictResponse=stale.waitForResponse(r=>r.url().endsWith('/scene.json')&&r.request().method()==='POST');
+  await stale.locator('#layer-text').fill('Stale Synthetic Overwrite');
+  await stale.locator('#save-appearance').click();
   await stale.waitForFunction(()=>window.__motionEditor?.blocked>=1);
+  assert.equal((await conflictResponse).status(),409);
+  const staleAfter=await stale.evaluate(()=>window.__motionEditor);
+  assert.equal(staleAfter.commits,0);
+  assert.deepEqual(staleAfter.scene,staleBefore.scene);
+  assert.deepEqual(staleAfter.history,staleBefore.history);
+  assert.equal(await readFile(store,'utf8'),winnerRaw);
+  await screenshot('conflict-synthetic',stale);
   assert.match((await stale.evaluate(()=>window.__motionEditor.errors.at(-1))),/another editor|changed the local scene/i);
   assert.equal(parseEditableScene(await readFile(store,'utf8')).layers.length,4);
+  // Close the tabs and recreate the service, proving reload from disk rather than UI history.
   await stale.close();
-  await page.reload({waitUntil:'load'});await page.waitForFunction(()=>window.__motionEditor?.ready===true);
+  await page.close();
+  await new Promise(resolve=>service.server.close(resolve));
+  service=await startEditorServer({port:0,sceneFile:store});
+  page=await context.newPage();
+  await page.goto(service.url,{waitUntil:'load'});await page.waitForFunction(()=>window.__motionEditor?.ready===true);
   const reopen=await page.evaluate(()=>window.__motionEditor);
   assert.equal(reopen.scene.layers.length,4);
   assert.equal(reopen.scene.layers.find(l=>l.id==='headline').text,'New Synthetic Headline');
@@ -132,20 +217,37 @@ async function main(){
   assert.equal(reopen.scene.layers.find(l=>l.id==='headline').keys.at(-1).scale,1.2);
   assert.ok(reopen.scene.layers.find(l=>l.id==='headline').keys.at(-1).x>.70);
   assert.equal(reopen.scene.layers.find(l=>l.id==='headline').start_frame,6);
+  assert.deepEqual(reopen.scene,winner.scene);
+  assert.equal(reopen.etag,winner.etag);
+  assert.deepEqual(reopen.history,{undo:0,redo:0});
+  assert.equal(reopen.scene.layers.find(l=>l.id==='accent').start_frame,11);
+  assert.equal(reopen.scene.layers.find(l=>l.id==='accent').end_frame,19);
+  assert.equal(browserErrors.filter(x=>x.startsWith('pageerror')).length,0,JSON.stringify(browserErrors));
   assert.equal(sha(serializeEditableScene(reopen.scene)),sha(serializeEditableScene(parseEditableScene(await readFile(store,'utf8')))));
-  await page.screenshot({path:join(out,'konva-editor-approved-synthetic.png'),fullPage:true});
+  assert.deepEqual(outboundRequests,[],'Browser must never request external material');
+  assert.equal(await page.locator('.clip[data-layer="headline"] .key-marker').count(),2);
+  await screenshot('approved-synthetic');
   const result={status:'PASS_USER_APPROVED_OPT_IN_EDITOR_SHELL_SYNTHETIC_ONLY',
+   runtime:{platform:process.platform,node:process.version,browser_channel:channel,browser_version:browser.version(),headless,
+    commit:process.env.GITHUB_SHA||null,pr_head:process.env.MOTION_EDITOR_PR_HEAD||null},
+   screenshots:artifacts.map(path=>path.split(/[\\/]/).at(-1)),
    app:'editor/',package:'konva@10.7.1',scope:'LOCAL_ONLY',
    saved_scene_sha256:sha(serializeEditableScene(reopen.scene)),
    layer_count:reopen.scene.layers.length,headline_clip:[6,28],headline_ease:'ease-out-cubic',
+   timeline_pointer_actions:3,accent_clip:[11,19],real_pointer_trim_start:true,real_pointer_trim_end:true,
+   external_media_response:rejectedMedia.status,stale_window_response:409,server_restart_reload:true,
    real_pointer_timeline_drag:true,real_pointer_canvas_drag:true,appearance_edit:true,
    individual_keyframe_numeric_values_saved:true,keyframe_markers_present:true,
    undo_redo:true,stale_editor_save_refused:true,eased_key_split_refused:true,reload:true,
-   no_external_media:true,official_canvas_ffmpeg_modified:false,
+   no_external_media:true,browser_external_requests:outboundRequests.length,official_canvas_ffmpeg_modified:false,
    not_proven:['locked-font visual parity','Windows Premiere','private media rights','Bezier control points','commercial art approval']};
   await writeFile(join(out,'konva-editor-approved-synthetic-report.json'),JSON.stringify(result,null,2)+'\n');
   console.log('KONVA_EDITOR_APPROVED_SHELL_PROOF',JSON.stringify(result));
+ }catch(error){
+  if(page&&!page.isClosed())await page.screenshot({path:join(out,'konva-editor-failure-synthetic.png'),fullPage:true}).catch(()=>{});
+  throw error;
  }finally{
+  if(context)await context.tracing.stop({path:join(out,'konva-editor-synthetic-trace.zip')}).catch(()=>{});
   if(browser)await browser.close();
   if(service)await new Promise(resolve=>service.server.close(resolve));
   await rm(temp,{recursive:true,force:true});

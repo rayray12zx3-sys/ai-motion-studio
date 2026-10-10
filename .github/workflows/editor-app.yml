@@ -51,8 +51,9 @@ jobs:
         with:
           name: approved-konva-editor-synthetic
           path: |
-            out/konva-editor-approved-synthetic.png
+            out/konva-editor-*.png
             out/konva-editor-approved-synthetic-report.json
+            out/konva-editor-synthetic-trace.zip
           retention-days: 7
           if-no-files-found: ignore
       - name: Approval boundary
