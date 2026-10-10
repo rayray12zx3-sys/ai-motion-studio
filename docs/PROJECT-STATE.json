@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "2026-10-10 Operator explicitly approved formal Konva frontend app. #71 merged 52f2a1a (exact-head editor CI #38029300683, root #38029300686 PASS), stand-alone `npm ci --prefix editor`, `node editor/server.mjs`, localhost GUI, S1 timeline/save with ETag and original synthetic Chrome proof; #72 merged ea37b19 (editor CI #38029671775, root #38029671766 PASS) adds individual numeric keyframe editing and markers. Root package/lock/official Canvas+FFmpeg unchanged. Next approval required for Windows user acceptance on local PC, official renderer pixel geometry parity/SceneSpec migration, arbitrary Bezier S1 v2, private/company media rights; isolated source/editor UI improvements within v1 may continue independently.",
     "2026-10-10 S3 original-synthetic native easing preset UI #69 merged de06e6b (Chrome CI #38028087532 + root CI #38028087471 exact-head PASS). Real frame-12 preview x .307142857→.36441529 and opacity .38095→.76277 selecting existing linear vs ease-out-cubic, Undo/Redo, 3 local writes, reverse seek and fail-closed nonlinear split; no new root deps/renderer. This is NOT full Bezier curve GUI. Arbitrary Bezier handles/control points require neutral S1 schema versioning/migration and explicit owner decision, not automatic modification.",
     "2026-10-10 S4 strict official-vs-neutral contract gap audit PR #67 merged as f656f765 with exact-head CI #38026709308 PASS 30/30 tests. S1 independent layers/partial clips/keyframes/geometry differ fundamentally from official two-field title/subtitle preauthored gradient/render motion. Equal dimensions/fps/duration ≠ pixel parity. Explicit copy-only R&D draft requires deliberate visual-loss acknowledgement and locked glyph coverage, no renderer change. Next low-risk work: individual synthetic-only edge/boundary audits and document true production adoption gates; any official SceneSpec compiler or renderer migration needs owner authorization, not automatic integration.",
     "S4 browser JSON→pinned FFmpeg same-scene integration PR #64 merged 09b2bfa8; exact-head integrated CI #38025568046, standalone #38025568112, root #38025568054 PASS: saved synthetic Chrome scene SHA 06284eadee..., 30x360x640, lossless exact, MP4 lossy documented. Separate synthetic 1080x1920 8f ProRes 4444 Alpha probe PR #65 merged 3a30dcbc; CI #38025754924 and root #38025754860 PASS alpha samples 0/128/255. Official Canvas SceneSpec/pixel parity STILL NOT TESTED; human production UI/fonts, company media license, Windows Premiere import and real ad creative acceptance require operator approval. No new root deps or contact with licensors. Next allowed work: write bounded independent production-vs-experiment mapping gap analysis only or other synthetic-only research; do NOT auto-adopt rendering/production GUI.",
@@ -613,8 +614,8 @@
     "licensor_contact": "DECLINED",
     "paid_licensing": "NOT_AUTHORIZED",
     "private_repo_makes_license_valid": false,
-    "new_editor": "ORIGINAL_SYNTHETIC_BROWSER_SAVED_SCENE_TO_FFMPEG_AND_SEPARATE_ALPHA_PROBES_ONLY__NOT_PRODUCT",
-    "first_candidate": "KONVA_MIT_ISOLATED_EVALUATION_ONLY",
+    "new_editor": "APPROVED_LOCAL_OPT_IN_KONVA_10_7_1_FRONTEND_CI_VERIFIED__RENDERER_SEPARATE",
+    "first_candidate": "KONVA_MIT_10_7_1_FRONTEND_ADOPTED_EDITOR_ONLY",
     "timeline_candidate": "REACT_TIMELINE_EDITOR_MIT_TRANSITIVE_AUDIT_REQUIRED",
     "other_candidates": [
       "FABRIC_JS_MIT",
@@ -656,7 +657,7 @@
       {
         "id": "S2",
         "name": "isolated_konva_pointer_editor_and_license_audit",
-        "status": "ISOLATED_PACKAGE_AUDIT_AND_BROWSER_POINTER_DISK_ROUNDTRIP_PASS__PRODUCTION_NOT_APPROVED",
+        "status": "OPT_IN_LOCAL_KONVA_FRONTEND_APPROVED_AND_CI_VERIFIED__NOT_AUTHORITATIVE_PIXELS",
         "package_audit_pr": 53,
         "browser_test_pr": 54,
         "package_audit_merge_sha": "35c9b3939097b029eaaeddec0a5c9352fd537cc2",
@@ -679,14 +680,16 @@
           "local_disk_roundtrip": true
         },
         "production_dependency_adopted": false,
-        "actual_editor_approved": false,
+        "actual_editor_approved": true,
         "pending": [
           "NATIVE_TIMELINE_OR_KEYFRAME_CURVES",
           "UNDO_REDO",
           "PRODUCTION_CANVAS_FRAME_PARITY",
           "MEDIA_RIGHTS",
           "WINDOWS_PREMIERE"
-        ]
+        ],
+        "editor_frontend_dependency_adopted": true,
+        "actual_editor_approved_scope": "FRONTEND_ONLY__NO_RENDERER_OR_ART_APPROVAL"
       },
       {
         "id": "S3",
@@ -759,7 +762,11 @@
           "professional_bezier_control_points": false,
           "root_dependencies_added": false
         },
-        "native_bezier_curve_editor": "NOT_IMPLEMENTED__S1_V1_SCHEMA_ONLY_TWO_PRESETS"
+        "native_bezier_curve_editor": "NOT_IMPLEMENTED__S1_V1_SCHEMA_ONLY_TWO_PRESETS",
+        "numeric_inspector_pr": 72,
+        "numeric_inspector_merge_sha": "ea37b19d4c8994abff6c6c2f227f5942005ace87",
+        "numeric_inspector_ci": 38029671775,
+        "numeric_inspector_status": "ATOMIC_EXISTING_KEY_VALUES_IN_OPT_IN_APP_VERIFIED__FREE_BEZIER_NOT_DONE"
       },
       {
         "id": "S4",
@@ -906,6 +913,39 @@
       "asset_array_must_be_empty": true,
       "gui": "NOT_IMPLEMENTED",
       "render_change": false
+    },
+    "frontend_adoption": {
+      "status": "OPERATOR_APPROVED_AND_LOCAL_EDITOR_CI_VERIFIED__NOT_COMMERCIAL_RENDERER_APPROVAL",
+      "operator_approval_date": "2026-10-10",
+      "selected_package": "konva",
+      "version": "10.7.1",
+      "published_license": "MIT",
+      "isolated_manifest": "editor/package.json",
+      "isolated_lock": "editor/package-lock.json",
+      "app_entry": "node editor/server.mjs",
+      "local_scene_location": "editor/.local/scene.json",
+      "approved_pr": 71,
+      "merge_sha": "52f2a1a679a6ed7923b046522ce751cbf144fb4b",
+      "exact_head": "402952cb1e6bc475c8b8c770e4b655938be6f5f5",
+      "ci": {
+        "local_editor": 38029300683,
+        "root_renderer": 38029300686
+      },
+      "numeric_keyframe_pr": 72,
+      "numeric_merge_sha": "ea37b19d4c8994abff6c6c2f227f5942005ace87",
+      "numeric_exact_head": "14195dadcaab2474019d32737a4b4acfcc0ab57e",
+      "numeric_ci": {
+        "local_editor": 38029671775,
+        "root_renderer": 38029671766
+      },
+      "real_browser_verified": true,
+      "stale_write_rejected": true,
+      "external_media_forbidden": true,
+      "root_package_dependency_changed": false,
+      "official_renderer_changed": false,
+      "official_canvas_pixel_parity": "NOT_VERIFIED",
+      "arbitrary_bezier_controls": "NOT_AUTHORIZED",
+      "windows_user_acceptance": "PENDING_OPERATOR_ON_REAL_PC"
     }
   }
 }
