@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "S4 browser JSON→pinned FFmpeg same-scene integration PR #64 merged 09b2bfa8; exact-head integrated CI #38025568046, standalone #38025568112, root #38025568054 PASS: saved synthetic Chrome scene SHA 06284eadee..., 30x360x640, lossless exact, MP4 lossy documented. Separate synthetic 1080x1920 8f ProRes 4444 Alpha probe PR #65 merged 3a30dcbc; CI #38025754924 and root #38025754860 PASS alpha samples 0/128/255. Official Canvas SceneSpec/pixel parity STILL NOT TESTED; human production UI/fonts, company media license, Windows Premiere import and real ad creative acceptance require operator approval. No new root deps or contact with licensors. Next allowed work: write bounded independent production-vs-experiment mapping gap analysis only or other synthetic-only research; do NOT auto-adopt rendering/production GUI.",
     "S4 two bounded CI-pass R&D checks merged: #61 shared Konva+DOM timeline actual Chrome edits/undo/reload (2 timeline gestures +1 canvas,5 saves) CI #38024966876 + root #38024966782; #62 separate original synthetic FFmpeg 30x360x640 frames lossless exact x264rgb and H264 MP4 CI #38025223621 + root #38025223586. They are NOT one browser-saved-scene->video test and preview is NOT official production renderer pixel equivalent; alpha MOV/Premiere/unlicensed real assets untouched. #12 M3A already contains PNG hash+declared license contract, no duplicate implementation or rights approval. Next isolated safe task: test browser-persisted S1 scene passed to R&D encoder without root deps or renderer migration; otherwise wait for operator to authorize production changes. No licensor outreach.",
     "S4 partial synthetic @napi-rs/canvas preview PR #59 merged to main at 402da01c; root CI #38023857595 PASS 25/25 tests. Synthetic neutral scene's full 30-frame RGB/RGBA sequence deterministic, edited frames changed and existing drawFrame(profiles.smoke,12) PNG remained identical. NOT full S4: new painter != official renderer SceneSpec/pixels, no FFmpeg encoded MP4/ProRes/alpha pipeline or Windows Premiere. No production changes. Next safe task: review S1/M3A provenance reuse and document actual scope of professional editor unmet functionality, do not auto-adopt new dependency or engine.",
     "S3 synthetic isolated timeline data PR #56 safely merged (CI #38023289295, 20/20 root tests), Chrome DOM track PR #57 merged at eabe3c6 (CI #38023547260 browser and #38023547198 root PASS); keyframes 8/12/26 and clip [8,27) persisted after actual pointer drag/trim/undo/redo. No production UI or S4 parity achieved. Next bounded R&D: opt-in synthetic editor-scene→Canvas frame matching or standalone asset-provenance contract review; use no new root deps and preserve full rollback. Do not confuse R&D browser with commercial editor adoption.",
@@ -610,7 +611,7 @@
     "licensor_contact": "DECLINED",
     "paid_licensing": "NOT_AUTHORIZED",
     "private_repo_makes_license_valid": false,
-    "new_editor": "ISOLATED_SYNTHETIC_COMBINED_KONVA_TIMELINE_AND_SEPARATE_FFMPEG_PREVIEW_PROOFS__NOT_PRODUCT",
+    "new_editor": "ORIGINAL_SYNTHETIC_BROWSER_SAVED_SCENE_TO_FFMPEG_AND_SEPARATE_ALPHA_PROBES_ONLY__NOT_PRODUCT",
     "first_candidate": "KONVA_MIT_ISOLATED_EVALUATION_ONLY",
     "timeline_candidate": "REACT_TIMELINE_EDITOR_MIT_TRANSITIVE_AUDIT_REQUIRED",
     "other_candidates": [
@@ -731,7 +732,7 @@
       {
         "id": "S4",
         "name": "canvas_render_roundtrip_and_deterministic_parity",
-        "status": "PARTIAL_SYNTHETIC_COMBINED_GUI_AND_FFMPEG_ENCODE_PASS__PRODUCTION_PARITY_NOT_TESTED",
+        "status": "PARTIAL_SYNTHETIC_BROWSER_SAVED_FFMPEG_AND_1080P_ALPHA_PASS__PRODUCT_PIXEL_PARITY_NOT_TESTED",
         "pr": 59,
         "merge_sha": "402da01c1330c92fb5bded5eba22e231ac490c67",
         "head": "d3f878545621534dd60d38a8dd89a5c5ce2689c3",
@@ -801,8 +802,45 @@
           "real_browser_scene_encoded_end_to_end": false
         },
         "official_renderer_pixel_parity": "NOT_TESTED",
-        "encoded_alpha_mov": "NOT_TESTED",
-        "production_approval": false
+        "encoded_alpha_mov": "ORIGINAL_SYNTHETIC_1080x1920_8_FRAME_PRORES_4444_SAMPLE_PASS__WINDOWS_NOT_TESTED",
+        "production_approval": false,
+        "browser_to_ffmpeg_pr": 64,
+        "browser_to_ffmpeg_merge_sha": "09b2bfa80044d1f6b2c19d18a29d9d19d765a724",
+        "browser_to_ffmpeg_head": "2b2ec26b6db62f0b9a11ac71c82d089a3b55739c",
+        "browser_to_ffmpeg_ci": {
+          "integrated": 38025568046,
+          "standalone": 38025568112,
+          "root": 38025568054
+        },
+        "browser_to_ffmpeg_evidence": {
+          "actual_saved_scene_sha256": "06284eadee123b2ba69a990fd318c0d503d4f52478d88de9616924de882193cb",
+          "exact_saved_input_encoded": true,
+          "profile": "360x640-30fps-30frames",
+          "lossless_decode_rgb_exact": true,
+          "h264_mp4_sample_mean_error": 1.6767423321759258,
+          "production_renderer_pixel_parity": false
+        },
+        "prores_alpha_pr": 65,
+        "prores_alpha_merge_sha": "3a30dcbc98fedec0391c39dec5eaab4e4e51ef27",
+        "prores_alpha_head": "3b681c6475a03e73ddd956aa50ad7cd833652549",
+        "prores_alpha_ci": {
+          "synthetic_alpha": 38025754924,
+          "root": 38025754860
+        },
+        "alpha_probe_evidence": {
+          "codec": "prores",
+          "pixel_format": "yuva444p10le",
+          "resolution": "1080x1920",
+          "fps": 30,
+          "frames": 8,
+          "decoded_alpha_samples": [
+            0,
+            128,
+            255
+          ],
+          "production_artwork": false,
+          "premiere_windows": false
+        }
       },
       {
         "id": "S5",
