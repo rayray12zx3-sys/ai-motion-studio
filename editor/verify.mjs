@@ -209,6 +209,9 @@ async function main(){
   assert.equal(state.history.undo,3); // Undo then Redo does not create a fifth history snapshot.
   const before=state.timeline.find(l=>l.id==='headline');
   async function drag(selector,dx,dy,predicate){
+   // Additional approved export controls can shift the timeline below the viewport.
+   // Real pointer tests must scroll the target into view before mouse geometry.
+   await page.locator(selector).scrollIntoViewIfNeeded();
    const bounds=await page.locator(selector).boundingBox();
    assert.ok(bounds,'Missing draggable surface: '+selector);
    const x=bounds.x+bounds.width/2,y=bounds.y+bounds.height/2;
@@ -223,6 +226,7 @@ async function main(){
   assert.equal(shifted.end,before.end+2);
   const beforeXY=state.sample;
   const dataBeforeCanvas=state.scene;
+  await page.locator('#stage').scrollIntoViewIfNeeded();
   const stage=await page.locator('#stage').boundingBox();
   assert.ok(stage);
   // Center of the original-synthetic proxy shape, anchored to normalized frame x/y.
