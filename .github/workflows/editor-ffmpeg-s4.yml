@@ -1,0 +1,47 @@
+name: Isolated S4 synthetic FFmpeg preview encode
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/editor-ffmpeg/**'
+      - '.github/workflows/editor-ffmpeg-s4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: synthetic-ffmpeg-s4-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-encoded-roundtrip:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Existing pinned npm runtime
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify pinned official FFmpeg binary
+        run: node scripts/setup-encoder.mjs
+      - name: Synthetic preview full 30-frame lossless and H264 encode/decode
+        run: node experiments/editor-ffmpeg/verify.mjs
+      - name: Original synthetic samples only (not company content)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: s4-synthetic-encoded-preview
+          path: |
+            out/s4-original-synthetic.mp4
+            out/s4-edited-synthetic.mp4
+            out/s4-ffmpeg-synthetic-report.json
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Explicit milestone boundary
+        run: echo 'Partial S4 preview encode test only; not official Canvas SceneSpec pixel-parity or commercial rights approval.' >> "$GITHUB_STEP_SUMMARY"
