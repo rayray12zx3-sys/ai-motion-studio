@@ -40,12 +40,16 @@ const report = {
 
 async function ensurePlaywright() {
   try {
-    const { chromium } = await import('playwright-core');
+    const imported = await import('playwright-core');
+    const chromium = imported.chromium ?? imported.default?.chromium;
+    if (!chromium || typeof chromium.launch !== 'function') throw new Error('playwright-core did not expose Chromium launcher');
     return chromium;
   } catch (e) {
     console.log('Installing playwright-core for studio verification...');
     execSync('npm install --no-save --ignore-scripts --no-audit --no-fund playwright-core@1.55.0', { cwd: __dirname, stdio: 'inherit', timeout: 90000 });
-    const { chromium } = await import('playwright-core');
+    const imported = await import('playwright-core');
+    const chromium = imported.chromium ?? imported.default?.chromium;
+    if (!chromium || typeof chromium.launch !== 'function') throw new Error('playwright-core did not expose Chromium launcher');
     return chromium;
   }
 }
