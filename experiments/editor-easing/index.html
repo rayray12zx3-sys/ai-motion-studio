@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>S3 Original Synthetic Easing Inspector</title><style>
+body{font:14px system-ui,sans-serif;background:#152937;color:#eff9fb;padding:15px}
+main{width:400px}h1{font-size:18px}
+canvas{border:1px solid #84aaa9;background:#10283b}
+fieldset{border:1px solid #76999b;margin:8px 0;padding:8px}
+label{display:block;margin:8px 0}
+select,button,input{margin:3px;padding:5px}
+button{background:#b1dad9;color:#132b37;border:0}
+#status{font:12px monospace;white-space:pre-wrap;min-height:30px}
+</style></head><body><main>
+<h1>Keyframe easing inspector — synthetic R&D</h1>
+<canvas id="preview" width="360" height="460" aria-label="Original synthetic keyframe preview"></canvas>
+<fieldset><legend>Frame-accurate seek (30fps)</legend>
+<label for="frame">Frame <output id="frame-value">12</output></label>
+<input id="frame" aria-label="Seek to frame" type="range" min="0" max="29" step="1" value="12"/>
+</fieldset>
+<fieldset><legend>Headline keyframe</legend>
+<label for="key">Target keyframe</label><select id="key"></select>
+<label for="ease">Incoming segment easing</label>
+<select id="ease"><option value="linear">Linear</option><option value="ease-out-cubic">Ease-out cubic</option></select>
+<button id="apply">Apply easing</button>
+<button id="insert">Try insert frame 12</button>
+</fieldset>
+<button id="undo">Undo</button><button id="redo">Redo</button>
+<div id="status" role="status">Loading</div>
+</main><script type="module" src="/easing-ui.mjs"></script></body></html>
