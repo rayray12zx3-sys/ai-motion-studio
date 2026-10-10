@@ -26,6 +26,8 @@ function paint(){
  if(!item())selected=s.layers[0].id;
  const target=item();
  if(selectedKey===null||!target.keys.some(k=>k.frame===selectedKey))selectedKey=target.keys.at(-1).frame;
+ $('undo').disabled=history.past.length===0;
+ $('redo').disabled=history.future.length===0;
  $('seek').max=String(s.duration_frames-1);
  $('seek').value=String(frame);
  $('seek-value').textContent=String(frame);
@@ -185,13 +187,24 @@ $('delete').addEventListener('click',()=>apply(()=>{
  const scene=removeEditorLayer(history.present,selected);
  selected=scene.layers[0].id;selectedKey=null;return historyWith(scene);
 },'layer'));
-$('undo').addEventListener('click',()=>apply(()=>undoTimelineEdit(history),'undo'));
-$('redo').addEventListener('click',()=>apply(()=>redoTimelineEdit(history),'redo'));
+$('undo').addEventListener('click',()=>{
+ if(busy||history.past.length===0)return;
+ apply(()=>undoTimelineEdit(history),'undo');
+});
+$('redo').addEventListener('click',()=>{
+ if(busy||history.future.length===0)return;
+ apply(()=>redoTimelineEdit(history),'redo');
+});
 document.addEventListener('keydown',event=>{
- if((event.ctrlKey||event.metaKey)&&!event.altKey&&['z','y'].includes(event.key.toLowerCase())){
-  event.preventDefault();
-  if(event.key.toLowerCase()==='z')$('undo').click();else $('redo').click();
- }
+ if(!(event.ctrlKey||event.metaKey)||event.altKey)return;
+ const key=event.key.toLowerCase();
+ if(key!=='z'&&key!=='y')return;
+ // Native text/number/select editing keeps its own browser Undo stack.
+ if(event.target?.closest?.('input,textarea,select,[contenteditable]'))return;
+ const direction=key==='y'||(key==='z'&&event.shiftKey)?'redo':'undo';
+ if(busy||(direction==='undo'?!history.past.length:!history.future.length))return;
+ event.preventDefault();
+ $(direction).click();
 });
 // Native track gestures run through the same existing S3 neutral contract and local save gate.
 $('timeline').addEventListener('pointerdown',event=>{
