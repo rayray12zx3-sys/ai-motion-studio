@@ -8,6 +8,9 @@ test('HyperFrames 0.8.143 License Audit execution', async () => {
   assert.equal(result.package, 'hyperframes');
   assert.equal(result.version, '0.8.143');
   assert.ok(result.integrity.startsWith('sha512-'));
+  assert.equal(result.actualArchiveVerified,true);
+  assert.ok(result.tarballFileCount>10);
+  assert.equal(result.inventory.length,result.transitiveTotalCount);
   assert.equal(result.shasum, '8761025aa327993c605a307ec2d9f01fe6bde047');
   assert.ok(result.transitiveTotalCount > 0);
 

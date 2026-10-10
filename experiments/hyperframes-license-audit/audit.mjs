@@ -1,4 +1,6 @@
-import { execSync } from 'child_process';
+import { execSync, execFileSync } from 'child_process';
+import { createHash } from 'node:crypto';
+import os from 'node:os';
 import fs from 'fs';
 import path from 'path';
 
@@ -14,7 +16,14 @@ export async function runAudit() {
   const tarballUrl = viewManifest.dist?.tarball || '';
 
   // 2. Transitive lockfile resolution
-  const tmpDir = fs.mkdtempSync('/tmp/hf-audit-exp-');
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(),'hf-audit-exp-'));
+  const tgz = execFileSync('npm',['pack',targetPkg,'--ignore-scripts','--silent'],{cwd:tmpDir,encoding:'utf8',timeout:120000}).trim().split(/\r?\n/).pop();
+  const bytes = fs.readFileSync(path.join(tmpDir,tgz));
+  const verifiedSha1=createHash('sha1').update(bytes).digest('hex');
+  const verifiedSha512='sha512-'+createHash('sha512').update(bytes).digest('base64');
+  if(verifiedSha1!==shasum || verifiedSha512!==integrity)throw Error('actual published package archive checksum mismatch');
+  const tarballPaths=execFileSync('tar',['-tzf',tgz],{cwd:tmpDir,encoding:'utf8',timeout:120000}).trim().split('\n');
+  const noticePaths=tarballPaths.filter(s=>/\/(?:LICENSE(?:\.[^/]*)?|NOTICE(?:\.[^/]*)?)$/i.test(s));
   fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify({
     name: 'hf-license-audit-temp',
     type: 'module',
@@ -76,7 +85,10 @@ export async function runAudit() {
     tarballUrl,
     directDepsCount: directDepNames.length,
     transitiveTotalCount: uniqueInventory.length,
-    inventory
+    inventory:uniqueInventory,
+    actualArchiveVerified:true,
+    tarballFileCount:tarballPaths.length,
+    noticePaths
   };
 }
 

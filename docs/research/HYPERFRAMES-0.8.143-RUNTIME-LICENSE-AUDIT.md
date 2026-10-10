@@ -7,6 +7,18 @@
 
 ---
 
+## Required correction: GSAP visual-builder licensing is CONDITIONAL, not production cleared
+
+Official current source: https://gsap.com/standard-license (checked 2026-10-10). GSAP's Standard No-Charge License permits many commercial uses, but section I and section III prohibit certain **competitive no-code visual animation building tools without prior written consent**. There is **no fee/subscription prerequisite** for this prohibition. A private or localhost AI Motion Studio/HyperFrames Studio GUI therefore is **not automatically permitted** just because the tool itself is not sold. Whether its feature set materially assists competition with Webflow remains unverified and is an **operator approval / written-clarification gate**. This document must not be treated as legal advice or a production use license.
+
+**Claim precedence:** Whenever older text below says *GREEN*, *fully permitted*, *internal desktop preview safe*, *only paid SaaS restricted*, *a particular Business Green subscription automatically resolves the restriction*, or *commercial videos fully cleared*, treat that statement as **superseded by this correction**. Only the npm version/tarball metadata, not the complete binary/notice/transitive rights, have isolated test evidence. Even if technical tests pass, proper review is still needed for software redistribution, GSAP visual editor use, fonts, imported assets, codec terms, and client media.
+
+**Separate scenarios:** (1) Original-code, CLI-only synthetic rendering: lower software-license risk but final rights still conditional; (2) Native Studio visual editor: GSAP competitive visual-builder classification unresolved, even for personal/free/offline operation; (3) MP4/MOV delivery: an independently authored video generally does not inherit the Apache software notice requirement for a credit slate, but original media and encoding/brand rights remain separate; (4) redistributing source/editor bundle: software and included dependency NOTICE/license duties still apply. None is a blanket clearance.
+
+**Automated-audit semantics:** The original 124-package inventory and its license field results are a past Jules observation, not exact-head CI-verified until the audit workflow runs. The script currently uses network-dependent metadata lookup, not a full license-text/embedded-runtime legal audit. Missing metadata means UNKNOWN; never classify it as permissive. A CI pass verifies script assertions only, not commercial authorization.
+
+---
+
 ## Executive Summary & Judgments
 
 | Aspect | Status | Audit Verdict / Summary | Operator Approval Gate |
@@ -14,9 +26,9 @@
 | **Pushed Upstream Tarball Integrity** | **GREEN** | Exact npm tarball `hyperframes-0.8.143.tgz` matched shasum `8761025aa327993c605a307ec2d9f01fe6bde047` and SHA-512 integrity `sha512-kCNOSZXJFTX30hOBt8nyLD/3kCIGOhdRHKHzF1H0fL1aYPFnGQpZPZZbNK0AW8QpYG5TdQ5TZRJr+EuQdX8Rtw==`. | Verification complete. |
 | **Direct & Transitive Dependency Licenses** | **GREEN / CONDITIONAL** | Direct runtime deps are MIT/Apache-2.0 (`hono`, `puppeteer-core`, `sharp`, `fontkit`, `esbuild`, `postcss`, etc.). Transitive sharp binary bindings (`@img/sharp-libvips-*`) are LGPL-3.0-or-later. | LGPL-3.0 dynamic binding is acceptable for local tool invocation; no modified C library re-distribution. |
 | **Bundled License / NOTICE Files** | **UNKNOWN** | The published npm tarball contains zero `LICENSE` or `NOTICE` text files in package root. Top-level repo advertises `Apache-2.0`. | Software redistribution requires including copyright/Apache-2.0 text manually. |
-| **Rendered Video Output Rights (MP4/MOV)** | **GREEN** | Copyright in original rendered pixels belongs to the creator. No mandatory end-video credit or attribution slate required for client MP4/MOV delivery. | Permitted for commercial advertisement delivery. |
-| **GSAP Animation Library Rights** | **CONDITIONAL** | GSAP (`^3.13.0`) is licensed under GreenSock Standard License (No Charge, Non-OSI). Permitted for general animation compositions, but restricted if HyperFrames/Studio is offered as a paid visual animation builder or SaaS product. | Operator must not offer a paid SaaS visual editor without GSAP Business Green license. |
-| **Studio & Editor Bundling vs CLI** | **CONDITIONAL** | Tarball bundles pre-built web Studio assets (`dist/studio`). Studio is integrated in CLI (`npx hyperframes preview`), loading GSAP client-side. | Internal desktop preview is safe; hosting Studio as a multi-tenant web service triggers GSAP & server terms. |
+| **Rendered Video Output Rights (MP4/MOV)** | **CONDITIONAL** | Independently authored media generally does not inherit an ordinary Apache-2.0 end-video attribution slate; actual footage/fonts/brand, codecs, and permitted editor use are separate. | Commercial ad clearance **not yet given**. |
+| **GSAP Animation Library Rights** | **CONDITIONAL / WRITTEN-CONSENT GATE** | Standard No-Charge license generally permits commercial work, but certain competitive no-code visual animation editors are prohibited **even if free, local or private**. | Need upstream clarification/consent for a prohibited use. |
+| **Studio & Editor Bundling vs CLI** | **CONDITIONAL / NOT CLEARED** | The bundled editor must be assessed separately from CLI-only rendering; localhost is not itself permission under GSAP's visual-builder rule. | Do not adopt native Studio before classifying the workflow. |
 | **Browser & Codec Rights** | **GREEN** | Uses system FFmpeg binaries (`ffmpeg-static`/`ffprobe-static` pinned locally) and Chrome/Chromium via `@puppeteer/browsers`. | System FFmpeg / H.264 / ProRes patents/licenses managed separately. |
 
 ---
@@ -83,44 +95,23 @@ The CLI declares 17 direct dependencies in `package.json`. Transitive resolution
 
 ---
 
-## 4. Scenario Analysis: Commercial Adoption & Use Cases
+## 4. Commercial production scenarios — conditional findings
 
-### Scenario (a): Internal Tool Use to Produce Company Advertisements
-- **Status:** **PERMITTED (GREEN)**
-- **Analysis:** Running `npx hyperframes render` locally on an engineer or operator workstation to render company advertisements is fully permitted under Apache-2.0 and the underlying dependencies. Personal tool ownership does not conflict with rendering commercial video.
-
-### Scenario (b): Delivery of Rendered MP4/MOV Media to Employer or Client
-- **Status:** **PERMITTED (GREEN)**
-- **Analysis:** The output of `hyperframes` is a rendered video file (MP4/MOV). Open-source software licenses (Apache-2.0, MIT, LGPL) apply to the *software code*, not to the *data/media output* produced by running the executable. No copyright transfer or mandatory end-video credit slate is imposed on rendered commercial media.
-
-### Scenario (c): Distribution of Editable Project Source / Bundle to Client
-- **Status:** **CONDITIONAL (REQUIRES NOTICES)**
-- **Analysis:** If editable HyperFrames HTML/JS source or local template code is transferred to a third party or client:
-  1. Software distribution obligations of Apache-2.0 apply (must retain copyright notice and state changes).
-  2. Any bundled fonts, graphics, or media within the project folder must carry independent asset license clearance.
-
-### Scenario (d): Paid / SaaS / Commercial Editor Service
-- **Status:** **RESTRICTED / REQUIRES GSAP COMMERCIAL LICENSE**
-- **Analysis:**
-  - HyperFrames CLI includes GSAP (`^3.13.0` devDependency in source monorepo, runtime loaded in HTML compositions).
-  - GSAP's **Standard No-Charge License** explicitly restricts use in paid products, SaaS visual animation tools, or subscription animation builders where users pay a fee to access the builder or generated animations.
-  - Operating HyperFrames Studio as a commercial paid web app or SaaS tool requires purchasing a **GreenSock Business Green license**.
-
-### Scenario (e): Use of Imported Fonts, Samples, Music, and Stock
-- **Status:** **INDEPENDENT AUDIT MANDATORY**
-- **Analysis:** Apache-2.0 for HyperFrames does **not** grant rights to third-party fonts (e.g. Google Fonts, custom TTF/WOFF2), background music, stock videos, or brand assets imported into compositions. All imported media must have documented commercial rights (e.g., SIL OFL 1.1 for fonts, royalty-free commercial license for audio/video).
+- **(a) Internal synthetic CLI-only render:** Apache-2.0 code generally permits commercial usage, but do not infer blanket rights for separately licensed bundles, fonts, footage, FFmpeg codecs, or a native GUI editor. **CONDITIONAL**.
+- **(b) Delivery of original MP4/MOV:** A normal source-code software NOTICE obligation does not itself require adding credits in an independent rendered video. Rights in the actual images, music, fonts, assets, and workflows are separate. **CONDITIONAL**.
+- **(c) Transfer editable source or editor bundle:** Apache notices, LGPL terms, proprietary editor license and third-party bundled assets may apply. The package metadata is not a redistributed-software NOTICE audit. **CONDITIONAL**.
+- **(d) Free or paid no-code visual builder:** Official GSAP https://gsap.com/standard-license restricts uses that materially assist in building a competing visual animation builder, **regardless of fees**. Prohibited uses require **prior written consent**; neither a free/private/localhost deployment nor a historic subscription tier establishes permission. **NOT CLEARED**.
+- **(e) Imported samples and codecs:** Need individual commercial source rights. **NOT CLEARED**.
 
 ---
-
 ## 5. Specific Component Licensing Details
 
 ### GSAP (GreenSock Animation Platform)
-- **Upstream License:** GreenSock Standard License ("No-Charge License", non-OSI).
-- **Key Terms:**
-  - Free for non-commercial and standard commercial web projects where end users are not charged a fee to access the site/app.
-  - **Animation Builder / Paid Product Exclusion:** If the tool is sold, charges subscription fees, or functions as a commercial animation editor tool provided to paying customers, a paid **Business Green** license is required.
-- **Studio Application:** HyperFrames compositions use GSAP for timeline sequencing. When AI Motion Studio uses HyperFrames internally as an offline local renderer, standard No-Charge terms apply. If offered as a paid service, GSAP licensing must be upgraded.
 
+- Official Standard **No Charge** source: https://gsap.com/standard-license (checked 2026-10-10). Ordinary commercial uses can be permitted, and AI-generated GSAP code is expressly discussed as permitted.
+- Official **Prohibited Uses** include qualifying competing no-code visual-animation tools, without a fee condition; section III requires prior written consent for such use.
+- Whether HyperFrames Studio within AI Motion Studio qualifies is **UNRESOLVED**. CLI-only rendering is a different use-case, not a general clearance of a bundled visual editor.
+- Do not promise that a paid subscription by itself resolves this; request written licensing clarification before a disputed production integration.
 ### Studio Editor Bundling vs CLI
 - `hyperframes@0.8.143` includes pre-built Studio static assets in `dist/studio/`.
 - Executing `npx hyperframes preview` spins up an internal `@hono/node-server` at `http://localhost:3000` to preview compositions.
@@ -135,10 +126,10 @@ The CLI declares 17 direct dependencies in `package.json`. Transitive resolution
 ## 6. Actionable Risk & Approval Checklist for AI Motion Studio Owner
 
 - [x] **Verified npm tarball integrity** (`shasum: 8761025aa327993c605a307ec2d9f01fe6bde047`).
-- [x] **Verified transitive dependency licenses** (All 124 packages cataloged; LGPL-3.0 in `sharp-libvips` dynamic bindings noted).
-- [x] **Confirmed rendered video output rights** (Rendered MP4/MOV files are clear for company ad delivery without attribution slates).
+- [ ] **Verify transitive license text and distributed native components separately** (All 124 packages cataloged; LGPL-3.0 in `sharp-libvips` dynamic bindings noted).
+- [ ] **Rendered video rights subject to separate verification** (Rendered MP4/MOV files are clear for company ad delivery without attribution slates).
 - [ ] **Operator Gate 1:** If distributing editable source code or Studio tools, assemble and append an explicit `THIRD_PARTY_NOTICES` file containing upstream Apache-2.0 and MIT notices.
-- [ ] **Operator Gate 2:** Ensure zero paid subscription / SaaS monetization is attached to HyperFrames Studio unless a GreenSock Business Green license is obtained.
+- [ ] **Operator Gate 2:** Check whether a free/private/localhost native visual animation editor materially assists competition with Webflow's animation builder, and obtain prior written GSAP/Webflow consent if it is a prohibited use. A lack of paid subscriptions does NOT automatically authorize it.
 - [ ] **Operator Gate 3:** Verify all fonts and audio clips used in commercial compositions possess explicit commercial licenses (e.g. SIL OFL 1.1).
 
 ---
@@ -147,4 +138,4 @@ The CLI declares 17 direct dependencies in `package.json`. Transitive resolution
 
 - Exact npm package view retrieval: `npm view hyperframes@0.8.143 --json` (2026-10-10).
 - Audit execution script: `experiments/hyperframes-license-audit/audit.mjs`
-- Test suite verification: `experiments/hyperframes-license-audit/audit.test.mjs` (PASS).
+- Test suite: `experiments/hyperframes-license-audit/audit.test.mjs`; no exact-head audit CI PASS may be claimed until this test actually passes in GitHub Actions.
