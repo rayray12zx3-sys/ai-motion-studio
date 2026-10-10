@@ -18,6 +18,16 @@
 <label for="keyframe">關鍵影格 <select id="keyframe"></select></label>
 <label for="ease">進入此格的緩動 <select id="ease"><option value="linear">Linear</option><option value="ease-out-cubic">Ease-out cubic</option></select></label>
 <button id="save-ease">套用緩動</button>
+<div class="separator"></div>
+<h2>此關鍵影格的數值</h2>
+<div class="key-grid">
+<label for="key-x">X（正規化）<input id="key-x" type="number" min="-0.5" max="1.5" step="any"></label>
+<label for="key-y">Y（正規化）<input id="key-y" type="number" min="-0.5" max="1.5" step="any"></label>
+<label for="key-scale">縮放<input id="key-scale" type="number" min="0.01" max="4" step="any"></label>
+<label for="key-rotation">旋轉（弧度）<input id="key-rotation" type="number" min="-3.141592653589793" max="3.141592653589793" step="any"></label>
+<label for="key-opacity">不透明度（0～1）<input id="key-opacity" type="number" min="0" max="1" step="any"></label>
+</div>
+<button id="save-values">儲存此格數值</button>
 <div class="button-row"><button id="add-key">在目前格新增關鍵影格</button><button id="remove-key">刪除此關鍵影格</button></div>
 <div class="separator"></div><div class="button-row"><button id="add-rect">新增矩形</button><button id="duplicate">複製圖層</button><button id="delete">刪除圖層</button></div>
 <p class="field-note">支援 30fps、S1 既有兩種緩動。不支援外部素材或自由 Bezier 控制點。</p>
