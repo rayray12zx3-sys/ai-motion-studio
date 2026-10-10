@@ -1,0 +1,29 @@
+name: Isolated HyperFrames License Audit
+on:
+  pull_request:
+    paths:
+      - 'experiments/hyperframes-license-audit/**'
+      - 'docs/research/HYPERFRAMES-0.8.143-RUNTIME-LICENSE-AUDIT.md'
+      - '.github/workflows/hyperframes-license-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Check audit syntax
+        run: |
+          node --check experiments/hyperframes-license-audit/audit.mjs
+          node --check experiments/hyperframes-license-audit/audit.test.mjs
+      - name: Execute pinned npm 0.8.143 license audit test
+        run: node --test experiments/hyperframes-license-audit/audit.test.mjs
+      - name: Record scope limitations
+        run: echo 'Metadata-only audit, NOT a commercial license clearance or studio adoption.' >> "$GITHUB_STEP_SUMMARY"
