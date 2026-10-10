@@ -34,21 +34,6 @@ function boundaries(scene,layer,frame){
  return {frame,x:state.x,y:state.y,scale:state.scale,
   rotation:state.rotation,opacity:state.opacity,ease:'linear'};
 }
-function editTrim(scene,layer,id,frame,startEdge){
- if(!validFrame(frame))throw Error('Invalid trim frame');
- const start=startEdge?frame:layer.start_frame;
- const end=startEdge?layer.end_frame:frame;
- if(start<layer.start_frame||end>layer.end_frame||end-start<2)
-  throw Error('Trim only supports shortening to at least two frames');
- if(start===layer.start_frame&&end===layer.end_frame)
-  throw Error('No-op trim not accepted');
- // Both boundaries are sampled on the original scene before modifying keyframes.
- const first=boundaries(scene,layer,start),last=boundaries(scene,layer,end-1);
- const between=layer.keys.filter(k=>k.frame>start&&k.frame<end-1);
- const target=scene.layers.find(l=>l.id===id);
- target.start_frame=start;target.end_frame=end;
- target.keys=[first,...between,last];
-}
 export function editTimeline(scene,operation){
  validateEditableScene(scene);
  if(!plain(operation)||!allowedTypes.has(operation.type))throw Error('Unsupported timeline operation');
@@ -59,6 +44,8 @@ export function editTimeline(scene,operation){
   ['type','layerId','frame'];
  exactly(operation,keys,'timeline operation');
  const layer=getLayer(scene,operation.layerId);
+ if(t==='trim-start'||t==='trim-end')
+  return trimTimelineClip(scene,operation.layerId,t==='trim-start'?'start':'end',operation.frame);
  if(t==='move'){
   if(!Number.isInteger(operation.deltaFrames)||Math.abs(operation.deltaFrames)>1800)
    throw Error('Invalid integer frame move');
@@ -76,10 +63,6 @@ export function editTimeline(scene,operation){
   cloned.start_frame+=operation.deltaFrames;cloned.end_frame+=operation.deltaFrames;
   for(const k of cloned.keys)k.frame+=operation.deltaFrames;
   next.layers.push(cloned);
- }else if(t==='trim-start'||t==='trim-end'){
-  editTrim(scene,layer,operation.layerId,operation.frame,t==='trim-start');
-  // editTrim must mutate *next*, not original. Reapply below using original as source.
-  throw Error('Unreachable trim path');
  }else{
   if(!validFrame(operation.frame))throw Error('Invalid keyframe frame');
   const index=target.keys.findIndex(k=>k.frame===operation.frame);
