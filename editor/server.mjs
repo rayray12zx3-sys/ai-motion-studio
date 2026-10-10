@@ -63,6 +63,38 @@ export async function startEditorServer({port=0,sceneFile=join(root,'.local','sc
    if(req.headers.host!==host)throw Error('Only localhost Host accepted');
    if(req.headers.origin&&req.headers.origin!=='http://'+host)throw Error('Cross-origin request refused');
    const url=new URL(req.url,'http://'+host);
+   // Authenticated-to-this-local-page, read-only frame of the SAVED S1 scene.
+   // This uses the already-authorized locked Canvas painter, never Konva proxies.
+   // The extra request header prevents third-party <img> embeds from reading a local frame.
+   if(req.method==='GET'&&url.pathname==='/render-preview.png'){
+    const validQuery=url.searchParams.size===1&&
+      url.searchParams.has('frame')&&/^(0|[1-9][0-9]{0,3})$/.test(url.searchParams.get('frame'))&&
+      !url.hash;
+    if(!validQuery||req.headers['x-motion-preview']!=='1'||typeof req.headers['if-match']!=='string'||
+       (req.headers['sec-fetch-site']&&req.headers['sec-fetch-site']!=='same-origin'))
+      throw Error('Unauthorized or invalid local frame preview request');
+    const current=await readScene(scenePath);
+    if(req.headers['if-match']!=='"'+sha(current)+'"'){
+     respond(res,409,JSON.stringify({error:'Saved scene changed; reload before preview'}));return;
+    }
+    let painter;
+    try{
+     ({drawEditableSceneFrame:painter}=await import('../src/free/editable-scene.mjs'));
+    }catch(error){
+     if(error.code==='ERR_MODULE_NOT_FOUND'||error.code==='MODULE_NOT_FOUND'){
+      respond(res,503,JSON.stringify({error:'Install existing root npm dependencies, restart editor server'}));return;
+     }
+     throw error;
+    }
+    try{
+     const scene=parseEditableScene(current),frame=Number(url.searchParams.get('frame'));
+     const canvas=painter(scene,frame,{output:'opaque'});
+     const png=canvas.toBuffer('image/png');
+     respond(res,200,png,'image/png',sha(png));return;
+    }catch(error){
+     respond(res,422,JSON.stringify({error:'Saved S1 scene cannot be rendered at this frame with locked Canvas and font'}));return;
+    }
+   }
    if(url.search||url.hash||url.pathname!==req.url)throw Error('Unexpected request path');
    if(req.method==='GET'&&staticRoutes.has(url.pathname)){
     const [path,type]=staticRoutes.get(url.pathname);
