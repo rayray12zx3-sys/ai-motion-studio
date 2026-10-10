@@ -33,6 +33,12 @@
 <p class="field-note">支援 30fps、S1 既有兩種緩動。不支援外部素材或自由 Bezier 控制點。</p>
 </div>
 </section>
+<section class="pane output-preview">
+<div class="heading"><h2>正式 Canvas 逐格畫面 <small>唯讀 · 已儲存場景 · 不含 Konva 選取框</small></h2><button id="render-frame" type="button">產生此影格的 Canvas 預覽</button></div>
+<p id="rendered-status" role="status" aria-live="polite">按按鈕查看已儲存的 S1 場景之真實 Canvas 影格。需先安裝既有根目錄依賴；不會輸出影片或送出外部資料。</p>
+<div id="rendered-wrap"><img id="rendered-image" alt="相同 S1 場景由正式鎖定 Canvas 字型逐格輸出的 PNG" hidden></div>
+<p class="field-note">此圖由正式 S1 Canvas 畫格產生；上方 Konva 畫布仍僅供選取與位置編輯。此功能不代表原始舊版樣板的像素相同，也不代表 Premiere 或商用美術驗收。</p>
+</section>
 <section class="pane timeline-pane"><div class="heading"><h2>時間軸</h2><small>拖曳片段中央移動，拖曳兩端修剪；逐格對齊</small></div><div id="timeline-scroller"><div id="timeline" role="group" aria-label="逐格時間軸"></div></div></section>
 <div id="status" role="status" aria-live="polite">載入本機場景中…</div>
 <footer>只在此電腦的 127.0.0.1 執行；資料儲存在 editor/.local。正式 Canvas+FFmpeg 未更動。</footer>
