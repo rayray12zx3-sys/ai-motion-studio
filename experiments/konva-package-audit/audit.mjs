@@ -41,7 +41,7 @@ export async function inspectKonvaArchive(){
  try{
   const view=JSON.parse(run('npm',['view',name+'@'+version,'--json'],cwd));
   if(view.dist?.shasum!==expectedSha1||view.dist?.integrity!==expectedIntegrity)
-   throw Error('Published npm registry digest differs from immutable research pin');
+   throw Error('Registry pin mismatch: sha1='+String(view.dist?.shasum)+' vs '+expectedSha1+'; sha512='+String(view.dist?.integrity)+' vs '+expectedIntegrity);
   const tarball=run('npm',['pack',name+'@'+version,'--ignore-scripts','--silent'],cwd).trim().split(/\r?\n/).pop();
   if(!/^konva-10\.7\.1\.tgz$/.test(tarball))throw Error('Unexpected archive filename');
   const bytes=readFileSync(join(cwd,tarball));
