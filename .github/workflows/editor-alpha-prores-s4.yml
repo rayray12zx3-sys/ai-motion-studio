@@ -1,0 +1,46 @@
+name: Isolated S4 synthetic 1080p ProRes Alpha
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/editor-alpha-prores/**'
+      - '.github/workflows/editor-alpha-prores-s4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: synthetic-prores-alpha-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-alpha-mov:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Install existing pinned npm versions only
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Provision existing hash-verified FFmpeg
+        run: node scripts/setup-encoder.mjs
+      - name: Test original synthetic 1080x1920 ProRes 4444 Alpha
+        run: node experiments/editor-alpha-prores/verify.mjs
+      - name: Seven-day synthetic Alpha video and QA JSON
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: synthetic-1080p-prores-alpha-s4
+          path: |
+            out/s4-original-synthetic-alpha-1080x1920.mov
+            out/s4-alpha-prores-report.json
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Scope warning
+        run: echo 'Only 8 original synthetic ProRes 4444 Alpha frames on Linux; Windows Premiere and official renderer parity remain not proven.' >> "$GITHUB_STEP_SUMMARY"
