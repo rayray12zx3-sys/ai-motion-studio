@@ -10,6 +10,7 @@ const probe={ready:false,commits:0,canvasDrags:0,timelineActions:0,easeChanges:0
 window.__motionEditor=probe;
 let history,etag,selected='headline',selectedKey=null,frame=12,busy=false,gesture=null;
 let stage,layer,viewport;
+let exporting=false,lastExport=null;
 let stillUrl=null,stillFrame=null,stillTag=null,stillMode=null,stillToken=0;
 const item=()=>history.present.layers.find(l=>l.id===selected);
 const updateStatus=msg=>{$('status').textContent=msg;};
@@ -77,6 +78,8 @@ function paint(){
  if(selectedKey===null||!target.keys.some(k=>k.frame===selectedKey))selectedKey=target.keys.at(-1).frame;
  $('undo').disabled=history.past.length===0;
  $('redo').disabled=history.future.length===0;
+ if(lastExport&&lastExport.scene_etag!==etag)
+  $('export-feedback').textContent='上次輸出是較早版本的場景：'+lastExport.output+'；請重新匯出目前版本。';
  $('seek').max=String(s.duration_frames-1);
  $('seek').value=String(frame);
  $('seek-value').textContent=String(frame);
@@ -197,6 +200,39 @@ $('layer-list').addEventListener('click',event=>{
 $('seek').addEventListener('input',event=>{frame=Number(event.target.value);paint();});
 $('render-mode').addEventListener('change',()=>invalidateStill());
 $('render-still').addEventListener('click',()=>loadCanvasStill());
+$('export-video').addEventListener('click',async()=>{
+ if(exporting||busy)return;
+ const version=etag,mode=$('export-mode').value;
+ exporting=true;$('export-video').disabled=true;
+ $('export-feedback').textContent='正式 Canvas+FFmpeg 正在輸出已儲存的 S1 動畫；請勿關閉本機伺服器。';
+ probe.exportVideo={status:'RUNNING',mode};
+ try{
+  const response=await fetch('/render-video?mode='+mode,{
+   method:'POST',headers:{'X-AI-Motion-Export':'1','If-Match':version}
+  });
+  const data=await response.json();
+  if(!response.ok||data.status!=='DONE')throw Error('HTTP '+response.status+'：'+(data.error||'匯出失敗'));
+  lastExport={...data,scene_etag:version};
+  $('copy-export-path').disabled=false;
+  $('export-feedback').textContent='已在此電腦輸出：'+data.output+
+   '。請在專案根目錄開啟該路徑；創意、美術及 Premiere 匯入仍須另外驗收。';
+  probe.exportVideo={status:'DONE',mode,output:data.output,run_id:data.run_id,
+   frames:data.frames,scene_sha256:data.scene_sha256,output_sha256:data.output_sha256};
+  if(version!==etag)$('export-feedback').textContent+='（注意：匯出的是較早儲存版本。）';
+ }catch(error){
+  $('export-feedback').textContent='未完成本機匯出：'+String(error.message||error);
+  probe.exportVideo={status:'ERROR',mode,message:String(error.message||error)};
+ }finally{exporting=false;$('export-video').disabled=false;}
+});
+$('copy-export-path').addEventListener('click',async()=>{
+ if(!lastExport)return;
+ try{
+  await navigator.clipboard.writeText(lastExport.output);
+  $('export-feedback').textContent='已複製相對於專案根目錄的影片路徑：'+lastExport.output;
+ }catch{
+  $('export-feedback').textContent='輸出路徑（請手動複製）：'+lastExport.output;
+ }
+});
 $('keyframe').addEventListener('change',event=>{selectedKey=Number(event.target.value);paint();});
 $('save-appearance').addEventListener('click',()=>apply(()=>{
  let scene=history.present;
