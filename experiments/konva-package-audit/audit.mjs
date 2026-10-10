@@ -6,6 +6,8 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
 const name='konva',version='10.7.1';
+const expectedSha1='b77f1663f1b108d37f45034c33bb88f6c8364504';
+const expectedIntegrity='sha512-7XV+NQRpgrjquoHD0EcRQCsNovT5ZUlOcEiYdYjLjBUFq6gP8HeRKIUSjPBSa7XBfYMa2SY4+RyNOoEAbfB6gA==';
 const run=(exe,args,cwd)=>execFileSync(exe,args,{cwd,encoding:'utf8',timeout:120000,maxBuffer:10*1024*1024});
 const digest=(bytes,algorithm)=>createHash(algorithm).update(bytes).digest(algorithm==='sha512'?'base64':'hex');
 export function validatePackageMetadata(view,packed,archiveBytes,entries){
@@ -38,6 +40,8 @@ export async function inspectKonvaArchive(){
  const cwd=mkdtempSync(join(tmpdir(),'motion-konva-audit-'));
  try{
   const view=JSON.parse(run('npm',['view',name+'@'+version,'--json'],cwd));
+  if(view.dist?.shasum!==expectedSha1||view.dist?.integrity!==expectedIntegrity)
+   throw Error('Published npm registry digest differs from immutable research pin');
   const tarball=run('npm',['pack',name+'@'+version,'--ignore-scripts','--silent'],cwd).trim().split(/\r?\n/).pop();
   if(!/^konva-10\.7\.1\.tgz$/.test(tarball))throw Error('Unexpected archive filename');
   const bytes=readFileSync(join(cwd,tarball));
