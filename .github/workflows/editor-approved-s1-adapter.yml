@@ -60,3 +60,54 @@ jobs:
           if-no-files-found: ignore
       - name: Preserve default authority and creative gate
         run: echo 'New opt-in S1 renderer uses the original Canvas+hash-pinned FFmpeg; old default renderer and root dependencies remain unchanged. Only original synthetic sample. No pixel parity with Konva proxy, real media rights, user creative review or Premiere acceptance is claimed.' >> "$GITHUB_STEP_SUMMARY"
+
+  approved-s1-windows-mp4-alpha:
+    runs-on: windows-2022
+    timeout-minutes: 18
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+    env:
+      MOTION_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Check real PR SHA and install root runtime with Windows-safe npm.cmd
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne $env:MOTION_EXPECTED_HEAD) { throw "PR head checkout mismatch" }
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw "Root npm.cmd ci failed" }
+          node --test tests/editor-approved-render-adapter.test.mjs
+          if ($LASTEXITCODE -ne 0) { throw "S1 strict Canvas source tests failed" }
+      - name: Provision SHA-256 verified native Windows FFmpeg
+        run: |
+          node scripts/setup-encoder.mjs
+          if ($LASTEXITCODE -ne 0) { throw "Pinned native Windows FFmpeg verification failed" }
+      - name: Real native Windows H264 and ProRes Alpha encode and decoded-frame QA
+        run: |
+          node scripts/render-editable.mjs experiments/editor-contract/original-synthetic.json ci-s1-mp4 mp4
+          if ($LASTEXITCODE -ne 0) { throw "Windows H264 encoding failed" }
+          node scripts/render-editable.mjs experiments/editor-contract/original-synthetic.json ci-s1-alpha alpha
+          if ($LASTEXITCODE -ne 0) { throw "Windows ProRes Alpha encoding failed" }
+          node scripts/verify-editable-render.mjs
+          if ($LASTEXITCODE -ne 0) { throw "Windows actual decoded H264/Alpha QA failed" }
+      - name: Synthetic 7-day Windows exports only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: approved-s1-canvas-ffmpeg-windows-synthetic
+          path: |
+            out/editable-ci-s1-mp4/
+            out/editable-ci-s1-alpha/
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: No claim of user-PC Premiere or creative acceptance
+        run: |
+          "Hosted Windows native Canvas+FFmpeg H264/ProRes decoded technical QA only. Not exact user Windows PC, Premiere import, Konva WYSIWYG or commercial art acceptance." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
