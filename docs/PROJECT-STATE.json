@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "2026-10-10 user explicitly approved additive S1 editor → existing locked Canvas+FFmpeg renderer. PR #80 merged eaa88a after original-synthetic Linux actual 30f H264/ProRes Alpha CI #38034805469, root 42 tests CI #38034805362, editor Chrome #38034805344. PR #81 fixed newly truncated Windows FFmpeg hash, added pin parity regression; exact-head Windows+Linux real MP4/ProRes Alpha #38035152519 and root #38035152514 PASS, merged 7b0e7d8. S1 scene file opt-in export available in scripts/render-editable.mjs, old src/free/scene.mjs and scripts/render.mjs unchanged. Hosted encoded proof ONLY 360x640@30fps/30f; 1080p S1 encode / Konva WYSIWYG / user Windows Premiere / real assets rights / Bezier v2 / human creative pending. X list 20 GitHub projects audited in docs/X-MOTION-OPEN-SOURCE-REVIEW-2026-10-10.md, no external packages or assets installed. Next safe technical gate: optionally test dedicated original-synthetic high-resolution S1 encode and develop read-only final Canvas preview using same painter, without authorizing company media.",
     "2026-10-10 PR #77 merged 8f56d225 (exact head 44a09b71; Windows headed Chrome/Edge #38033072823, Linux #38033072863, root Canvas regression #38033072810 PASS): native S1 editor 9:16/16:9 profiles preserve dimensions on preview, real pointer normalized x/y and saved/reopened JSON. PR #76 final exact head 160545c CI Windows #38031806799, Linux #38031806792, root #38031806828, full three official renders #38031802874, post-main #38031977078 PASS; merged bfa4e05. Neither provides official renderer pixel parity, real media/rights, Premiere or human desktop UX. Editor v1 source-only work can continue; formal renderer compiler or S1 v2 Bezier needs new owner approval.",
     "2026-10-10 PR #76 hosted Windows Chrome + Edge browser E2E verified at implementation f86a535: Windows #38031493476, Linux #38031493460, root #38031493459 and full synthetic official render #38031504465 PASS. Routine drag/trim/numeric/easing/Undo/Redo/JSON/refusal checks are automated; no user-local test script needed. Query final PR head/checks before merge. Personal actual-PC ergonomics/policies, Premiere and human creative acceptance remain; production renderer and dependencies unchanged. See docs/EDITOR-WINDOWS-BROWSER-E2E-2026-10-10.md.",
     "2026-10-10 approved local Konva editor technical Windows runner smoke #74 safely merged e4b1700: Windows Node24 exact-head CI #38029985148 PASS 4/4 tests no skips, Linux Chrome CI #38029985108 and official renderer CI #38029985064 PASS. Windows Node install/server/ETag/symlink works on hosted runner, but the OPERATOR must still launch GUI on their own Windows PC and visually accept interaction; no Windows Premiere or commercial art/rights approval. Do not need more packages. Original Canvas+FFmpeg untouched.",
@@ -1024,6 +1025,52 @@
         "official_pixel_parity": "NOT_PROVEN",
         "human_pc_acceptance": false
       }
+    },
+    "s1_export_adapter": {
+      "operator_approved": true,
+      "scope": "OPT_IN_S1_V1_CANVAS_FFMPEG_ONLY",
+      "default_legacy_renderer_changed": false,
+      "s1_canvas_painter": "src/free/editable-scene.mjs",
+      "s1_video_cli": "scripts/render-editable.mjs",
+      "pr": 80,
+      "pr_head": "9b7e39482f7996989651874b21ee86e4b5a32cd8",
+      "merge_sha": "eaa88a3964cd620d726ea34e42f6c25f75c30d5a",
+      "linux_ci": {
+        "s1_encode": 38034805469,
+        "root": 38034805362,
+        "editor": 38034805344
+      },
+      "windows_fix_pr": 81,
+      "windows_fix_exact_head": "1ab6acb3dd6431716df248918c8a0bb043921718",
+      "windows_fix_merge_sha": "7b0e7d875ea7b2730f0d1605cd628c3cf943952e",
+      "windows_ci": {
+        "linux_windows_encoded": 38035152519,
+        "root": 38035152514
+      },
+      "profiles_supported": [
+        "360x640",
+        "640x360",
+        "1080x1920",
+        "1920x1080"
+      ],
+      "encoded_ci_profile": "360x640-30fps-30frames",
+      "output_modes": [
+        "H264_MP4",
+        "PRORES_4444_ALPHA_MOV"
+      ],
+      "alpha_decoded": true,
+      "frames_hash_verified": true,
+      "source_media_assets": 0,
+      "new_root_packages": false,
+      "official_old_renderer_modified": false,
+      "konva_wysiwyg_pixel_parity": "NOT_TESTED_PROXY_PREVIEW",
+      "full_hd_new_s1_video_encode": "NOT_TESTED",
+      "windows_premiere_on_user_pc": "NOT_TESTED",
+      "real_company_media_rights": "NOT_AUTHORIZED",
+      "arbitrary_bezier": "NOT_AUTHORIZED",
+      "commercial_art_approval": false,
+      "research_20_oss": "docs/X-MOTION-OPEN-SOURCE-REVIEW-2026-10-10.md",
+      "imported_external_packages_or_assets": 0
     }
   }
 }
