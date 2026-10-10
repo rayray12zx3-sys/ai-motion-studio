@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Original Synthetic Timeline S3</title>
+<style>
+body{font:15px system-ui,sans-serif;background:#132330;color:#e7eff2;margin:24px}
+main{max-width:480px}
+#track{position:relative;width:300px;height:86px;background:#233d4d;border:1px solid #72919d;margin:18px 0;touch-action:none}
+#clip{position:absolute;top:20px;height:46px;background:#3d7b89;border:1px solid #c3ede9;box-sizing:border-box;cursor:grab;touch-action:none;user-select:none}
+#clip:active{cursor:grabbing}
+.handle{position:absolute;top:0;bottom:0;width:11px;background:#dcf3bb;cursor:ew-resize}
+#start-handle{left:0}#end-handle{right:0}
+#clip-label{position:absolute;left:20px;right:20px;text-align:center;top:12px;font-size:12px;pointer-events:none}
+button{margin:4px;padding:7px 12px;background:#b2dbda;border:0;color:#142a33;cursor:pointer}
+#status{font-family:monospace;font-size:13px;min-height:38px;white-space:pre-wrap}
+</style>
+</head>
+<body><main><h1>S3 synthetic timeline</h1><p>Integer 30fps frames, drag clip or either edge.</p>
+<div id="track" role="group" aria-label="Original synthetic frame timeline">
+<div id="clip" aria-label="headline timeline clip">
+<span id="start-handle" class="handle" data-edge="start" aria-label="trim start"></span>
+<span id="clip-label">headline</span>
+<span id="end-handle" class="handle" data-edge="end" aria-label="trim end"></span>
+</div></div>
+<button id="add-key">Insert key at frame 12</button>
+<button id="undo">Undo</button><button id="redo">Redo</button>
+<div id="status" role="status">Loading</div>
+</main><script type="module" src="/timeline-ui.mjs"></script></body></html>
