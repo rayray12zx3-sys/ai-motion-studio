@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "S4 two bounded CI-pass R&D checks merged: #61 shared Konva+DOM timeline actual Chrome edits/undo/reload (2 timeline gestures +1 canvas,5 saves) CI #38024966876 + root #38024966782; #62 separate original synthetic FFmpeg 30x360x640 frames lossless exact x264rgb and H264 MP4 CI #38025223621 + root #38025223586. They are NOT one browser-saved-scene->video test and preview is NOT official production renderer pixel equivalent; alpha MOV/Premiere/unlicensed real assets untouched. #12 M3A already contains PNG hash+declared license contract, no duplicate implementation or rights approval. Next isolated safe task: test browser-persisted S1 scene passed to R&D encoder without root deps or renderer migration; otherwise wait for operator to authorize production changes. No licensor outreach.",
     "S4 partial synthetic @napi-rs/canvas preview PR #59 merged to main at 402da01c; root CI #38023857595 PASS 25/25 tests. Synthetic neutral scene's full 30-frame RGB/RGBA sequence deterministic, edited frames changed and existing drawFrame(profiles.smoke,12) PNG remained identical. NOT full S4: new painter != official renderer SceneSpec/pixels, no FFmpeg encoded MP4/ProRes/alpha pipeline or Windows Premiere. No production changes. Next safe task: review S1/M3A provenance reuse and document actual scope of professional editor unmet functionality, do not auto-adopt new dependency or engine.",
     "S3 synthetic isolated timeline data PR #56 safely merged (CI #38023289295, 20/20 root tests), Chrome DOM track PR #57 merged at eabe3c6 (CI #38023547260 browser and #38023547198 root PASS); keyframes 8/12/26 and clip [8,27) persisted after actual pointer drag/trim/undo/redo. No production UI or S4 parity achieved. Next bounded R&D: opt-in synthetic editor-scene→Canvas frame matching or standalone asset-provenance contract review; use no new root deps and preserve full rollback. Do not confuse R&D browser with commercial editor adoption.",
     "2026-10-10 S2 isolated Konva: package/immutable archive MIT license audit PR #53 merged (CI #38022425735 and root #38022425745 PASS), original synthetic actual Chrome mouse drag-save-reopen PR #54 merged at 6a363715 (CI #38022691910 and root #38022691737 PASS). No root Konva dependency, no official GUI/editor, no timeline/curve, no Canvas video render parity. Next safe work is S3 vendor-neutral timeline data plan or S1 M3-A provenance reconciliation; no production editor adoption without operator permission.",
@@ -609,7 +610,7 @@
     "licensor_contact": "DECLINED",
     "paid_licensing": "NOT_AUTHORIZED",
     "private_repo_makes_license_valid": false,
-    "new_editor": "ISOLATED_S1_S3_DATA_AND_S2_S3_BROWSER_PLUS_S4_PREVIEW_FEASIBILITY_ONLY",
+    "new_editor": "ISOLATED_SYNTHETIC_COMBINED_KONVA_TIMELINE_AND_SEPARATE_FFMPEG_PREVIEW_PROOFS__NOT_PRODUCT",
     "first_candidate": "KONVA_MIT_ISOLATED_EVALUATION_ONLY",
     "timeline_candidate": "REACT_TIMELINE_EDITOR_MIT_TRANSITIVE_AUDIT_REQUIRED",
     "other_candidates": [
@@ -730,7 +731,7 @@
       {
         "id": "S4",
         "name": "canvas_render_roundtrip_and_deterministic_parity",
-        "status": "PARTIAL_SYNTHETIC_CANVAS_PREVIEW_DETERMINISM_PASS__OFFICIAL_VIDEO_PARITY_NOT_TESTED",
+        "status": "PARTIAL_SYNTHETIC_COMBINED_GUI_AND_FFMPEG_ENCODE_PASS__PRODUCTION_PARITY_NOT_TESTED",
         "pr": 59,
         "merge_sha": "402da01c1330c92fb5bded5eba22e231ac490c67",
         "head": "d3f878545621534dd60d38a8dd89a5c5ce2689c3",
@@ -755,7 +756,53 @@
           "KONVA_TIMELINE_SINGLE_EDITOR_UI",
           "WINDOWS_PREMIERE_NATIVE_IMPORT",
           "LICENSED_REAL_COMPANY_MEDIA_AND_HUMAN_CREATIVE_REVIEW"
-        ]
+        ],
+        "shared_editor_pr": 61,
+        "shared_editor_merge_sha": "eaf59a9939846edd3783efc9728df2325cc0e9b2",
+        "shared_editor_exact_head": "6f59509e54fa19a47d04e5539a98e559fbb54842",
+        "shared_editor_ci": {
+          "browser": 38024966876,
+          "root": 38024966782
+        },
+        "shared_editor_evidence": {
+          "timeline_gestures": 2,
+          "konva_drags": 1,
+          "undo": 1,
+          "redo": 1,
+          "json_writes": 5,
+          "clip_start": 6,
+          "clip_end": 26,
+          "position_before": [
+            0.25,
+            0.7
+          ],
+          "position_after": [
+            0.35,
+            0.725
+          ],
+          "reload_exact": true,
+          "remote_media_refused": true
+        },
+        "ffmpeg_synthetic_pr": 62,
+        "ffmpeg_synthetic_merge_sha": "98427f769f7978279dc03511db73f0a8a5c223b0",
+        "ffmpeg_synthetic_exact_head": "44368635a33307b957a7383f2305b711285b6bdc",
+        "ffmpeg_ci": {
+          "synthetic_encoded": 38025223621,
+          "root": 38025223586
+        },
+        "ffmpeg_synthetic_evidence": {
+          "profile": "360x640@30fps-30f",
+          "lossless_rgb_decoded_exact": true,
+          "mp4_h264_yuv420p_checked": true,
+          "mean_rgb_error_original": 1.679176986882716,
+          "mean_rgb_error_edited": 1.6770323109567902,
+          "official_canvas_smoke_png_unchanged": true,
+          "imported_assets": 0,
+          "real_browser_scene_encoded_end_to_end": false
+        },
+        "official_renderer_pixel_parity": "NOT_TESTED",
+        "encoded_alpha_mov": "NOT_TESTED",
+        "production_approval": false
       },
       {
         "id": "S5",
