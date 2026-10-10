@@ -13,6 +13,9 @@ const staticRoutes=new Map([
  ['/styles.css',[join(root,'styles.css'),'text/css; charset=utf-8']],
  ['/app.mjs',[join(root,'app.mjs'),'text/javascript; charset=utf-8']],
  ['/operations.mjs',[join(root,'operations.mjs'),'text/javascript; charset=utf-8']],
+ // Browser URL aliases for the same shared ESM imports used by Node unit tests.
+ ['/experiments/editor-contract/scene.mjs',[join(root,'../experiments/editor-contract/scene.mjs'),'text/javascript; charset=utf-8']],
+ ['/experiments/editor-contract/timeline.mjs',[join(root,'../experiments/editor-contract/timeline.mjs'),'text/javascript; charset=utf-8']],
  ['/scene.mjs',[join(root,'../experiments/editor-contract/scene.mjs'),'text/javascript; charset=utf-8']],
  ['/timeline.mjs',[join(root,'../experiments/editor-contract/timeline.mjs'),'text/javascript; charset=utf-8']],
  ['/vendor/konva.min.js',[join(root,'node_modules/konva/konva.min.js'),'text/javascript; charset=utf-8']]
