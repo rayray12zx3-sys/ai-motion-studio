@@ -79,3 +79,14 @@ test('unknown scene fields, external media, unsupported fonts and output options
  assert.throws(()=>drawEditableSceneFrame(fixture,30),/Out-of-range/);
  assert.equal(fixture.layers[1].text,'Original Title');
 });
+
+test('approved Windows and Linux export encoder pins exactly match existing verified installer',()=>{
+ const installer=readFileSync(new URL('../scripts/setup-encoder.mjs',import.meta.url),'utf8');
+ const exporter=readFileSync(new URL('../scripts/render-editable.mjs',import.meta.url),'utf8');
+ for(const target of ['win32-x64','linux-x64']){
+  const pattern=new RegExp("'"+target+"'\\s*:\\s*'([0-9a-f]+)'");
+  const sourcePin=pattern.exec(installer)?.[1],exportPin=pattern.exec(exporter)?.[1];
+  assert.match(sourcePin||'',/^[0-9a-f]{64}$/,'Existing installer SHA-256 for '+target);
+  assert.equal(exportPin,sourcePin,'S1 export pin must match existing installer for '+target);
+ }
+});
