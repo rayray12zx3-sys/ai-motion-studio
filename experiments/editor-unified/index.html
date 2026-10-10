@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Motion Studio original synthetic combined editor proof</title>
+<style>
+body{margin:0;padding:14px;background:#14222d;color:#eef6f8;font:14px system-ui,sans-serif}
+main{width:400px;max-width:100%}h1{font-size:17px;margin:0 0 10px}
+#stage{width:360px;height:640px;border:1px solid #7695a1;background:#152f42}
+#track{width:300px;height:64px;background:#26404d;position:relative;border:1px solid #7695a1;margin:14px 0 10px;touch-action:none}
+#clip{position:absolute;top:11px;height:40px;background:#39778c;border:1px solid #c6f4e7;box-sizing:border-box;touch-action:none;cursor:grab;user-select:none}
+.handle{position:absolute;top:0;bottom:0;width:11px;background:#dcecae;cursor:ew-resize;touch-action:none}
+#start-handle{left:0}#end-handle{right:0}
+#clip-label{position:absolute;left:15px;right:15px;top:10px;text-align:center;pointer-events:none}
+button{background:#b9e3e2;color:#113144;border:0;padding:6px 12px;margin-right:7px;cursor:pointer}
+#status{font:12px monospace;min-height:36px;padding:8px 0;white-space:pre-wrap}
+</style></head>
+<body><main><h1>Unified editor — original synthetic only</h1>
+<div id="stage" aria-label="Konva synthetic canvas"></div>
+<div id="track" role="group" aria-label="Original timeline track"><div id="clip" aria-label="headline timeline clip">
+<span class="handle" data-edge="start" id="start-handle"></span><span id="clip-label">headline</span><span class="handle" data-edge="end" id="end-handle"></span></div></div>
+<button id="undo">Undo</button><button id="redo">Redo</button>
+<div id="status" role="status">Loading</div>
+</main><script src="/konva.min.js"></script><script type="module" src="/unified-editor.mjs"></script></body></html>
