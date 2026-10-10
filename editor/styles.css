@@ -9,6 +9,13 @@ button,select,input{font:inherit}button{cursor:pointer;background:#6bbcb8;color:
 button:hover{background:#8ce0d9}button:disabled{opacity:.4;cursor:default}
 #canvas-wrap{margin:12px auto;padding:12px;display:flex;align-items:center;justify-content:center;overflow:auto;background:#0e202d;border:1px solid #345463;border-radius:8px;min-height:300px}
 #stage{background:#10283b;flex:none;border:1px solid #74919b}
+.render-reference{margin-top:16px;border-top:1px solid #3a5762;padding-top:12px}
+.render-reference summary{cursor:pointer;font-weight:700}
+.render-reference label{display:flex;align-items:center;gap:10px;margin:12px 0}
+.render-reference select{font:inherit;padding:7px;background:#102630;color:#e8f3f5;border:1px solid #65808a}
+#render-feedback{color:#b3c8ce;font-size:12px}
+#rendered-still{display:block;width:auto;height:auto;max-width:100%;max-height:640px;margin:12px auto;background:repeating-conic-gradient(#51646d 0% 25%,#d9e2df 0% 50%) 50% / 20px 20px;border:1px solid #74919b}
+#rendered-still[hidden]{display:none!important}
 .seek{display:flex;align-items:center;gap:14px}.seek input{flex:1}
 .properties label{display:flex;flex-direction:column;margin:12px 0 6px;gap:6px}
 .properties input:not([type=color]),.properties select{width:100%;background:#102630;border:1px solid #65808a;border-radius:5px;color:white;padding:8px}
