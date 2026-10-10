@@ -34,3 +34,5 @@ footer{padding:6px 0 14px}@media(max-width:780px){.workspace{grid-template-colum
 .key-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}
 .key-grid label{font-size:12px}
 .key-marker{position:absolute;top:2px;bottom:2px;width:4px;border-radius:2px;background:#f2d196;pointer-events:none}
+
+.output-preview{margin-top:14px}.output-preview .heading{gap:10px}#rendered-status{color:#b9d8da;min-height:22px}#rendered-wrap{display:flex;justify-content:center;align-items:center;min-height:40px;overflow:auto}#rendered-image{max-width:360px;max-height:640px;width:auto;height:auto;object-fit:contain;border:1px solid #597782;background:repeating-conic-gradient(#46616b 0% 25%,#223945 0% 50%) 50%/18px 18px}#rendered-image[hidden]{display:none}
