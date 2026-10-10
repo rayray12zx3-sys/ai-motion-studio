@@ -52,7 +52,12 @@ async function main(){
   await context.tracing.start({screenshots:true,snapshots:true,sources:true});
   const outboundRequests=[];
   context.on('request',request=>{
-   if(new URL(request.url()).hostname!=='127.0.0.1')outboundRequests.push(request.url());
+   const url=new URL(request.url());
+   // Browser checks open additional isolated test servers on other localhost ports.
+   // Reject all external origins, while permitting only loopback HTTP or its in-memory blob URLs.
+   const localHttp=url.protocol==='http:'&&url.hostname==='127.0.0.1';
+   const localMemoryBlob=url.protocol==='blob:'&&/^http:\/\/127\.0\.0\.1:[0-9]+$/.test(url.origin);
+   if(!localHttp&&!localMemoryBlob)outboundRequests.push(request.url());
   });
   const browserErrors=[];
   context.on('page',tab=>{
@@ -79,6 +84,67 @@ async function main(){
   assert.equal(first.frame,12);assert.equal(first.scene.layers.length,3);
   assert.equal(first.scene.layers.find(l=>l.id==='headline').text,'Original Title');
   await screenshot('initial-synthetic');
+  if(process.env.MOTION_TEST_CANVAS_STILL==='1'){
+   const originalScene=await page.evaluate(()=>JSON.stringify(window.__motionEditor.scene));
+   await page.locator('.render-reference summary').click();
+   await page.locator('#render-still').click();
+   await page.waitForFunction(()=>window.__motionEditor?.still?.status==='READY');
+   const picture=await page.locator('#rendered-still').evaluate(async image=>{
+    await image.decode();
+    const canvas=document.createElement('canvas');
+    canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+    const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);
+    return {width:canvas.width,height:canvas.height,
+      pixels:[...ctx.getImageData(0,0,1,1).data],
+      currentSrc:image.currentSrc,visible:!image.hidden};
+   });
+   assert.deepEqual([picture.width,picture.height],[360,640]);
+   assert.equal(picture.visible,true);
+   assert.equal(picture.pixels[3],255,'Opaque authoritative frame background');
+   assert.ok(picture.currentSrc.startsWith('blob:'),'Only local in-memory preview URL');
+   const sceneVersion=await page.evaluate(()=>window.__motionEditor.etag);
+   const direct=await fetch(service.url+'/canvas-preview.png?frame=12&mode=opaque',{
+    headers:{'X-AI-Motion-Preview':'1','If-Match':sceneVersion}});
+   assert.equal(direct.status,200);
+   const directHash=sha(Buffer.from(await direct.arrayBuffer()));
+   await page.locator('#render-mode').selectOption('transparent');
+   await page.waitForFunction(()=>window.__motionEditor?.still?.status==='STALE');
+   assert.equal(await page.locator('#rendered-still').isHidden(),true);
+   await page.locator('#render-still').click();
+   await page.waitForFunction(()=>window.__motionEditor?.still?.status==='READY');
+   const alphaPixel=await page.locator('#rendered-still').evaluate(async image=>{
+    await image.decode();
+    const canvas=document.createElement('canvas');
+    canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+    const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);
+    return [...ctx.getImageData(0,0,1,1).data];
+   });
+   assert.equal(alphaPixel[3],0,'Transparent Canvas PNG has alpha outside content');
+   await page.locator('#seek').fill('14');
+   await page.waitForFunction(()=>window.__motionEditor?.still?.status==='STALE');
+   assert.equal(await page.locator('#rendered-still').isHidden(),true);
+   await page.locator('#seek').fill('12');
+   assert.equal(await page.evaluate(()=>JSON.stringify(window.__motionEditor.scene)),originalScene,
+    'Read-only Canvas frame queries must never edit scene history');
+   await screenshot('authoritative-canvas-still-synthetic');
+   console.log('AUTHORITATIVE_CANVAS_STILL_BROWSER_PROOF',JSON.stringify({
+    browser:channel,opaque_preview:[picture.width,picture.height],
+    opaque_png_sha256:directHash,transparent_outside_pixel_alpha:alphaPixel[3],
+    same_saved_scene:true,seek_invalidated_stale_still:true,
+    non_wysiwyg_konva_proxy:true
+   }));
+  }else{
+   // Clean editor-only installation deliberately lacks the root Canvas runtime.
+   // The optional still tool must fail helpfully without preventing Konva edits.
+   await page.locator('.render-reference summary').click();
+   await page.locator('#render-still').click();
+   await page.waitForFunction(()=>window.__motionEditor?.still?.status==='ERROR');
+   const advisory=await page.evaluate(()=>window.__motionEditor.still.message);
+   assert.match(advisory,/503/);
+   assert.match(advisory,/root Canvas runtime is not installed/);
+   assert.equal(await page.locator('#rendered-still').isHidden(),true);
+   assert.equal((await page.evaluate(()=>window.__motionEditor)).commits,0);
+  }
   await page.locator('#ease').selectOption('ease-out-cubic');
   await page.locator('#save-ease').click();
   await page.waitForFunction(()=>window.__motionEditor?.easeChanges===1);

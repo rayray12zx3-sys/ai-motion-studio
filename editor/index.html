@@ -8,6 +8,13 @@
 <div class="pane"><div class="heading"><h2>畫布預覽 <small id="frame-label">第 12 格</small></h2><small id="profile-label" aria-live="polite">讀取場景尺寸…</small><div><button id="undo" title="Ctrl+Z">復原</button><button id="redo" title="Ctrl+Y">重做</button></div></div>
 <div id="canvas-wrap"><div id="stage" role="img" aria-label="可拖曳的 Konva 合成場景畫布"></div></div>
 <label class="seek" for="seek">影格 <input id="seek" type="range" min="0" max="29" value="12" step="1"><output id="seek-value">12</output></label>
+<details class="render-reference"><summary>檢視正式 Canvas 畫格（只讀）</summary>
+<p class="field-note">此區由已儲存的 S1 場景使用正式 Canvas 字型與繪圖產生，不是上方可拖曳的 Konva 代理物件，也不會產生影片或修改場景。</p>
+<label for="render-mode">背景模式 <select id="render-mode"><option value="opaque">不透明 MP4 背景</option><option value="transparent">透明 Alpha 背景</option></select></label>
+<button id="render-still" type="button">重新產生目前影格</button>
+<p id="render-feedback" role="status" aria-live="polite">尚未產生正式 Canvas 畫格。</p>
+<img id="rendered-still" hidden alt="由已儲存 S1 場景產生的正式 Canvas 單格畫面">
+</details>
 </div>
 <div class="pane properties"><h2>圖層與屬性</h2><div id="layer-list" role="group" aria-label="選取圖層"></div>
 <p class="field-note" id="selected-label">尚未選取</p>

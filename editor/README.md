@@ -34,11 +34,28 @@ Only the editor has `konva@10.7.1` under its own `editor/package.json` and immut
 - Persist accepted validated local JSON atomically to ignored `editor/.local/scene.json`. Existing file is backed up as `scene.json.previous`; an ETag/version check refuses stale-browser overwrites. Local scene data and backups are **never committed or uploaded**.
 - The first launch opens **only the original synthetic S1 demo** if the local file does not exist. No file picker/import or outbound media source is provided. `assets: []` is strictly enforced. Data can be reset only by the local operator handling their own ignored files (never by an automated script).
 
+## Read-only authoritative Canvas frame reference (optional)
+
+The editable blue Konva rectangles are still **position-selection proxies**; they do not reproduce production text, object width, locked fonts, or exact pixels. To inspect the **real saved S1 Canvas result**, expand **「檢視正式 Canvas 畫格（只讀）」**, choose opaque MP4-style background or transparent Alpha-style background, then click **「重新產生目前影格」**. The preview button requests one deterministic PNG from the currently saved scene and selected frame using the very same locked `drawEditableSceneFrame` implementation as the additive approved S1 Canvas+FFmpeg exporter. The local view uses an in-memory `blob:` URL; no video export, extra scene save, CDN, external upload, or new product dependency is involved. The image is invalidated whenever the saved scene version, selected frame, or output mode changes.
+
+The **editor installation stays independent** and continues to work without the root rendering dependencies. Only the optional saved-frame reference needs the already-approved root packages installed separately. From the *repository root*:
+
+```powershell
+npm.cmd ci --ignore-scripts --no-audit --no-fund
+# restart the existing local editor process if it was open
+node editor/server.mjs
+```
+
+On Linux/macOS use `npm ci` instead of `npm.cmd ci`. Do **not** switch the main output renderer or install an external engine. The strict 127.0.0.1 endpoint `/canvas-preview.png` is **read-only**, requires a same-origin scripted request with `X-AI-Motion-Preview: 1` plus the current scene ETag, validates a bounded frame and opaque/transparent mode, and returns a PNG with `Cache-Control: no-store`. Requests with stale ETags, unauthorized requests, unsupported fonts or foreign media fail closed. No local file browser or arbitrary path is exposed.
+
+The preview shows **output-authoritative single-frame pixels** for the same S1 mode, not pixel matching between the independent Konva stage and Canvas, not a Premiere import, and not commercial video approval.
+
+
 ## Critical boundary
 
 **Canvas rectangles are draggable *position proxies*, not authoritative rendered text, fonts, product UI or commercial deliverables.** Text is edited as S1 neutral metadata and reflected in property controls, not accurately previewed with the locked production Noto Sans TC typeface. Dragging a proxy shifts **all its x/y keyframes atomically**, preserving relative timing; do not interpret this as editing an individual animation curve.
 
-This version is a usable **local S1 schema editor shell**, not a polished editor release. It cannot import external media; has no advanced arbitrary Bezier control points, color/typography fidelity guarantee, finished multi-shot templates, audio, media-provenance clearance, or Windows Premiere acceptance. Editing never triggers a production render. The **only** authoritative video renderer remains the original Canvas+FFmpeg path. Existing S4 experimental synthetic encoder proofs do not prove pixel parity with it.
+This version is a usable **local S1 schema editor shell**, not a polished editor release. It cannot import external media; has no advanced arbitrary Bezier control points, color/typography fidelity guarantee, finished multi-shot templates, audio, media-provenance clearance, or Windows Premiere acceptance. Editing never automatically triggers a production video export; the separate read-only still-reference button can draw one approved S1 Canvas frame without persisting changes. The **only** authoritative video renderer remains the original Canvas+FFmpeg path. Existing S4 experimental synthetic encoder proofs do not prove pixel parity with it.
 
 ## Safety and technical verification
 
