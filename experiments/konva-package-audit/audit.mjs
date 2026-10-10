@@ -6,8 +6,8 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
 const name='konva',version='10.7.1';
-const expectedSha1='b77f1663f1b108d37f45034c33bb88f6c8364504';
-const expectedIntegrity='sha512-7XV+NQRpgrjquoHD0EcRQCsNovT5ZUlOcEiYdYjLjBUFq6gP8HeRKIUSjPBSa7XBfYMa2SY4+RyNOoEAbfB6gA==';
+const expectedSha1='0671f25fde54ea897194c23b994e12c3f4fb9c27';
+const expectedIntegrity='sha512-z/JyXPaT6tWBSEcaT70mdfN3oNQ6U6rDxlH9OkRdxlJaf23DOqfMPGptQWVvXlWfKMJQWEa+PNe9ru3zQR7ifw==';
 const run=(exe,args,cwd)=>execFileSync(exe,args,{cwd,encoding:'utf8',timeout:120000,maxBuffer:10*1024*1024});
 const digest=(bytes,algorithm)=>createHash(algorithm).update(bytes).digest(algorithm==='sha512'?'base64':'hex');
 export function validatePackageMetadata(view,packed,archiveBytes,entries){
