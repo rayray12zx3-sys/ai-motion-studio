@@ -70,6 +70,15 @@ async function main(){
   await page.waitForFunction(()=>window.__motionEditor?.commits===4);
   state=await page.evaluate(()=>window.__motionEditor);
   assert.equal(state.scene.layers.find(l=>l.id==='headline').text,'New Synthetic Headline');
+  // Individual end-key x and scale are edited together as one saved undo item.
+  await page.locator('#key-x').fill('0.64');
+  await page.locator('#key-scale').fill('1.2');
+  await page.locator('#save-values').click();
+  await page.waitForFunction(()=>window.__motionEditor?.commits===5);
+  state=await page.evaluate(()=>window.__motionEditor);
+  assert.equal(state.scene.layers.find(l=>l.id==='headline').keys.at(-1).x,.64);
+  assert.equal(state.scene.layers.find(l=>l.id==='headline').keys.at(-1).scale,1.2);
+  assert.equal(state.history.undo,5);
   const before=state.timeline.find(l=>l.id==='headline');
   async function drag(selector,dx,dy,predicate){
    const bounds=await page.locator(selector).boundingBox();
@@ -120,6 +129,8 @@ async function main(){
   assert.equal(reopen.scene.layers.length,4);
   assert.equal(reopen.scene.layers.find(l=>l.id==='headline').text,'New Synthetic Headline');
   assert.equal(reopen.scene.layers.find(l=>l.id==='headline').keys.at(-1).ease,'ease-out-cubic');
+  assert.equal(reopen.scene.layers.find(l=>l.id==='headline').keys.at(-1).scale,1.2);
+  assert.ok(reopen.scene.layers.find(l=>l.id==='headline').keys.at(-1).x>.70);
   assert.equal(reopen.scene.layers.find(l=>l.id==='headline').start_frame,6);
   assert.equal(sha(serializeEditableScene(reopen.scene)),sha(serializeEditableScene(parseEditableScene(await readFile(store,'utf8')))));
   await page.screenshot({path:join(out,'konva-editor-approved-synthetic.png'),fullPage:true});
@@ -128,6 +139,7 @@ async function main(){
    saved_scene_sha256:sha(serializeEditableScene(reopen.scene)),
    layer_count:reopen.scene.layers.length,headline_clip:[6,28],headline_ease:'ease-out-cubic',
    real_pointer_timeline_drag:true,real_pointer_canvas_drag:true,appearance_edit:true,
+   individual_keyframe_numeric_values_saved:true,keyframe_markers_present:true,
    undo_redo:true,stale_editor_save_refused:true,eased_key_split_refused:true,reload:true,
    no_external_media:true,official_canvas_ffmpeg_modified:false,
    not_proven:['locked-font visual parity','Windows Premiere','private media rights','Bezier control points','commercial art approval']};
