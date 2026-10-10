@@ -1,0 +1,45 @@
+name: Isolated S3 Native Browser Timeline
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/timeline-browser/**'
+      - '.github/workflows/timeline-browser-s3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: timeline-s3-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-synthetic-timeline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Verify isolated timeline harness syntax
+        run: |
+          node --check experiments/timeline-browser/verify.mjs
+          node --check experiments/timeline-browser/timeline-ui.mjs
+      - name: Real Chrome move, trim, insert key, undo/redo, save and reload
+        run: node experiments/timeline-browser/verify.mjs
+      - name: Upload only public original synthetic screenshot and JSON test report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: timeline-s3-original-synthetic
+          path: |
+            out/timeline-s3-original-synthetic.png
+            out/timeline-s3-report.json
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Preserve non-adoption boundary
+        run: echo 'This is synthetic S3 DOM timeline R&D; Canvas+FFmpeg, company media, and editor adoption remain untouched.' >> "$GITHUB_STEP_SUMMARY"
