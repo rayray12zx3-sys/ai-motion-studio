@@ -34,6 +34,12 @@ Above license classification applies to listed upstream projects, not every font
 3. **Authoritative compiler/render**: a validated adapter maps supported neutral properties into the existing src/free Canvas renderer; any unsupported parameter fails closed. scripts/render.mjs and root Node/FFmpeg/font lock remain unchanged until new functionality passes an explicit opt-in gate.
 4. **Independent R&D**: HyperFrames CLI may use the same synthetic scene semantics for comparison only, in its own branch with no Studio GUI or production import. Keep historical #33/#39/#47 Drafts as evidence; no automatic engine migration.
 
+## Verified checkpoint — S1 pure-data slice (2026-10-10)
+
+- **Completed scoped experiment, not a renderer migration:** [PR #51](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/51) merged. Original self-authored `experiments/editor-contract/scene.mjs` and synthetic fixture have no imports, no npm dependencies and no access to company media. Tests run in existing root CI.
+- Exact pre-merge HEAD `9b3b3d68c9553502cc81d8ec3085383fefd7c117`; [CI #38021694739](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/38021694739) passed 14/14 root tests including 6 targeted editor-data cases, as well as existing production checks. Merged as `97a4dc9fbdcbe75475d306e30cac3987c5788d71`.
+- Tested immutable source editing, 30fps frame 0/15/29, strict schema and malformed/extra-field rejection, z+ID ordering, overlap, linear/ease-out timing, and JSON roundtrip. **Not tested:** file system editor save, mouse/GUI controls, font/layout rights, provenance evidence (assets deliberately forbidden), output pixel parity, actual Windows Premiere operation or production integration.
+- Continue S1's unimplemented source rights/provenance model **without importing any binary assets**, or advance S2 only through an isolated Konva dependency/NOTICE evaluation. Neither authorizes replacing Canvas+FFmpeg or installing a root production editor.
 ## Implementation milestones — each independent PR; no art or production adoption inferred
 
 **S0 — Governance and rights baseline (this docs-only plan):** record no-contact choice and Studio exclusion in canonical handoff, AGENTS guidance and machine-readable state; no new dependencies, no new hosted services. Reuse existing Issues #4/#5 for broad roadmap/rights tracking rather than duplicate tickets.

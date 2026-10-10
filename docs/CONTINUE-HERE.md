@@ -4,6 +4,10 @@
 
 > This file is the **entry point**, not an authoritative live API snapshot. In every new conversation: **read this document and [PROJECT-STATE.json](PROJECT-STATE.json), then query GitHub's live PRs, issues and exact-head Actions before claiming progress or editing**. Historical text in [ACTIVE-WORK-2026-10-09.md](ACTIVE-WORK-2026-10-09.md) is append-only; later checkpoints supersede earlier claims.
 
+## Verified S1 isolated editor-data research — 2026-10-10
+
+- **[PR #51](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/51) safely squash-merged** a self-authored, dependency-free, **experiment-only** `editable-scene-v1` neutral scene contract. Pre-merge exact HEAD `9b3b3d68c9553502cc81d8ec3085383fefd7c117` [root CI #38021694739](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/38021694739) **PASS (14 tests, 0 failures; 6 new editor-contract test cases)**. Merge `97a4dc9fbdcbe75475d306e30cac3987c5788d71`. Files changed: isolated `experiments/editor-contract` README/module/JSON fixture and `tests/editor-contract.test.mjs` only.
+- Proven **pure-data** gates: 30fps integer frames 0/15/29, stable layers, deterministic easing, overlap and reverse-seek order-independence, immutable clip shift, JSON serialize/reopen and malicious/unknown/unbounded input refusal. Imported assets are explicitly forbidden (`assets: []`); **asset-provenance contract, Konva GUI pointer controls, actual disk save, Canvas pixel parity and Premiere Windows remain NOT PROVEN**. Existing M3/M7 Draft SceneSpecs are untouched; this is not a new production schema, renderer, installed package or artistic approval.
 ## Operator-approved editor separation decision — 2026-10-10
 
 - **Decision:** keep Canvas+FFmpeg as production/default; retain HyperFrames CLI 0.8.143 for **isolated synthetic R&D only**, but **do not integrate HyperFrames/GSAP Studio GUI**. No licensor outreach, no paid software licensing and no presumption that switching the GitHub repo to Private changes rights.
