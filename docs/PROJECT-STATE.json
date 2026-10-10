@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "2026-10-10 operator approved editor-renderer separation: retain Canvas+FFmpeg production, keep HyperFrames CLI isolated R&D only, DO NOT integrate HyperFrames/GSAP Studio GUI, do not contact licensors or buy licensing. Study Konva MIT and React Timeline Editor MIT with per-package transitive rights audit; record S0-S5 plan at docs/EDITOR-SEPARATION-ROADMAP-2026-10-10.md. No new production deps or engine migration.",
     "2026-10-10 exact-head checkpoints: synthetic native HyperFrames Studio timeline clip drag/persist/reopen/render PASS only in Draft #47 (fa594fac; workflows 38018274652/38018274659); native keyframe/easing not verified. Pinned HyperFrames npm/archive license metadata audit PASS only in Draft #46 (e9e6578; workflows 38018404603/38018404633), but GSAP no-code visual-builder commercial permission UNRESOLVED. Issues #40/#41 closed for bounded R&D, NOT production rights or adoption. Original wrong-base #45 closed unmerged. Keep #33/#39/#44/#46/#47 R&D Draft.",
     "Issue #36 bounded engineering verification complete in corrected isolated Draft PR #39, exact-head both workflows PASS; original 360p tests intact. PR #37 closed unmerged. Recheck PR #39 live state before further work; do not merge R&D into main without separate architecture/commercial-license approval.",
     "Current canonical handoff is on main. PR #33 HyperFrames (R&D Draft, NOT merged) has actual 360x640 original MP4 and transparent ProRes 4444 MOV, full 30-frame independently decoded repeatability, and successful CI. Do not promote this candidate engine without separate architecture and dependency review.",
@@ -593,5 +594,65 @@
       "exact_head": "e9e65785a0d17d72cce58f5a12cdf17fa17bb451",
       "production_adoption": false
     }
-  ]
+  ],
+  "editor_strategy": {
+    "decision_date": "2026-10-10",
+    "authority": "OPERATOR_DECIDED_EDITOR_RENDERER_SEPARATION",
+    "production_default": "CANVAS_FFMPEG_UNCHANGED",
+    "hyperframes_cli": "PINNED_0_8_143_ISOLATED_SYNTHETIC_RND_ONLY",
+    "hyperframes_studio_gui": "EXCLUDED_FROM_PRODUCTION_AND_NEW_EDITOR",
+    "gsap_no_code_visual_editor": "EXCLUDED_FROM_PRODUCTION",
+    "licensor_contact": "DECLINED",
+    "paid_licensing": "NOT_AUTHORIZED",
+    "private_repo_makes_license_valid": false,
+    "new_editor": "NOT_IMPLEMENTED",
+    "first_candidate": "KONVA_MIT_ISOLATED_EVALUATION_ONLY",
+    "timeline_candidate": "REACT_TIMELINE_EDITOR_MIT_TRANSITIVE_AUDIT_REQUIRED",
+    "other_candidates": [
+      "FABRIC_JS_MIT",
+      "MOVEABLE_MIT",
+      "MOTION_CANVAS_MIT_REFERENCE"
+    ],
+    "no_new_production_dependencies": true,
+    "plan_path": "docs/EDITOR-SEPARATION-ROADMAP-2026-10-10.md",
+    "milestones": [
+      {
+        "id": "S0",
+        "name": "decision_record_and_license_shortlist",
+        "status": "PLANNED_DOCS_PR"
+      },
+      {
+        "id": "S1",
+        "name": "neutral_scene_data_contract_no_dependencies",
+        "status": "NOT_STARTED"
+      },
+      {
+        "id": "S2",
+        "name": "isolated_konva_pointer_editor_and_license_audit",
+        "status": "NOT_STARTED"
+      },
+      {
+        "id": "S3",
+        "name": "isolated_timeline_drag_edit_and_keyframes",
+        "status": "NOT_STARTED"
+      },
+      {
+        "id": "S4",
+        "name": "canvas_render_roundtrip_and_deterministic_parity",
+        "status": "NOT_STARTED"
+      },
+      {
+        "id": "S5",
+        "name": "human_approval_and_optional_separate_rollout",
+        "status": "NOT_AUTHORIZED"
+      }
+    ],
+    "carryover_gates": [
+      "NATIVE_KEYFRAME_CURVE_EDITOR_NOT_VERIFIED",
+      "PREMIERE_WINDOWS_NOT_TESTED",
+      "HUMAN_ART_REVIEW_REQUIRED",
+      "THIRD_PARTY_MEDIA_RIGHTS_SEPARATE"
+    ],
+    "no_automatic_merges_of_hyperframes_drafts": true
+  }
 }

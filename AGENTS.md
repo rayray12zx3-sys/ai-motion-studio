@@ -8,3 +8,10 @@
 - Run lint, syntax checks, tests and smoke render. Validate exact width/height/fps/frame count/codec with ffprobe; preserve review frames/contact sheet and hashes in ignored output or synthetic CI artifacts.
 - Standalone repository only: no State Engine integration, provider/generation calls or private production adoption here.
 - Source changes use branch/PR. Never force push or delete main. Branch protection settings require separate verified administration access.
+
+## Approved editor/renderer separation (operator decision 2026-10-10)
+
+- Keep Canvas+FFmpeg as the authoritative default/production renderer. HyperFrames CLI is R&D-only and must not enter the root dependency graph.
+- Never import, copy or distribute HyperFrames Studio GUI/compiled assets or implement a GSAP-backed no-code Studio visual editor for production. Do not contact licensors or purchase licensing as part of this project workflow; the operator chose the non-contact separation route.
+- Prototype a self-authored neutral EditableSceneSpec, isolated Konva interactive UI and optional MIT timeline components only on dedicated Draft branches. Actual package adoption requires pinned version, transitive/license/NOTICE audit, CI and separate authorization where production dependencies or architecture change.
+- Maintain user-approved source-only scope, private company/Drive/NAS exclusions, M11 rejected and M12 frozen. See docs/EDITOR-SEPARATION-ROADMAP-2026-10-10.md.
