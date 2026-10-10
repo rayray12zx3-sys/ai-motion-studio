@@ -42,6 +42,10 @@ jobs:
       - name: Install only the pinned editor frontend
         working-directory: ${{ github.workspace }}/editor
         run: npm.cmd ci --ignore-scripts --no-audit --no-fund
+      - name: Install existing approved root Canvas and locked font for real PNG preview
+        run: |
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw "Root Canvas dependencies failed" }
       - name: Verify Windows Konva package and ESM syntax
         shell: pwsh
         run: |
