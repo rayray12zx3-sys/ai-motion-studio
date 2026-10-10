@@ -2,13 +2,14 @@
 import {parseEditableScene,serializeEditableScene,evaluateEditableFrame} from '/scene.mjs';
 import {editTimeline,makeTimelineHistory,undoTimelineEdit,redoTimelineEdit} from '/timeline.mjs';
 import {changeLayerAppearance,addEditorRectangle,removeEditorLayer,translateEditorLayer,uniqueLayerId} from '/operations.mjs';
+import {fitNeutralPreview,neutralPreviewPoint,normalizedPointerDelta} from '/preview-geometry.mjs';
 
 const $=id=>document.getElementById(id);
-const fps=30,unit=14,stageWidth=360,stageHeight=640;
+const unit=14;
 const probe={ready:false,commits:0,canvasDrags:0,timelineActions:0,easeChanges:0,undo:0,redo:0,blocked:0,errors:[]};
 window.__motionEditor=probe;
 let history,etag,selected='headline',selectedKey=null,frame=12,busy=false,gesture=null;
-let stage,layer;
+let stage,layer,viewport;
 const item=()=>history.present.layers.find(l=>l.id===selected);
 const updateStatus=msg=>{$('status').textContent=msg;};
 function clipValues(scene=history.present){return scene.layers.find(l=>l.id===selected);}
@@ -17,6 +18,11 @@ function historyWith(scene){
 }
 function paint(){
  const s=history.present;
+ viewport=fitNeutralPreview(s.canvas);
+ stage.size({width:viewport.width,height:viewport.height});
+ $('stage').style.width=viewport.width+'px';
+ $('stage').style.height=viewport.height+'px';
+ $('profile-label').textContent='場景 '+viewport.profile+' · 縮放預覽 '+viewport.width+'×'+viewport.height;
  if(!item())selected=s.layers[0].id;
  const target=item();
  if(selectedKey===null||!target.keys.some(k=>k.frame===selectedKey))selectedKey=target.keys.at(-1).frame;
@@ -45,8 +51,9 @@ function paint(){
  const active=evaluateEditableFrame(s,frame).layers;
  for(const entry of active){
   // Rectangles deliberately represent editable positions, not locked-font or output pixels.
+  const point=neutralPreviewPoint(viewport,entry.x,entry.y);
   const shape=new window.Konva.Rect({
-   id:entry.id,x:entry.x*stageWidth,y:entry.y*stageHeight,
+   id:entry.id,x:point.x,y:point.y,
    offsetX:45,offsetY:27,width:90,height:54,scaleX:entry.scale,scaleY:entry.scale,
    rotation:entry.rotation*180/Math.PI,opacity:entry.opacity,
    fill:entry.type==='text'?'#8abfcb':entry.color,
@@ -56,10 +63,10 @@ function paint(){
   shape.on('click',()=>{selected=entry.id;selectedKey=null;paint();});
   shape.on('dragend',async()=>{
    if(busy)return paint();
-   const dx=shape.x()/stageWidth-entry.x,dy=shape.y()/stageHeight-entry.y;
-   if(Math.abs(dx)+Math.abs(dy)<.0001)return paint();
+   const delta=normalizedPointerDelta(viewport,shape.x()-point.x,shape.y()-point.y);
+   if(Math.abs(delta.x)+Math.abs(delta.y)<.0001)return paint();
    selected=entry.id;selectedKey=null;
-   try{await commit(historyWith(translateEditorLayer(history.present,entry.id,dx,dy)),'canvas');}
+   try{await commit(historyWith(translateEditorLayer(history.present,entry.id,delta.x,delta.y)),'canvas');}
    catch(error){reject(error);}
   });
   layer.add(shape);
@@ -96,6 +103,7 @@ function paint(){
  const playhead=document.createElement('div');playhead.className='playhead';
  playhead.style.left=(120+frame*unit)+'px';timeline.appendChild(playhead);
  probe.selected=selected;probe.keyframe=selectedKey;probe.frame=frame;
+ probe.preview={...viewport,kind:'NEUTRAL_POSITION_PROXY_NOT_OFFICIAL_PIXELS'};
  probe.scene=structuredClone(s);probe.etag=etag;
  probe.sample=active.find(x=>x.id===selected)||null;
  probe.history={undo:history.past.length,redo:history.future.length};
@@ -225,7 +233,8 @@ try{
  history=makeTimelineHistory(parseEditableScene(await response.text()));
  if(!item())selected=history.present.layers[0].id;
  frame=Math.min(frame,history.present.duration_frames-1);
- stage=new window.Konva.Stage({container:'stage',width:stageWidth,height:stageHeight});
+ const initialView=fitNeutralPreview(history.present.canvas);
+ stage=new window.Konva.Stage({container:'stage',width:initialView.width,height:initialView.height});
  layer=new window.Konva.Layer();stage.add(layer);
  paint();probe.ready=true;
  updateStatus('本機場景已載入，可編輯 · 尚未建立正式影片輸出連結');
