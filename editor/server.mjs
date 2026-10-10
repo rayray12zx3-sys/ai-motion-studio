@@ -27,7 +27,7 @@ const denied={error:'Rejected local editor request'};
 function respond(res,status,body,type='application/json; charset=utf-8',etag=null){
  const headers={'Content-Type':type,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',
  'Referrer-Policy':'no-referrer','X-Frame-Options':'DENY',
- 'Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"};
+ 'Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"};
  if(etag)headers.ETag='"'+etag+'"';
  res.writeHead(status,headers);res.end(body);
 }
@@ -63,6 +63,40 @@ export async function startEditorServer({port=0,sceneFile=join(root,'.local','sc
    if(req.headers.host!==host)throw Error('Only localhost Host accepted');
    if(req.headers.origin&&req.headers.origin!=='http://'+host)throw Error('Cross-origin request refused');
    const url=new URL(req.url,'http://'+host);
+   // Opt-in still reference is generated from the *saved* scene via the same Canvas
+   // painter used by the approved S1 MP4/Alpha exporter, never from Konva proxies.
+   if(req.method==='GET'&&url.pathname==='/canvas-preview.png'){
+    if(req.headers['x-ai-motion-preview']!=='1'||
+      (req.headers['sec-fetch-site']&& !['same-origin','none'].includes(req.headers['sec-fetch-site']))){
+     respond(res,403,JSON.stringify(denied));return;
+    }
+    if(url.hash||[...url.searchParams.keys()].sort().join(',')!=='frame,mode'||
+       !/^(?:0|[1-9][0-9]{0,3})$/.test(url.searchParams.get('frame')??'')||
+       !['opaque','transparent'].includes(url.searchParams.get('mode'))){
+     respond(res,400,JSON.stringify(denied));return;
+    }
+    const current=await readScene(scenePath),currentTag='"'+sha(current)+'"';
+    if(req.headers['if-match']!==currentTag){
+     respond(res,409,JSON.stringify({error:'Local scene changed; refresh before requesting a still'}));return;
+    }
+    const frame=Number(url.searchParams.get('frame')),mode=url.searchParams.get('mode');
+    const scene=parseEditableScene(current);
+    if(frame>=scene.duration_frames){
+     respond(res,400,JSON.stringify(denied));return;
+    }
+    try{
+     // Dependency is optional for launching the editor; no automatic installs.
+     const {drawEditableSceneFrame}=await import('../src/free/editable-scene.mjs');
+     const png=drawEditableSceneFrame(scene,frame,{output:mode}).toBuffer('image/png');
+     respond(res,200,png,'image/png',sha(png));return;
+    }catch(error){
+     if(error.code==='ERR_MODULE_NOT_FOUND'){
+      respond(res,503,JSON.stringify({error:'Optional root Canvas runtime is not installed; run npm.cmd ci from the repository root, then restart the editor'}));return;
+     }
+     // Includes unsupported production font glyphs: fail closed, no proxy fallback.
+     respond(res,422,JSON.stringify({error:'Saved S1 frame cannot be rendered with the locked Canvas contract'}));return;
+    }
+   }
    if(url.search||url.hash||url.pathname!==req.url)throw Error('Unexpected request path');
    if(req.method==='GET'&&staticRoutes.has(url.pathname)){
     const [path,type]=staticRoutes.get(url.pathname);
