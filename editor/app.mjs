@@ -10,6 +10,8 @@ const probe={ready:false,commits:0,canvasDrags:0,timelineActions:0,easeChanges:0
 window.__motionEditor=probe;
 let history,etag,selected='headline',selectedKey=null,frame=12,busy=false,gesture=null;
 let stage,layer,viewport;
+let canvasPreviewKey=null,canvasPreviewRequest=0;
+probe.trueCanvas={status:'not_requested',frame:null,etag:null,sha256:null};
 const item=()=>history.present.layers.find(l=>l.id===selected);
 const updateStatus=msg=>{$('status').textContent=msg;};
 function clipValues(scene=history.present){return scene.layers.find(l=>l.id===selected);}
@@ -106,6 +108,13 @@ function paint(){
  playhead.style.left=(120+frame*unit)+'px';timeline.appendChild(playhead);
  probe.selected=selected;probe.keyframe=selectedKey;probe.frame=frame;
  probe.preview={...viewport,kind:'NEUTRAL_POSITION_PROXY_NOT_OFFICIAL_PIXELS'};
+ const currentPreviewKey=etag+':'+frame;
+ if(canvasPreviewKey!==currentPreviewKey){
+  $('rendered-image').hidden=true;
+  $('rendered-status').textContent='第 '+frame+' 格尚未建立正式 Canvas 預覽；請按按鈕產生已儲存影格。';
+  probe.trueCanvas={status:'not_current',frame,etag,sha256:null};
+ }
+
  probe.scene=structuredClone(s);probe.etag=etag;
  probe.sample=active.find(x=>x.id===selected)||null;
  probe.history={undo:history.past.length,redo:history.future.length};
@@ -187,6 +196,47 @@ $('delete').addEventListener('click',()=>apply(()=>{
  const scene=removeEditorLayer(history.present,selected);
  selected=scene.layers[0].id;selectedKey=null;return historyWith(scene);
 },'layer'));
+// Explicit on-demand read-only final-S1-Canvas pixel preview. No video export/network.
+$('render-frame').addEventListener('click',async()=>{
+ if(busy)return;
+ const askedFrame=frame,askedTag=etag,key=askedTag+':'+askedFrame;
+ const requestId=++canvasPreviewRequest;
+ $('render-frame').disabled=true;
+ $('rendered-status').textContent='正在從本機正式 Canvas 讀取第 '+askedFrame+' 格…';
+ probe.trueCanvas={status:'loading',frame:askedFrame,etag:askedTag,sha256:null};
+ try{
+  const response=await fetch('/render-preview.png?frame='+askedFrame,{
+   method:'GET',cache:'no-store',
+   headers:{'X-Motion-Preview':'1','If-Match':askedTag}
+  });
+  if(!response.ok){
+   if(response.status===503)throw Error('尚未安裝正式 Canvas 依賴。請在專案根目錄執行 npm.cmd ci，然後重啟編輯器。');
+   if(response.status===409)throw Error('場景已被其他視窗修改；重新載入後再預覽。');
+   if(response.status===422)throw Error('此場景含正式鎖定字型無法渲染的內容；檢查文字及場景數值。');
+   throw Error('本機 Canvas 預覽被拒絕（HTTP '+response.status+'）。');
+  }
+  if(response.headers.get('Content-Type')!=='image/png')throw Error('預覽服務未回傳 PNG');
+  const png=await response.blob();
+  const url=await new Promise((resolveUrl,rejectUrl)=>{
+   const reader=new FileReader();
+   reader.onload=()=>resolveUrl(reader.result);
+   reader.onerror=()=>rejectUrl(Error('無法載入本機 PNG'));
+   reader.readAsDataURL(png);
+  });
+  if(requestId!==canvasPreviewRequest||key!==etag+':'+frame)return;
+  $('rendered-image').src=url;
+  $('rendered-image').hidden=false;
+  $('rendered-status').textContent='已顯示第 '+askedFrame+' 格的正式 Canvas 影格（已儲存場景，非 Konva 代理）。';
+  canvasPreviewKey=key;
+  probe.trueCanvas={status:'ready',frame:askedFrame,etag:askedTag,
+   sha256:response.headers.get('ETag'),bytes:png.size};
+ }catch(error){
+  if(requestId!==canvasPreviewRequest||key!==etag+':'+frame)return;
+  $('rendered-image').hidden=true;
+  $('rendered-status').textContent='正式 Canvas 預覽不可用：'+String(error.message||error);
+  probe.trueCanvas={status:'unavailable',frame:askedFrame,etag:askedTag,sha256:null};
+ }finally{$('render-frame').disabled=false;}
+});
 $('undo').addEventListener('click',()=>{
  if(busy||history.past.length===0)return;
  apply(()=>undoTimelineEdit(history),'undo');
