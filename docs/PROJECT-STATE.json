@@ -619,7 +619,9 @@
       {
         "id": "S0",
         "name": "decision_record_and_license_shortlist",
-        "status": "PLANNED_DOCS_PR"
+        "status": "COMPLETED_DOCS_MERGED",
+        "main_sha": "e772af3a6b91420580425f37045b960fc9706049",
+        "documentation_pr": 49
       },
       {
         "id": "S1",
@@ -653,6 +655,7 @@
       "HUMAN_ART_REVIEW_REQUIRED",
       "THIRD_PARTY_MEDIA_RIGHTS_SEPARATE"
     ],
-    "no_automatic_merges_of_hyperframes_drafts": true
+    "no_automatic_merges_of_hyperframes_drafts": true,
+    "decision_recorded_on_main": true
   }
 }
