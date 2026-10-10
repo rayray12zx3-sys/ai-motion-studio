@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "S1 bounded pure-data exchange experiment PR #51 merged to main at 97a4dc9f; exact-head root CI #38021694739 PASS (14/14 tests). DO NOT treat this as production schema or GUI: no imported asset/provenance support, no native disk save, no Konva install, no pixel-parity validation. Next safe isolated work: formalize asset provenance metadata without binaries and/or read-only Konva license/transitive investigation; maintain Canvas+FFmpeg default.",
     "2026-10-10 operator approved editor-renderer separation: retain Canvas+FFmpeg production, keep HyperFrames CLI isolated R&D only, DO NOT integrate HyperFrames/GSAP Studio GUI, do not contact licensors or buy licensing. Study Konva MIT and React Timeline Editor MIT with per-package transitive rights audit; record S0-S5 plan at docs/EDITOR-SEPARATION-ROADMAP-2026-10-10.md. No new production deps or engine migration.",
     "2026-10-10 exact-head checkpoints: synthetic native HyperFrames Studio timeline clip drag/persist/reopen/render PASS only in Draft #47 (fa594fac; workflows 38018274652/38018274659); native keyframe/easing not verified. Pinned HyperFrames npm/archive license metadata audit PASS only in Draft #46 (e9e6578; workflows 38018404603/38018404633), but GSAP no-code visual-builder commercial permission UNRESOLVED. Issues #40/#41 closed for bounded R&D, NOT production rights or adoption. Original wrong-base #45 closed unmerged. Keep #33/#39/#44/#46/#47 R&D Draft.",
     "Issue #36 bounded engineering verification complete in corrected isolated Draft PR #39, exact-head both workflows PASS; original 360p tests intact. PR #37 closed unmerged. Recheck PR #39 live state before further work; do not merge R&D into main without separate architecture/commercial-license approval.",
@@ -605,7 +606,7 @@
     "licensor_contact": "DECLINED",
     "paid_licensing": "NOT_AUTHORIZED",
     "private_repo_makes_license_valid": false,
-    "new_editor": "NOT_IMPLEMENTED",
+    "new_editor": "NO_VISUAL_UI_YET__S1_DATA_EXPERIMENT_MERGED",
     "first_candidate": "KONVA_MIT_ISOLATED_EVALUATION_ONLY",
     "timeline_candidate": "REACT_TIMELINE_EDITOR_MIT_TRANSITIVE_AUDIT_REQUIRED",
     "other_candidates": [
@@ -626,7 +627,24 @@
       {
         "id": "S1",
         "name": "neutral_scene_data_contract_no_dependencies",
-        "status": "NOT_STARTED"
+        "status": "PURE_DATA_RND_MERGED__GUI_ASSET_PROVENANCE_AND_RENDER_PARITY_PENDING",
+        "pr": 51,
+        "main_merge_sha": "97a4dc9fbdcbe75475d306e30cac3987c5788d71",
+        "exact_head": "9b3b3d68c9553502cc81d8ec3085383fefd7c117",
+        "exact_head_ci_run": 38021694739,
+        "unit_tests": {
+          "root_pass": 14,
+          "root_fail": 0,
+          "new_editor_contract_tests": 6
+        },
+        "production_schema_adopted": false,
+        "new_production_dependencies": false,
+        "pending": [
+          "LOCAL_ASSET_PROVENANCE_AND_RIGHTS_METADATA",
+          "BROWSER_GUI_POINTER_EDITING",
+          "ACTUAL_CANVAS_RENDER_PARITY",
+          "NATIVE_DISK_EDITOR_SAVE"
+        ]
       },
       {
         "id": "S2",
@@ -656,6 +674,18 @@
       "THIRD_PARTY_MEDIA_RIGHTS_SEPARATE"
     ],
     "no_automatic_merges_of_hyperframes_drafts": true,
-    "decision_recorded_on_main": true
+    "decision_recorded_on_main": true,
+    "s1_verified": {
+      "pr": 51,
+      "scope": "PURE_DATA_EXPERIMENT_ONLY",
+      "commit": "97a4dc9fbdcbe75475d306e30cac3987c5788d71",
+      "verified_pr_head": "9b3b3d68c9553502cc81d8ec3085383fefd7c117",
+      "ci_run": 38021694739,
+      "pass": 14,
+      "fail": 0,
+      "asset_array_must_be_empty": true,
+      "gui": "NOT_IMPLEMENTED",
+      "render_change": false
+    }
   }
 }
