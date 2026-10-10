@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "2026-10-10 S3 original-synthetic native easing preset UI #69 merged de06e6b (Chrome CI #38028087532 + root CI #38028087471 exact-head PASS). Real frame-12 preview x .307142857→.36441529 and opacity .38095→.76277 selecting existing linear vs ease-out-cubic, Undo/Redo, 3 local writes, reverse seek and fail-closed nonlinear split; no new root deps/renderer. This is NOT full Bezier curve GUI. Arbitrary Bezier handles/control points require neutral S1 schema versioning/migration and explicit owner decision, not automatic modification.",
     "2026-10-10 S4 strict official-vs-neutral contract gap audit PR #67 merged as f656f765 with exact-head CI #38026709308 PASS 30/30 tests. S1 independent layers/partial clips/keyframes/geometry differ fundamentally from official two-field title/subtitle preauthored gradient/render motion. Equal dimensions/fps/duration ≠ pixel parity. Explicit copy-only R&D draft requires deliberate visual-loss acknowledgement and locked glyph coverage, no renderer change. Next low-risk work: individual synthetic-only edge/boundary audits and document true production adoption gates; any official SceneSpec compiler or renderer migration needs owner authorization, not automatic integration.",
     "S4 browser JSON→pinned FFmpeg same-scene integration PR #64 merged 09b2bfa8; exact-head integrated CI #38025568046, standalone #38025568112, root #38025568054 PASS: saved synthetic Chrome scene SHA 06284eadee..., 30x360x640, lossless exact, MP4 lossy documented. Separate synthetic 1080x1920 8f ProRes 4444 Alpha probe PR #65 merged 3a30dcbc; CI #38025754924 and root #38025754860 PASS alpha samples 0/128/255. Official Canvas SceneSpec/pixel parity STILL NOT TESTED; human production UI/fonts, company media license, Windows Premiere import and real ad creative acceptance require operator approval. No new root deps or contact with licensors. Next allowed work: write bounded independent production-vs-experiment mapping gap analysis only or other synthetic-only research; do NOT auto-adopt rendering/production GUI.",
     "S4 two bounded CI-pass R&D checks merged: #61 shared Konva+DOM timeline actual Chrome edits/undo/reload (2 timeline gestures +1 canvas,5 saves) CI #38024966876 + root #38024966782; #62 separate original synthetic FFmpeg 30x360x640 frames lossless exact x264rgb and H264 MP4 CI #38025223621 + root #38025223586. They are NOT one browser-saved-scene->video test and preview is NOT official production renderer pixel equivalent; alpha MOV/Premiere/unlicensed real assets untouched. #12 M3A already contains PNG hash+declared license contract, no duplicate implementation or rights approval. Next isolated safe task: test browser-persisted S1 scene passed to R&D encoder without root deps or renderer migration; otherwise wait for operator to authorize production changes. No licensor outreach.",
@@ -728,7 +729,37 @@
           "S4_CANVAS_PIXEL_FRAME_PARITY",
           "WINDOWS_PREMIERE",
           "REAL_MEDIA_RIGHTS_AND_HUMAN_CREATIVE_APPROVAL"
-        ]
+        ],
+        "easing_preset_ui_pr": 69,
+        "easing_preset_ui_merge_sha": "de06e6b755fc94aa105021efab43a205312cd2bb",
+        "easing_preset_ui_exact_head": "36439c9c58539e1f972b18d58ecedb4103a42ec4",
+        "easing_preset_ui_ci": {
+          "chrome": 38028087532,
+          "root": 38028087471
+        },
+        "easing_preset_ui_evidence": {
+          "presets": [
+            "linear",
+            "ease-out-cubic"
+          ],
+          "selected_key_frame": 25,
+          "preview_frame": 12,
+          "linear_x": 0.30714285714285716,
+          "cubic_x": 0.364415289925494,
+          "linear_opacity": 0.38095238095238093,
+          "cubic_opacity": 0.7627685995032933,
+          "apply": 1,
+          "undo": 1,
+          "redo": 1,
+          "local_json_writes": 3,
+          "reverse_seek_verified": true,
+          "nonlinear_split_refused": true,
+          "remote_media_refused": true,
+          "reloaded_identically": true,
+          "professional_bezier_control_points": false,
+          "root_dependencies_added": false
+        },
+        "native_bezier_curve_editor": "NOT_IMPLEMENTED__S1_V1_SCHEMA_ONLY_TWO_PRESETS"
       },
       {
         "id": "S4",
