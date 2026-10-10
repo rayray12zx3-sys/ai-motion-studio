@@ -1,0 +1,35 @@
+name: Konva S2 isolated archive license audit
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/konva-package-audit/**'
+      - '.github/workflows/konva-package-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: konva-archive-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  konva-archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Audit source syntax without external UI installation
+        run: |
+          node --check experiments/konva-package-audit/audit.mjs
+          node --check experiments/konva-package-audit/audit.test.mjs
+      - name: Validate exact pinned Konva tarball and MIT license notice
+        run: node --test experiments/konva-package-audit/audit.test.mjs
+      - name: Narrow scope
+        run: echo 'R&D dependency metadata evidence only. No production Konva adoption or commercial media clearance.' >> "$GITHUB_STEP_SUMMARY"
