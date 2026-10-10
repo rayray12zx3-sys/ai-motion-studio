@@ -8,6 +8,8 @@ import {dirname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {drawEditableSceneFrame} from '../src/free/editable-scene.mjs';
 import {parseEditableScene} from '../experiments/editor-contract/scene.mjs';
+import {selectEditableReviewFrames} from './select-editable-review-frames.mjs';
+import {loadImage} from '@napi-rs/canvas';
 const root=dirname(fileURLToPath(new URL('../package.json',import.meta.url)));
 const source=parseEditableScene(readFileSync(join(root,'experiments/editor-contract/original-synthetic.json'),'utf8'));
 const encoder=join(dirname(fileURLToPath(import.meta.resolve('ffmpeg-static/package.json'))),
@@ -15,6 +17,7 @@ const encoder=join(dirname(fileURLToPath(import.meta.resolve('ffmpeg-static/pack
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const frame=14,w=360,h=640;
 const stats={};
+const expectedReview=selectEditableReviewFrames(source);
 function decode(file,n,fmt){
  const data=execFileSync(encoder,['-hide_banner','-loglevel','error','-nostdin','-i',file,
  '-vf','select=eq(n\\,'+n+')','-frames:v','1','-f','rawvideo','-pix_fmt',fmt,'pipe:1'],
@@ -32,6 +35,20 @@ for(const [id,mode,ext] of [['ci-s1-mp4','opaque','mp4'],['ci-s1-alpha','transpa
  assert.equal(report.approval,'UNAPPROVED');
  assert.equal(report.media_assets,0);assert.equal(report.network_requests,0);
  assert.equal(report.frame_hashes.length,30);
+ assert.equal(report.review_frame_selection,
+  'S1_CLIP_BOUNDARIES_KEYS_AND_MIDPOINT_MAX_12__SAMPLED_NOT_FULL_QC');
+ assert.deepEqual(report.review_frames.map(x=>x.frame),expectedReview);
+ for(const sample of report.review_frames){
+  const canvas=drawEditableSceneFrame(source,sample.frame,{output:mode});
+  const pixels=Buffer.from(canvas.getContext('2d').getImageData(0,0,w,h).data);
+  assert.equal(sample.rgba_sha256,sha(pixels),'S1 review sample frame hash mismatch');
+  assert.equal(sample.rgba_sha256,report.frame_hashes[sample.frame]);
+  assert.equal(sample.name,'frame-'+sample.frame+'.png');
+  const picture=await loadImage(readFileSync(join(dir,sample.name)));
+  assert.deepEqual([picture.width,picture.height],[w,h]);
+ }
+ const sheet=await loadImage(readFileSync(join(dir,'contact-sheet.png')));
+ assert.deepEqual([sheet.width,sheet.height],[960,Math.ceil(expectedReview.length/4)*260]);
  assert.equal(report.output_sha256,sha(readFileSync(file)));
  const canvas=drawEditableSceneFrame(source,frame,{output:mode});
  const raw=Buffer.from(canvas.getContext('2d').getImageData(0,0,w,h).data);
@@ -61,4 +78,4 @@ for(const [id,mode,ext] of [['ci-s1-mp4','opaque','mp4'],['ci-s1-alpha','transpa
   stats.mp4={codec:'h264',mean_rgb_error:mean};
  }
 }
-console.log('APPROVED_EDITABLE_S1_EXPORT_ENCODED_QC',JSON.stringify(stats));
+console.log('APPROVED_EDITABLE_S1_EXPORT_ENCODED_QC',JSON.stringify({...stats,review_frame_count:expectedReview.length,review_frames:expectedReview,labeled_contact_sheet:true}));

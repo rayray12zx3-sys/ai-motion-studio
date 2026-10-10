@@ -5,6 +5,8 @@ on:
     paths:
       - 'editor/**'
       - 'tests/editor-gui-export.e2e.mjs'
+      - 'scripts/render-editable.mjs'
+      - 'scripts/select-editable-review-frames.mjs'
       - '.github/workflows/editor-local-gui-export.yml'
   workflow_dispatch:
 

@@ -11,6 +11,8 @@ import probe from 'ffprobe-static';
 import {createCanvas,loadImage} from '@napi-rs/canvas';
 import {drawEditableSceneFrame,validateEditableRenderScene} from '../src/free/editable-scene.mjs';
 import {parseEditableScene,serializeEditableScene} from '../experiments/editor-contract/scene.mjs';
+import {selectEditableReviewFrames} from './select-editable-review-frames.mjs';
+import {fontFamily} from '../src/free/scene.mjs';
 
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const approvedEncoders={
@@ -62,7 +64,7 @@ const finished=new Promise((resolveDone,reject)=>{
  proc.on('close',code=>code===0?resolveDone():reject(Error('FFmpeg rejected scene: '+stderr)));
 });
 finished.catch(()=>{});
-const sampleFrames=[0,Math.floor((frames-1)*.5),frames-1];
+const sampleFrames=selectEditableReviewFrames(scene);
 const hashes=[],samples=[];
 try{
  for(let i=0;i<frames;i++){
@@ -102,6 +104,7 @@ const summary={
  canvas:scene.canvas,frames,fps,scene_sha256:sha(Buffer.from(sceneBytes)),
  encoder_sha256:sha(readFileSync(encoder)),codec:video.codec_name,
  pix_fmt:video.pix_fmt,frame_hashes:hashes,review_frames:samples,
+ review_frame_selection:'S1_CLIP_BOUNDARIES_KEYS_AND_MIDPOINT_MAX_12__SAMPLED_NOT_FULL_QC',
  output_sha256:fileHash,
  source_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,windowsHide:true,encoding:'utf8'}).trim(),
  root_lockfile_sha256:sha(readFileSync(join(root,'package-lock.json'))),
@@ -112,13 +115,18 @@ const summary={
  windows_premiere:'NOT_TESTED',approval:'UNAPPROVED'
 };
 writeFileSync(join(destination,'render-report.json'),JSON.stringify(summary,null,2)+'\n');
-const sheet=createCanvas(720,480),ctx=sheet.getContext('2d');
-ctx.fillStyle='#101827';ctx.fillRect(0,0,720,480);
+const columns=4,cellW=240,cellH=260,rows=Math.ceil(samples.length/columns);
+const sheet=createCanvas(columns*cellW,rows*cellH),ctx=sheet.getContext('2d');
+ctx.fillStyle='#101827';ctx.fillRect(0,0,sheet.width,sheet.height);
 for(let i=0;i<samples.length;i++){
  const image=await loadImage(readFileSync(join(destination,samples[i].name)));
- const cellW=240,cellH=480,scale=Math.min(220/image.width,420/image.height);
- ctx.drawImage(image,i*cellW+(cellW-image.width*scale)/2,
-   (cellH-image.height*scale)/2,image.width*scale,image.height*scale);
+ const x=(i%columns)*cellW,y=Math.floor(i/columns)*cellH;
+ const scale=Math.min(216/image.width,216/image.height);
+ ctx.drawImage(image,x+(cellW-image.width*scale)/2,
+   y+(228-image.height*scale)/2,image.width*scale,image.height*scale);
+ // Labels are review-only metadata, never applied to a rendered MP4/MOV frame.
+ ctx.fillStyle='#e8f5f2';ctx.font='16px '+fontFamily;ctx.textAlign='center';
+ ctx.fillText('Frame '+samples[i].frame,x+cellW/2,y+246);
 }
 writeFileSync(join(destination,'contact-sheet.png'),sheet.toBuffer('image/png'));
 console.log('EDITABLE_SCENE_CANVAS_FFMPEG_RESULT',JSON.stringify({
