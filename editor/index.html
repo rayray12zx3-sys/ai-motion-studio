@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Motion Studio — Konva Editor</title><link rel="stylesheet" href="/styles.css">
+</head><body>
+<header><div><h1>AI Motion Studio</h1><p>Konva 編輯器 · 本機場景工作區</p></div><div class="flag">預覽不代表正式渲染畫面</div></header>
+<main>
+<section class="workspace">
+<div class="pane"><div class="heading"><h2>畫布預覽 <small id="frame-label">第 12 格</small></h2><div><button id="undo" title="Ctrl+Z">復原</button><button id="redo" title="Ctrl+Y">重做</button></div></div>
+<div id="canvas-wrap"><div id="stage" role="img" aria-label="可拖曳的 Konva 合成場景畫布"></div></div>
+<label class="seek" for="seek">影格 <input id="seek" type="range" min="0" max="29" value="12" step="1"><output id="seek-value">12</output></label>
+</div>
+<div class="pane properties"><h2>圖層與屬性</h2><div id="layer-list" role="group" aria-label="選取圖層"></div>
+<p class="field-note" id="selected-label">尚未選取</p>
+<label for="layer-text">文字 <input id="layer-text" type="text" maxlength="80" placeholder="僅限文字圖層"></label>
+<label for="layer-color">顏色 <input id="layer-color" type="color"></label>
+<button id="save-appearance">儲存文字／顏色</button>
+<div class="separator"></div>
+<label for="keyframe">關鍵影格 <select id="keyframe"></select></label>
+<label for="ease">進入此格的緩動 <select id="ease"><option value="linear">Linear</option><option value="ease-out-cubic">Ease-out cubic</option></select></label>
+<button id="save-ease">套用緩動</button>
+<div class="button-row"><button id="add-key">在目前格新增關鍵影格</button><button id="remove-key">刪除此關鍵影格</button></div>
+<div class="separator"></div><div class="button-row"><button id="add-rect">新增矩形</button><button id="duplicate">複製圖層</button><button id="delete">刪除圖層</button></div>
+<p class="field-note">支援 30fps、S1 既有兩種緩動。不支援外部素材或自由 Bezier 控制點。</p>
+</div>
+</section>
+<section class="pane timeline-pane"><div class="heading"><h2>時間軸</h2><small>拖曳片段中央移動，拖曳兩端修剪；逐格對齊</small></div><div id="timeline-scroller"><div id="timeline" role="group" aria-label="逐格時間軸"></div></div></section>
+<div id="status" role="status" aria-live="polite">載入本機場景中…</div>
+<footer>只在此電腦的 127.0.0.1 執行；資料儲存在 editor/.local。正式 Canvas+FFmpeg 未更動。</footer>
+</main><script src="/vendor/konva.min.js"></script><script type="module" src="/app.mjs"></script>
+</body></html>
