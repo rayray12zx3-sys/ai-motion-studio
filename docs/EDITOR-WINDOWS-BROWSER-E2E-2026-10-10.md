@@ -2,6 +2,11 @@
 
 PR [#76](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/76) continues main `68ee13f` after checking merged PRs #71–#75. #74 already proved Windows Node/server compatibility; this change reuses and extends the existing Linux browser verifier instead of rebuilding the editor. Only CI, test tooling and documentation change. No production or editor dependency manifests, official Canvas+FFmpeg, M11/M12, real/company materials or user PC paths are modified or accessed.
 
+## Final PR and later viewport verification
+
+- Final exact-head `160545c167f6389666a5a7161f49ce4b0265bd9c` passed [Windows Chrome+Edge #38031806799](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/38031806799), [Linux Chrome #38031806792](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/38031806792), [root #38031806828](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/38031806828), [official three-profile render #38031802874](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/38031802874) and [post-main #38031977078](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/38031977078) — all PASS. [PR #76](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/76) merged `bfa4e05dc0770da8a35b9da2a9e9fab39cbb51f1`.
+- [PR #77](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/77) head `44a09b71e9e0b181cdf3f76af3f407aae67f2a80` passed [Windows Chrome+Edge #38033072823](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/38033072823), [Linux Chrome #38033072863](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/38033072863), [root #38033072810](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/38033072810); merged `8f56d225b41bbf42974b7edfc2e4c0de7c85da0f`. Exact S1 source profile labels, bounded aspect-preserving stage, browser normalized drag and JSON reload; still NOT official renderer pixel parity.
+
 ## Verified implementation checkpoint
 
 Implementation head: `f86a535c898b9b1f7491648acc9d013820e1dfc8`. These completed runs are evidence for that implementation; documentation and explicit head checkout are added afterward. Final PR checks must all pass again before merge. The PR is the live authority for final head, merge and final CI evidence.
