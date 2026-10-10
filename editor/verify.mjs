@@ -230,6 +230,68 @@ async function main(){
   assert.deepEqual(outboundRequests,[],'Browser must never request external material');
   assert.equal(await page.locator('.clip[data-layer="headline"] .key-marker').count(),2);
   await screenshot('approved-synthetic');
+  // Follow the original passing S1 flow with independent landscape/full-HD fixture proofs.
+  // Each has a separate loopback server and new browser tab, never real media.
+  const profileBrowserChecks=[];
+  for(const [sourceWidth,sourceHeight] of [[640,360],[1080,1920],[1920,1080]]){
+   const variant=structuredClone(first.scene);
+   variant.canvas={width:sourceWidth,height:sourceHeight};
+   const profileFile=join(temp,'profile-'+sourceWidth+'x'+sourceHeight+'.json');
+   await writeFile(profileFile,serializeEditableScene(variant),'utf8');
+   const profileServer=await startEditorServer({port:0,sceneFile:profileFile});
+   let tab;
+   try{
+    tab=await context.newPage();
+    await tab.goto(profileServer.url,{waitUntil:'load'});
+    await tab.waitForFunction(()=>window.__motionEditor?.ready===true);
+    const beforeProfile=await tab.evaluate(()=>window.__motionEditor);
+    const view=beforeProfile.preview;
+    assert.equal(view.profile,sourceWidth+'x'+sourceHeight);
+    assert.equal(view.kind,'NEUTRAL_POSITION_PROXY_NOT_OFFICIAL_PIXELS');
+    assert.equal(view.sourceWidth,sourceWidth);assert.equal(view.sourceHeight,sourceHeight);
+    assert.equal(view.width/view.height,sourceWidth/sourceHeight);
+    assert.equal(view.width,360);
+    const aspect=sourceWidth/sourceHeight;
+    assert.ok(Math.abs(view.height-(360/aspect))<1e-9);
+    const domProfile=await tab.locator('#stage').evaluate(el=>({
+     width:parseFloat(el.style.width),height:parseFloat(el.style.height)
+    }));
+    assert.equal(domProfile.width,view.width);assert.equal(domProfile.height,view.height);
+    const label=await tab.locator('#profile-label').textContent();
+    assert.ok(label.includes(sourceWidth+'x'+sourceHeight));
+    const bbox=await tab.locator('#stage').boundingBox();
+    assert.ok(bbox);
+    const start=beforeProfile.sample;
+    assert.equal(beforeProfile.selected,'headline');assert.ok(start);
+    const centerX=bbox.x+1+start.x*view.width;
+    const centerY=bbox.y+1+start.y*view.height;
+    await tab.mouse.move(centerX,centerY);await tab.mouse.down();
+    await tab.mouse.move(centerX+18,centerY+9,{steps:20});await tab.mouse.up();
+    await tab.waitForFunction(()=>window.__motionEditor?.canvasDrags===1);
+    const moved=await tab.evaluate(()=>window.__motionEditor);
+    assert.ok(Math.abs(moved.sample.x-start.x-18/view.width)<0.015);
+    assert.ok(Math.abs(moved.sample.y-start.y-9/view.height)<0.015);
+    const stored=parseEditableScene(await readFile(profileFile,'utf8'));
+    assert.deepEqual(stored,moved.scene);
+    assert.deepEqual(stored.canvas,variant.canvas);
+    assert.deepEqual(stored.assets,[]);
+    const savedHash=sha(serializeEditableScene(stored));
+    await tab.reload({waitUntil:'load'});
+    await tab.waitForFunction(()=>window.__motionEditor?.ready===true);
+    const reopened=await tab.evaluate(()=>window.__motionEditor);
+    assert.deepEqual(reopened.scene,stored);
+    assert.equal(reopened.preview.profile,view.profile);
+    if(sourceWidth===1920||sourceWidth===1080)await screenshot('profile-'+sourceWidth+'x'+sourceHeight+'-synthetic',tab);
+    profileBrowserChecks.push({profile:view.profile,display:[view.width,view.height],
+     canvas_mouse_drag:true,normalized_scene_saved_and_reopened:true,sha256:savedHash});
+   }finally{
+    if(tab&&!tab.isClosed())await tab.close();
+    await new Promise(resolve=>profileServer.server.close(resolve));
+   }
+  }
+  assert.equal(profileBrowserChecks.length,3);
+  assert.equal(browserErrors.filter(x=>x.startsWith('pageerror')).length,0,JSON.stringify(browserErrors));
+  assert.deepEqual(outboundRequests,[],'Profile tests must remain local');
   const result={status:'PASS_USER_APPROVED_OPT_IN_EDITOR_SHELL_SYNTHETIC_ONLY',
    runtime:{platform:process.platform,node:process.version,browser_channel:channel,browser_version:browser.version(),headless,
     commit:testedCommit,event_commit:process.env.GITHUB_SHA||null,pr_head:process.env.MOTION_EDITOR_PR_HEAD||null},
@@ -243,6 +305,7 @@ async function main(){
    individual_keyframe_numeric_values_saved:true,keyframe_markers_present:true,
    undo_redo:true,stale_editor_save_refused:true,eased_key_split_refused:true,reload:true,
    no_external_media:true,browser_external_requests:outboundRequests.length,official_canvas_ffmpeg_modified:false,
+   s1_viewport_profile_checks:profileBrowserChecks,
    not_proven:['locked-font visual parity','Windows Premiere','private media rights','Bezier control points','commercial art approval']};
   await writeFile(join(out,'konva-editor-approved-synthetic-report.json'),JSON.stringify(result,null,2)+'\n');
   console.log('KONVA_EDITOR_APPROVED_SHELL_PROOF',JSON.stringify(result));
