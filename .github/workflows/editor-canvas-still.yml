@@ -1,0 +1,111 @@
+name: Konva saved scene vs authoritative S1 Canvas still
+
+on:
+  pull_request:
+    paths:
+      - 'editor/server.mjs'
+      - 'editor/app.mjs'
+      - 'editor/index.html'
+      - 'editor/styles.css'
+      - 'editor/verify.mjs'
+      - 'src/free/editable-scene.mjs'
+      - 'tests/editor-canvas-still.test.mjs'
+      - '.github/workflows/editor-canvas-still.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: editor-canvas-still-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-still-linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      MOTION_TEST_CANVAS_STILL: '1'
+      MOTION_EDITOR_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      MOTION_EDITOR_BROWSER_CHANNEL: chrome
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Install already approved root Canvas and independent editor Konva
+        run: |
+          test "$(git rev-parse HEAD)" = "$MOTION_EDITOR_PR_HEAD"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm ci --prefix editor --ignore-scripts --no-audit --no-fund
+      - name: Byte-identical saved-S1 Canvas PNG and endpoint safety
+        run: node --test tests/editor-canvas-still.test.mjs
+      - name: Real Google Chrome official PNG, alpha and stale frame test plus editor regression
+        run: node editor/verify.mjs
+      - name: Original synthetic still and Chrome trace only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: locked-canvas-preview-linux-synthetic
+          path: |
+            out/konva-editor-*.png
+            out/konva-editor-approved-synthetic-report.json
+            out/konva-editor-synthetic-trace.zip
+          retention-days: 7
+          if-no-files-found: ignore
+  browser-still-windows:
+    runs-on: windows-2022
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, msedge]
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+    env:
+      MOTION_TEST_CANVAS_STILL: '1'
+      MOTION_EDITOR_HEADED: '1'
+      MOTION_EDITOR_BROWSER_CHANNEL: ${{ matrix.browser }}
+      MOTION_EDITOR_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Exact source head, existing root packages and independent editor pin
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne $env:MOTION_EDITOR_PR_HEAD) { throw 'PR head mismatch' }
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'Root pinned install failed' }
+          npm.cmd ci --prefix editor --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'Editor isolated install failed' }
+      - name: Saved S1 exact Canvas PNG pixels, denial gates and no write
+        run: |
+          node --test tests/editor-canvas-still.test.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'S1 Canvas PNG HTTP regression failed' }
+      - name: Actual Windows browser Canvas and Konva side-by-side frame reference
+        run: |
+          node editor/verify.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'Windows Chrome/Edge authoritative Canvas still regression failed' }
+      - name: Original synthetic screenshot and trace only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: locked-canvas-preview-windows-${{ matrix.browser }}-synthetic
+          path: |
+            out/konva-editor-*.png
+            out/konva-editor-approved-synthetic-report.json
+            out/konva-editor-synthetic-trace.zip
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Technical proof is not WYSIWYG or Premiere approval
+        run: |
+          "Actual hosted Chrome/Edge still image from locked S1 Canvas on the same saved scene; editing Konva proxies remain separate. Private media/rights, user-PC Premiere and human art review not tested." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
