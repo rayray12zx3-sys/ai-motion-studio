@@ -78,7 +78,7 @@ async function main(){
   state=await page.evaluate(()=>window.__motionEditor);
   assert.equal(state.scene.layers.find(l=>l.id==='headline').keys.at(-1).x,.64);
   assert.equal(state.scene.layers.find(l=>l.id==='headline').keys.at(-1).scale,1.2);
-  assert.equal(state.history.undo,5);
+  assert.equal(state.history.undo,3); // Undo then Redo does not create a fifth history snapshot.
   const before=state.timeline.find(l=>l.id==='headline');
   async function drag(selector,dx,dy,predicate){
    const bounds=await page.locator(selector).boundingBox();
