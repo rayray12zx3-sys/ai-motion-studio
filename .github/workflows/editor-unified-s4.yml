@@ -1,0 +1,45 @@
+name: Isolated S4 unified synthetic editor
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/editor-unified/**'
+      - '.github/workflows/editor-unified-s4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: editor-unified-s4-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-unified-editor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Syntax check isolated unified fixture
+        run: |
+          node --check experiments/editor-unified/unified-editor.mjs
+          node --check experiments/editor-unified/verify.mjs
+      - name: Real Chrome Konva and timeline shared-scene pointer and save test
+        run: node experiments/editor-unified/verify.mjs
+      - name: Synthetic artifact only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: unified-original-synthetic-s4
+          path: |
+            out/unified-original-synthetic.png
+            out/unified-editor-report.json
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Isolation warning
+        run: echo 'Original synthetic R&D only; no Canvas+FFmpeg production renderer, rights approval, full UI or asset ingestion.' >> "$GITHUB_STEP_SUMMARY"
