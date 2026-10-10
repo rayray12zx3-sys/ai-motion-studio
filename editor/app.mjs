@@ -10,13 +10,61 @@ const probe={ready:false,commits:0,canvasDrags:0,timelineActions:0,easeChanges:0
 window.__motionEditor=probe;
 let history,etag,selected='headline',selectedKey=null,frame=12,busy=false,gesture=null;
 let stage,layer,viewport;
+let stillUrl=null,stillFrame=null,stillTag=null,stillMode=null,stillToken=0;
 const item=()=>history.present.layers.find(l=>l.id===selected);
 const updateStatus=msg=>{$('status').textContent=msg;};
+function invalidateStill(message='場景、影格或背景模式已變動；請重新產生正式 Canvas 畫格。'){
+ stillToken++;
+ if(stillUrl){URL.revokeObjectURL(stillUrl);stillUrl=null;}
+ $('rendered-still').hidden=true;
+ $('rendered-still').removeAttribute('src');
+ $('render-feedback').textContent=message;
+ $('render-still').disabled=false;
+ stillFrame=null;stillTag=null;stillMode=null;
+ probe.still={status:'STALE'};
+}
+async function loadCanvasStill(){
+ const requestedFrame=frame,requestedTag=etag,mode=$('render-mode').value,token=++stillToken;
+ $('render-still').disabled=true;
+ $('render-feedback').textContent='使用正式 Canvas 正在繪製第 '+requestedFrame+' 格…';
+ probe.still={status:'LOADING',frame:requestedFrame,mode};
+ try{
+  const response=await fetch('/canvas-preview.png?frame='+requestedFrame+'&mode='+mode,{
+   method:'GET',cache:'no-store',
+   headers:{'X-AI-Motion-Preview':'1','If-Match':requestedTag}
+  });
+  if(!response.ok){
+   const info=await response.json().catch(()=>({error:'Canvas still request failed'}));
+   throw Error('HTTP '+response.status+'：'+(info.error||'不可用'));
+  }
+  if(!response.headers.get('Content-Type')?.startsWith('image/png'))
+   throw Error('回應不是正式 Canvas PNG');
+  const blob=await response.blob();
+  if(token!==stillToken||frame!==requestedFrame||etag!==requestedTag||
+   $('render-mode').value!==mode)return;
+  const objectUrl=URL.createObjectURL(blob);
+  if(stillUrl)URL.revokeObjectURL(stillUrl);
+  stillUrl=objectUrl;stillFrame=requestedFrame;stillTag=requestedTag;stillMode=mode;
+  $('rendered-still').src=objectUrl;
+  $('rendered-still').hidden=false;
+  $('rendered-still').alt='正式 Canvas 已儲存場景第 '+requestedFrame+' 格（'+mode+'）';
+  $('render-feedback').textContent='已產生第 '+requestedFrame+' 格（'+mode+'）。此圖是正式 Canvas 單格，不是 Konva 操作畫面。';
+  probe.still={status:'READY',frame:requestedFrame,mode,mime:blob.type,bytes:blob.size};
+ }catch(error){
+  if(token===stillToken){
+   if(stillUrl){URL.revokeObjectURL(stillUrl);stillUrl=null;}
+   $('rendered-still').hidden=true;
+   $('render-feedback').textContent='無法產生正式畫格：'+String(error.message||error);
+   probe.still={status:'ERROR',frame:requestedFrame,mode,message:String(error.message||error)};
+  }
+ }finally{if(token===stillToken)$('render-still').disabled=false;}
+}
 function clipValues(scene=history.present){return scene.layers.find(l=>l.id===selected);}
 function historyWith(scene){
  return {past:[...structuredClone(history.past),structuredClone(history.present)].slice(-20),present:scene,future:[]};
 }
 function paint(){
+ if(stillFrame!==null&&(stillFrame!==frame||stillTag!==etag||stillMode!==$('render-mode').value))invalidateStill();
  const s=history.present;
  viewport=fitNeutralPreview(s.canvas);
  stage.size({width:viewport.width,height:viewport.height});
@@ -146,6 +194,8 @@ $('layer-list').addEventListener('click',event=>{
  if(id){selected=id;selectedKey=null;paint();}
 });
 $('seek').addEventListener('input',event=>{frame=Number(event.target.value);paint();});
+$('render-mode').addEventListener('change',()=>invalidateStill());
+$('render-still').addEventListener('click',()=>loadCanvasStill());
 $('keyframe').addEventListener('change',event=>{selectedKey=Number(event.target.value);paint();});
 $('save-appearance').addEventListener('click',()=>apply(()=>{
  let scene=history.present;
