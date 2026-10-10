@@ -245,6 +245,34 @@ async function main(){
     await tab.goto(profileServer.url,{waitUntil:'load'});
     await tab.waitForFunction(()=>window.__motionEditor?.ready===true);
     const beforeProfile=await tab.evaluate(()=>window.__motionEditor);
+    if(sourceWidth===640){
+     // An empty S3 history must not send redundant saves, even via keyboard.
+     assert.equal(await tab.locator('#undo').isDisabled(),true);
+     assert.equal(await tab.locator('#redo').isDisabled(),true);
+     await tab.locator('#status').click();
+     await tab.keyboard.press('Control+z');
+     await tab.keyboard.press('Control+y');
+     assert.equal((await tab.evaluate(()=>window.__motionEditor)).commits,0);
+     const input=tab.locator('#layer-text');
+     await input.focus();await tab.keyboard.type(' typed');
+     await tab.keyboard.press('Control+z');
+     const afterNativeUndo=await tab.evaluate(()=>window.__motionEditor);
+     assert.equal(afterNativeUndo.commits,0,'Input Ctrl+Z must not edit scene history');
+     assert.deepEqual(afterNativeUndo.scene,beforeProfile.scene);
+     await input.fill('Keyboard Synthetic Title');
+     await tab.locator('#save-appearance').click();
+     await tab.waitForFunction(()=>window.__motionEditor?.commits===1);
+     assert.equal((await tab.evaluate(()=>window.__motionEditor)).scene.layers.find(x=>x.id==='headline').text,'Keyboard Synthetic Title');
+     await tab.locator('#status').click();
+     await tab.keyboard.press('Control+z');
+     await tab.waitForFunction(()=>window.__motionEditor?.undo===1);
+     assert.equal((await tab.evaluate(()=>window.__motionEditor)).scene.layers.find(x=>x.id==='headline').text,'Original Title');
+     await tab.keyboard.press('Control+Shift+z');
+     await tab.waitForFunction(()=>window.__motionEditor?.redo===1);
+     assert.equal((await tab.evaluate(()=>window.__motionEditor)).scene.layers.find(x=>x.id==='headline').text,'Keyboard Synthetic Title');
+     await tab.keyboard.press('Control+y');
+     assert.equal((await tab.evaluate(()=>window.__motionEditor)).redo,1,'Empty redo must not save');
+    }
     const view=beforeProfile.preview;
     assert.equal(view.profile,sourceWidth+'x'+sourceHeight);
     assert.equal(view.kind,'NEUTRAL_POSITION_PROXY_NOT_OFFICIAL_PIXELS');
@@ -306,6 +334,7 @@ async function main(){
    undo_redo:true,stale_editor_save_refused:true,eased_key_split_refused:true,reload:true,
    no_external_media:true,browser_external_requests:outboundRequests.length,official_canvas_ffmpeg_modified:false,
    s1_viewport_profile_checks:profileBrowserChecks,
+   native_field_undo_preserved:true,ctrl_shift_z_redo_and_noop_history_verified:true,
    not_proven:['locked-font visual parity','Windows Premiere','private media rights','Bezier control points','commercial art approval']};
   await writeFile(join(out,'konva-editor-approved-synthetic-report.json'),JSON.stringify(result,null,2)+'\n');
   console.log('KONVA_EDITOR_APPROVED_SHELL_PROOF',JSON.stringify(result));
