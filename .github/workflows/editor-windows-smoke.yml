@@ -1,0 +1,43 @@
+name: Local Konva editor Windows smoke
+
+on:
+  pull_request:
+    paths:
+      - 'editor/**'
+      - 'tests/editor-local-app.test.mjs'
+      - '.github/workflows/editor-windows-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: editor-windows-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-editor-windows:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Install only the pinned editor frontend
+        run: npm ci --prefix editor --ignore-scripts --no-audit --no-fund
+      - name: Verify Windows Konva package and ESM syntax
+        shell: pwsh
+        run: |
+          node --check editor/server.mjs
+          node --check editor/app.mjs
+          node --check editor/operations.mjs
+          node --input-type=module -e "import assert from 'node:assert/strict';import{readFileSync}from'node:fs';const p=JSON.parse(readFileSync('editor/node_modules/konva/package.json'));assert.equal(p.version,'10.7.1');assert.equal(p.license,'MIT');"
+      - name: Local loopback, atomic save, ETag and S1 tests on Windows
+        run: node --test tests/editor-local-app.test.mjs
+      - name: Scope reminder
+        shell: pwsh
+        run: |
+          "Windows Node 24 + Konva local-service technical smoke only; no physical Windows Premiere, user UX or video-output approval." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
