@@ -6,6 +6,8 @@ on:
       - 'src/free/editable-scene.mjs'
       - 'scripts/render-editable.mjs'
       - 'scripts/verify-editable-render.mjs'
+      - 'scripts/select-editable-review-frames.mjs'
+      - 'tests/editor-review-frames.test.mjs'
       - 'tests/editor-approved-render-adapter.test.mjs'
       - '.github/workflows/editor-approved-s1-adapter.yml'
   workflow_dispatch:
