@@ -1,9 +1,10 @@
-name: Isolated S4 unified synthetic editor
+name: Isolated S4 browser-to-FFmpeg synthetic roundtrip
 
 on:
   pull_request:
     paths:
       - 'experiments/editor-unified/**'
+      - 'experiments/editor-ffmpeg/verify.mjs'
       - '.github/workflows/editor-unified-s4.yml'
   workflow_dispatch:
 
@@ -17,7 +18,7 @@ concurrency:
 jobs:
   synthetic-unified-editor:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 14
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -31,6 +32,10 @@ jobs:
           node --check experiments/editor-unified/verify.mjs
       - name: Real Chrome Konva and timeline shared-scene pointer and save test
         run: node experiments/editor-unified/verify.mjs
+      - name: Install only existing root packages and verify pinned encoder
+        run: npm ci --ignore-scripts --no-audit --no-fund && node scripts/setup-encoder.mjs
+      - name: Encode exactly the browser-persisted synthetic S1 scene
+        run: node experiments/editor-ffmpeg/verify.mjs out/unified-editor-scene.json
       - name: Synthetic artifact only
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -39,7 +44,11 @@ jobs:
           path: |
             out/unified-original-synthetic.png
             out/unified-editor-report.json
+            out/unified-editor-scene.json
+            out/s4-original-synthetic.mp4
+            out/s4-edited-synthetic.mp4
+            out/s4-ffmpeg-synthetic-report.json
           retention-days: 7
           if-no-files-found: ignore
       - name: Isolation warning
-        run: echo 'Original synthetic R&D only; no Canvas+FFmpeg production renderer, rights approval, full UI or asset ingestion.' >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'Original synthetic browser-saved S1 JSON to experimental Canvas/FFmpeg only; not official production pixel parity, rights approval, full UI or asset ingestion.' >> "$GITHUB_STEP_SUMMARY"

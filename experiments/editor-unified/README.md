@@ -19,6 +19,11 @@ The Chrome test must prove in order:
 
 This **does not** prove a finished professional visual editor, text rendering, native easing/Bezier-curve editor, production Canvas+FFmpeg pixel/video parity, ProRes 4444 Alpha, source-image/music rights, external media ingestion, responsive interaction performance or Windows Premiere validation. No root `package.json` / `package-lock.json`, `src/free`, `scripts/render.mjs`, art-review output or private State Engine may change.
 
+## S4 linked persisted-scene → FFmpeg test (Draft)
+
+After the actual pointer/Undo/Redo and remote-asset-rejection checks pass, the browser harness emits only the validated original synthetic JSON to ignored `out/unified-editor-scene.json`. The same job installs **existing root packages only**, verifies the already-pinned FFmpeg executable and sends **that exact browser-saved scene** into `node experiments/editor-ffmpeg/verify.mjs out/unified-editor-scene.json`. The encoder checks the saved browser receipt's SHA-256 plus exact clip/position and outputs a short-lived original/edited MP4 and report. Neither test may read corporate media or change the production renderer.
+
+Passing this proves one bounded original-synthetic browser state → saved JSON → experimental neutral Canvas painter → FFmpeg pipeline, **not** equivalence with the official `src/free` renderer, ProRes alpha, Windows Premiere, commercial media rights or a production-ready UI.
 ## Existing M3-A asset provenance — reusable design, not imported
 
 [Draft PR #12](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/12) already contains `src/creative/assets.mjs` with trusted-root PNG verification: constrained relative paths, duplicate IDs, SHA-256, dimensions, type and declared `license`/`source`, plus symlink checks. Its standalone tests confirm **data integrity** rather than proving that named persons, copyright owners or licensors authorized ad use. The M3-A branch is stacked on an unmerged M2 base. **Do not cherry-pick the file or blindly merge its stack; do not duplicate its verifier.** A future owner-approved asset adapter would independently establish rights evidence and evaluate race/path/decoder/security threat models. Until then S1 and this fixture **require `assets: []`** and reject every real imported file.

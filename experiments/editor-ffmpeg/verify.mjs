@@ -81,8 +81,28 @@ async function main(){
  const out=join(root,'../../out');mkdirSync(out,{recursive:true});
  try{
   const original=parseEditableScene(readFileSync(join(root,'../editor-contract/original-synthetic.json'),'utf8'));
-  const edited=parseEditableScene(serializeEditableScene(editFixture(original)));
-  assert.deepEqual(edited.layers[1].keys.map(k=>k.frame),[8,12,26]);
+  // Only one exact public original-synthetic browser artifact path is accepted as CLI input.
+  const browserSaved=process.argv[2]==='out/unified-editor-scene.json';
+  if(process.argv.length>3||(process.argv.length===3&&!browserSaved))
+   throw Error('Only the verified synthetic browser scene output path is accepted');
+  const edited=browserSaved
+   ? parseEditableScene(readFileSync(join(out,'unified-editor-scene.json'),'utf8'))
+   : parseEditableScene(serializeEditableScene(editFixture(original)));
+  const editedClip=edited.layers.find(l=>l.id==='headline');
+  let browserReceipt=null;
+  if(browserSaved){
+   browserReceipt=JSON.parse(readFileSync(join(out,'unified-editor-report.json'),'utf8'));
+   assert.deepEqual([editedClip.start_frame,editedClip.end_frame],[6,26]);
+   assert.deepEqual(editedClip.keys.map(k=>k.frame),[6,25]);
+   assert.equal(browserReceipt.source,'original synthetic editor-contract v1');
+   assert.equal(browserReceipt.saved_reopened_identically,true);
+   assert.equal(browserReceipt.sha256,sha(Buffer.from(serializeEditableScene(edited))));
+   assert.equal(browserReceipt.after_position.x,editedClip.keys[0].x);
+   assert.equal(browserReceipt.after_position.y,editedClip.keys[0].y);
+   assert.deepEqual(edited.assets,[]);
+  }else{
+   assert.deepEqual(editedClip.keys.map(k=>k.frame),[8,12,26]);
+  }
   const approvedBefore=drawFrame(profiles.smoke,12).toBuffer('image/png');
   const first=sceneFrames(original),next=sceneFrames(edited);
   assert.equal(first.length,frames*bytesPerFrame);assert.equal(next.length,frames*bytesPerFrame);
@@ -123,6 +143,10 @@ async function main(){
    edited_h264_sha256:sha(readFileSync(editedMP4)),
    official_canvas_smoke_frame_unchanged:true,media:'ORIGINAL_SYNTHETIC_ONLY',
    new_production_dependencies:false,
+   actual_browser_persisted_scene_encoded:browserSaved,
+   verified_browser_scene_sha256:browserSaved?browserReceipt.sha256:null,
+   edited_clip_frames:[editedClip.start_frame,editedClip.end_frame],
+   edited_clip_entry_xy:[editedClip.keys[0].x,editedClip.keys[0].y],
    unverified:['Actual official Canvas renderer SceneSpec pixel parity','1080p opaque encode and alpha ProRes',
     'Windows Premiere','licensed company assets','creative approval']
   };

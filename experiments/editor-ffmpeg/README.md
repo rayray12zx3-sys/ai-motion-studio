@@ -13,6 +13,11 @@ The original and edited synthetic MP4 videos plus a JSON report are available on
 
 The test also confirms official `drawFrame(profiles.smoke,12)` PNG is byte-identical before and after. No root `package.json`, `package-lock.json`, original renderer CLI, FFmpeg pin, frozen M11/M12 art or company State Engine code is changed.
 
+## Optional actual synthetic browser-saved scene input (Draft)
+
+With the isolated Chrome unified editor test run first in the **same** job, `node experiments/editor-ffmpeg/verify.mjs out/unified-editor-scene.json` accepts only this precise ignored synthetic output path (no arbitrary user-supplied file). It verifies the browser test's persisted scene SHA-256 receipt, expected `[6,26)` headline frames and normalized position and prohibits assets. It then renders these **actual edited browser JSON** frames with the experimental painter and performs the same pinned FFmpeg lossless and H264 MP4 checks. Running without a file argument preserves the previous scripted synthetic data test behavior.
+
+An end-to-end CI success only connects the experimental browser editor to the **experimental neutral preview**, not to the approved Canvas production art/SceneSpec or commercial encoder contract.
 **Still not proven:** neutral-scene pixels versus actual official production renderer (no common artwork/geometry contract); encoded 1080×1920 video; ProRes 4444 alpha; Windows Premiere import; company media rights; released editor; creative approval.
 
 [Merged unified Konva+timeline research PR #61](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/61) independently verified shared scene edits and undo/reload but did not verify video. A green test here must never be misrepresented as a production SceneSpec migration or commercial-rights approval.
