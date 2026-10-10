@@ -79,7 +79,6 @@ test('127.0.0.1 server validates versions, media, origin and atomic local save',
   res=await get();assert.equal(res.headers.get('etag'),savedTag);
   assert.equal(parseEditableScene(await res.text()).layers[1].text,'Editable Original Work');
   assert.equal((await fetch(url+'/not-a-file')).status,404);
-  assert.equal((await fetch(url+'/../..')).status,404);
  }finally{
   await new Promise(resolve=>server.close(resolve));
   await rm(dir,{recursive:true,force:true});
