@@ -42,6 +42,7 @@ jobs:
         run: |
           node --check editor/server.mjs
           node --check editor/operations.mjs
+          node --check editor/preview-geometry.mjs
           node --check editor/app.mjs
           node --check editor/verify.mjs
       - name: Run local server, license and scene-safety tests
