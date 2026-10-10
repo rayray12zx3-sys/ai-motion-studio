@@ -124,6 +124,10 @@ async function main(){
   assert.deepEqual(reopened.clip,{start:6,end:26,keys:[6,25]});
   assert.ok(Math.abs(reopened.entry.x-state.entry.x)<1e-12);
   assert.ok(Math.abs(reopened.entry.y-state.entry.y)<1e-12);
+  // Hand off only the independently validated, synthetic browser-saved scene to S4 encoder CI.
+  const forEncode=parseEditableScene(readFileSync(scenePath,'utf8'));
+  assert.deepEqual(forEncode,persisted);
+  writeFileSync(join(output,'unified-editor-scene.json'),serializeEditableScene(forEncode)+'\n');
   await page.screenshot({path:join(output,'unified-original-synthetic.png')});
   const report={status:'PASS_ISOLATED_SYNTHETIC_SHARED_SCENE_KONVA_TIMELINE_ONLY',
    source:'original synthetic editor-contract v1',
