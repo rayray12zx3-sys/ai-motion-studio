@@ -52,7 +52,10 @@ async function main(){
   await context.tracing.start({screenshots:true,snapshots:true,sources:true});
   const outboundRequests=[];
   context.on('request',request=>{
-   if(new URL(request.url()).hostname!=='127.0.0.1')outboundRequests.push(request.url());
+   const url=new URL(request.url());
+   const localHttp=url.protocol==='http:'&&url.hostname==='127.0.0.1'&&url.origin===service.url;
+   const localMemoryBlob=url.protocol==='blob:'&&url.origin===service.url;
+   if(!localHttp&&!localMemoryBlob)outboundRequests.push(request.url());
   });
   const browserErrors=[];
   context.on('page',tab=>{
