@@ -1,12 +1,14 @@
 // Local-only opt-in Konva editor. Official src/free and FFmpeg are intentionally never imported.
 import {createHash,randomUUID} from 'node:crypto';
 import {createServer} from 'node:http';
+import {spawn} from 'node:child_process';
 import {readFile,writeFile,mkdir,rename,copyFile,lstat,unlink} from 'node:fs/promises';
 import {dirname,join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {parseEditableScene,serializeEditableScene} from '../experiments/editor-contract/scene.mjs';
 
 const root=dirname(fileURLToPath(import.meta.url));
+const repoRoot=resolve(root,'..');
 const defaultScene=join(root,'../experiments/editor-contract/original-synthetic.json');
 const staticRoutes=new Map([
  ['/',[join(root,'index.html'),'text/html; charset=utf-8']],
@@ -56,7 +58,7 @@ export async function startEditorServer({port=0,sceneFile=join(root,'.local','sc
  if(!Number.isInteger(port)||port<0||port>65535)throw Error('Invalid localhost port');
  if(typeof sceneFile!=='string'||!sceneFile)throw Error('Local scene path required');
  const scenePath=resolve(sceneFile);
- let serial=Promise.resolve();
+ let serial=Promise.resolve(),rendering=false;
  const server=createServer(async(req,res)=>{
   try{
    const host='127.0.0.1:'+server.address().port;
@@ -95,6 +97,85 @@ export async function startEditorServer({port=0,sceneFile=join(root,'.local','sc
      }
      // Includes unsupported production font glyphs: fail closed, no proxy fallback.
      respond(res,422,JSON.stringify({error:'Saved S1 frame cannot be rendered with the locked Canvas contract'}));return;
+    }
+   }
+   // Explicit opt-in GUI export. Runs the already-approved fixed S1 CLI on a
+   // byte-identical private snapshot, not a user-supplied command or path.
+   if(req.method==='POST'&&url.pathname==='/render-video'){
+    if(req.headers['x-ai-motion-export']!=='1'||
+       (req.headers['sec-fetch-site']&&!['same-origin','none'].includes(req.headers['sec-fetch-site']))){
+     respond(res,403,JSON.stringify(denied));return;
+    }
+    if(url.hash||[...url.searchParams.keys()].join(',')!=='mode'||
+       !['mp4','alpha'].includes(url.searchParams.get('mode'))||
+       (req.headers['content-length']&&req.headers['content-length']!=='0')||
+       req.headers['transfer-encoding']){
+     respond(res,400,JSON.stringify(denied));return;
+    }
+    const current=await readScene(scenePath),currentTag='"'+sha(current)+'"';
+    if(req.headers['if-match']!==currentTag){
+     respond(res,409,JSON.stringify({error:'Saved scene version changed; reload before export'}));return;
+    }
+    let scene;
+    try{
+     const {validateEditableRenderScene}=await import('../src/free/editable-scene.mjs');
+     scene=parseEditableScene(current);
+     validateEditableRenderScene(scene);
+    }catch(error){
+     if(error.code==='ERR_MODULE_NOT_FOUND'){
+      respond(res,503,JSON.stringify({error:'Optional root Canvas runtime missing; npm.cmd ci from repository root, then restart the editor'}));return;
+     }
+     respond(res,422,JSON.stringify({error:'The saved scene has unsupported locked-font or S1 render data'}));return;
+    }
+    if(rendering){respond(res,423,JSON.stringify({error:'Another local export is already running'}));return;}
+    rendering=true;
+    const runId='ui-'+randomUUID().replaceAll('-','').slice(0,16);
+    const mode=url.searchParams.get('mode'),snapshotDirectory=join(repoRoot,'out','.editor-render-snapshots');
+    const snapshot=join(snapshotDirectory,runId+'.json');
+    try{
+     await mkdir(snapshotDirectory,{recursive:true,mode:0o700});
+     const folder=await lstat(snapshotDirectory);
+     if(!folder.isDirectory()||folder.isSymbolicLink())throw Error('Unsafe snapshot folder');
+     await writeFile(snapshot,current,{flag:'wx',mode:0o600});
+     const videoFile=mode==='mp4'?'motion.mp4':'motion-alpha.mov';
+     const args=[join(repoRoot,'scripts','render-editable.mjs'),snapshot,runId,mode];
+     const detail=await new Promise((resolveRun,rejectRun)=>{
+      const child=spawn(process.execPath,args,{cwd:repoRoot,windowsHide:true,
+       stdio:['ignore','pipe','pipe']});
+      let stdout='',stderr='',timedOut=false;
+      const timeout=setTimeout(()=>{timedOut=true;child.kill();},15*60*1000);
+      child.stdout.on('data',chunk=>{stdout=(stdout+chunk.toString()).slice(-10000);});
+      child.stderr.on('data',chunk=>{stderr=(stderr+chunk.toString()).slice(-10000);});
+      child.on('error',error=>{clearTimeout(timeout);rejectRun(error);});
+      child.on('close',code=>{
+       clearTimeout(timeout);
+       if(timedOut)return rejectRun(Error('Export time limit reached'));
+       if(code!==0)return rejectRun(Error(stderr.includes('Unverified FFmpeg binary')?
+        'Pinned FFmpeg unavailable':'Native Canvas FFmpeg export failed'));
+       try{
+        const line=stdout.split(/\r?\n/).find(x=>x.startsWith('EDITABLE_SCENE_CANVAS_FFMPEG_RESULT '));
+        const data=JSON.parse(line.slice('EDITABLE_SCENE_CANVAS_FFMPEG_RESULT '.length));
+        if(data.technical_qc!=='PASS'||data.scene_sha256!==sha(Buffer.from(current)))
+         throw Error('Encoded scene evidence mismatch');
+        resolveRun(data);
+       }catch(error){rejectRun(error);}
+      });
+     });
+     respond(res,200,JSON.stringify({status:'DONE',run_id:runId,mode,
+      frames:scene.duration_frames,canvas:scene.canvas,
+      output:'out/editable-'+runId+'/'+videoFile,
+      report:'out/editable-'+runId+'/render-report.json',
+      scene_sha256:detail.scene_sha256,output_sha256:detail.output_sha256,
+      creative_qc:'PENDING_HUMAN_REVIEW',
+      premiere_windows:'NOT_TESTED'}));return;
+    }catch(error){
+     const unavailable=error.message==='Pinned FFmpeg unavailable'||error.code==='ENOENT';
+     respond(res,unavailable?503:500,JSON.stringify({error:unavailable?
+      'Install the existing hash-verified encoder with node scripts/setup-encoder.mjs and retry':
+      'Local render did not complete. Inspect ignored out/editable-'+runId+' for incomplete output'}));return;
+    }finally{
+     rendering=false;
+     await unlink(snapshot).catch(err=>{if(err.code!=='ENOENT')console.error('Private snapshot cleanup failed');});
     }
    }
    if(url.search||url.hash||url.pathname!==req.url)throw Error('Unexpected request path');
