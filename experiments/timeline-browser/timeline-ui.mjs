@@ -1,4 +1,4 @@
-import {parseEditableScene,serializeEditableScene} from '/scene-contract.mjs';
+import {parseEditableScene,serializeEditableScene} from '/scene.mjs';
 import {makeTimelineHistory,commitTimelineEdit,undoTimelineEdit,redoTimelineEdit} from '/timeline-contract.mjs';
 const stage=document.getElementById('track');
 const clip=document.getElementById('clip');
