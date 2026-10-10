@@ -78,6 +78,24 @@ async function main(){
   assert.equal(first.selected,'headline');
   assert.equal(first.frame,12);assert.equal(first.scene.layers.length,3);
   assert.equal(first.scene.layers.find(l=>l.id==='headline').text,'Original Title');
+  // Existing S1 saved scene -> locked Canvas PNG, not a Konva screenshot.
+  assert.equal((await page.evaluate(()=>window.__motionEditor)).trueCanvas.status,'not_current');
+  await page.locator('#render-frame').click();
+  await page.waitForFunction(()=>window.__motionEditor?.trueCanvas.status==='ready');
+  const firstCanvas=await page.evaluate(()=>({
+    preview:window.__motionEditor.trueCanvas,
+    img:document.getElementById('rendered-image').src,
+    hidden:document.getElementById('rendered-image').hidden,
+    width:document.getElementById('rendered-image').naturalWidth,
+    height:document.getElementById('rendered-image').naturalHeight
+  }));
+  assert.equal(firstCanvas.preview.frame,12);
+  assert.match(firstCanvas.preview.sha256,/^"[0-9a-f]{64}"$/);
+  assert.match(firstCanvas.img,/^data:image\/png;base64,/);
+  assert.equal(firstCanvas.hidden,false);
+  assert.deepEqual([firstCanvas.width,firstCanvas.height],[360,640]);
+  assert.equal(firstCanvas.preview.etag,first.etag);
+  await screenshot('original-locked-canvas-synthetic');
   await screenshot('initial-synthetic');
   await page.locator('#ease').selectOption('ease-out-cubic');
   await page.locator('#save-ease').click();
@@ -98,6 +116,16 @@ async function main(){
   await page.waitForFunction(()=>window.__motionEditor?.commits===4);
   state=await page.evaluate(()=>window.__motionEditor);
   assert.equal(state.scene.layers.find(l=>l.id==='headline').text,'New Synthetic Headline');
+  assert.equal((await page.evaluate(()=>window.__motionEditor)).trueCanvas.status,'not_current',
+   'After saving a new S1 scene the previous locked Canvas image must be marked stale');
+  assert.equal(await page.locator('#rendered-image').isHidden(),true);
+  await page.locator('#render-frame').click();
+  await page.waitForFunction(()=>window.__motionEditor?.trueCanvas.status==='ready');
+  const editedCanvas=await page.evaluate(()=>window.__motionEditor.trueCanvas);
+  assert.notEqual(editedCanvas.sha256,firstCanvas.preview.sha256,
+   'Editing saved text must alter locked Canvas rendered bytes');
+  await screenshot('edited-locked-canvas-synthetic');
+
   // Five end-key numeric properties are edited together as one saved undo item.
   await page.locator('#key-x').fill('0.64');
   await page.locator('#key-y').fill('0.72');
@@ -273,6 +301,16 @@ async function main(){
      await tab.keyboard.press('Control+y');
      assert.equal((await tab.evaluate(()=>window.__motionEditor)).redo,1,'Empty redo must not save');
     }
+    if(sourceWidth===1920){
+     await tab.locator('#render-frame').click();
+     await tab.waitForFunction(()=>window.__motionEditor?.trueCanvas.status==='ready');
+     const actual=await tab.locator('#rendered-image').evaluate(el=>({
+      w:el.naturalWidth,h:el.naturalHeight,src:el.src.slice(0,24),hidden:el.hidden
+     }));
+     assert.deepEqual([actual.w,actual.h],[1920,1080]);
+     assert.equal(actual.hidden,false);
+     assert.ok(actual.src.startsWith('data:image/png;base64,'));
+    }
     const view=beforeProfile.preview;
     assert.equal(view.profile,sourceWidth+'x'+sourceHeight);
     assert.equal(view.kind,'NEUTRAL_POSITION_PROXY_NOT_OFFICIAL_PIXELS');
@@ -335,6 +373,7 @@ async function main(){
    no_external_media:true,browser_external_requests:outboundRequests.length,official_canvas_ffmpeg_modified:false,
    s1_viewport_profile_checks:profileBrowserChecks,
    native_field_undo_preserved:true,ctrl_shift_z_redo_and_noop_history_verified:true,
+   locked_canvas_real_png_preview:true,locked_canvas_edits_change_pixels:true,full_hd_readonly_canvas_frame:true,
    not_proven:['locked-font visual parity','Windows Premiere','private media rights','Bezier control points','commercial art approval']};
   await writeFile(join(out,'konva-editor-approved-synthetic-report.json'),JSON.stringify(result,null,2)+'\n');
   console.log('KONVA_EDITOR_APPROVED_SHELL_PROOF',JSON.stringify(result));
