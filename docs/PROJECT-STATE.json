@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "2026-10-10 approved local Konva editor technical Windows runner smoke #74 safely merged e4b1700: Windows Node24 exact-head CI #38029985148 PASS 4/4 tests no skips, Linux Chrome CI #38029985108 and official renderer CI #38029985064 PASS. Windows Node install/server/ETag/symlink works on hosted runner, but the OPERATOR must still launch GUI on their own Windows PC and visually accept interaction; no Windows Premiere or commercial art/rights approval. Do not need more packages. Original Canvas+FFmpeg untouched.",
     "2026-10-10 Operator explicitly approved formal Konva frontend app. #71 merged 52f2a1a (exact-head editor CI #38029300683, root #38029300686 PASS), stand-alone `npm ci --prefix editor`, `node editor/server.mjs`, localhost GUI, S1 timeline/save with ETag and original synthetic Chrome proof; #72 merged ea37b19 (editor CI #38029671775, root #38029671766 PASS) adds individual numeric keyframe editing and markers. Root package/lock/official Canvas+FFmpeg unchanged. Next approval required for Windows user acceptance on local PC, official renderer pixel geometry parity/SceneSpec migration, arbitrary Bezier S1 v2, private/company media rights; isolated source/editor UI improvements within v1 may continue independently.",
     "2026-10-10 S3 original-synthetic native easing preset UI #69 merged de06e6b (Chrome CI #38028087532 + root CI #38028087471 exact-head PASS). Real frame-12 preview x .307142857→.36441529 and opacity .38095→.76277 selecting existing linear vs ease-out-cubic, Undo/Redo, 3 local writes, reverse seek and fail-closed nonlinear split; no new root deps/renderer. This is NOT full Bezier curve GUI. Arbitrary Bezier handles/control points require neutral S1 schema versioning/migration and explicit owner decision, not automatic modification.",
     "2026-10-10 S4 strict official-vs-neutral contract gap audit PR #67 merged as f656f765 with exact-head CI #38026709308 PASS 30/30 tests. S1 independent layers/partial clips/keyframes/geometry differ fundamentally from official two-field title/subtitle preauthored gradient/render motion. Equal dimensions/fps/duration ≠ pixel parity. Explicit copy-only R&D draft requires deliberate visual-loss acknowledgement and locked glyph coverage, no renderer change. Next low-risk work: individual synthetic-only edge/boundary audits and document true production adoption gates; any official SceneSpec compiler or renderer migration needs owner authorization, not automatic integration.",
@@ -945,7 +946,19 @@
       "official_renderer_changed": false,
       "official_canvas_pixel_parity": "NOT_VERIFIED",
       "arbitrary_bezier_controls": "NOT_AUTHORIZED",
-      "windows_user_acceptance": "PENDING_OPERATOR_ON_REAL_PC"
+      "windows_user_acceptance": "PENDING_OPERATOR_ON_REAL_PC",
+      "windows_node_smoke_pr": 74,
+      "windows_node_smoke_merge_sha": "e4b1700711584771d334e65e5539b1b0a3171087",
+      "windows_node_smoke_exact_head": "eced1c34bcc53b3225515a0316b6364b84f50b6b",
+      "windows_ci": {
+        "node_local": 38029985148,
+        "linux_chrome_editor": 38029985108,
+        "root_renderer": 38029985064
+      },
+      "windows_local_security_tests_pass": 4,
+      "windows_local_security_tests_skipped": 0,
+      "windows_runner_technical_compatibility": "PASSED",
+      "windows_premiere_test": "NOT_RUN"
     }
   }
 }
