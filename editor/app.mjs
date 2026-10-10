@@ -26,6 +26,7 @@ function invalidateStill(message='場景、影格或背景模式已變動；請�
 async function loadCanvasStill(){
  const requestedFrame=frame,requestedTag=etag,mode=$('render-mode').value,token=++stillToken;
  $('render-still').disabled=true;
+ stillFrame=requestedFrame;stillTag=requestedTag;stillMode=mode;
  $('render-feedback').textContent='使用正式 Canvas 正在繪製第 '+requestedFrame+' 格…';
  probe.still={status:'LOADING',frame:requestedFrame,mode};
  try{
