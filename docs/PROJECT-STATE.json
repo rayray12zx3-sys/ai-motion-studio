@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "2026-10-10 PR #86 merged 3efc702 (exact head 38b29aa): local Konva editor now has an explicitly clicked MP4/ProRes Alpha export button wired to the approved hash-verified S1 Canvas+FFmpeg CLI, with saved-scene ETag, fixed local arguments, private ephemeral snapshot removal, one export at a time, ignored output folder with videos, review sheet and hashes. Exact-head 10/10 checks ALL PASS: GUI original synthetic Windows Chrome+Edge/Linux #38041697101, locked Canvas still browser #38041697060, full independent Windows editor #38041697084/Linux editor #38041697086, root regression #38041697098. Early same-head Chrome cancelled after proof due redundant full editor reruns; adjusted focused feature suite and independent comprehensive suites all green. No third-party packages/media/Bezier v2/M11/M12 or old renderer changes. Next meaningful optional scope outside current S1 v1: richer layer geometry/creative authoring and audited media import require a new owner decision; real Windows Premiere and human artistic/commercial clearance remain unverified.",
     "2026-10-10 #83 exact-head hosted Linux+Windows native 1920x1080 H264 and 1080x1920 ProRes Alpha S1 30f original-synthetic CI #38035669976 plus root #38035669936 PASS; merged 20d117c. This is actual NEW S1 full HD technical proof, NOT user PC Premiere or real company material. #84 merged ac5cc348 after seven exact-head CI checks (hosted read-only locked Canvas PNG preview Windows Chrome/Edge Linux #38038235777, standalone editor Win #38038235989/Linux #38038235778, root #38038235837 ALL PASS). Separate saved S1 real Canvas single-frame PNG reader via localhost exact ETag, optional root packages, transparent/opaque; Konva stage remains proxy NOT WYSIWYG. Next remaining product-level gate: GUI trigger for S1 CLI output in safe local environment, optional preview parity overlay, and any real media/Bezier schema v2 requires explicit future operator approval.",
     "2026-10-10 user explicitly approved additive S1 editor → existing locked Canvas+FFmpeg renderer. PR #80 merged eaa88a after original-synthetic Linux actual 30f H264/ProRes Alpha CI #38034805469, root 42 tests CI #38034805362, editor Chrome #38034805344. PR #81 fixed newly truncated Windows FFmpeg hash, added pin parity regression; exact-head Windows+Linux real MP4/ProRes Alpha #38035152519 and root #38035152514 PASS, merged 7b0e7d8. S1 scene file opt-in export available in scripts/render-editable.mjs, old src/free/scene.mjs and scripts/render.mjs unchanged. Hosted encoded proof ONLY 360x640@30fps/30f; 1080p S1 encode / Konva WYSIWYG / user Windows Premiere / real assets rights / Bezier v2 / human creative pending. X list 20 GitHub projects audited in docs/X-MOTION-OPEN-SOURCE-REVIEW-2026-10-10.md, no external packages or assets installed. Next safe technical gate: optionally test dedicated original-synthetic high-resolution S1 encode and develop read-only final Canvas preview using same painter, without authorizing company media.",
     "2026-10-10 PR #77 merged 8f56d225 (exact head 44a09b71; Windows headed Chrome/Edge #38033072823, Linux #38033072863, root Canvas regression #38033072810 PASS): native S1 editor 9:16/16:9 profiles preserve dimensions on preview, real pointer normalized x/y and saved/reopened JSON. PR #76 final exact head 160545c CI Windows #38031806799, Linux #38031806792, root #38031806828, full three official renders #38031802874, post-main #38031977078 PASS; merged bfa4e05. Neither provides official renderer pixel parity, real media/rights, Premiere or human desktop UX. Editor v1 source-only work can continue; formal renderer compiler or S1 v2 Bezier needs new owner approval.",
@@ -1108,7 +1109,40 @@
       "still_preview_png_pixel_equal_to_s1_video_painter": true,
       "still_preview_alpha_png_verified": true,
       "still_preview_external_urls_rejected": true,
-      "root_renderer_legacy_unchanged": true
+      "root_renderer_legacy_unchanged": true,
+      "gui_export": {
+        "status": "MERGED_EXACT_HEAD_ALL_TEN_CI_PASS__OPT_IN_LOCAL_ONLY",
+        "pr": 86,
+        "exact_head": "38b29aa8105cb0dabab61478e2de1420ea62ab99",
+        "merge_sha": "3efc702ac6c2d5d00273831f94402572d489f0da",
+        "ci": {
+          "gui_windows_chrome_edge_linux": 38041697101,
+          "canvas_still_windows_chrome_edge_linux": 38041697060,
+          "standalone_editor_windows": 38041697084,
+          "standalone_editor_linux": 38041697086,
+          "root_offline_regression": 38041697098
+        },
+        "individual_exact_head_checks": 10,
+        "headed_windows_browser_export": [
+          "chrome",
+          "msedge"
+        ],
+        "export_modes": [
+          "H264_MP4",
+          "PRORES_4444_ALPHA_MOV"
+        ],
+        "scene_saved_etag_match_required": true,
+        "scene_mutation_on_export": false,
+        "private_snapshot_cleanup": true,
+        "local_media_imports": false,
+        "new_dependencies": false,
+        "old_default_renderer_changed": false,
+        "scene_v1_only": true,
+        "konva_wysiwyg": "NOT_PROVEN",
+        "actual_user_windows_premiere": "NOT_TESTED",
+        "human_art_rights": "NOT_APPROVED",
+        "initial_cancelled_duplicated_chrome_ci": "RESOLVED_BY_FOCUSED_BROWSER_TEST_AND_INDEPENDENT_FULL_EDITOR_REGRESSION"
+      }
     }
   }
 }
