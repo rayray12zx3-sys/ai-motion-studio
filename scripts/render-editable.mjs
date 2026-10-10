@@ -14,7 +14,7 @@ import {parseEditableScene,serializeEditableScene} from '../experiments/editor-c
 
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const approvedEncoders={
- 'win32-x64':'04e1307997530f9cf2fe35cba2ca7e8875ca91da02',
+ 'win32-x64':'04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00',
  'linux-x64':'e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99'
 };
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
