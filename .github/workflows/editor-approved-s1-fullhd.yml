@@ -1,0 +1,103 @@
+name: Approved S1 full-HD native encoded synthetic proof
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/prepare-editable-fullhd.mjs'
+      - 'scripts/verify-editable-fullhd.mjs'
+      - '.github/workflows/editor-approved-s1-fullhd.yml'
+      - 'scripts/render-editable.mjs'
+      - 'src/free/editable-scene.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: approved-s1-fullhd-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-native-fullhd:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    env:
+      MOTION_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Installed exact head, existing packages and hash-pinned FFmpeg
+        run: |
+          test "$(git rev-parse HEAD)" = "$MOTION_EXPECTED_HEAD"
+          npm ci --ignore-scripts --no-audit --no-fund
+          node scripts/setup-encoder.mjs
+      - name: Original synthetic full-HD 16:9 and 9:16 Canvas encoded outputs
+        run: |
+          node scripts/prepare-editable-fullhd.mjs
+          node scripts/render-editable.mjs out/approved-s1-fullhd-fixtures/landscape.json ci-hd-landscape mp4
+          node scripts/render-editable.mjs out/approved-s1-fullhd-fixtures/vertical.json ci-hd-vertical alpha
+          node scripts/verify-editable-fullhd.mjs
+      - name: Seven-day original synthetic contact sheets and encoded evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: approved-s1-fullhd-linux-original-synthetic
+          path: |
+            out/editable-ci-hd-landscape/
+            out/editable-ci-hd-vertical/
+          retention-days: 7
+          if-no-files-found: ignore
+  windows-native-fullhd:
+    runs-on: windows-2022
+    timeout-minutes: 22
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+    env:
+      MOTION_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Windows exact head, runtime packages and hash-verified FFmpeg
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne $env:MOTION_EXPECTED_HEAD) { throw "Incorrect checkout head" }
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw "Windows package install failed" }
+          node scripts/setup-encoder.mjs
+          if ($LASTEXITCODE -ne 0) { throw "Windows FFmpeg pin failed" }
+      - name: Native Windows original-synthetic full-HD MP4 and Alpha MOV
+        run: |
+          node scripts/prepare-editable-fullhd.mjs
+          if ($LASTEXITCODE -ne 0) { throw "Full-HD fixture synthesis failed" }
+          node scripts/render-editable.mjs out/approved-s1-fullhd-fixtures/landscape.json ci-hd-landscape mp4
+          if ($LASTEXITCODE -ne 0) { throw "Full-HD 1920x1080 MP4 encode failed" }
+          node scripts/render-editable.mjs out/approved-s1-fullhd-fixtures/vertical.json ci-hd-vertical alpha
+          if ($LASTEXITCODE -ne 0) { throw "Full-HD 1080x1920 Alpha ProRes encode failed" }
+          node scripts/verify-editable-fullhd.mjs
+          if ($LASTEXITCODE -ne 0) { throw "Full-HD decoded pixel/Alpha QA failed" }
+      - name: Seven-day Windows original synthetic renders and reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: approved-s1-fullhd-windows-original-synthetic
+          path: |
+            out/editable-ci-hd-landscape/
+            out/editable-ci-hd-vertical/
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Safety boundary
+        run: |
+          "Hosted real Windows full-HD encoding on original S1 synthetic scene only; no proof of locked Konva WYSIWYG, actual user Premiere, production media rights or creative acceptance." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
