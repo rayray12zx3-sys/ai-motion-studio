@@ -84,11 +84,17 @@ test('127.0.0.1 server validates versions, media, origin and atomic local save',
   await rm(dir,{recursive:true,force:true});
  }
 });
-test('refuse pre-existing symlink scene target and never follow it',async()=>{
+test('refuse pre-existing symlink scene target and never follow it',async(t)=>{
  const dir=await mkdtemp(join(tmpdir(),'motion-editor-symlink-'));
  const privateFile=join(dir,'private.txt'),sceneFile=join(dir,'scene.json');
  await writeFile(privateFile,'original secret must not be replaced');
- await symlink(privateFile,sceneFile);
+ try{await symlink(privateFile,sceneFile);}
+ catch(error){
+  await rm(dir,{recursive:true,force:true});
+  if(process.platform==='win32'&&['EPERM','EACCES'].includes(error.code))
+   return t.skip('Windows account cannot create a symlink; the server still refuses nonregular targets');
+  throw error;
+ }
  const {server,url}=await startEditorServer({sceneFile});
  try{
   const response=await fetch(url+'/scene.json');
