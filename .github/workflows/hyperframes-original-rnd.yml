@@ -6,6 +6,7 @@ on:
       - 'experiments/hyperframes-original/**'
       - 'experiments/hyperframes-overlay/**'
       - 'experiments/hyperframes-fullhd-overlay/**'
+      - 'experiments/hyperframes-studio-edit/**'
       - '.github/workflows/hyperframes-original-rnd.yml'
   workflow_dispatch:
 
@@ -68,6 +69,8 @@ jobs:
           npx --yes hyperframes@0.8.143 render -c ./index.html -o ../../out/hyperframes-fullhd-alpha.mov --format mov --fps 30
       - name: Decode and verify portrait-HD synthetic ProRes Alpha
         run: node experiments/hyperframes-original/verify-alpha-fullhd.mjs
+      - name: Verify actual native Studio GUI edit and persistent synthetic render
+        run: node experiments/hyperframes-studio-edit/verify-studio-edit.mjs
       - name: Save original synthetic MP4 + metadata, short retention
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -79,6 +82,8 @@ jobs:
             out/hyperframes-original-alpha-report.json
             out/hyperframes-fullhd-alpha.mov
             out/hyperframes-fullhd-alpha-report.json
+            out/hyperframes-studio-loaded.png
+            out/hyperframes-studio-report.json
           retention-days: 2
           if-no-files-found: error
       - name: Non-production limitation
