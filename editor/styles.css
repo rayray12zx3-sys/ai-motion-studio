@@ -8,7 +8,7 @@ main{max-width:1300px;margin:auto;padding:16px 20px}.workspace{display:grid;grid
 button,select,input{font:inherit}button{cursor:pointer;background:#6bbcb8;color:#0f252e;border:0;border-radius:5px;padding:8px 12px;margin:3px 4px 3px 0;font-weight:600}
 button:hover{background:#8ce0d9}button:disabled{opacity:.4;cursor:default}
 #canvas-wrap{margin:12px auto;padding:12px;display:flex;align-items:center;justify-content:center;overflow:auto;background:#0e202d;border:1px solid #345463;border-radius:8px;min-height:300px}
-#stage{width:360px;height:640px;background:#10283b;flex:none;border:1px solid #74919b}
+#stage{background:#10283b;flex:none;border:1px solid #74919b}
 .seek{display:flex;align-items:center;gap:14px}.seek input{flex:1}
 .properties label{display:flex;flex-direction:column;margin:12px 0 6px;gap:6px}
 .properties input:not([type=color]),.properties select{width:100%;background:#102630;border:1px solid #65808a;border-radius:5px;color:white;padding:8px}
