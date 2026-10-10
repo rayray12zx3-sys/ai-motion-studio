@@ -9,3 +9,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+experiments/hyperframes-studio-edit/work/
+experiments/hyperframes-studio-edit/node_modules/
