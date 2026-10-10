@@ -16,7 +16,7 @@ function localFixture(){
 test('S2 synthetic audit metadata checks exact archive bytes and optional peer boundary',()=>{
  const f=localFixture();
  const result=validatePackageMetadata(f.metadata,f.packageJson,f.bytes,f.entries);
- console.log('KONVA_NPM_PACKAGE_PIN '+JSON.stringify({sha1:result.archive_sha1,integrity:result.archive_integrity,license_files:result.license_files,optional_peers:result.optional_peers}));
+
  assert.equal(result.version,'10.7.1');
  assert.equal(result.license,'MIT');
  assert.equal(result.runtime_dependency_count,0);
@@ -32,6 +32,9 @@ test('S2 synthetic tamper, missing notices, mandatory runtime peers fail closed'
 });
 test('S2 published npm artifact must match registry sha1+sha512 and include MIT notice',async()=>{
  const result=await inspectKonvaArchive();
+ console.log('KONVA_REAL_NPM_ARCHIVE_PIN '+JSON.stringify({sha1:result.archive_sha1,integrity:result.archive_integrity,license_files:result.license_files,optional_peers:result.optional_peers}));
+ assert.equal(result.archive_sha1,'0671f25fde54ea897194c23b994e12c3f4fb9c27');
+ assert.equal(result.archive_integrity,'sha512-z/JyXPaT6tWBSEcaT70mdfN3oNQ6U6rDxlH9OkRdxlJaf23DOqfMPGptQWVvXlWfKMJQWEa+PNe9ru3zQR7ifw==');
  assert.equal(result.name,'konva');
  assert.equal(result.version,'10.7.1');
  assert.equal(result.license,'MIT');
