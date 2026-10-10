@@ -1,0 +1,45 @@
+name: Isolated Konva S2 browser pointer prototype
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/konva-browser/**'
+      - '.github/workflows/konva-browser.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: konva-browser-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-pointer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Syntax check independent browser harness
+        run: |
+          node --check experiments/konva-browser/editor.mjs
+          node --check experiments/konva-browser/verify.mjs
+      - name: Real Chrome synthetic drag, save, reload
+        run: node experiments/konva-browser/verify.mjs
+      - name: Upload synthetic screenshot and report only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: konva-s2-original-synthetic
+          path: |
+            out/konva-s2-original-synthetic.png
+            out/konva-s2-report.json
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Scope notice
+        run: echo 'R&D browser-only Konva fixture, not authorized for production editing or output.' >> "$GITHUB_STEP_SUMMARY"
