@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "2026-10-10 S2 isolated Konva: package/immutable archive MIT license audit PR #53 merged (CI #38022425735 and root #38022425745 PASS), original synthetic actual Chrome mouse drag-save-reopen PR #54 merged at 6a363715 (CI #38022691910 and root #38022691737 PASS). No root Konva dependency, no official GUI/editor, no timeline/curve, no Canvas video render parity. Next safe work is S3 vendor-neutral timeline data plan or S1 M3-A provenance reconciliation; no production editor adoption without operator permission.",
     "S1 bounded pure-data exchange experiment PR #51 merged to main at 97a4dc9f; exact-head root CI #38021694739 PASS (14/14 tests). DO NOT treat this as production schema or GUI: no imported asset/provenance support, no native disk save, no Konva install, no pixel-parity validation. Next safe isolated work: formalize asset provenance metadata without binaries and/or read-only Konva license/transitive investigation; maintain Canvas+FFmpeg default.",
     "2026-10-10 operator approved editor-renderer separation: retain Canvas+FFmpeg production, keep HyperFrames CLI isolated R&D only, DO NOT integrate HyperFrames/GSAP Studio GUI, do not contact licensors or buy licensing. Study Konva MIT and React Timeline Editor MIT with per-package transitive rights audit; record S0-S5 plan at docs/EDITOR-SEPARATION-ROADMAP-2026-10-10.md. No new production deps or engine migration.",
     "2026-10-10 exact-head checkpoints: synthetic native HyperFrames Studio timeline clip drag/persist/reopen/render PASS only in Draft #47 (fa594fac; workflows 38018274652/38018274659); native keyframe/easing not verified. Pinned HyperFrames npm/archive license metadata audit PASS only in Draft #46 (e9e6578; workflows 38018404603/38018404633), but GSAP no-code visual-builder commercial permission UNRESOLVED. Issues #40/#41 closed for bounded R&D, NOT production rights or adoption. Original wrong-base #45 closed unmerged. Keep #33/#39/#44/#46/#47 R&D Draft.",
@@ -606,7 +607,7 @@
     "licensor_contact": "DECLINED",
     "paid_licensing": "NOT_AUTHORIZED",
     "private_repo_makes_license_valid": false,
-    "new_editor": "NO_VISUAL_UI_YET__S1_DATA_EXPERIMENT_MERGED",
+    "new_editor": "ISOLATED_KONVA_ORIGINAL_SYNTHETIC_BROWSER_POINTER_POC_ONLY",
     "first_candidate": "KONVA_MIT_ISOLATED_EVALUATION_ONLY",
     "timeline_candidate": "REACT_TIMELINE_EDITOR_MIT_TRANSITIVE_AUDIT_REQUIRED",
     "other_candidates": [
@@ -649,7 +650,37 @@
       {
         "id": "S2",
         "name": "isolated_konva_pointer_editor_and_license_audit",
-        "status": "NOT_STARTED"
+        "status": "ISOLATED_PACKAGE_AUDIT_AND_BROWSER_POINTER_DISK_ROUNDTRIP_PASS__PRODUCTION_NOT_APPROVED",
+        "package_audit_pr": 53,
+        "browser_test_pr": 54,
+        "package_audit_merge_sha": "35c9b3939097b029eaaeddec0a5c9352fd537cc2",
+        "browser_test_merge_sha": "6a363715bfd70514de261f237dab7e3ab174af09",
+        "package_audit_exact_head": "20661f1858793f04e926469d740150076d0b69b3",
+        "browser_test_exact_head": "259a8ff5d9c3e79394602deb040cce38604319af",
+        "exact_head_ci": {
+          "audit": 38022425735,
+          "package_root": 38022425745,
+          "browser": 38022691910,
+          "browser_root": 38022691737
+        },
+        "konva_version": "10.7.1",
+        "license": "MIT_PUBLISHED_ARCHIVE_VERIFIED",
+        "browser_synthetic_drag": {
+          "from_x": 0.2,
+          "to_x": 0.35555555555555557,
+          "from_y": 0.65,
+          "to_y": 0.69375,
+          "local_disk_roundtrip": true
+        },
+        "production_dependency_adopted": false,
+        "actual_editor_approved": false,
+        "pending": [
+          "NATIVE_TIMELINE_OR_KEYFRAME_CURVES",
+          "UNDO_REDO",
+          "PRODUCTION_CANVAS_FRAME_PARITY",
+          "MEDIA_RIGHTS",
+          "WINDOWS_PREMIERE"
+        ]
       },
       {
         "id": "S3",
