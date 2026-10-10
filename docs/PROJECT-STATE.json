@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "2026-10-10 PR #76 hosted Windows Chrome + Edge browser E2E verified at implementation f86a535: Windows #38031493476, Linux #38031493460, root #38031493459 and full synthetic official render #38031504465 PASS. Routine drag/trim/numeric/easing/Undo/Redo/JSON/refusal checks are automated; no user-local test script needed. Query final PR head/checks before merge. Personal actual-PC ergonomics/policies, Premiere and human creative acceptance remain; production renderer and dependencies unchanged. See docs/EDITOR-WINDOWS-BROWSER-E2E-2026-10-10.md.",
     "2026-10-10 approved local Konva editor technical Windows runner smoke #74 safely merged e4b1700: Windows Node24 exact-head CI #38029985148 PASS 4/4 tests no skips, Linux Chrome CI #38029985108 and official renderer CI #38029985064 PASS. Windows Node install/server/ETag/symlink works on hosted runner, but the OPERATOR must still launch GUI on their own Windows PC and visually accept interaction; no Windows Premiere or commercial art/rights approval. Do not need more packages. Original Canvas+FFmpeg untouched.",
     "2026-10-10 Operator explicitly approved formal Konva frontend app. #71 merged 52f2a1a (exact-head editor CI #38029300683, root #38029300686 PASS), stand-alone `npm ci --prefix editor`, `node editor/server.mjs`, localhost GUI, S1 timeline/save with ETag and original synthetic Chrome proof; #72 merged ea37b19 (editor CI #38029671775, root #38029671766 PASS) adds individual numeric keyframe editing and markers. Root package/lock/official Canvas+FFmpeg unchanged. Next approval required for Windows user acceptance on local PC, official renderer pixel geometry parity/SceneSpec migration, arbitrary Bezier S1 v2, private/company media rights; isolated source/editor UI improvements within v1 may continue independently.",
     "2026-10-10 S3 original-synthetic native easing preset UI #69 merged de06e6b (Chrome CI #38028087532 + root CI #38028087471 exact-head PASS). Real frame-12 preview x .307142857→.36441529 and opacity .38095→.76277 selecting existing linear vs ease-out-cubic, Undo/Redo, 3 local writes, reverse seek and fail-closed nonlinear split; no new root deps/renderer. This is NOT full Bezier curve GUI. Arbitrary Bezier handles/control points require neutral S1 schema versioning/migration and explicit owner decision, not automatic modification.",
@@ -958,7 +959,41 @@
       "windows_local_security_tests_pass": 4,
       "windows_local_security_tests_skipped": 0,
       "windows_runner_technical_compatibility": "PASSED",
-      "windows_premiere_test": "NOT_RUN"
+      "windows_premiere_test": "NOT_RUN",
+      "windows_browser_e2e": {
+        "pr": 76,
+        "implementation_head": "f86a535c898b9b1f7491648acc9d013820e1dfc8",
+        "status": "HOSTED_REAL_HEADED_CHROME_EDGE_PASS__FINAL_PR_CHECKS_LIVE",
+        "runner": "windows-2022",
+        "node": "24.19.0",
+        "browsers": {
+          "chrome": "154.0.8037.98",
+          "msedge": "152.0.4191.66"
+        },
+        "ci": {
+          "windows": 38031493476,
+          "linux_chrome": 38031493460,
+          "root": 38031493459,
+          "full_synthetic_render": 38031504465
+        },
+        "saved_scene_sha256": "4e9daf619531d780cdecb41f2ef9c6e867d5c1239db6840a7ff296689026ec9c",
+        "pointer_canvas_drag": true,
+        "timeline_move_and_both_trims": true,
+        "numeric_properties": [
+          "x",
+          "y",
+          "scale",
+          "rotation",
+          "opacity"
+        ],
+        "easing_and_undo_redo": true,
+        "json_disk_reload_after_service_recreation": true,
+        "external_media_status": 400,
+        "stale_window_status": 409,
+        "external_browser_requests": 0,
+        "human_local_acceptance": false,
+        "evidence_doc": "docs/EDITOR-WINDOWS-BROWSER-E2E-2026-10-10.md"
+      }
     }
   }
 }

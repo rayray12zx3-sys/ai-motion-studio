@@ -22,10 +22,13 @@ jobs:
   local-editor:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      MOTION_EDITOR_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.19.0'
@@ -51,8 +54,9 @@ jobs:
         with:
           name: approved-konva-editor-synthetic
           path: |
-            out/konva-editor-approved-synthetic.png
+            out/konva-editor-*.png
             out/konva-editor-approved-synthetic-report.json
+            out/konva-editor-synthetic-trace.zip
           retention-days: 7
           if-no-files-found: ignore
       - name: Approval boundary

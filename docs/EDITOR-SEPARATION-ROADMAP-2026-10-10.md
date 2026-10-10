@@ -112,3 +112,9 @@ Above license classification applies to listed upstream projects, not every font
 
 Begin **S1 only** on a clean, isolated Draft based on freshly verified main: no dependency install and no production modifications. First inspect existing renderer scene shape and M3/M7 SceneSpec draft work to avoid incompatible parallel contracts. Write a small pure-data adapter/test specification, then seek exact-head Actions evidence. Follow with S2 Konva sandbox only after dependency/license audit and operator acceptance of any production dependency change. This roadmap does **not** authorize a broad migration.
 
+
+## Hosted Windows browser automation supersedes the server-only checkpoint — 2026-10-10
+
+[PR #76](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/76) verifies the approved editor on real headed Windows Chrome and Edge, including pointer move/trim/drag, numeric keys, easing, Undo/Redo, disk reload and media/conflict refusal. This removes the need to delegate those repeatable technical checks to the operator. Implementation-head Windows, Linux, root and full synthetic render CI all passed; final-head status is available on the PR. See [test evidence and precise manual-only items](EDITOR-WINDOWS-BROWSER-E2E-2026-10-10.md).
+
+Actual user-PC software policies, physical display/input comfort, Premiere application use and creative approval remain human gates. Missing official renderer adaptation or Bezier-v2 features require separate engineering authorization; human operation of the current editor cannot validate an unimplemented feature. No root dependencies, Canvas+FFmpeg, M11/M12 or private/company materials change.
