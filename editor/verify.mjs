@@ -131,6 +131,17 @@ async function main(){
     same_saved_scene:true,seek_invalidated_stale_still:true,
     non_wysiwyg_konva_proxy:true
    }));
+  }else{
+   // Clean editor-only installation deliberately lacks the root Canvas runtime.
+   // The optional still tool must fail helpfully without preventing Konva edits.
+   await page.locator('.render-reference summary').click();
+   await page.locator('#render-still').click();
+   await page.waitForFunction(()=>window.__motionEditor?.still?.status==='ERROR');
+   const advisory=await page.evaluate(()=>window.__motionEditor.still.message);
+   assert.match(advisory,/503/);
+   assert.match(advisory,/root Canvas runtime is not installed/);
+   assert.equal(await page.locator('#rendered-still').isHidden(),true);
+   assert.equal((await page.evaluate(()=>window.__motionEditor)).commits,0);
   }
   await page.locator('#ease').selectOption('ease-out-cubic');
   await page.locator('#save-ease').click();
