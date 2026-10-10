@@ -34,7 +34,7 @@ async function main(){
    try{
     const routes={'/':['text/html',html],
      '/timeline-ui.mjs':['text/javascript',ui],
-     '/scene-contract.mjs':['text/javascript',scene],
+     '/scene.mjs':['text/javascript',scene],
      '/timeline-contract.mjs':['text/javascript',timeline]};
     if(req.method==='GET'&&routes[req.url]){
      res.writeHead(200,{'Content-Type':routes[req.url][0]});res.end(routes[req.url][1]);return;
