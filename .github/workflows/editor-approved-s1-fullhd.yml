@@ -7,6 +7,7 @@ on:
       - 'scripts/verify-editable-fullhd.mjs'
       - '.github/workflows/editor-approved-s1-fullhd.yml'
       - 'scripts/render-editable.mjs'
+      - 'scripts/select-editable-review-frames.mjs'
       - 'src/free/editable-scene.mjs'
   workflow_dispatch:
 
