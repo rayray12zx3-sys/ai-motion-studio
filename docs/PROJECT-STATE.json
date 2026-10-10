@@ -212,6 +212,26 @@
       "merged": false,
       "technical_acceptance": "PASS_EXACT_HEAD_360P_RETENTION_AND_1080P_ALPHA_SYNTHETIC",
       "production_adoption": false
+    },
+    {
+      "number": 47,
+      "label": "Native HyperFrames Studio synthetic GUI clip edit",
+      "base": "feat/hyperframes-1080p-isolated-followup-issue36",
+      "head_sha": "fa594fac0d812153d545635391e7c8c94476ab43",
+      "draft": true,
+      "merged": false,
+      "technical_acceptance": "PASS_NATIVE_CLIP_DRAG_PERSIST_REOPEN_RENDER__NOT_KEYFRAME_EDIT",
+      "production_adoption": false
+    },
+    {
+      "number": 46,
+      "label": "Pinned HyperFrames runtime license audit correction",
+      "base": "jules-16804301305694300352-14423ccc",
+      "head_sha": "e9e65785a0d17d72cce58f5a12cdf17fa17bb451",
+      "draft": true,
+      "merged": false,
+      "technical_acceptance": "PASS_EXACT_HEAD_NPM_ARCHIVE_AND_METADATA_ONLY__GSAP_RIGHTS_UNRESOLVED",
+      "production_adoption": false
     }
   ],
   "milestone_runs": {
@@ -425,6 +445,28 @@
       "merged_to_main": false,
       "creative_approval": "NOT_GRANTED",
       "production_adoption": "NOT_AUTHORIZED"
+    },
+    "hyperframes_studio_gui_clip": {
+      "head": "fa594fac0d812153d545635391e7c8c94476ab43",
+      "isolated_ci": 38018274652,
+      "root_ci": 38018274659,
+      "conclusion": "success",
+      "native_timeline_drag": true,
+      "persisted_start_before_s": 0,
+      "persisted_start_after_s": 0.15,
+      "reopen_retained": true,
+      "before_after_rendered_frame_png_diff": true,
+      "keyframe_edit": "NOT_VERIFIED",
+      "main_adopted": false
+    },
+    "hyperframes_license_audit": {
+      "head": "e9e65785a0d17d72cce58f5a12cdf17fa17bb451",
+      "audit_ci": 38018404603,
+      "root_ci": 38018404633,
+      "conclusion": "success",
+      "archive_integrity_script_test": true,
+      "studio_visual_editor_license": "UNRESOLVED",
+      "production_adoption": false
     }
   },
   "evidence_docs": [
@@ -445,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "2026-10-10 exact-head checkpoints: synthetic native HyperFrames Studio timeline clip drag/persist/reopen/render PASS only in Draft #47 (fa594fac; workflows 38018274652/38018274659); native keyframe/easing not verified. Pinned HyperFrames npm/archive license metadata audit PASS only in Draft #46 (e9e6578; workflows 38018404603/38018404633), but GSAP no-code visual-builder commercial permission UNRESOLVED. Issues #40/#41 closed for bounded R&D, NOT production rights or adoption. Original wrong-base #45 closed unmerged. Keep #33/#39/#44/#46/#47 R&D Draft.",
     "Issue #36 bounded engineering verification complete in corrected isolated Draft PR #39, exact-head both workflows PASS; original 360p tests intact. PR #37 closed unmerged. Recheck PR #39 live state before further work; do not merge R&D into main without separate architecture/commercial-license approval.",
     "Current canonical handoff is on main. PR #33 HyperFrames (R&D Draft, NOT merged) has actual 360x640 original MP4 and transparent ProRes 4444 MOV, full 30-frame independently decoded repeatability, and successful CI. Do not promote this candidate engine without separate architecture and dependency review.",
     "Private Google Drive preview delivery for original synthetic MP4 and MOV is now CONFIRMED by upload and folder readback; never add Drive URLs/IDs or company content to public GitHub.",
@@ -524,22 +567,31 @@
     {
       "issue": 40,
       "topic": "hyperframes_native_studio_gui_edit_persist_render",
-      "state": "OPEN_JULES_ACKNOWLEDGED",
-      "implementation": "NOT_YET_VERIFIED",
+      "state": "CLOSED_BOUNDED_RND_TEST",
+      "implementation": "TECHNICAL_PASS_NATIVE_CLIP_GUI_ONLY",
       "merge_authorized": false,
       "related_drafts": [
         33,
         39
       ],
-      "requires_native_gui_pointer_test": true
+      "requires_native_gui_pointer_test": true,
+      "corrected_pr": 47,
+      "original_pr": 45,
+      "exact_head": "fa594fac0d812153d545635391e7c8c94476ab43",
+      "keyframe_easing_gui": "NOT_VERIFIED",
+      "production_adoption": false
     },
     {
       "issue": 41,
       "topic": "hyperframes_0_8_143_commercial_runtime_license_audit",
-      "state": "OPEN_JULES_LABEL_NOT_COMPLETION",
-      "implementation": "NOT_YET_VERIFIED",
+      "state": "CLOSED_AUDIT_EVIDENCE_ONLY",
+      "implementation": "PINNED_NPM_METADATA_AND_ARCHIVE_CI_PASS",
       "merge_authorized": false,
-      "legal_clearance": "NOT_GRANTED"
+      "legal_clearance": "NOT_GRANTED_GSAP_COMPETITIVE_BUILDER_CONDITIONAL",
+      "original_pr": 44,
+      "corrected_pr": 46,
+      "exact_head": "e9e65785a0d17d72cce58f5a12cdf17fa17bb451",
+      "production_adoption": false
     }
   ]
 }
