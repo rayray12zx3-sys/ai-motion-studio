@@ -29,6 +29,12 @@ The renderer never accepts URLs or makes runtime network requests. `scripts/setu
 
 CI uses only `experiments/editor-contract/original-synthetic.json`, runs a real MP4 + ProRes 4444 Alpha 30-frame smoke, ffprobe count/dimensions/fps/codec/format checks, SHA-256 frame/report checks, H.264 decoded channel-error bound and decoded transparent/visible Alpha checks. Existing official renderer unit and root CI must remain green. CI artifacts are synthetic only with 7-day retention.
 
+## Additional permitted usability integration — opt-in local GUI export
+
+The authorized S1 Canvas+FFmpeg path may also be invoked by the operator **from the separately installed local Konva editor GUI**. This is not new engine adoption: it calls the exact already-approved `scripts/render-editable.mjs` CLI through Node's `spawn` with fixed trusted arguments; no untrusted shell, media file path, browser-provided output directory, provider access or new runtime dependencies. The scene is snapshotted from persisted canonical JSON after exact ETag validation, and the transient private snapshot is deleted when the encode finishes. A unique output run directory is always generated under ignored `out/`; a second simultaneous browser export is refused, and the UI shows status and relative file paths.
+
+This option must be gated by original-synthetic, real hosted Windows Chrome/Edge + Linux Chrome browser clicks, actual native MP4 and ProRes Alpha, scene hash/version conflict, foreign-origin/body/mode refusals, generated video metadata/codec/frame checks, snapshot cleanup, clean editor-only install behavior and all existing renderer regressions. If it fails, do not promote the GUI export as complete. It remains opt-in and does not alter any default video output.
+
 ## Not yet approved or completed
 
 - **WYSIWYG** editor geometry or exact letterform/pixel parity with the Konva UI (currently proxies).
