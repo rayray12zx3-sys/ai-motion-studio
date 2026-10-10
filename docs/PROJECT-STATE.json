@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "S4 partial synthetic @napi-rs/canvas preview PR #59 merged to main at 402da01c; root CI #38023857595 PASS 25/25 tests. Synthetic neutral scene's full 30-frame RGB/RGBA sequence deterministic, edited frames changed and existing drawFrame(profiles.smoke,12) PNG remained identical. NOT full S4: new painter != official renderer SceneSpec/pixels, no FFmpeg encoded MP4/ProRes/alpha pipeline or Windows Premiere. No production changes. Next safe task: review S1/M3A provenance reuse and document actual scope of professional editor unmet functionality, do not auto-adopt new dependency or engine.",
     "S3 synthetic isolated timeline data PR #56 safely merged (CI #38023289295, 20/20 root tests), Chrome DOM track PR #57 merged at eabe3c6 (CI #38023547260 browser and #38023547198 root PASS); keyframes 8/12/26 and clip [8,27) persisted after actual pointer drag/trim/undo/redo. No production UI or S4 parity achieved. Next bounded R&D: opt-in synthetic editor-scene→Canvas frame matching or standalone asset-provenance contract review; use no new root deps and preserve full rollback. Do not confuse R&D browser with commercial editor adoption.",
     "2026-10-10 S2 isolated Konva: package/immutable archive MIT license audit PR #53 merged (CI #38022425735 and root #38022425745 PASS), original synthetic actual Chrome mouse drag-save-reopen PR #54 merged at 6a363715 (CI #38022691910 and root #38022691737 PASS). No root Konva dependency, no official GUI/editor, no timeline/curve, no Canvas video render parity. Next safe work is S3 vendor-neutral timeline data plan or S1 M3-A provenance reconciliation; no production editor adoption without operator permission.",
     "S1 bounded pure-data exchange experiment PR #51 merged to main at 97a4dc9f; exact-head root CI #38021694739 PASS (14/14 tests). DO NOT treat this as production schema or GUI: no imported asset/provenance support, no native disk save, no Konva install, no pixel-parity validation. Next safe isolated work: formalize asset provenance metadata without binaries and/or read-only Konva license/transitive investigation; maintain Canvas+FFmpeg default.",
@@ -608,7 +609,7 @@
     "licensor_contact": "DECLINED",
     "paid_licensing": "NOT_AUTHORIZED",
     "private_repo_makes_license_valid": false,
-    "new_editor": "ISOLATED_S2_KONVA_POINTER_AND_S3_DOM_TIMELINE_BROWSER_PROOFS_ONLY",
+    "new_editor": "ISOLATED_S1_S3_DATA_AND_S2_S3_BROWSER_PLUS_S4_PREVIEW_FEASIBILITY_ONLY",
     "first_candidate": "KONVA_MIT_ISOLATED_EVALUATION_ONLY",
     "timeline_candidate": "REACT_TIMELINE_EDITOR_MIT_TRANSITIVE_AUDIT_REQUIRED",
     "other_candidates": [
@@ -729,7 +730,32 @@
       {
         "id": "S4",
         "name": "canvas_render_roundtrip_and_deterministic_parity",
-        "status": "NOT_STARTED"
+        "status": "PARTIAL_SYNTHETIC_CANVAS_PREVIEW_DETERMINISM_PASS__OFFICIAL_VIDEO_PARITY_NOT_TESTED",
+        "pr": 59,
+        "merge_sha": "402da01c1330c92fb5bded5eba22e231ac490c67",
+        "head": "d3f878545621534dd60d38a8dd89a5c5ce2689c3",
+        "root_ci": 38023857595,
+        "root_tests_pass": 25,
+        "new_s4_tests": 5,
+        "synthetic_360p_full_frames": 30,
+        "unique_original_frame_hashes": 27,
+        "original_1080x1920_samples": [
+          0,
+          15,
+          29
+        ],
+        "legacy_renderer_byte_invariance": true,
+        "ffmpeg_video_parity": "NOT_TESTED",
+        "production_renderer_adapter": "NOT_AUTHORIZED",
+        "new_dependencies": false,
+        "media": "ORIGINAL_SYNTHETIC_ONLY",
+        "remaining": [
+          "PRODUCTION_CANVAS_SCENESPEC_CONVERSION",
+          "ENCODED_FFMPEG_MP4_ALPHA_MOV_PARITY",
+          "KONVA_TIMELINE_SINGLE_EDITOR_UI",
+          "WINDOWS_PREMIERE_NATIVE_IMPORT",
+          "LICENSED_REAL_COMPANY_MEDIA_AND_HUMAN_CREATIVE_REVIEW"
+        ]
       },
       {
         "id": "S5",
