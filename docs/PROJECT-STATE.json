@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "S3 synthetic isolated timeline data PR #56 safely merged (CI #38023289295, 20/20 root tests), Chrome DOM track PR #57 merged at eabe3c6 (CI #38023547260 browser and #38023547198 root PASS); keyframes 8/12/26 and clip [8,27) persisted after actual pointer drag/trim/undo/redo. No production UI or S4 parity achieved. Next bounded R&D: opt-in synthetic editor-scene→Canvas frame matching or standalone asset-provenance contract review; use no new root deps and preserve full rollback. Do not confuse R&D browser with commercial editor adoption.",
     "2026-10-10 S2 isolated Konva: package/immutable archive MIT license audit PR #53 merged (CI #38022425735 and root #38022425745 PASS), original synthetic actual Chrome mouse drag-save-reopen PR #54 merged at 6a363715 (CI #38022691910 and root #38022691737 PASS). No root Konva dependency, no official GUI/editor, no timeline/curve, no Canvas video render parity. Next safe work is S3 vendor-neutral timeline data plan or S1 M3-A provenance reconciliation; no production editor adoption without operator permission.",
     "S1 bounded pure-data exchange experiment PR #51 merged to main at 97a4dc9f; exact-head root CI #38021694739 PASS (14/14 tests). DO NOT treat this as production schema or GUI: no imported asset/provenance support, no native disk save, no Konva install, no pixel-parity validation. Next safe isolated work: formalize asset provenance metadata without binaries and/or read-only Konva license/transitive investigation; maintain Canvas+FFmpeg default.",
     "2026-10-10 operator approved editor-renderer separation: retain Canvas+FFmpeg production, keep HyperFrames CLI isolated R&D only, DO NOT integrate HyperFrames/GSAP Studio GUI, do not contact licensors or buy licensing. Study Konva MIT and React Timeline Editor MIT with per-package transitive rights audit; record S0-S5 plan at docs/EDITOR-SEPARATION-ROADMAP-2026-10-10.md. No new production deps or engine migration.",
@@ -607,7 +608,7 @@
     "licensor_contact": "DECLINED",
     "paid_licensing": "NOT_AUTHORIZED",
     "private_repo_makes_license_valid": false,
-    "new_editor": "ISOLATED_KONVA_ORIGINAL_SYNTHETIC_BROWSER_POINTER_POC_ONLY",
+    "new_editor": "ISOLATED_S2_KONVA_POINTER_AND_S3_DOM_TIMELINE_BROWSER_PROOFS_ONLY",
     "first_candidate": "KONVA_MIT_ISOLATED_EVALUATION_ONLY",
     "timeline_candidate": "REACT_TIMELINE_EDITOR_MIT_TRANSITIVE_AUDIT_REQUIRED",
     "other_candidates": [
@@ -685,7 +686,45 @@
       {
         "id": "S3",
         "name": "isolated_timeline_drag_edit_and_keyframes",
-        "status": "NOT_STARTED"
+        "status": "SYNTHETIC_DATA_AND_REAL_BROWSER_POINTER_UNDO_ROUNDTRIP_PASS__PRODUCTION_NOT_APPROVED",
+        "data_pr": 56,
+        "browser_pr": 57,
+        "data_merge_sha": "ae4ae3ededa3adb31a65495d42cd25659651d44f",
+        "browser_merge_sha": "eabe3c6ca37c25dad8b7b8f7f270cfdbab41ac55",
+        "data_head": "f57075e4e3a944d5da2cf8038306a12eb5051380",
+        "browser_head": "1f9a2893448198beccfd26aab21294ff03cfec4a",
+        "exact_head_ci": {
+          "data_root": 38023289295,
+          "browser": 38023547260,
+          "browser_root": 38023547198
+        },
+        "root_unit_tests_pass": 20,
+        "browser_proof": {
+          "native_pointer_moves_and_trims": 3,
+          "temporary_json_disk_writes": 6,
+          "start_before": 4,
+          "end_before": 26,
+          "start_after": 8,
+          "end_after": 27,
+          "keyframes_after": [
+            8,
+            12,
+            26
+          ],
+          "undo_redo": true,
+          "reopened_identically": true,
+          "unsafe_remote_media_rejected": true
+        },
+        "type": "ISOLATED_SYNTHETIC_RND_ONLY",
+        "production_timeline_adopted": false,
+        "professional_gui_complete": false,
+        "remaining": [
+          "VISUAL_BEZIER_CURVES",
+          "KONVA_TIMELINE_INTEGRATION",
+          "S4_CANVAS_PIXEL_FRAME_PARITY",
+          "WINDOWS_PREMIERE",
+          "REAL_MEDIA_RIGHTS_AND_HUMAN_CREATIVE_APPROVAL"
+        ]
       },
       {
         "id": "S4",
