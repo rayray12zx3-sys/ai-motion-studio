@@ -1,0 +1,45 @@
+name: Isolated S3 native easing inspector
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/editor-easing/**'
+      - '.github/workflows/editor-easing-s3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: synthetic-easing-s3-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-synthetic-easing:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Syntax-only research harness
+        run: |
+          node --check experiments/editor-easing/easing-ui.mjs
+          node --check experiments/editor-easing/verify.mjs
+      - name: Real Chrome original synthetic easing selection and persistence
+        run: node experiments/editor-easing/verify.mjs
+      - name: Public synthetic screenshot and JSON report only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: original-synthetic-easing-s3
+          path: |
+            out/original-synthetic-easing-inspector.png
+            out/original-synthetic-easing-report.json
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: R&D scope reminder
+        run: echo 'Preset easing selection only; NOT native Bezier-point curve editing, official renderer pixel parity, or adopted editor.' >> "$GITHUB_STEP_SUMMARY"
