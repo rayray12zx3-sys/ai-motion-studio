@@ -1,7 +1,7 @@
 // Local-only opt-in Konva editor. Official src/free and FFmpeg are intentionally never imported.
 import {createHash,randomUUID} from 'node:crypto';
 import {createServer} from 'node:http';
-import {readFile,writeFile,mkdir,rename,copyFile,stat,lstat,unlink} from 'node:fs/promises';
+import {readFile,writeFile,mkdir,rename,copyFile,lstat,unlink} from 'node:fs/promises';
 import {dirname,join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {parseEditableScene,serializeEditableScene} from '../experiments/editor-contract/scene.mjs';
@@ -12,6 +12,7 @@ const staticRoutes=new Map([
  ['/',[join(root,'index.html'),'text/html; charset=utf-8']],
  ['/styles.css',[join(root,'styles.css'),'text/css; charset=utf-8']],
  ['/app.mjs',[join(root,'app.mjs'),'text/javascript; charset=utf-8']],
+ ['/operations.mjs',[join(root,'operations.mjs'),'text/javascript; charset=utf-8']],
  ['/scene.mjs',[join(root,'../experiments/editor-contract/scene.mjs'),'text/javascript; charset=utf-8']],
  ['/timeline.mjs',[join(root,'../experiments/editor-contract/timeline.mjs'),'text/javascript; charset=utf-8']],
  ['/vendor/konva.min.js',[join(root,'node_modules/konva/konva.min.js'),'text/javascript; charset=utf-8']]
@@ -78,7 +79,7 @@ export async function startEditorServer({port=0,sceneFile=join(root,'.local','sc
     }
     const validated=canonical(data);
     const answer=await new Promise((done,reject)=>{
-     serial=serial.then(async()=>{
+     serial=serial.catch(()=>{}).then(async()=>{
       const current=await readScene(scenePath);
       const currentTag='"'+sha(current)+'"';
       if(currentTag!==req.headers['if-match'])return {status:409,body:{error:'Scene changed in another editor; reload first'}};
