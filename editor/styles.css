@@ -30,3 +30,7 @@ button:hover{background:#8ce0d9}button:disabled{opacity:.4;cursor:default}
 .playhead{position:absolute;top:20px;bottom:0;border-left:2px solid #edb27f;pointer-events:none;z-index:4}
 #status{margin:14px 0;padding:10px;background:#152d37;border-radius:5px;min-height:40px}
 footer{padding:6px 0 14px}@media(max-width:780px){.workspace{grid-template-columns:1fr}header{align-items:flex-start}#canvas-wrap{justify-content:flex-start}}
+
+.key-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}
+.key-grid label{font-size:12px}
+.key-marker{position:absolute;top:2px;bottom:2px;width:4px;border-radius:2px;background:#f2d196;pointer-events:none}

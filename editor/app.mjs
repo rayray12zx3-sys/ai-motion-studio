@@ -32,7 +32,10 @@ function paint(){
   const o=document.createElement('option');o.value=String(k.frame);o.textContent='Frame '+k.frame;return o;
  }));
  $('keyframe').value=String(selectedKey);
- $('ease').value=target.keys.find(k=>k.frame===selectedKey).ease;
+ const chosen=target.keys.find(k=>k.frame===selectedKey);
+ $('ease').value=chosen.ease;
+ for(const field of ['x','y','scale','rotation','opacity'])
+  $('key-'+field).value=String(chosen[field]);
  const controls=$('layer-list');controls.replaceChildren(...[...s.layers].sort((a,b)=>a.z-b.z).map(l=>{
   const button=document.createElement('button');button.className='layer-button';
   button.dataset.layer=l.id;button.setAttribute('aria-pressed',String(l.id===selected));
@@ -80,6 +83,12 @@ function paint(){
   for(const side of ['start','end']){
    const handle=document.createElement('span');handle.className='handle';
    handle.dataset.edge=side;clip.appendChild(handle);
+  }
+  for(const key of l.keys){
+   const mark=document.createElement('span');mark.className='key-marker';
+   mark.style.left=((key.frame-l.start_frame)*unit+11)+'px';
+   mark.title='Keyframe '+key.frame+' ('+key.ease+')';
+   clip.appendChild(mark);
   }
   track.appendChild(clip);row.append(name,track);rows.push(row);
  }
@@ -136,6 +145,21 @@ $('save-appearance').addEventListener('click',()=>apply(()=>{
 },'appearance'));
 $('save-ease').addEventListener('click',()=>apply(()=>historyWith(editTimeline(history.present,
  {type:'set-key',layerId:selected,frame:selectedKey,property:'ease',value:$('ease').value})),'easing'));
+$('save-values').addEventListener('click',()=>apply(()=>{
+ const old=item().keys.find(k=>k.frame===selectedKey);
+ let scene=history.present,changed=0;
+ for(const field of ['x','y','scale','rotation','opacity']){
+  const input=$('key-'+field),value=Number(input.value);
+  if(input.value.trim()===''||!Number.isFinite(value))throw Error('Invalid '+field);
+  if(value!==old[field]){
+   scene=editTimeline(scene,{type:'set-key',layerId:selected,frame:selectedKey,
+    property:field,value});
+   changed++;
+  }
+ }
+ if(!changed)throw Error('Keyframe values did not change');
+ return historyWith(scene);
+},'key-values'));
 $('add-key').addEventListener('click',()=>apply(()=>historyWith(editTimeline(history.present,
  {type:'insert-key',layerId:selected,frame})),'keyframe'));
 $('remove-key').addEventListener('click',()=>apply(()=>historyWith(editTimeline(history.present,

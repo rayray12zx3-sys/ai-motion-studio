@@ -20,7 +20,7 @@ Only the editor has `konva@10.7.1` under its own `editor/package.json` and immut
 - Live Konva object proxy canvas with selected layer highlighting, real drag, bounded normalized position saves.
 - Multiple layer selector, limited text/color editing, create/duplicate/remove bounded rectangle layers.
 - Native DOM frame-snapped clip drag and left/right trim on the same S1 `editable-scene-v1` document.
-- S3 keyframe add/remove, two approved incoming easing presets (`linear`, `ease-out-cubic`), real frame seek, Undo/Redo with Ctrl+Z / Ctrl+Y.
+- S3 keyframe add/remove, per-key x/y/scale/rotation (radians)/opacity editing as a **single atomic undo entry**, visible timeline keyframe markers, two approved incoming easing presets (`linear`, `ease-out-cubic`), real frame seek, Undo/Redo with Ctrl+Z / Ctrl+Y. Values remain bounded by S1 v1 validation.
 - Persist accepted validated local JSON atomically to ignored `editor/.local/scene.json`. Existing file is backed up as `scene.json.previous`; an ETag/version check refuses stale-browser overwrites. Local scene data and backups are **never committed or uploaded**.
 - The first launch opens **only the original synthetic S1 demo** if the local file does not exist. No file picker/import or outbound media source is provided. `assets: []` is strictly enforced. Data can be reset only by the local operator handling their own ignored files (never by an automated script).
 
