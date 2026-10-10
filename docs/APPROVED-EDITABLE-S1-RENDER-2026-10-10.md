@@ -23,7 +23,7 @@ node scripts/render-editable.mjs editor/.local/scene.json local-first mp4
 node scripts/render-editable.mjs editor/.local/scene.json local-alpha alpha
 ```
 
-The output goes only into ignored `out/editable-local-first/` or `out/editable-local-alpha/` respectively, with one video, review-frame PNGs, a contact sheet and `render-report.json`. **Every run ID must be unique:** output directories are never overwritten. Choose only a bounded lowercase `a-z0-9-` label beginning with a letter, or the tool rejects it.
+The output goes only into ignored `out/editable-local-first/` or `out/editable-local-alpha/` respectively, with one video, review-frame PNGs, an automatically frame-numbered contact sheet focused on S1 clip entry/exit, keyframe and midpoint events (at most 12 reviewed samples), plus `render-report.json`. This self-authored S1 event-aware sampling applies the useful review method identified in the 20-project OSS audit **without copying an external renderer, fonts, sound or assets**. Sampling does not change emitted video frames and is not full-frame or commercial creative clearance. **Every run ID must be unique:** output directories are never overwritten. Choose only a bounded lowercase `a-z0-9-` label beginning with a letter, or the tool rejects it.
 
 The renderer never accepts URLs or makes runtime network requests. `scripts/setup-encoder.mjs` is the existing **installation-only**, SHA-256 verified encoder provisioning step; it may download from its known release endpoint only at setup, not when exporting. Do not put media/user/company materials into the public repository or public CI.
 
