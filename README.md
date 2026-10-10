@@ -65,6 +65,18 @@ node editor/server.mjs
 
 Open the printed `127.0.0.1` URL. The editor supports an S1 neutral scene with interactive Konva proxies, timeline/keyframes, Undo/Redo and local JSON saves. This is **not pixel-accurate official render preview or commercial asset/Windows Premiere approval**. See [editor setup](editor/README.md), [approved scope](docs/EDITOR-KONVA-ADOPTION-DECISION-2026-10-10.md) and [editor license inventory](editor/THIRD_PARTY.md).
 
+## Approved opt-in S1 scene → actual Canvas+FFmpeg video (separate from legacy)
+
+The Konva editor's **existing validated neutral v1 scene JSON** can now be passed to an opt-in locked Canvas+FFmpeg renderer; the original title/subtitle renderer remains the default and is not replaced. After installing the *existing* root runtime and hash-pinned FFmpeg, run:
+
+```sh
+node scripts/render-editable.mjs editor/.local/scene.json first-preview mp4
+# Alternatively, a separate ProRes 4444 Alpha sample:
+node scripts/render-editable.mjs editor/.local/scene.json alpha-preview alpha
+```
+
+Run IDs are unique; all results live in ignored `out/editable-<run-id>/` and include the finished local file, source/frame hashes, sample PNGs and a contact sheet. Export only accepts S1's **assets:[]** and locked-font characters. **Konva selection proxies are not WYSIWYG or legacy title/subtitle pixel parity**. No company media, real assets, Windows Premiere acceptance or creative approval is implied. See [scope and usage](docs/APPROVED-EDITABLE-S1-RENDER-2026-10-10.md) and [review of the 20 X-listed OSS projects](docs/X-MOTION-OPEN-SOURCE-REVIEW-2026-10-10.md).
+
 ## Local usage
 
 Requirements:

@@ -7,6 +7,12 @@
 - [PR #76](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/76) merged `bfa4e05d` with final exact-head Windows Chrome/Edge #38031806799, Linux #38031806792, root #38031806828, three-profile official synthetic render #38031802874, and post-merge main #38031977078 PASS.
 - [PR #77](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/77) merged `8f56d225`, exact-head hosted Windows Chrome/Edge #38033072823, Linux Chrome #38033072863 and root CI #38033072810 PASS. Existing S1 canvas profiles preserve source aspect (360×640 / 640×360 / 1080×1920 / 1920×1080) and normalized pointer x/y through Konva stage/downscale. No third-party media, official pixels, product dependency graph or renderer changed. Windows human UX, Premiere, Bezier schema v2 and final pixel parity remain unverified or separately gated.
 
+## Later operator approval — additive S1 v1 Canvas+FFmpeg mode (2026-10-10)
+
+- Operator explicitly approved creating an **optional** S1 editor scene renderer on top of existing Canvas+FFmpeg (not adopting other engines or dependencies). This authorizes additive `src/free/editable-scene.mjs`, `scripts/render-editable.mjs`, locked fonts, neutral v1 data and only original-synthetic CI without changing the legacy `src/free/scene.mjs`/`scripts/render.mjs` default flow.
+- `editable-scene-v1` continues to reject media assets and arbitrary Bezier v2; the Konva stage is still a position-selection proxy, not final rendered pixels. Commercial user media/right clearance, final art, native Windows Premiere import and any new schema/engine changes need distinct approval.
+- The [X-linked 20-project audit](X-MOTION-OPEN-SOURCE-REVIEW-2026-10-10.md) prioritizes deterministic QA, contact sheets, audio cue/timing concepts and broad design grammar **without importing any third-party packages or media**. Implementation scope: [approved S1 render decision](APPROVED-EDITABLE-S1-RENDER-2026-10-10.md).
+
 ## Non-negotiable operator decision
 
 - Keep the existing deterministic Canvas + FFmpeg renderer as the sole production/default rendering lane. Preserve opaque MP4 and already-approved optional Canvas ProRes 4444 Alpha profiles; do not change package.json/package-lock.json in this planning PR.
