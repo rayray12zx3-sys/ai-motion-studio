@@ -145,6 +145,34 @@ async function main(){
    assert.equal(await page.locator('#rendered-still').isHidden(),true);
    assert.equal((await page.evaluate(()=>window.__motionEditor)).commits,0);
   }
+  if(process.env.MOTION_TEST_GUI_EXPORT==='1'){
+   for(const format of ['mp4','alpha']){
+    await page.locator('#export-mode').selectOption(format);
+    await page.locator('#export-video').click();
+    await page.waitForFunction(()=>window.__motionEditor?.exportVideo?.status==='DONE',
+      {timeout:120000});
+    const product=await page.evaluate(()=>window.__motionEditor.exportVideo);
+    assert.equal(product.mode,format);
+    assert.equal(product.frames,30);
+    assert.match(product.output,/^out\/editable-ui-[a-f0-9]{16}\/(motion\.mp4|motion-alpha\.mov)$/);
+    assert.match(product.output_sha256,/^[0-9a-f]{64}$/);
+    assert.equal(product.scene_sha256,sha(serializeEditableScene(first.scene)));
+    assert.equal(await page.locator('#copy-export-path').isDisabled(),false);
+    assert.equal((await page.locator('#export-feedback').textContent()).includes(product.output),true);
+   }
+   await screenshot('gui-export-completed-synthetic');
+   console.log('S1_GUI_BROWSER_EXPORT_PROOF',JSON.stringify({
+    browser:channel,forms:['mp4','alpha'],scene_unchanged:(
+     await page.evaluate(()=>JSON.stringify(window.__motionEditor.scene))
+    )===JSON.stringify(first.scene),
+    no_user_media:true
+   }));
+  }else if(process.env.MOTION_TEST_CANVAS_STILL!=='1'){
+   await page.locator('#export-video').click();
+   await page.waitForFunction(()=>window.__motionEditor?.exportVideo?.status==='ERROR');
+   assert.match((await page.evaluate(()=>window.__motionEditor.exportVideo.message)),/503/);
+   assert.equal((await page.evaluate(()=>window.__motionEditor)).commits,0);
+  }
   await page.locator('#ease').selectOption('ease-out-cubic');
   await page.locator('#save-ease').click();
   await page.waitForFunction(()=>window.__motionEditor?.easeChanges===1);
