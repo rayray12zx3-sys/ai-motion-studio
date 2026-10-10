@@ -1,0 +1,113 @@
+name: Explicit local Konva S1 video export
+
+on:
+  pull_request:
+    paths:
+      - 'editor/**'
+      - 'tests/editor-gui-export.e2e.mjs'
+      - '.github/workflows/editor-local-gui-export.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: editor-local-gui-export-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gui-export-linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    env:
+      MOTION_EDITOR_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      MOTION_TEST_CANVAS_STILL: '1'
+      MOTION_TEST_GUI_EXPORT: '1'
+      MOTION_EDITOR_BROWSER_CHANNEL: chrome
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Existing pinned packages, editor-only Konva and native encoder
+        run: |
+          test "$(git rev-parse HEAD)" = "$MOTION_EDITOR_PR_HEAD"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm ci --prefix editor --ignore-scripts --no-audit --no-fund
+          node scripts/setup-encoder.mjs
+          node --check editor/server.mjs
+          node --check tests/editor-gui-export.e2e.mjs
+      - name: Actual loopback API saved-S1 MP4 and Alpha, security and snapshots
+        run: node tests/editor-gui-export.e2e.mjs
+      - name: Actual Chrome GUI click to original synthetic MP4 and Alpha videos
+        run: node editor/verify.mjs
+      - name: Original synthetic video and browser trace only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: original-s1-gui-export-linux
+          path: |
+            out/editable-ui-*/
+            out/konva-editor-*.png
+            out/konva-editor-synthetic-trace.zip
+          retention-days: 7
+          if-no-files-found: ignore
+  gui-export-windows:
+    runs-on: windows-2022
+    timeout-minutes: 22
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, msedge]
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
+    env:
+      MOTION_EDITOR_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      MOTION_TEST_CANVAS_STILL: '1'
+      MOTION_TEST_GUI_EXPORT: '1'
+      MOTION_EDITOR_HEADED: '1'
+      MOTION_EDITOR_BROWSER_CHANNEL: ${{ matrix.browser }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Exact PR head and existing packages
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne $env:MOTION_EDITOR_PR_HEAD) { throw 'PR HEAD mismatch' }
+          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'Root install failed' }
+          npm.cmd ci --prefix editor --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'Editor install failed' }
+          node scripts/setup-encoder.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'FFmpeg pin failed' }
+      - name: Native Windows loopback render API and decoded two-format video
+        run: |
+          node tests/editor-gui-export.e2e.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'Windows S1 GUI render endpoint failed' }
+      - name: Real installed Windows browser triggers MP4 and MOV
+        run: |
+          node editor/verify.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'Windows Chrome/Edge S1 GUI video export failed' }
+      - name: Original synthetic local outputs, no private inputs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: original-s1-gui-export-windows-${{ matrix.browser }}
+          path: |
+            out/editable-ui-*/
+            out/konva-editor-*.png
+            out/konva-editor-synthetic-trace.zip
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Exact scope
+        run: |
+          "Only user-triggered, local, saved-S1 original synthetic MP4 and ProRes Alpha; no remote media, GSAP/Remotion, human Premiere or art acceptance." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8

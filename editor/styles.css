@@ -41,3 +41,8 @@ footer{padding:6px 0 14px}@media(max-width:780px){.workspace{grid-template-colum
 .key-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}
 .key-grid label{font-size:12px}
 .key-marker{position:absolute;top:2px;bottom:2px;width:4px;border-radius:2px;background:#f2d196;pointer-events:none}
+.export-pane{margin-top:14px}
+.export-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:12px}
+.export-actions label{display:flex;gap:8px;align-items:center}
+.export-actions select{font:inherit;background:#102630;color:#e8f3f5;border:1px solid #65808a;padding:7px}
+#export-feedback{overflow-wrap:anywhere;color:#b3c8ce}

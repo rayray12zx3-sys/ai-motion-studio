@@ -145,6 +145,58 @@ async function main(){
    assert.equal(await page.locator('#rendered-still').isHidden(),true);
    assert.equal((await page.evaluate(()=>window.__motionEditor)).commits,0);
   }
+  if(process.env.MOTION_TEST_GUI_EXPORT==='1'){
+   for(const format of ['mp4','alpha']){
+    await page.locator('#export-mode').selectOption(format);
+    await page.locator('#export-video').click();
+    await page.waitForFunction(()=>window.__motionEditor?.exportVideo?.status==='DONE',
+      null,{timeout:120000});
+    const product=await page.evaluate(()=>window.__motionEditor.exportVideo);
+    assert.equal(product.mode,format);
+    assert.equal(product.frames,30);
+    assert.match(product.output,/^out\/editable-ui-[a-f0-9]{16}\/(motion\.mp4|motion-alpha\.mov)$/);
+    assert.match(product.output_sha256,/^[0-9a-f]{64}$/);
+    assert.equal(product.scene_sha256,sha(serializeEditableScene(first.scene)));
+    assert.equal(await page.locator('#copy-export-path').isDisabled(),false);
+    assert.equal((await page.locator('#export-feedback').textContent()).includes(product.output),true);
+   }
+   await screenshot('gui-export-completed-synthetic');
+   console.log('S1_GUI_BROWSER_EXPORT_PROOF',JSON.stringify({
+    browser:channel,forms:['mp4','alpha'],scene_unchanged:(
+     await page.evaluate(()=>JSON.stringify(window.__motionEditor.scene))
+    )===JSON.stringify(first.scene),
+    no_user_media:true
+   }));
+  }else if(process.env.MOTION_TEST_CANVAS_STILL!=='1'){
+   await page.locator('#export-video').click();
+   await page.waitForFunction(()=>window.__motionEditor?.exportVideo?.status==='ERROR');
+   assert.match((await page.evaluate(()=>window.__motionEditor.exportVideo.message)),/503/);
+   assert.equal((await page.evaluate(()=>window.__motionEditor)).commits,0);
+  }
+  // Feature workflows must verify their own real Chrome/Edge interaction, but
+  // must not repeat the complete editor gesture suite on the SAME headed browser.
+  // The comprehensive timeline/drag/undo/reopen regression continues independently
+  // in editor-app and editor-windows-smoke CI without either feature flag.
+  if(process.env.MOTION_TEST_GUI_EXPORT==='1'||process.env.MOTION_TEST_CANVAS_STILL==='1'){
+   assert.equal((await page.evaluate(()=>window.__motionEditor)).commits,0,
+    'Read-only preview and opt-in output buttons must not edit the saved scene');
+   assert.deepEqual(outboundRequests,[],'Dedicated feature workflow must not open external URLs');
+   assert.equal(browserErrors.filter(x=>x.startsWith('pageerror')).length,0,JSON.stringify(browserErrors));
+   const proof={
+    status:'PASS_FOCUSED_REAL_BROWSER_S1_CANVAS_FEATURES',
+    browser:channel,
+    commit:testedCommit,
+    guided_video_exports:process.env.MOTION_TEST_GUI_EXPORT==='1'?['mp4','alpha']:[],
+    read_only_canvas_still:process.env.MOTION_TEST_CANVAS_STILL==='1',
+    saved_scene_commits:0,
+    external_requests:outboundRequests.length,
+    full_editor_regression:'SEPARATELY_RUN_BY_EDITOR_APP_AND_WINDOWS_SMOKE',
+    unverified:['Windows Premiere on user PC','commercial media rights','human art approval','Konva WYSIWYG']
+   };
+   await writeFile(join(out,'konva-editor-focused-canvas-features-report.json'),JSON.stringify(proof,null,2)+'\n');
+   console.log('FOCUSED_CANVAS_FEATURE_BROWSER_PROOF',JSON.stringify(proof));
+   return;
+  }
   await page.locator('#ease').selectOption('ease-out-cubic');
   await page.locator('#save-ease').click();
   await page.waitForFunction(()=>window.__motionEditor?.easeChanges===1);
@@ -181,6 +233,9 @@ async function main(){
   assert.equal(state.history.undo,3); // Undo then Redo does not create a fifth history snapshot.
   const before=state.timeline.find(l=>l.id==='headline');
   async function drag(selector,dx,dy,predicate){
+   // Additional approved export controls can shift the timeline below the viewport.
+   // Real pointer tests must scroll the target into view before mouse geometry.
+   await page.locator(selector).scrollIntoViewIfNeeded();
    const bounds=await page.locator(selector).boundingBox();
    assert.ok(bounds,'Missing draggable surface: '+selector);
    const x=bounds.x+bounds.width/2,y=bounds.y+bounds.height/2;
@@ -195,6 +250,7 @@ async function main(){
   assert.equal(shifted.end,before.end+2);
   const beforeXY=state.sample;
   const dataBeforeCanvas=state.scene;
+  await page.locator('#stage').scrollIntoViewIfNeeded();
   const stage=await page.locator('#stage').boundingBox();
   assert.ok(stage);
   // Center of the original-synthetic proxy shape, anchored to normalized frame x/y.

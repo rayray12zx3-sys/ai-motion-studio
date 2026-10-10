@@ -40,6 +40,12 @@
 <p class="field-note">支援 30fps、S1 既有兩種緩動。不支援外部素材或自由 Bezier 控制點。</p>
 </div>
 </section>
+<section class="pane export-pane">
+<div class="heading"><h2>匯出已儲存的 S1 動畫</h2><small>使用固定版本的 Canvas+FFmpeg；不使用 Konva 代理圖作為影片畫面</small></div>
+<div class="export-actions"><label for="export-mode">格式 <select id="export-mode"><option value="mp4">H.264 MP4（不透明）</option><option value="alpha">ProRes 4444 MOV（透明 Alpha）</option></select></label>
+<button type="button" id="export-video">開始本機匯出</button><button type="button" id="copy-export-path" disabled>複製輸出路徑</button></div>
+<p id="export-feedback" role="status" aria-live="polite">尚未匯出。影片會儲存在本機專案的 out/ 目錄，不會上傳至 GitHub。</p>
+<p class="field-note">匯出前必須先安裝根目錄既有依賴與已驗證 FFmpeg；按下按鈕才會執行。不含素材匯入、音訊或 Premiere／美術驗收。</p></section>
 <section class="pane timeline-pane"><div class="heading"><h2>時間軸</h2><small>拖曳片段中央移動，拖曳兩端修剪；逐格對齊</small></div><div id="timeline-scroller"><div id="timeline" role="group" aria-label="逐格時間軸"></div></div></section>
 <div id="status" role="status" aria-live="polite">載入本機場景中…</div>
 <footer>只在此電腦的 127.0.0.1 執行；資料儲存在 editor/.local。正式 Canvas+FFmpeg 未更動。</footer>

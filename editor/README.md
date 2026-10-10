@@ -57,6 +57,25 @@ The preview shows **output-authoritative single-frame pixels** for the same S1 m
 
 This version is a usable **local S1 schema editor shell**, not a polished editor release. It cannot import external media; has no advanced arbitrary Bezier control points, color/typography fidelity guarantee, finished multi-shot templates, audio, media-provenance clearance, or Windows Premiere acceptance. Editing never automatically triggers a production video export; the separate read-only still-reference button can draw one approved S1 Canvas frame without persisting changes. The **only** authoritative video renderer remains the original Canvas+FFmpeg path. Existing S4 experimental synthetic encoder proofs do not prove pixel parity with it.
 
+## Explicit one-click local MP4 / ProRes Alpha export
+
+After saving an S1 scene, use **「匯出已儲存的 S1 動畫」** beneath the stage/timeline to select opaque H.264 MP4 or transparent ProRes 4444 MOV and click **「開始本機匯出」**. Export never happens on page load, seek, typing or normal save; it requires a deliberate click. It uses the *same* locked Canvas+hash-pinned FFmpeg CLI as the approved S1 adapter, from a temporary private snapshot of the **persisted, ETag-matched** scene. The snapshot is automatically deleted afterward. No arbitrary filesystem paths, shell, external URLs, companies' source materials, uploads, or new packages are accepted.
+
+Required setup once, from the **repository root**, in Windows PowerShell (Node 24):
+
+```powershell
+npm.cmd ci --ignore-scripts --no-audit --no-fund
+node scripts/setup-encoder.mjs
+npm.cmd ci --prefix editor --ignore-scripts --no-audit --no-fund
+node editor/server.mjs
+```
+
+Node's encoder setup is the *existing approved installation-only hash-verifying script*; it is separate from the offline video export action. On Linux/macOS use `npm ci` instead of `npm.cmd ci`. **Normal editor-only operation still requires only the separately pinned Konva editor package.** Missing optional root Canvas or pinned FFmpeg fails with an actionable status; neither is silently installed.
+
+Each export uses a new server-generated `ui-…` ID and writes under ignored `out/editable-ui-…/`, with the file `motion.mp4` or `motion-alpha.mov`, locked-S1 frame hashes, review PNGs, a contact sheet and render-report JSON. The UI displays the relative output path and can copy it; no raw local folder, output target, company media or private JSON is sent to GitHub. Opening the file itself is an operator action. A single export may run at once, and has a 15-minute safety timeout. Scene updates occurring after the export starts do not change the immutable snapshot; the UI distinguishes old versions. **A successful technical encode is not a user art, Premiere, license or commercial approval.**
+
+The loopback-only export endpoint requires a special `X-AI-Motion-Export: 1` header, exact saved-scene ETag, no request body, fixed `mp4`/`alpha` modes and strict same-origin browser protection. Server snapshots are private and ephemeral; generated video remains in local ignored `out/` for the user. The old `scripts/render.mjs` `{title,subtitle}` default and root package graph are untouched.
+
 ## Safety and technical verification
 
 The service binds to `127.0.0.1` only, checks Host and Origin, accepts known routes, sends CSP and no-cache headers, caps parsed JSON to 65,536 UTF-8 bytes, requires strict S1 schema, stores to a fixed local-only path, checks expected ETag for writes, and rejects symlink targets. No third-party UI CDN, remote font, company NAS/Drive, private State Engine, automatic updates, telemetry or licensor contact.
