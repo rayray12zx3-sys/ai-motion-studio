@@ -1,6 +1,11 @@
 # AI Motion Studio — Editor/Renderer Separation Roadmap
 
-**Operator decision date:** 2026-10-10 Asia/Taipei. **Status:** APPROVED DIRECTION, NOT AN IMPLEMENTED EDITOR OR AN APPROVED NEW PRODUCTION DEPENDENCY.
+**Operator decision date:** 2026-10-10 Asia/Taipei. **Status:** Independently packaged, operator-approved opt-in Konva frontend exists and has hosted Windows Chrome/Edge tests; the official Canvas+FFmpeg renderer and its root dependencies remain unchanged. Product SceneSpec compiler/adoption and commercial output acceptance are NOT approved.
+
+## Latest verified opt-in frontend checkpoint — 2026-10-10
+
+- [PR #76](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/76) merged `bfa4e05d` with final exact-head Windows Chrome/Edge #38031806799, Linux #38031806792, root #38031806828, three-profile official synthetic render #38031802874, and post-merge main #38031977078 PASS.
+- [PR #77](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/77) merged `8f56d225`, exact-head hosted Windows Chrome/Edge #38033072823, Linux Chrome #38033072863 and root CI #38033072810 PASS. Existing S1 canvas profiles preserve source aspect (360×640 / 640×360 / 1080×1920 / 1920×1080) and normalized pointer x/y through Konva stage/downscale. No third-party media, official pixels, product dependency graph or renderer changed. Windows human UX, Premiere, Bezier schema v2 and final pixel parity remain unverified or separately gated.
 
 ## Non-negotiable operator decision
 
