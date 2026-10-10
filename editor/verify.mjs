@@ -19,6 +19,9 @@ async function main(){
  const channel=process.env.MOTION_EDITOR_BROWSER_CHANNEL||'chrome';
  assert.ok(['chrome','msedge'].includes(channel),'Supported installed browser channel required');
  const headless=process.env.MOTION_EDITOR_HEADED!=='1';
+ const testedCommit=execFileSync('git',['rev-parse','HEAD'],{cwd:here,encoding:'utf8'}).trim();
+ if(process.env.MOTION_EDITOR_PR_HEAD)assert.equal(testedCommit,process.env.MOTION_EDITOR_PR_HEAD,
+  'Browser verifier must check out the exact PR head');
  const artifacts=[];
  try{
   const manifest=JSON.parse(await readFile(join(here,'node_modules/konva/package.json'),'utf8'));
@@ -229,7 +232,7 @@ async function main(){
   await screenshot('approved-synthetic');
   const result={status:'PASS_USER_APPROVED_OPT_IN_EDITOR_SHELL_SYNTHETIC_ONLY',
    runtime:{platform:process.platform,node:process.version,browser_channel:channel,browser_version:browser.version(),headless,
-    commit:process.env.GITHUB_SHA||null,pr_head:process.env.MOTION_EDITOR_PR_HEAD||null},
+    commit:testedCommit,event_commit:process.env.GITHUB_SHA||null,pr_head:process.env.MOTION_EDITOR_PR_HEAD||null},
    screenshots:artifacts.map(path=>path.split(/[\\/]/).at(-1)),
    app:'editor/',package:'konva@10.7.1',scope:'LOCAL_ONLY',
    saved_scene_sha256:sha(serializeEditableScene(reopen.scene)),
