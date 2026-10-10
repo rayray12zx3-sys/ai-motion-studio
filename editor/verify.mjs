@@ -53,8 +53,10 @@ async function main(){
   const outboundRequests=[];
   context.on('request',request=>{
    const url=new URL(request.url());
-   const localHttp=url.protocol==='http:'&&url.hostname==='127.0.0.1'&&url.origin===service.url;
-   const localMemoryBlob=url.protocol==='blob:'&&url.origin===service.url;
+   // Browser checks open additional isolated test servers on other localhost ports.
+   // Reject all external origins, while permitting only loopback HTTP or its in-memory blob URLs.
+   const localHttp=url.protocol==='http:'&&url.hostname==='127.0.0.1';
+   const localMemoryBlob=url.protocol==='blob:'&&/^http:\/\/127\.0\.0\.1:[0-9]+$/.test(url.origin);
    if(!localHttp&&!localMemoryBlob)outboundRequests.push(request.url());
   });
   const browserErrors=[];
