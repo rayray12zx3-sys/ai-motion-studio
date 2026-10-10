@@ -487,6 +487,7 @@
     "M12 artistic approval and viewable reference footage remain outstanding."
   ],
   "next_work": [
+    "2026-10-10 #83 exact-head hosted Linux+Windows native 1920x1080 H264 and 1080x1920 ProRes Alpha S1 30f original-synthetic CI #38035669976 plus root #38035669936 PASS; merged 20d117c. This is actual NEW S1 full HD technical proof, NOT user PC Premiere or real company material. #84 merged ac5cc348 after seven exact-head CI checks (hosted read-only locked Canvas PNG preview Windows Chrome/Edge Linux #38038235777, standalone editor Win #38038235989/Linux #38038235778, root #38038235837 ALL PASS). Separate saved S1 real Canvas single-frame PNG reader via localhost exact ETag, optional root packages, transparent/opaque; Konva stage remains proxy NOT WYSIWYG. Next remaining product-level gate: GUI trigger for S1 CLI output in safe local environment, optional preview parity overlay, and any real media/Bezier schema v2 requires explicit future operator approval.",
     "2026-10-10 user explicitly approved additive S1 editor → existing locked Canvas+FFmpeg renderer. PR #80 merged eaa88a after original-synthetic Linux actual 30f H264/ProRes Alpha CI #38034805469, root 42 tests CI #38034805362, editor Chrome #38034805344. PR #81 fixed newly truncated Windows FFmpeg hash, added pin parity regression; exact-head Windows+Linux real MP4/ProRes Alpha #38035152519 and root #38035152514 PASS, merged 7b0e7d8. S1 scene file opt-in export available in scripts/render-editable.mjs, old src/free/scene.mjs and scripts/render.mjs unchanged. Hosted encoded proof ONLY 360x640@30fps/30f; 1080p S1 encode / Konva WYSIWYG / user Windows Premiere / real assets rights / Bezier v2 / human creative pending. X list 20 GitHub projects audited in docs/X-MOTION-OPEN-SOURCE-REVIEW-2026-10-10.md, no external packages or assets installed. Next safe technical gate: optionally test dedicated original-synthetic high-resolution S1 encode and develop read-only final Canvas preview using same painter, without authorizing company media.",
     "2026-10-10 PR #77 merged 8f56d225 (exact head 44a09b71; Windows headed Chrome/Edge #38033072823, Linux #38033072863, root Canvas regression #38033072810 PASS): native S1 editor 9:16/16:9 profiles preserve dimensions on preview, real pointer normalized x/y and saved/reopened JSON. PR #76 final exact head 160545c CI Windows #38031806799, Linux #38031806792, root #38031806828, full three official renders #38031802874, post-main #38031977078 PASS; merged bfa4e05. Neither provides official renderer pixel parity, real media/rights, Premiere or human desktop UX. Editor v1 source-only work can continue; formal renderer compiler or S1 v2 Bezier needs new owner approval.",
     "2026-10-10 PR #76 hosted Windows Chrome + Edge browser E2E verified at implementation f86a535: Windows #38031493476, Linux #38031493460, root #38031493459 and full synthetic official render #38031504465 PASS. Routine drag/trim/numeric/easing/Undo/Redo/JSON/refusal checks are automated; no user-local test script needed. Query final PR head/checks before merge. Personal actual-PC ergonomics/policies, Premiere and human creative acceptance remain; production renderer and dependencies unchanged. See docs/EDITOR-WINDOWS-BROWSER-E2E-2026-10-10.md.",
@@ -1024,6 +1025,20 @@
         "normalized_canvas_drag_and_json_reload": true,
         "official_pixel_parity": "NOT_PROVEN",
         "human_pc_acceptance": false
+      },
+      "canvas_reference_still": {
+        "status": "MERGED_VERIFIED_SEPARATE_AUTHORITATIVE_CANVAS_PNG_NOT_KONVA_WYSIWYG",
+        "pr": 84,
+        "merge_sha": "ac5cc3487f4cf66e2bddf3dcdd268ffc2efb148a",
+        "requires_optional_root_install": true,
+        "modes": [
+          "opaque",
+          "transparent"
+        ],
+        "saved_scene_etag_guard": true,
+        "installed_editor_only_still_working": true,
+        "hosted_windows_edge_chrome_and_linux_ci": 38038235777,
+        "read_only_png_proven": true
       }
     },
     "s1_export_adapter": {
@@ -1063,14 +1078,37 @@
       "source_media_assets": 0,
       "new_root_packages": false,
       "official_old_renderer_modified": false,
-      "konva_wysiwyg_pixel_parity": "NOT_TESTED_PROXY_PREVIEW",
-      "full_hd_new_s1_video_encode": "NOT_TESTED",
+      "konva_wysiwyg_pixel_parity": "NOT_WYSIWYG_KONVA_PROXIES__LOCKED_CANVAS_STILL_SEPARATE_VERIFIED",
+      "full_hd_new_s1_video_encode": "HOSTED_WIN_LINUX_SYNTHETIC_1080P_MP4_PRORES_ALPHA_EXACT_HEAD_PASS",
       "windows_premiere_on_user_pc": "NOT_TESTED",
       "real_company_media_rights": "NOT_AUTHORIZED",
       "arbitrary_bezier": "NOT_AUTHORIZED",
       "commercial_art_approval": false,
       "research_20_oss": "docs/X-MOTION-OPEN-SOURCE-REVIEW-2026-10-10.md",
-      "imported_external_packages_or_assets": 0
+      "imported_external_packages_or_assets": 0,
+      "full_hd_pr": 83,
+      "full_hd_head": "5788f34ddd9700c7ae48283e494fbe7ec9b65335",
+      "full_hd_merge": "20d117c16811ee16d5ae03ed15dc989bd769cc14",
+      "full_hd_ci": {
+        "win_linux": 38035669976,
+        "root": 38035669936
+      },
+      "still_preview_pr": 84,
+      "still_preview_head": "ab3a9ba0595321d70d9d4f833105f3d8c76f76a7",
+      "still_preview_merge": "ac5cc3487f4cf66e2bddf3dcdd268ffc2efb148a",
+      "still_preview_ci": {
+        "win_chrome_edge_linux": 38038235777,
+        "editor_only_windows": 38038235989,
+        "editor_only_linux": 38038235778,
+        "root": 38038235837
+      },
+      "still_preview_optional_root_install": true,
+      "still_preview_saved_etag_guard": true,
+      "still_preview_read_only": true,
+      "still_preview_png_pixel_equal_to_s1_video_painter": true,
+      "still_preview_alpha_png_verified": true,
+      "still_preview_external_urls_rejected": true,
+      "root_renderer_legacy_unchanged": true
     }
   }
 }
