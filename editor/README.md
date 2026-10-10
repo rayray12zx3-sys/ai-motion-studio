@@ -27,7 +27,7 @@ Only the editor has `konva@10.7.1` under its own `editor/package.json` and immut
 
 ## Implemented editor shell
 
-- Live Konva object proxy canvas with selected layer highlighting, real drag, bounded normalized position saves.
+- Live Konva object proxy canvas with selected layer highlighting, real drag, bounded normalized position saves. **All four existing S1 canvas profiles** (360×640, 640×360, 1080×1920, 1920×1080) now preserve the original neutral scene aspect ratio inside a maximum 360×640 viewport, and real pointer deltas convert back into the same normalized coordinates for save/reopen. The displayed profile and downscaled viewport dimensions are explicitly labeled; this does **not** provide locked-font or official renderer pixel parity.
 - Multiple layer selector, limited text/color editing, create/duplicate/remove bounded rectangle layers.
 - Native DOM frame-snapped clip drag and left/right trim on the same S1 `editable-scene-v1` document.
 - S3 keyframe add/remove, per-key x/y/scale/rotation (radians)/opacity editing as a **single atomic undo entry**, visible timeline keyframe markers, two approved incoming easing presets (`linear`, `ease-out-cubic`), real frame seek, Undo/Redo with Ctrl+Z / Ctrl+Y. Values remain bounded by S1 v1 validation.
