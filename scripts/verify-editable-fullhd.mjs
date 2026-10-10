@@ -8,6 +8,7 @@ import {join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {drawEditableSceneFrame} from '../src/free/editable-scene.mjs';
 import {parseEditableScene} from '../experiments/editor-contract/scene.mjs';
+import {selectEditableReviewFrames} from './select-editable-review-frames.mjs';
 const root=dirname(fileURLToPath(new URL('../package.json',import.meta.url)));
 const encoder=join(dirname(fileURLToPath(import.meta.resolve('ffmpeg-static/package.json'))),
  process.platform==='win32'?'ffmpeg.exe':'ffmpeg');
@@ -33,6 +34,19 @@ for(const task of [
  assert.equal(report.frames,30);assert.equal(report.fps,30);
  assert.equal(report.codec,task.codec);assert.equal(report.pix_fmt,task.pix_fmt);
  assert.equal(report.frame_hashes.length,30);
+ assert.equal(report.review_frame_selection,
+  'S1_CLIP_BOUNDARIES_KEYS_AND_MIDPOINT_MAX_12__SAMPLED_NOT_FULL_QC');
+ const reviewed=selectEditableReviewFrames(source);
+ assert.ok(reviewed.length>3&&reviewed.length<=12);
+ assert.deepEqual(report.review_frames.map(x=>x.frame),reviewed);
+ for(const sample of report.review_frames){
+  assert.equal(sample.name,'frame-'+sample.frame+'.png');
+  const actual=readFileSync(join(directory,sample.name));
+  assert.ok(actual.length>100,'Full-HD native review PNG missing '+sample.frame);
+  assert.equal(sample.rgba_sha256,report.frame_hashes[sample.frame]);
+ }
+ assert.ok(readFileSync(join(directory,'contact-sheet.png')).length>100,
+  'Full-HD labeled contact sheet missing');
  assert.equal(report.mode,task.mode==='transparent'?'alpha':'mp4');
  assert.equal(report.output_sha256,sha(readFileSync(video)));
  assert.equal(report.media_assets,0);
