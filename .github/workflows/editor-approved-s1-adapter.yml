@@ -1,0 +1,62 @@
+name: Approved opt-in S1 Canvas FFmpeg adapter
+
+on:
+  pull_request:
+    paths:
+      - 'src/free/editable-scene.mjs'
+      - 'scripts/render-editable.mjs'
+      - 'scripts/verify-editable-render.mjs'
+      - 'tests/editor-approved-render-adapter.test.mjs'
+      - '.github/workflows/editor-approved-s1-adapter.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: approved-s1-adapter-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  approved-s1-synthetic-mp4-alpha:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      MOTION_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Install existing root packages only
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Existing source and exact head preflight
+        run: |
+          test "$(git rev-parse HEAD)" = "$MOTION_EXPECTED_HEAD"
+          node --check src/free/editable-scene.mjs
+          node --check scripts/render-editable.mjs
+          node --check scripts/verify-editable-render.mjs
+          node --test tests/editor-approved-render-adapter.test.mjs
+      - name: Provision already pinned hash-verified FFmpeg
+        run: node scripts/setup-encoder.mjs
+      - name: Render original synthetic 360x640 H264 and ProRes Alpha (30 frames each)
+        run: |
+          node scripts/render-editable.mjs experiments/editor-contract/original-synthetic.json ci-s1-mp4 mp4
+          node scripts/render-editable.mjs experiments/editor-contract/original-synthetic.json ci-s1-alpha alpha
+          node scripts/verify-editable-render.mjs
+      - name: Synthetic samples and encoded media only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: approved-s1-canvas-ffmpeg-synthetic
+          path: |
+            out/editable-ci-s1-mp4/
+            out/editable-ci-s1-alpha/
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Preserve default authority and creative gate
+        run: echo 'New opt-in S1 renderer uses the original Canvas+hash-pinned FFmpeg; old default renderer and root dependencies remain unchanged. Only original synthetic sample. No pixel parity with Konva proxy, real media rights, user creative review or Premiere acceptance is claimed.' >> "$GITHUB_STEP_SUMMARY"
