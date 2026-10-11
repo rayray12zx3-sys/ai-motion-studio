@@ -40,7 +40,8 @@ jobs:
         shell: pwsh
         run: |
           if ((git rev-parse HEAD).Trim() -ne $env:EXPECTED_V2_HEAD) { throw 'Wrong research PR head' }
-          npm.cmd ci --ignore-scripts --no-audit --no-fund
+          if ($IsWindows) { npm.cmd ci --ignore-scripts --no-audit --no-fund }
+          else { npm ci --ignore-scripts --no-audit --no-fund }
           if ($LASTEXITCODE -ne 0) { throw 'Root lockfile install failed' }
       - name: Prove strict v2 schema and source/viewport geometry with native Canvas pixels
         shell: pwsh
