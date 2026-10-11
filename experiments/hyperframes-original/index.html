@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=360, initial-scale=1"/>
+<title>Original flat-track synthetic motion | isolated engine benchmark</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#0e1c29}
+#main{position:relative;width:360px;height:640px;background:linear-gradient(155deg,#0d2030,#173746);overflow:hidden}
+.clip{position:absolute}
+.card{top:240px;left:88px;width:184px;height:144px;background:#204755;border:2px solid #70d5b8;border-radius:24px;box-shadow:0 22px 54px #0006}
+.line{left:112px;height:12px;background:#a8eee0;border-radius:6px}
+.line.primary{top:272px;width:120px}
+.line.secondary{top:302px;width:78px;background:#e8c481}
+.track{left:112px;top:345px;width:130px;height:8px;background:#41616b;border-radius:4px}
+.fill{left:112px;top:345px;height:8px;background:#e4c381;border-radius:4px;animation:fillBar 1s linear both}
+.enter{animation:cardArrival 1s cubic-bezier(.2,.75,.3,1) both}
+@keyframes cardArrival{0%{transform:translateY(48px) scale(.94);opacity:0}30%{opacity:1}75%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes fillBar{0%{width:0}100%{width:110px}}
+</style>
+</head>
+<body>
+<div id="main" data-composition-id="original-synthetic-motion" data-no-timeline data-start="0" data-duration="1" data-width="360" data-height="640" data-fps="30">
+  <div id="card-body" class="clip card enter" data-start="0" data-duration="1" data-track-index="1"></div>
+  <div id="card-title" class="clip line primary enter" data-start="0" data-duration="1" data-track-index="2"></div>
+  <div id="card-label" class="clip line secondary enter" data-start="0" data-duration="1" data-track-index="3"></div>
+  <div id="progress-base" class="clip track enter" data-start="0" data-duration="1" data-track-index="4"></div>
+  <div id="progress-fill" class="clip fill" data-start="0" data-duration="1" data-track-index="5"></div>
+</div>
+</body>
+</html>
