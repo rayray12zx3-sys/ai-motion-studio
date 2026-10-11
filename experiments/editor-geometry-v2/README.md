@@ -33,7 +33,7 @@ Dedicated Linux **and** Windows CI should publish these original-synthetic sampl
 
 ## Open gates; do not silently promote
 
-1. Actual browser Konva `Rect` and `Text` usage of the v2 projected props, with input controls/undo/redo and saved-scene compatibility — **NOT IMPLEMENTED**. Browser font shapes, wrapping and selection overlays are **NOT** WYSIWYG/pixel verified.
+1. **Research-only** real Chrome + pinned Konva `Rect` proof is now wired in `browser.html`, `browser-client.mjs` and `verify-browser.mjs`, with one synthetic width-toggle control. The browser is served only via a disposable 127.0.0.1 HTTP server, accepts only two explicit synthetic size variants, and compares node geometry plus five interior RGBA samples per variant against the native isolated Canvas painter. This is NOT complete pixel parity (edges/antialiasing unverified), not a real Konva editor with full input controls/undo/redo/save and not actual production text render. Browser font shapes, wrapping and selection overlays are still **NOT** WYSIWYG/pixel verified.
 2. Explicit, backward-compatible v1→v2 project migration contract and **separate** local opt-in editor/encoder preview, not automatic startup migration — **NOT APPROVED OR IMPLEMENTED**.
 3. More complex shapes, responsive layouts and arbitrary Bezier/easing-v2, optional real media/music/source provenance and any new renderer contract — separate decisions.
 4. Full-speed encoded MP4/ProRes Alpha and on-device Premiere, user-artistic quality — **NOT established by PNG test**.
