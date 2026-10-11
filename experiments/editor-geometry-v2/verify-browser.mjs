@@ -35,7 +35,11 @@ mkdirSync(out,{recursive:true});
 const browserSource={
  '/':{data:readFileSync(join(here,'browser.html')),type:'text/html; charset=utf-8'},
  '/browser-client.mjs':{data:readFileSync(join(here,'browser-client.mjs')),type:'text/javascript; charset=utf-8'},
- '/konva.min.js':{data:readFileSync(join(root,'editor/node_modules/konva/konva.min.js')),type:'text/javascript; charset=utf-8'}
+ '/konva.min.js':{data:readFileSync(join(root,'editor/node_modules/konva/konva.min.js')),type:'text/javascript; charset=utf-8'},
+ '/fixture.json':{data:readFileSync(join(here,'original-synthetic.json')),type:'application/json; charset=utf-8'},
+ '/v2/scene.mjs':{data:readFileSync(join(here,'scene.mjs')),type:'text/javascript; charset=utf-8'},
+ '/v2/geometry.mjs':{data:readFileSync(join(here,'geometry.mjs')),type:'text/javascript; charset=utf-8'},
+ '/editor-contract/scene.mjs':{data:readFileSync(join(root,'experiments/editor-contract/scene.mjs')),type:'text/javascript; charset=utf-8'}
 };
 const server=createServer((req,res)=>{
  const host='127.0.0.1:'+server.address().port;
@@ -48,15 +52,6 @@ const server=createServer((req,res)=>{
   'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',
   'Content-Security-Policy':"default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self' data: blob:; style-src 'self'; object-src 'none'; base-uri 'none'"
  };
- if(url.pathname==='/projection'&&url.hash===''&&[...url.searchParams.keys()].join(',')==='variant'){
-  const variant=url.searchParams.get('variant');
-  if(!Object.hasOwn(variants,variant)){res.writeHead(400);res.end('Invalid variant');return;}
-  const projected=projectGeometryV2Frame(variants[variant],30);
-  const data=JSON.stringify({width:projected.viewport.width,height:projected.viewport.height,
-   layers:projected.layers.map(l=>({id:l.id,type:l.type,props:v2KonvaNodeProps(l)}))});
-  res.writeHead(200,{...headers,'Content-Type':'application/json; charset=utf-8'});
-  res.end(data);return;
- }
  if(url.search){res.writeHead(404);res.end('Not found');return;}
  const route=browserSource[url.pathname];
  if(!route){res.writeHead(404);res.end('Not found');return;}
@@ -152,17 +147,62 @@ try{
    verified_text_geometry_props:snapshot.textNodes.map(n=>({id:n.id,fontSize:n.fontSize,
     width:n.width,align:n.align}))});
  }
+ // Exercise real in-memory v2 controls, not only two predefined buttons.
+ await page.locator('#rect-width').fill('0.55');
+ await page.locator('#rect-height').fill('0.18');
+ await page.getByRole('button',{name:'Apply rectangle size'}).click();
+ let changed=await page.evaluate(()=>window.__v2Research.snapshot());
+ assert.equal(changed.variant,'custom');
+ assert.equal(changed.controls.width,.55);
+ assert.equal(changed.controls.height,.18);
+ assert.ok(Math.abs(changed.nodes[0].width-360*.55)<1e-8);
+ assert.ok(Math.abs(changed.nodes[0].height-640*.18)<1e-8);
+ await page.locator('#font-size').fill('0.078');
+ await page.locator('#max-width').fill('0.77');
+ await page.locator('#text-align').selectOption('right');
+ await page.getByRole('button',{name:'Apply text layout'}).click();
+ changed=await page.evaluate(()=>window.__v2Research.snapshot());
+ assert.equal(changed.controls.fontSize,.078);
+ assert.equal(changed.controls.maxWidth,.77);
+ assert.equal(changed.controls.align,'right');
+ assert.equal(changed.textNodes[0].align,'right');
+ assert.ok(Math.abs(changed.textNodes[0].width-360*.77)<1e-8);
+ assert.equal(changed.historyPast,3); // shrink, custom dimensions, then text.
+ await page.getByRole('button',{name:'Undo'}).click();
+ let undone=await page.evaluate(()=>window.__v2Research.snapshot());
+ assert.equal(undone.controls.align,'center');
+ assert.equal(undone.controls.width,.55);
+ await page.getByRole('button',{name:'Undo'}).click();
+ undone=await page.evaluate(()=>window.__v2Research.snapshot());
+ assert.equal(undone.controls.width,.32);
+ assert.equal(undone.controls.height,.12);
+ await page.getByRole('button',{name:'Redo'}).click();
+ await page.getByRole('button',{name:'Redo'}).click();
+ let redone=await page.evaluate(()=>window.__v2Research.snapshot());
+ assert.deepEqual(redone.controls,changed.controls);
+ // Invalid numeric dimensions are rejected; no history mutation or source write.
+ await page.locator('#rect-width').fill('2');
+ await page.getByRole('button',{name:'Apply rectangle size'}).click();
+ const rejected=await page.evaluate(()=>({scene:window.__v2Research.snapshot(),
+  status:document.getElementById('status').textContent}));
+ assert.deepEqual(rejected.scene.controls,changed.controls);
+ assert.equal(rejected.scene.historyPast,changed.historyPast);
+ assert.match(rejected.status,/Rejected, scene unchanged/);
+ // Restore clean synthetic baseline for saved browser screenshot.
+ await page.getByRole('button',{name:'Restore panel'}).click();
+ assert.equal((await page.evaluate(()=>window.__v2Research.snapshot())).variant,'full');
  assert.deepEqual(errors,[]);
  assert.deepEqual(external,[]);
  await page.screenshot({path:join(out,'browser-synthetic-stage.png')});
  const report={
-  kind:'ISOLATED_GEOMETRY_V2_ACTUAL_KONVA_BROWSER_RECT_ONLY',
+  kind:'ISOLATED_GEOMETRY_V2_ACTUAL_KONVA_BROWSER_RESEARCH',
   exact_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),
   konva:'10.7.1',chromium:'installed chrome channel',scene:'original synthetic rectangles only',
   evidence,external_requests:external.length,browser_errors:errors.length,
   actual_browser_rect_geometry:true,interior_sampled_rgba_parity:true,
   every_pixel_rect_parity:false,text_browser_layout_props:true,
   text_browser_pixel_parity:false,
+  in_memory_size_text_controls_undo_redo_tested:true,
   full_editor_integration:false,source_v1_unmodified:true,
   premiere_and_human_approval:false
  };
