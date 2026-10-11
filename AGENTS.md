@@ -1,5 +1,11 @@
 # Motion execution boundary
 
+## Recovered agent-first motion production purpose (2026-10-11)
+
+- Read [recovered product vision / historical source pointers](docs/RECOVERED-PRODUCT-VISION-AND-ROADMAP-2026-10-11.md) and [individual tool/license decision map](docs/RECOVERED-TOOL-AND-LICENSE-MAP-2026-10-11.md) before proposing new packages or editor features.
+- The original #4/#5/#11 objective is **natural-language brief → AI/Codex director and storyboard → bounded SceneSpec → deterministic video → visual QA/revision**, not building a general-purpose AE/Premiere replacement. The optional Konva editor is a correction aid. Do not discard Creative Harness, two-brief reuse or template-registry Draft research because it is not merged.
+- Source ideas from M1/M7/M9 and skills are **historical candidates, not automatic import or art approvals**; the creative priority change does not authorize new model providers, schema/renderer revisions, asset/media usage, license-sensitive packages or merging stacked PRs. M11 rejected and M12 frozen remain unchanged.
+
 ## Continuation rule — read existing decisions before asking for renewed direction
 
 - Read [2026-10-11 decision index](docs/CONTINUATION-DECISIONS-2026-10-11.md), [canonical handoff](docs/CONTINUE-HERE.md), [dated project state](docs/PROJECT-STATE.json) and **live** GitHub before making an implementation plan.

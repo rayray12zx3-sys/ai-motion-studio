@@ -1,5 +1,13 @@
 # AI Motion Studio — Continue here (single conversation handoff entry)
 
+## Recovered original product goal, tool research, and individual commercial-use decisions — 2026-10-11
+
+**Read [the recovered conversation-driven AI motion product vision and execution priorities](RECOVERED-PRODUCT-VISION-AND-ROADMAP-2026-10-11.md) and [full recovered tool/licensing decision map](RECOVERED-TOOL-AND-LICENSE-MAP-2026-10-11.md) before creating more standalone editor features.**
+
+The project is a **conversation-driven AI/Codex motion generation system**, not an After Effects/Premiere replacement or a Konva-first manual editor. Original Issue #4/#5/#11, M1 Creative Harness Draft #9, M7 Brief→SceneSpec Draft #20, M9 template registry Draft #23, Motion QA Draft #29 and individually researched motion tools/rights are *still on GitHub*. Existing Canvas+FFmpeg and Konva are **approved implementation lanes only**, not the exhaustive design-tool shortlist. All Drafts remain unmerged/unapproved and M11/M12 exclusions stay in force.
+
+The recovered source index is a **documentation-only continuity fix**, not license re-verification, new runtime adoption, unfreezing rejected art, or approval to roll S1 v2 into production. The preferred next research slice is a safe two-brief end-to-end Agent→bounded SceneSpec→existing Canvas export→full-speed review benchmark, using original synthetic inputs and separate technical/human approval gates. Check live GitHub status before acting.
+
 ## Latest operator scope and verified gates — 2026-10-11
 
 **Read [the current decisions and acceptance index](CONTINUATION-DECISIONS-2026-10-11.md) before creating a new art or architecture plan.** The operator already set the animation-first/professional-quality goal, and directed safe bounded engineering continuation until a genuine owner gate. Do not ask again whether that goal is desired or equate technical smoke with artistic quality. Existing Creative Harness Draft #9 is unmerged; M11 rejected and M12 frozen.
