@@ -1,5 +1,15 @@
 # AI Motion Studio — Continue here (single conversation handoff entry)
 
+## Latest operator scope and verified gates — 2026-10-11
+
+**Read [the current decisions and acceptance index](CONTINUATION-DECISIONS-2026-10-11.md) before creating a new art or architecture plan.** The operator already set the animation-first/professional-quality goal, and directed safe bounded engineering continuation until a genuine owner gate. Do not ask again whether that goal is desired or equate technical smoke with artistic quality. Existing Creative Harness Draft #9 is unmerged; M11 rejected and M12 frozen.
+
+- Current checkpoint after narrow technical merges: [PR #92](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/92) **MERGED** `955834bd96940bd553c16ee6d34bb55b16b7003e`, exact head 10/10 GitHub jobs PASS; [PR #94](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/94) **MERGED** `b30974f1d07bf497a75d8c71372e61d3acd3c183`, root 52/52 unit tests PASS. #94 only adds a standalone read-only S1 clip-cut review advisory; no pixel/renderer/fixture mutation.
+- [Draft #93](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/93): six-second original synthetic MP4/Alpha review-only video CI PASS; **NOT MERGED / NOT ART APPROVED**. No adoption of particular typography, rectangles or pace.
+- [Issue #90](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/90): OPEN. Operator-supplied local Codex Windows editor/MP4/MOV technical PASS with **46 pass, 1 Windows symlink skip**; actual native Premiere on that PC **BLOCKED (not installed)** and human full-speed visual review **PENDING**. See issue evidence for limitations; do not infer remote inspection of ignored local files.
+- [Issue #91](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/91): independent `REFERENCE_ONLY`; never silently adopt.
+- **Live status overrides this dated note**; query GitHub PR heads, Issues and Actions again before claiming any new merge or acceptance. Existing sections below remain historical evidence, not an instruction to redo completed work.
+
 **Checkpoint date:** 2026-10-10 (Asia/Taipei). **Status:** canonical handoff published on **`main`** via [merged PR #27](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/27) (squash `139ffb39a4cc96ea0809f7cb902cf9786037d4b4`). Always check GitHub's live state before editing.
 
 > This file is the **entry point**, not an authoritative live API snapshot. In every new conversation: **read this document and [PROJECT-STATE.json](PROJECT-STATE.json), then query GitHub's live PRs, issues and exact-head Actions before claiming progress or editing**. Historical text in [ACTIVE-WORK-2026-10-09.md](ACTIVE-WORK-2026-10-09.md) is append-only; later checkpoints supersede earlier claims.

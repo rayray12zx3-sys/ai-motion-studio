@@ -1,5 +1,12 @@
 # Motion execution boundary
 
+## Continuation rule — read existing decisions before asking for renewed direction
+
+- Read [2026-10-11 decision index](docs/CONTINUATION-DECISIONS-2026-10-11.md), [canonical handoff](docs/CONTINUE-HERE.md), [dated project state](docs/PROJECT-STATE.json) and **live** GitHub before making an implementation plan.
+- The operator has already chosen the long-term **animation-first, high-quality, reusable motion graphics** goal. Continue safe, bounded engineering without repeatedly asking to reconfirm it; stop only for a real creative approval, architecture/schema/license/private-asset decision, or user-PC gate.
+- Historical creative proposals in Draft PR #9 are **not merged standards**. M11 visual direction is rejected and M12 frozen; no automatic style adoption. Distinguish technically proven S1 1-second/six-second synthetic samples from professional artistic acceptance.
+- The operator's "continue until you need me" direction is **not** broad permission for destructive work, unlicensed inputs, restricted/paid runtimes, schema migration or merges of frozen Drafts.
+
 - The production path is `src/free` plus `scripts/render.mjs`. Root installation and CI must never import/install Remotion or run the optional legacy experiment.
 - Use `npm ci --ignore-scripts`, then `node scripts/setup-encoder.mjs`. Dependency installation is the only network lane; the renderer is offline.
 - Preserve private/public boundaries: only synthetic scenes in public tests, artifacts, Issues and PRs. Keep private briefs, source UI, voice, renders and credentials outside Git.
