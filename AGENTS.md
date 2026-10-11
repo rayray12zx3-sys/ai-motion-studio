@@ -1,5 +1,11 @@
 # Motion execution boundary
 
+## First command in every new task: product charter + drift check
+
+**Mandatory:** read [AI Motion Studio Product Charter & Anti-Drift Gate](docs/PRODUCT-CHARTER-AND-DRIFT-CHECK.md) **before proposing a feature, changing priorities, selecting tools or opening a PR**. Use its START/FINISH five-field drift check in new implementation PRs and handoffs. A green CI or more editor/schema features do not prove progress toward AI-generated professional motion. No new implementation permission is conveyed by this pointer.
+
+**Decision hygiene:** the north star (conversation-driven Agent-assisted high-quality motion production) is established; the restored 2026-10-11 **P0–P5 order is an assistant proposal only**, not individually operator-approved. Check original #4/#5/#11 and later *explicit* decisions; do not secretly replace existing approved Konva work, unfreeze rejected M11/frozen M12, or treat Drafts as final. Update operator-approved product scope only via an explicit decision delta, never from an assistant summary.
+
 ## Recovered agent-first motion production purpose (2026-10-11)
 
 - Read [recovered product vision / historical source pointers](docs/RECOVERED-PRODUCT-VISION-AND-ROADMAP-2026-10-11.md) and [individual tool/license decision map](docs/RECOVERED-TOOL-AND-LICENSE-MAP-2026-10-11.md) before proposing new packages or editor features.
