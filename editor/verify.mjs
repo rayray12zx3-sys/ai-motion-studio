@@ -409,6 +409,8 @@ async function main(){
     assert.equal(domProfile.width,view.width);assert.equal(domProfile.height,view.height);
     const label=await tab.locator('#profile-label').textContent();
     assert.ok(label.includes(sourceWidth+'x'+sourceHeight));
+    // Keyboard checks can scroll to the status below the stage; raw mouse events do not auto-scroll.
+    await tab.locator('#stage').scrollIntoViewIfNeeded();
     const bbox=await tab.locator('#stage').boundingBox();
     assert.ok(bbox);
     const start=beforeProfile.sample;
