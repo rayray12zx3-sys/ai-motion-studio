@@ -4,7 +4,7 @@ import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
-import {parseGeometryV2Scene,resizeGeometryV2Rect} from '../experiments/editor-geometry-v2/scene.mjs';
+import {parseGeometryV2Scene,serializeGeometryV2Scene,resizeGeometryV2Rect} from '../experiments/editor-geometry-v2/scene.mjs';
 import {projectGeometryV2Frame} from '../experiments/editor-geometry-v2/geometry.mjs';
 import {drawGeometryV2Frame} from '../experiments/editor-geometry-v2/paint.mjs';
 
@@ -15,6 +15,7 @@ if(process.argv.length!==3||!/^[a-z][a-z0-9-]{0,39}$/.test(runId))
  throw Error('Usage: node scripts/preview-geometry-v2.mjs <unique-safe-run-id>');
 const fixture=readFileSync(join(root,'experiments/editor-geometry-v2/original-synthetic.json'),'utf8');
 const scene=parseGeometryV2Scene(fixture);
+const canonicalSceneSha256=sha(Buffer.from(serializeGeometryV2Scene(scene),'utf8'));
 const dir=join(root,'out','geometry-v2-'+runId);
 if(existsSync(dir))throw Error('Refusing to overwrite a previous v2 review folder');
 mkdirSync(dir,{recursive:true});
@@ -36,7 +37,8 @@ const projection=projectGeometryV2Frame(scene,30);
 const report={
  kind:'ISOLATED_GEOMETRY_V2_RESEARCH_ONLY',
  source_fixture:'experiments/editor-geometry-v2/original-synthetic.json',
- source_sha256:sha(Buffer.from(fixture)),
+ source_sha256:canonicalSceneSha256,
+ source_sha256_kind:'CANONICAL_GEOMETRY_V2_SCENE_JSON_NOT_RAW_CHECKOUT_BYTES',
  fps:scene.fps,frames:scene.duration_frames,canvas:scene.canvas,
  samples:images,source_projection:projection,
  rect_geometry_verified_by_unit_tests:true,
