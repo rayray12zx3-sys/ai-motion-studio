@@ -122,7 +122,8 @@ test('isolated real-frame seek is deterministic and all layer exits fade instead
  for(const f of [59,0,45,15,30,9])drawGeometryV2Frame(fixture,f);
  const actual=samples.map(f=>frameHash(drawGeometryV2Frame(fixture,f,{output:'transparent'})));
  assert.deepEqual(actual,expected);
- assert.equal(new Set(actual).size,samples.length);
+ assert.equal(actual[0],actual.at(-1),'Both endpoints intentionally render fully transparent');
+ assert.ok(new Set(actual).size>=4,'Mid-animation frames must vary visibly');
  assert.equal(alphaAt(drawGeometryV2Frame(fixture,0,{output:'transparent'}),180,275),0);
  assert.equal(alphaAt(drawGeometryV2Frame(fixture,59,{output:'transparent'}),180,275),0);
 });
