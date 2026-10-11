@@ -65,3 +65,36 @@ jobs:
         shell: pwsh
         run: |
           'SOURCE_ONLY_EXPERIMENT: rectangle geometry mapping and native Canvas PNG; NO v1 editor integration, no real Konva browser pixel parity, no v2 MP4/Alpha output, no Premiere/human art approval, no media import.' | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+
+  browser-rect-parity:
+    name: isolated-real-chrome-konva-rectangles
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      EXPECTED_V2_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Verify exact head and install existing pinned root + Konva-only editor packages
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_V2_HEAD"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm ci --prefix editor --ignore-scripts --no-audit --no-fund
+      - name: Real Chrome exact rectangle node geometry and sampled native Canvas RGBA
+        run: node experiments/editor-geometry-v2/verify-browser.mjs
+      - name: Seven-day isolated original synthetic browser and Canvas pixel evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: v2-original-synthetic-real-konva-browser
+          path: out/geometry-v2-browser-proof/
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Browser proof limitations
+        run: echo 'Actual Chrome Konva rectangle dimensions and 5 interior pixel samples per variant only. No glyph parity, all-pixel diff, finished editor migration, MP4/ProRes or creative approval.' >> "$GITHUB_STEP_SUMMARY"
