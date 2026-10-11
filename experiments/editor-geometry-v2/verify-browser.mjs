@@ -20,8 +20,8 @@ const root=resolve(here,'../..');
 const fixture=parseGeometryV2Scene(readFileSync(join(here,'original-synthetic.json'),'utf8'));
 const syntheticRects=source=>({...source,layers:source.layers.filter(l=>l.type==='rect')});
 const variants={
- full:syntheticRects(fixture),
- narrow:syntheticRects(resizeGeometryV2Rect(fixture,'panel',{width:.32,height:.12}))
+ full:fixture,
+ narrow:resizeGeometryV2Rect(fixture,'panel',{width:.32,height:.12})
 };
 const manifest=JSON.parse(readFileSync(join(root,'editor/node_modules/konva/package.json'),'utf8'));
 assert.equal(manifest.version,'10.7.1');
@@ -53,7 +53,7 @@ const server=createServer((req,res)=>{
   if(!Object.hasOwn(variants,variant)){res.writeHead(400);res.end('Invalid variant');return;}
   const projected=projectGeometryV2Frame(variants[variant],30);
   const data=JSON.stringify({width:projected.viewport.width,height:projected.viewport.height,
-   layers:projected.layers.map(l=>({id:l.id,props:v2KonvaNodeProps(l)}))});
+   layers:projected.layers.map(l=>({id:l.id,type:l.type,props:v2KonvaNodeProps(l)}))});
   res.writeHead(200,{...headers,'Content-Type':'application/json; charset=utf-8'});
   res.end(data);return;
  }
@@ -121,6 +121,7 @@ try{
   assert.equal(snapshot.variant,variant);
   assert.deepEqual([snapshot.width,snapshot.height],[360,640]);
   assert.equal(snapshot.nodes.length,2);
+  assert.equal(snapshot.textNodes.length,2);
   const projected=projectGeometryV2Frame(variants[variant],30);
   for(const [index,node] of snapshot.nodes.entries()){
    const expected=projected.layers[index];
@@ -130,14 +131,26 @@ try{
     assert.ok(Math.abs(node[key]-exp)<1e-8,variant+' '+node.id+' '+key);
    }
   }
-  const pixels=await extractedPNG(await page.evaluate(()=>window.__v2Research.png()));
-  const reference=drawGeometryV2Frame(variants[variant],30,{output:'transparent'});
+  const textProjection=projected.layers.filter(l=>l.type==='text');
+  for(const [index,node] of snapshot.textNodes.entries()){
+   const expected=textProjection[index];
+   assert.equal(node.id,expected.id);
+   assert.equal(node.text,expected.text);
+   assert.equal(node.align,expected.align);
+   for(const key of ['x','y','width','height','offsetX','offsetY','fontSize','opacity'])
+    assert.ok(Math.abs(node[key]-expected[key])<1e-8,
+     variant+' text '+node.id+' '+key);
+  }
+  const pixels=await extractedPNG(await page.evaluate(()=>window.__v2Research.rectPng()));
+  const reference=drawGeometryV2Frame(syntheticRects(variants[variant]),30,{output:'transparent'});
   verifyPixels(pixels.pixels,reference,variant);
   const name='konva-'+variant+'.png';
   writeFileSync(join(out,name),pixels.data);
   writeFileSync(join(out,'canvas-'+variant+'.png'),reference.toBuffer('image/png'));
   evidence.push({variant,png_sha256:sha(pixels.data),rectangles:snapshot.nodes,
-   compared_interior_rgba_pixels:sampledPoints.length});
+   compared_interior_rgba_pixels:sampledPoints.length,
+   verified_text_geometry_props:snapshot.textNodes.map(n=>({id:n.id,fontSize:n.fontSize,
+    width:n.width,align:n.align}))});
  }
  assert.deepEqual(errors,[]);
  assert.deepEqual(external,[]);
@@ -148,7 +161,8 @@ try{
   konva:'10.7.1',chromium:'installed chrome channel',scene:'original synthetic rectangles only',
   evidence,external_requests:external.length,browser_errors:errors.length,
   actual_browser_rect_geometry:true,interior_sampled_rgba_parity:true,
-  every_pixel_rect_parity:false,text_browser_parity:false,
+  every_pixel_rect_parity:false,text_browser_layout_props:true,
+  text_browser_pixel_parity:false,
   full_editor_integration:false,source_v1_unmodified:true,
   premiere_and_human_approval:false
  };
