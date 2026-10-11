@@ -1,5 +1,11 @@
 # AI Motion Studio
 
+## Product contract / 專案防偏移規範
+
+**先讀 [產品目標與防偏移規範](docs/PRODUCT-CHARTER-AND-DRIFT-CHECK.md)**：本專案的核心是讓使用者透過自然語言、AI／Codex 與可重用的動畫技術，製作真正能全速觀看和審查的高品質 Motion Graphics；不是通用 Premiere／AE 替代品。Canvas + FFmpeg 是當前已核准的正式渲染基礎；Konva 是可選的輔助編輯器，其他引擎及授權研究仍保留。PR 與 Agent 工作必須執行規範中的開工／完工防偏移檢查。
+
+**計畫與授權區分**：既有 [創作願景／歷史來源](docs/RECOVERED-PRODUCT-VISION-AND-ROADMAP-2026-10-11.md) 和 [個別工具／授權地圖](docs/RECOVERED-TOOL-AND-LICENSE-MAP-2026-10-11.md) 已保存；其中 P0～P5 只是建議順序，**不是**使用者逐項批准的功能導入計畫。任何商用素材／新引擎／新場景結構／美術方向變更仍需個別確認。技術測試通過不代表視覺品質或商業授權通過。
+
 ## Continue development / 換對話接續
 
 **Canonical project handoff (on `main`):** [CONTINUE-HERE.md](docs/CONTINUE-HERE.md) · [machine-readable progress](docs/PROJECT-STATE.json) · [append-only work log](docs/ACTIVE-WORK-2026-10-09.md) · [commercial output and tool-license research](docs/TOOL-ADOPTION-AND-LICENSE-RESEARCH-2026-10-09.md).
