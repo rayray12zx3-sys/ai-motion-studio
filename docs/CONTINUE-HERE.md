@@ -1,5 +1,11 @@
 # AI Motion Studio — Continue here (single conversation handoff entry)
 
+## PERMANENT FIRST READ — product charter, deviation detection and decision provenance
+
+**Before every future conversation, Agent run, plan, task, PR or continuation, first open [PRODUCT-CHARTER-AND-DRIFT-CHECK.md](PRODUCT-CHARTER-AND-DRIFT-CHECK.md).** This is the durable decision and anti-drift gateway: its START/FINISH check asks how a task contributes to an actual AI/Codex-created animation, a reusable motion technique, visible quality, iterative review, or a necessary technical/license blocker, and distinguishes user-approved direction from assistant-only suggestions.
+
+**Critical clarification from 2026-10-11 review:** [restored P0–P5 roadmap](RECOVERED-PRODUCT-VISION-AND-ROADMAP-2026-10-11.md) is a **PROPOSAL_ONLY priority grouping**, not a sequence the operator specifically ratified. The existing Konva frontend was explicitly approved for an opt-in support role, and the higher-quality animation goal existed before it; do not suppress legitimately requested editor maintenance or pretend it supersedes AI-first output goals. Prefer **a real source-backed two-brief, full-speed motion-quality benchmark** to measuring progress only by GUI controls / unit test counts. Preserve original [Issue #4](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/4), [#5](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/5), [#11](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/11), tool/license studies and Draft PR research. Live PR/CI still overrides dated implementation snapshots. No new artist/style/engine/license/asset/schema permission is implied.
+
 ## Recovered original product goal, tool research, and individual commercial-use decisions — 2026-10-11
 
 **Read [the recovered conversation-driven AI motion product vision and execution priorities](RECOVERED-PRODUCT-VISION-AND-ROADMAP-2026-10-11.md) and [full recovered tool/licensing decision map](RECOVERED-TOOL-AND-LICENSE-MAP-2026-10-11.md) before creating more standalone editor features.**
