@@ -153,3 +153,12 @@ test('strict v2 refuses unknown fields, unsupported media, invalid numeric size,
  assert.throws(()=>projectedRectCorners(null),/Rectangle/);
  assert.throws(()=>v2KonvaNodeProps({type:'invalid'}),/Invalid/);
 });
+
+test('canonical geometry-v2 scene digest survives Windows versus Linux checkout newlines',()=>{
+ const text=readFileSync(new URL('../experiments/editor-geometry-v2/original-synthetic.json',import.meta.url),'utf8');
+ const lf=text.replace(/\r\n/g,'\n');
+ const crlf=lf.replace(/\n/g,'\r\n');
+ const normalized=s=>Buffer.from(serializeGeometryV2Scene(parseGeometryV2Scene(s)),'utf8');
+ assert.equal(hash(normalized(lf)),hash(normalized(crlf)));
+ assert.deepEqual(parseGeometryV2Scene(lf),parseGeometryV2Scene(crlf));
+});
