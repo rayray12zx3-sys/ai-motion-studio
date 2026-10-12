@@ -25,7 +25,7 @@ export const boardBrief={
  ],
  operations:[{id:'schedule-task',shotId:'move-the-work',resultShotId:'see-its-place',frame:165,
   trigger:'drag',entityId:'atlas-card',field:'status',from:'Unscheduled',to:'Tuesday / scheduled',
-  gesture:{start:133,from:{x:480,y:477},to:{x:530,y:680}},
+  gesture:{start:133,from:{x:480,y:477},to:{x:610,y:720}},
   resultLabel:'DROPPED INTO TUESDAY',
   accent:true,reason:'The drag visibly assigns a date to the original task, not merely an aesthetic change.'}]
 };
