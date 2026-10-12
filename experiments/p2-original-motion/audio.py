@@ -43,6 +43,10 @@ for kind in ['thread','focus']:
    add(a,hit,tone(f,.45,.07,.18))
   for hit in [3.7,5.50,8.02,9.65]:add(a,hit,tick(.14,.06))
  a=a/(max(1.0,np.max(np.abs(a))/.67));a=np.tanh(a*1.3)/1.3
+ # Bring quiet original synthesized events into an audible, safe stereo range.
+ # The final tracks contain no speech; retain dynamic soft textures without clipping.
+ target_peak=.40 if kind=='thread' else .34
+ a*=target_peak/max(1e-9,float(np.max(np.abs(a))))
  # Stereo kept phase-aligned; slight amplitude difference only, no fake width
  stereo=np.column_stack([a*.97,a])
  path=root/(kind+'_audio.wav');sf.write(path,stereo,R,subtype='PCM_16')
