@@ -1,0 +1,28 @@
+name: Original dual-film source validation R&D
+on:
+  pull_request:
+    paths:
+      - 'experiments/p2-original-motion/**'
+      - '.github/workflows/original-p2-films-rnd.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Check both original film source grammars
+        run: |
+          cd experiments/p2-original-motion
+          node --check film.js
+          node --check setup-vendor.mjs
+          node --test tests/*.mjs
+          python3 -m py_compile audio.py render.py quality_check.py
+          test ! -e vendor/gsap-3.15.0.min.js

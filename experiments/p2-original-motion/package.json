@@ -1,0 +1,9 @@
+{
+  "name": "@ai-motion-studio/p2-original-motion-rnd",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Isolated original dual-motion film prototype; never a root or approved production renderer",
+  "dependencies": {"gsap": "3.15.0"},
+  "scripts": {"test": "node --test tests/*.mjs", "setup-vendor": "node setup-vendor.mjs"}
+}
