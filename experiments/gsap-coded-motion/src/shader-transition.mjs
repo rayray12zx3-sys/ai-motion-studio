@@ -32,13 +32,9 @@ export function createShaderTransition({THREE,renderer,width,height}={}){
  const render=(first,second,progress)=>{
   if(!Number.isFinite(progress)||progress<0||progress>1)throw Error('Transition progress must be 0..1');
   uniforms.uProgress.value=progress;
-  // At exactly 0 and 1, bypass the compositor to ensure pixel-identical cuts.
-  if(progress===0||progress===1){
-   renderer.setRenderTarget(null);
-   const rig=progress===0?first:second;
-   renderer.render(rig.scene,rig.camera);
-   return;
-  }
+  // All frames, INCLUDING p=0 and p=1, traverse the same render-target,
+  // ShaderMaterial, tone-mapping and color-space pipeline. Bypassing this
+  // compositor for single-shot frames caused a real 128/152-frame exposure pop.
   renderer.setRenderTarget(targetA);renderer.render(first.scene,first.camera);
   renderer.setRenderTarget(targetB);renderer.render(second.scene,second.camera);
   renderer.setRenderTarget(null);renderer.render(compositor,camera);
