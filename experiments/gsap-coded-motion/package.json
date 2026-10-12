@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check src/scene-engine.mjs && node --test tests/*.test.mjs"
+    "check": "node --check src/scene-engine.mjs && node --check src/spatial-graph.mjs && node --check src/svg-stage.mjs && node --check src/coded-motion-director.mjs && node --check src/tech-stage-bridge.mjs && node --test tests/*.test.mjs"
   },
   "dependencies": {
     "gsap": "3.15.0"

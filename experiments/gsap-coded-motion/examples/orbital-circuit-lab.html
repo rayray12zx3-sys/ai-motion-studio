@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Original Coded Motion Capability: Orbital Circuit</title>
+<style>
+html,body{margin:0;background:#090e18;color:white;min-height:100vh;display:grid;place-items:center}svg{width:min(90vw,55vh * .5625);height:auto;box-shadow:0 24px 120px #000b;background:#08131c}#status{position:fixed;bottom:10px;right:20px;font:12px monospace;color:#9ca9bc}svg text{font-family:Arial,Helvetica,sans-serif}
+</style></head><body>
+<svg id="film" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" aria-label="Original multi-layer kinetic-tech creative test">
+<defs>
+  <linearGradient id="back" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#05151d"/><stop offset=".52" stop-color="#0d1c30"/><stop offset="1" stop-color="#191334"/></linearGradient>
+  <linearGradient id="portal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#96f5cd"/><stop offset=".5" stop-color="#51bfe6"/><stop offset="1" stop-color="#996bf3"/></linearGradient>
+  <radialGradient id="center"><stop stop-color="#8ff5d4" stop-opacity=".5"/><stop offset=".6" stop-color="#4489c4" stop-opacity=".16"/><stop offset="1" stop-color="#080e1a" stop-opacity="0"/></radialGradient>
+  <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="15"/></filter>
+  <filter id="inner-glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="7"/></filter>
+  <clipPath id="typeMask"><rect x="0" y="170" width="1080" height="510"/></clipPath>
+  <path id="shapeTarget" d="M540 710 C770 715 875 850 876 1070 C874 1310 738 1415 535 1410 C330 1410 205 1310 210 1075 C214 853 335 712 540 710 Z"/>
+</defs>
+<!-- The compositor will flatten these leaves by semantic layer, retaining correct actual SVG painter order. -->
+<g id="elements">
+<g data-motion-id="background"><rect width="1080" height="1920" fill="url(#back)"/><rect width="1080" height="1920" fill="#060b16" opacity=".25"/></g>
+<g data-motion-id="background-grid" stroke="#79b7c8" stroke-opacity=".2" stroke-width="1.8" fill="none">
+  <path d="M0 510 H1080 M0 688 H1080 M0 866 H1080 M0 1044 H1080 M0 1222 H1080 M0 1400 H1080 M0 1578 H1080 M0 1756 H1080"/>
+  <path d="M60 0 V1920 M236 0 V1920 M412 0 V1920 M588 0 V1920 M764 0 V1920 M940 0 V1920"/>
+  <path d="M-200 1760 L540 930 L1280 1760 M-200 1510 L540 680 L1280 1510" stroke-width="2.5" opacity=".45"/>
+</g>
+<g data-motion-id="ambient"><circle cx="540" cy="1070" r="600" fill="url(#center)"/><circle cx="540" cy="1070" r="390" fill="none" stroke="#92eed5" opacity=".10" stroke-width="110" filter="url(#glow)"/></g>
+<g data-motion-id="portal-shadow"><path id="portalShadow" d="M540 770 C770 775 840 875 844 1060 C845 1250 722 1370 540 1370 C360 1370 236 1250 235 1060 C237 880 330 772 540 770 Z" fill="#020a17" stroke="#0c192b" stroke-width="74" filter="url(#glow)" opacity=".7"/></g>
+<g data-motion-id="portal-shell"><path id="heroPath" d="M540 770 C770 775 840 875 844 1060 C845 1250 722 1370 540 1370 C360 1370 236 1250 235 1060 C237 880 330 772 540 770 Z" fill="#12273e" stroke="url(#portal)" stroke-width="5"/><path d="M540 808 C736 810 810 911 811 1068 C815 1258 702 1330 540 1330 C375 1330 271 1254 270 1068 C271 901 361 808 540 808 Z" fill="none" stroke="#84ecdc" stroke-width="2.3" opacity=".4"/></g>
+<g data-motion-id="circuit-network" fill="none" stroke-linecap="round" stroke-linejoin="round">
+ <path id="circuitA" d="M306 966 L402 966 Q434 966 446 932 L466 890 M740 1190 H630 Q608 1190 599 1230 L585 1272" stroke="#a6fee5" stroke-width="6" opacity=".8"/>
+ <path id="circuitB" d="M315 1134 H404 Q447 1134 458 1177 L472 1230 M770 1017 H655 Q618 1017 608 967 L596 911" stroke="#a3b1fb" stroke-width="4" opacity=".75"/>
+ <circle cx="456" cy="964" r="15" fill="#80e7da"/><circle cx="632" cy="1210" r="11" fill="#b5c2ff"/><circle cx="590" cy="944" r="10" fill="#b5c2ff"/>
+ <path d="M470 1072 L608 1072 M540 1005 V1142" stroke="#7ebfe2" stroke-width="3" opacity=".6"/>
+</g>
+<g data-motion-id="inner-core"><circle cx="540" cy="1072" r="160" fill="url(#center)"/><circle cx="540" cy="1072" r="139" fill="#0e2a3e" stroke="#abeedd" stroke-width="3"/><circle id="core-ring" cx="540" cy="1072" r="105" fill="none" stroke="#c9fff1" stroke-width="11" stroke-dasharray="5 20" opacity=".7"/><circle cx="540" cy="1072" r="34" fill="#c3fff1"/><circle cx="540" cy="1072" r="64" fill="none" stroke="#50b9dc" stroke-width="2"/></g>
+<g data-motion-id="orbit-rail" fill="none"><ellipse cx="540" cy="1072" rx="430" ry="235" stroke="#87f3d7" stroke-width="2" opacity=".45" transform="rotate(-24 540 1072)"/><path id="orbitPath" d="M145 1190 C245 860 425 808 565 818 C805 830 939 1110 916 1254 C892 1384 713 1460 527 1450 C345 1440 210 1306 145 1190 Z" stroke="#8bf1d6" stroke-width="4" opacity=".85"/></g>
+<g data-motion-id="information-panels" fill="none" stroke="#91e7d8" stroke-opacity=".6"><path d="M130 1405 L320 1405 L360 1360" stroke-width="2"/><path d="M780 805 L890 760 H985" stroke-width="2"/>
+ <circle cx="360" cy="1360" r="5" fill="#92f5dc" stroke="none"/><circle cx="780" cy="805" r="5" fill="#92f5dc" stroke="none"/>
+ <text x="126" y="1450" fill="#92e5dd" stroke="none" font-size="18" letter-spacing="4">SYSTEM / 01</text><text x="766" y="744" fill="#96b3d1" stroke="none" font-size="18" letter-spacing="3">VECTOR FIELD</text></g>
+<g data-motion-id="title" clip-path="url(#typeMask)">
+ <text x="102" y="322" fill="#9ff9df" font-size="25" font-weight="700" letter-spacing="10">MOTION DESIGN SYSTEM</text>
+ <text x="92" y="435" fill="#f4f4e6" font-size="110" font-weight="900" letter-spacing="-5">IDEAS</text>
+ <text x="92" y="535" fill="#f4f4e6" font-size="110" font-weight="900" letter-spacing="-5">TAKE FORM</text>
+ <path id="titleUnderline" d="M100 588 H948" stroke="#91f4dd" stroke-width="4"/>
+ <text x="104" y="636" fill="#b7c6d9" font-size="27" letter-spacing="2">A persistent object across an evolving world.</text>
+</g>
+<g data-motion-id="satellite" id="satelliteSprite">
+ <g id="satelliteFollower"><g id="satelliteSpin"><circle cx="0" cy="0" r="29" fill="#041d30" stroke="#dcfff3" stroke-width="5"/><circle cx="0" cy="0" r="10" fill="#d9fff2"/><path d="M-52 0 H-33 M33 0 H52 M0 -51 V-32 M0 32 V51" stroke="#9cf3dc" stroke-width="5"/></g></g>
+</g>
+<g data-motion-id="foreground"><path d="M0 93 H1080 M0 1830 H1080" stroke="#aec1d1" opacity=".42" stroke-width="2"/><text x="100" y="122" font-size="24" fill="#a7bcd0" letter-spacing="4">FIELD RESEARCH / 2026</text><text x="980" y="122" text-anchor="end" font-size="24" fill="#b1c2d3" letter-spacing="2">/ 001</text><text x="100" y="1785" font-size="23" fill="#9aafc8" letter-spacing="5">CODED MOTION · DEPTH · CONTINUITY</text></g>
+</g><g id="paint"></g>
+</svg><div id="status">TECHNICAL BENCHMARK · NOT AN APPROVED FILM</div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../node_modules/gsap/dist/MorphSVGPlugin.min.js"></script>
+<script src="../node_modules/gsap/dist/DrawSVGPlugin.min.js"></script>
+<script src="../node_modules/gsap/dist/MotionPathPlugin.min.js"></script>
+<script type="module">
+import {compileSpatialGraph,auditFrameRange,auditBeatPlan} from '../src/spatial-graph.mjs';
+import {createCodedSpatialStage} from '../src/tech-stage-bridge.mjs';
+const graph=compileSpatialGraph({
+ width:1080,height:1920,fps:30,frames:300,
+ camera:{x:[{frame:0,value:-28},{frame:60,value:0},{frame:299,value:32}],y:[{frame:0,value:24},{frame:299,value:-26}],zoom:[{frame:0,value:1.025},{frame:299,value:1.045}]},
+ nodes:[
+ {id:'background',role:'surface',width:1080,height:1920,plane:-100},
+ {id:'background-grid',role:'art',width:1080,height:1920,plane:-90,depth:-180},
+ {id:'ambient',role:'art',width:1080,height:1920,plane:-80,depth:-70},
+ {id:'orbit-rig',role:'group',x:0,y:0,clip:{x:75,y:700,width:935,height:850}},
+ {id:'portal-shadow',parent:'orbit-rig',role:'art',width:1080,height:1920,plane:0},
+ {id:'portal-shell',parent:'orbit-rig',role:'surface',width:1080,height:1920,plane:5,depth:3},
+ {id:'circuit-network',parent:'orbit-rig',role:'art',width:1080,height:1920,plane:10},
+ {id:'inner-core',parent:'orbit-rig',role:'art',width:1080,height:1920,plane:15},
+ {id:'orbit-rail',role:'orbit',width:1080,height:1920,plane:30},
+ {id:'information-panels',role:'annotation',width:1080,height:1920,plane:35},
+ {id:'title',role:'text',x:0,y:0,boundsX:92,boundsY:300,width:870,height:350,plane:65,protect:true},
+ {id:'satellite',role:'art',width:60,height:60,plane:90},
+ {id:'foreground',role:'annotation',width:1080,height:1920,plane:130}
+ ],
+ tracks:[
+ {id:'orbit-rig',field:'scaleX',keyframes:[{frame:0,value:.87},{frame:90,value:1},{frame:180,value:1.04},{frame:299,value:1}]},
+ {id:'orbit-rig',field:'scaleY',keyframes:[{frame:0,value:.87},{frame:90,value:1},{frame:180,value:1.04},{frame:299,value:1}]},
+ {id:'orbit-rig',field:'opacity',keyframes:[{frame:0,value:.10},{frame:55,value:1},{frame:299,value:1}]},
+ {id:'ambient',field:'opacity',keyframes:[{frame:0,value:.3},{frame:110,value:.8},{frame:299,value:.5}]},
+ {id:'title',field:'y',keyframes:[{frame:0,value:20},{frame:52,value:0},{frame:299,value:0}]},
+ {id:'title',field:'opacity',keyframes:[{frame:0,value:0},{frame:35,value:1},{frame:299,value:1}]},
+ ]
+});
+const svg=document.querySelector('#film');
+// Real specialist libraries: timeline controls complex shape, stroke reveals, orbit, internal rotation.
+if(!window.gsap||!window.MorphSVGPlugin||!window.DrawSVGPlugin||!window.MotionPathPlugin)throw Error('Actual GSAP plugin runtime required');
+// One bridge unifies parent-group world transforms and actual GSAP technique tracks.
+const stage=createCodedSpatialStage({graph,svg,paintLayer:document.querySelector('#paint'),gsap,MorphSVGPlugin,DrawSVGPlugin,MotionPathPlugin});
+const node=(id)=>svg.querySelector('#'+id);
+stage.pathMorph(node('heroPath'),{shape:'#shapeTarget',at:3.0,seconds:2.75,type:'rotational',smooth:28});
+stage.draw(node('circuitA'),{at:1.4,seconds:2.2});
+stage.draw(node('circuitB'),{at:2.5,seconds:2.1});
+stage.draw(node('orbitPath'),{at:3.4,seconds:2.5});
+stage.orbit(node('satelliteFollower'),{path:node('orbitPath'),at:.35,seconds:8.8,autoRotate:true});
+stage.spin(node('satelliteSpin'),{at:.2,seconds:9,degrees:360});
+stage.draw(node('titleUnderline'),{at:.9,seconds:1.35,ease:'power3.out'});
+stage.spin(node('core-ring'),{at:0,seconds:9.5,degrees:210});
+window.seekFrame=(frame)=>stage.seekFrame(frame);
+window.motionTechAudit={version:gsap.version,plugins:['MorphSVG','DrawSVG','MotionPath'],sceneNodes:graph.nodeCount,frameCount:graph.frames,initial:graph.sample(0).issues.length,beatAudit:auditBeatPlan({fps:30,frames:300,beats:[
+ {id:'title',start:18,end:100,readable:true},
+ {id:'circuit-network',start:43,end:115,focal:true},
+ {id:'satellite',start:115,end:290,focal:true},
+ {id:'portal-morph',start:130,end:210,focal:true},
+ ]})};
+window.seekFrame(0);
+</script></body></html>

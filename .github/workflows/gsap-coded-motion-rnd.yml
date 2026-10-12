@@ -1,0 +1,23 @@
+name: GSAP coded motion R&D unit gates
+on:
+  pull_request:
+    paths:
+      - 'experiments/gsap-coded-motion/**'
+      - '.github/workflows/gsap-coded-motion-rnd.yml'
+  workflow_dispatch:
+jobs:
+  motion-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: experiments/gsap-coded-motion
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source, scene graph, director and SVG compositor (no network/media)
+        run: node --check src/scene-engine.mjs && node --check src/spatial-graph.mjs && node --check src/svg-stage.mjs && node --check src/coded-motion-director.mjs && node --check src/tech-stage-bridge.mjs && node --test tests/*.test.mjs
