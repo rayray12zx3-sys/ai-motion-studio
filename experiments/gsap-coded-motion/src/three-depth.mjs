@@ -4,9 +4,10 @@
  * Date, unseeded randomness, external textures, remote fonts or network.
  * Three.js is passed in (must be real official MIT `three` runtime, not a GUI).
  */
-export function createThreeDepthRig({THREE,width=1080,height=1920,fps=30,frames=300,palette='mint'}={}){
+export function createThreeDepthRig({THREE,width=1080,height=1920,fps=30,frames=300,palette='mint',cameraPath=null}={}){
  if(!THREE?.Scene||!THREE?.MeshPhysicalMaterial||!THREE?.PerspectiveCamera)throw Error('Real Three.js runtime required');
  if(![width,height,fps,frames].every(x=>Number.isInteger(x)&&x>0))throw Error('Positive integer frame profile required');
+ if(cameraPath&&(cameraPath.frames!==frames||typeof cameraPath.at!=='function'))throw Error('Invalid independent camera choreography');
  const color={mint:0x79f6d9,lavender:0xaa9cff}[palette];if(!color)throw Error('Unknown licensed original palette');
  const scene=new THREE.Scene();scene.background=new THREE.Color(0x07111e);
  const camera=new THREE.PerspectiveCamera(35,width/height,.08,90);camera.position.set(0,0,12);
@@ -56,8 +57,14 @@ export function createThreeDepthRig({THREE,width=1080,height=1920,fps=30,frames=
    markers.children[i].position.set(Math.cos(a)*2.66,Math.sin(a)*1.85,z);
    markers.children[i].rotation.set(t*.9,a,t*.4);
   }
-  camera.position.set(Math.sin(t*.25)*1.1,.05+Math.sin(t*.18)*.5,12.2-.25*Math.sin(t*.3));
-  camera.lookAt(.0,.0,-.1);
+  if(cameraPath){
+   const pose=cameraPath.at(frame);
+   camera.position.set(pose.x,pose.y,pose.z);
+   camera.lookAt(pose.lookX,pose.lookY,pose.lookZ);
+  }else{
+   camera.position.set(Math.sin(t*.25)*1.1,.05+Math.sin(t*.18)*.5,12.2-.25*Math.sin(t*.3));
+   camera.lookAt(.0,.0,-.1);
+  }
   uniforms.uTime.value=t;uniforms.uStrength.value=.55+.06*Math.sin(t*.5);
   scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
   return Object.freeze({frame,time:t,heroX:hero.position.x,heroRotation:[hero.rotation.x,hero.rotation.y,hero.rotation.z],cameraPosition:camera.position.toArray(),markers:markers.children.map(m=>m.position.toArray()),shaderTime:uniforms.uTime.value});
