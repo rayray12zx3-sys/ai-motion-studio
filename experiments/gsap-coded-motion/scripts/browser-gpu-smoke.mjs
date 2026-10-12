@@ -10,6 +10,8 @@ const allowed={'.html':'text/html; charset=utf-8','.js':'text/javascript; charse
 const server=createServer(async (req,res)=>{
   try{
     const url=new URL(req.url,'http://127.0.0.1');
+    // Chromium can request the default favicon outside the authored composition.
+    if(url.pathname==='/favicon.ico'){res.writeHead(204);res.end();return;}
     const requested=resolve(root,'.'+decodeURIComponent(url.pathname));
     if(!(requested===root||requested.startsWith(root+sep))) {res.writeHead(403);res.end();return;}
     if(!allowed[extname(requested)]) {res.writeHead(403);res.end();return;}
