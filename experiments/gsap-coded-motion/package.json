@@ -3,9 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check src/scene-engine.mjs && node --check src/spatial-graph.mjs && node --check src/svg-stage.mjs && node --check src/coded-motion-director.mjs && node --check src/tech-stage-bridge.mjs && node --test tests/*.test.mjs"
+    "check": "node --check src/scene-engine.mjs && node --check src/spatial-graph.mjs && node --check src/svg-stage.mjs && node --check src/coded-motion-director.mjs && node --check src/tech-stage-bridge.mjs && node --check src/three-depth.mjs && node --check src/shader-transition.mjs && node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "gsap": "3.15.0"
+    "gsap": "3.15.0",
+    "three": "0.181.2"
   }
 }

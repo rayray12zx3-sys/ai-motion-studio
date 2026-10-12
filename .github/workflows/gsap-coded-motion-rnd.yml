@@ -8,7 +8,7 @@ on:
 jobs:
   motion-unit:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: read
     defaults:
@@ -19,5 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Source, scene graph, director and SVG compositor (no network/media)
-        run: node --check src/scene-engine.mjs && node --check src/spatial-graph.mjs && node --check src/svg-stage.mjs && node --check src/coded-motion-director.mjs && node --check src/tech-stage-bridge.mjs && node --test tests/*.test.mjs
+      - name: Isolated pinned GSAP and Three.js dependencies only
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Scene graph, coded GSAP, real Three.js math and shader-compositor contract
+        run: npm run check
