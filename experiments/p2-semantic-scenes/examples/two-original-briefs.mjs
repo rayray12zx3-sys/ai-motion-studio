@@ -6,7 +6,7 @@
 const profile={width:1080,height:1920,fps:30,frames:360};
 export const boardBrief={
  version:'p2-semantic-scenes-v1',id:'atlas-board-to-date',assetPolicy:'original-only',profile,
- theme:{background:'#EDEEE9',surface:'#FFFFFF',ink:'#1A2630',accent:'#DB653E',muted:'#687479'},
+ theme:{background:'#EDEEE9',surface:'#FFFFFF',ink:'#1A2630',accent:'#DB653E',muted:'#536169',onBackground:'#1A2630',surfaceMuted:'#536169',accentText:'#9E3E1C'},
  music:{mode:'licensed-local',licenseGate:'PENDING_PUBLICATION_CREDIT',bpm:120,offsetFrame:0,auditioned:false},
  entities:[{id:'atlas-card',kind:'task',label:'Outline the launch page',status:'Unscheduled'}],
  shots:[
@@ -29,7 +29,7 @@ export const boardBrief={
 };
 export const captionBrief={
  version:'p2-semantic-scenes-v1',id:'index-audio-to-caption',assetPolicy:'original-only',profile,
- theme:{background:'#181C2B',surface:'#F2F1EE',ink:'#1D2635',accent:'#E67B48',muted:'#B1BACF'},
+ theme:{background:'#181C2B',surface:'#F2F1EE',ink:'#1D2635',accent:'#E67B48',muted:'#B1BACF',onBackground:'#F2F1EE',surfaceMuted:'#52606B',accentText:'#973612'},
  music:{mode:'licensed-local',licenseGate:'PENDING_PUBLICATION_CREDIT',bpm:150,offsetFrame:0,auditioned:false},
  entities:[{id:'spoken-moment',kind:'clip',label:'Make time for the useful part',status:'Not selected'}],
  shots:[
