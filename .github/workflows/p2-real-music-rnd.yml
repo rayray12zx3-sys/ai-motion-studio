@@ -1,0 +1,29 @@
+name: P2 attribution-licensed real music source R&D
+on:
+  pull_request:
+    paths:
+      - 'experiments/p2-real-music/**'
+      - '.github/workflows/p2-real-music-rnd.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  licensed-source-ingress:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Source valid Creative Commons recordings and verify codec
+        run: |
+          cd experiments/p2-real-music
+          bash download-ccby-source.sh
+      - name: Upload CC-BY tracks together with required attribution notice
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: p2-ccby-music-and-required-credits
+          path: experiments/p2-real-music/artifacts/
+          retention-days: 2
+          compression-level: 0
+          if-no-files-found: error
