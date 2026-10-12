@@ -19,6 +19,7 @@ jobs:
         run: |
           cd experiments/p2-real-music
           bash download-ccby-source.sh
+          python3 -m py_compile remix.py
       - name: Upload CC-BY tracks together with required attribution notice
         uses: actions/upload-artifact@v4.6.2
         with:
