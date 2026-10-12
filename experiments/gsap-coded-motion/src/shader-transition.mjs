@@ -3,20 +3,28 @@
  * external media, procedural random state or wall-clock derived animation.
  */
 export const VERTEX=`varying vec2 vUv; void main(){vUv=uv; gl_Position=vec4(position.xy,0.0,1.0);}`;
-export const FRAGMENT=`precision highp float; varying vec2 vUv;
+export const FRAGMENT = `precision highp float; varying vec2 vUv;
  uniform sampler2D uFrom; uniform sampler2D uTo; uniform float uProgress; uniform vec2 uResolution;
  float hash(vec2 x){return fract(sin(dot(x,vec2(127.1,311.7)))*43758.5453);}
+ float smoothNoise(vec2 x){
+   vec2 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);
+   float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.));
+   return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);
+ }
  void main(){
    float p=clamp(uProgress,0.,1.);
-   // Resolution-pinned, spatially coherent threshold instead of a muddy opacity crossfade.
-   vec2 v=vUv*uResolution/720.;
-   float n=hash(floor(v*4.));
-   float radial=length(vUv-.5)*.38;
-   float threshold=clamp((p-.12+radial-.20*n)*4.,0.,1.);
-   float clean=p<=0.0?0.0:(p>=1.0?1.0:threshold*threshold*(3.-2.*threshold));
-   vec4 a=texture2D(uFrom,vUv),b=texture2D(uTo,vUv);
-   float edge=(1.-smoothstep(.01,.042,abs(threshold-.5)))*p*(1.-p)*2.0;
-   gl_FragColor=mix(a,b,clean)+vec4(.10,.32,.30,0.)*edge;
+   vec2 center=(vUv-.5)*vec2(uResolution.x/uResolution.y,1.);
+   float radius=length(center),angle=atan(center.y,center.x);
+   // Continuous distance field: no tiled/floor-discontinuous cell threshold.
+   float organic=.026*sin(5.*angle+2.*p)+.025*(smoothNoise(vUv*vec2(6.,9.))-.5);
+   float frontier=.19+.69*radius+organic;
+   float feather=.12;
+   float blend=smoothstep(frontier-feather,frontier+feather,p);
+   blend=p<=0.?0.:(p>=1.?1.:blend);
+   vec4 before=texture2D(uFrom,vUv),after=texture2D(uTo,vUv);
+   float proximity=1.-smoothstep(.00,feather*1.35,abs(p-frontier));
+   float edge=proximity*sin(3.14159265*p)*.095;
+   gl_FragColor=mix(before,after,blend)+vec4(vec3(.06,.22,.24)*edge,0.);
  }`;
 export function createShaderTransition({THREE,renderer,width,height}={}){
  if(!THREE?.WebGLRenderTarget||!THREE?.ShaderMaterial||!renderer?.render)throw Error('Three.js WebGL and renderer required');
