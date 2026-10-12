@@ -34,6 +34,10 @@ There is deliberately **no actual model/provider/inference** inside this repo. T
 ## Current user reference principles, not clips to copy
 Real owner-provided Prompt Motion product videos show different purposes for object continuity, UI material and audiovisual rhythm. Borrow semantic lessons (why one action causes the next, clear product promise, purposeful signature camera, attention and audio cue plan), **not** the reference brand/shot order/graphics/song/copy/promotional numbers. Source summaries: separate Draft #111 and earlier Draft #110. No reference bytes, screenshots or Drive IDs are in this experiment.
 
+## Current approved mediation mode (2026-10-12)
+
+**Operator decision:** Use the *current ChatGPT conversation* as the creative director rather than connecting a new model service/API. See [dated decision record](../../docs/OPERATOR-DECISION-CHAT-MEDIATED-DIRECTOR-2026-10-12.md). The injected `complete()` adapter remains a test/optional integration contract, **not a requirement to obtain API keys**. A ChatGPT-authored source treatment can be supplied explicitly and validated through the existing preflight and CI; all film/art/rights gates remain separate. Do not claim unattended model autonomy or background execution.
+
 ## Charter START/FINISH
 - Goal: advance brief→model candidates→preflight/repair, ready for real shot graph; NOT output film quality.
 - Source: Issue #4; Draft #111 priority proposal; existing #110 source, only separate Draft R&D. No product/schema/new-engine adoption permission.
