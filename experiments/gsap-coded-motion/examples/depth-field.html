@@ -42,8 +42,10 @@ const wipe=createShaderTransition({THREE,renderer,width:1080,height:1920});
 const seekFrame=(frame)=>{
  if(!Number.isInteger(frame)||frame<0||frame>=300)throw Error('Bad frame');
  const a=first.seekFrame(frame),b=second.seekFrame(frame),shot=film.at(frame);
- if(shot.active.length===1){const rig=shot.rigs[0]==='mint'?first:second;renderer.render(rig.scene,rig.camera);}
- else wipe.render(first,second,shot.progress);
+ // One continuous display color pipeline for every frame; p=0/1 produce
+ // first/second scene using the SAME compositor as overlapping frames.
+ const displayProgress=shot.active.length===1?(shot.rigs[0]==='mint'?0:1):shot.progress;
+ wipe.render(first,second,displayProgress);
  typeTimeline.time(frame/30,true);
  return {frame,a,b,shot,typography:titleState(),shaderProgress:wipe.uniforms.uProgress.value};
 };
