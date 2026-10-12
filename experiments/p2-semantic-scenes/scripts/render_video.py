@@ -71,12 +71,26 @@ def main():
     args+=['-frames:v',str(count),'-t',str(count/fps),'-movflags','+faststart',str(target)]
     proc=subprocess.Popen(args,stdin=subprocess.PIPE)
     try:
+        last_svg=None
+        last_png=None
+        unique_rasterized=0
         for frame in range(count):
             src=source/(f'{frame:04d}.svg')
-            png=cairosvg.svg2png(bytestring=src.read_bytes(),
-                                 output_width=manifest['profile']['width'],
-                                 output_height=manifest['profile']['height'])
+            svg_bytes=src.read_bytes()
+            # Reuse only byte-for-byte IDENTICAL consecutive authored frames.
+            # Never infer visual equality: motion and type pixels stay unchanged.
+            if svg_bytes==last_svg:
+                png=last_png
+            else:
+                png=cairosvg.svg2png(bytestring=svg_bytes,
+                                     output_width=manifest['profile']['width'],
+                                     output_height=manifest['profile']['height'])
+                last_svg=svg_bytes
+                last_png=png
+                unique_rasterized+=1
             proc.stdin.write(png)
+        print('Rasterization: actual frames',count,
+              'unique consecutive SVG rasterizations',unique_rasterized,flush=True)
     except Exception:
         proc.kill()
         raise
