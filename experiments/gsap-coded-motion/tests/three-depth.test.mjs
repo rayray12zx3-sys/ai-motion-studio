@@ -29,18 +29,19 @@ test('real world-space depth and perspective projection are unlike flat 2D paral
  assert.notEqual(near.z,far.z);
  const projection0=rig.camera.projectionMatrix.toArray();assert.notEqual(projection0[0],projection0[5]);
 });
-test('GPU scene-to-scene effect owns two render targets and explicit zero/one boundaries',()=>{
+test('GPU compositor renders both sources through the same color pipeline at 0, half and 1',()=>{
  const calls=[],renderer={setRenderTarget(target){calls.push(['target',target===null?'screen':'offscreen'])},render(scene,camera){calls.push(['render',scene.type,camera.type])}};
  const transition=createShaderTransition({THREE,renderer,width:1080,height:1920});
  const sceneA=createThreeDepthRig({THREE,palette:'mint'}),sceneB=createThreeDepthRig({THREE,palette:'lavender'});
  sceneA.seekFrame(40);sceneB.seekFrame(40);
  transition.render(sceneA,sceneB,0);
  assert.equal(transition.uniforms.uProgress.value,0);
- assert.deepEqual(calls.filter(v=>v[0]==='target').map(v=>v[1]),['screen']);
+ assert.deepEqual(calls.filter(v=>v[0]==='target').map(v=>v[1]),['offscreen','offscreen','screen']);
  transition.render(sceneA,sceneB,.5);
- assert.deepEqual(calls.filter(v=>v[0]==='target').map(v=>v[1]),['screen','offscreen','offscreen','screen']);
+ assert.deepEqual(calls.filter(v=>v[0]==='target').map(v=>v[1]),['offscreen','offscreen','screen','offscreen','offscreen','screen']);
  transition.render(sceneA,sceneB,1);assert.equal(transition.uniforms.uProgress.value,1);
- assert.equal(calls.filter(v=>v[0]==='target').at(-1)[1],'screen');
+ assert.deepEqual(calls.filter(v=>v[0]==='target').map(v=>v[1]),Array(3).fill(['offscreen','offscreen','screen']).flat());
+ assert.equal(calls.filter(v=>v[0]==='render').length,9);
  assert.ok(FRAGMENT.includes('uProgress')&&FRAGMENT.includes('texture2D')&&VERTEX.includes('gl_Position'));
  assert.ok(FRAGMENT.includes('<tonemapping_fragment>')&&FRAGMENT.includes('<colorspace_fragment>'));
  assert.throws(()=>transition.render(sceneA,sceneB,1.1),/0..1/);
