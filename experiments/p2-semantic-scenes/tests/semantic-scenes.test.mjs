@@ -34,7 +34,15 @@ test('shared semantic hero position is continuous at shot boundaries',()=>{
   assert.equal(inspectFrame(p,second.start).hero.x,prior.hero.x);
   assert.equal(inspectFrame(p,second.start).hero.y,prior.hero.y);
   assert.ok(Math.abs(inspectFrame(p,second.start+13).hero.x-second.hero.x)<1);
-  assert.equal(inspectFrame(p,p.shots[2].start).hero.x,second.hero.x);
+  const lastSecond=inspectFrame(p,second.end-1).hero;
+  const firstThird=inspectFrame(p,p.shots[2].start).hero;
+  assert.equal(firstThird.x,lastSecond.x);
+  assert.equal(firstThird.y,lastSecond.y);
+  if(p.operations[0].trigger==='drag'){
+    assert.notEqual(lastSecond.y,second.hero.y);
+    assert.ok(renderSvgFrame(p,p.operations[0].frame).includes('id="visible-product-response"'));
+  }
+
  }
 });
 test('out-of-order frame evaluation and SVG export are byte-for-byte deterministic',()=>{
@@ -93,6 +101,29 @@ test('unmotivated tiny or reversed gesture trajectory is rejected',()=>{
  ]){
    const ex=copy(boardBrief);mutate(ex.operations[0]);
    assert.throws(()=>compileSemanticScenes(ex));
+ }
+});
+test('long editorial titles and persistent entity text fit frame/card bounds',()=>{
+ const getSize=(svg,phrase)=>{
+  const ending='>'+phrase+'</text>';
+  const end=svg.indexOf(ending);
+  assert.ok(end>=0,'Missing rendered text '+phrase);
+  const tagStart=svg.lastIndexOf('<text ',end);
+  const attr=svg.slice(tagStart,end).match(/font-size="([0-9.]+)"/);
+  assert.ok(attr,'Missing rendered font size');
+  return Number(attr[1]);
+ };
+ for(const p of [b,c]){
+  for(const frame of [35,140,180,280,359]){
+   const svg=renderSvgFrame(p,frame),v=inspectFrame(p,frame),s=v.shot;
+   const titlePx=getSize(svg,s.title);
+   assert.ok(titlePx*s.title.length*.78<=p.profile.width-124+1,'Title overflow: '+s.title);
+   const e=p.entities.find(x=>x.id===s.focusId);
+   for(const [label,multiplier] of [[e.label,.72],[v.state[e.id],.67]]){
+    const labelPx=getSize(svg,label);
+    assert.ok(labelPx*label.length*multiplier<=v.hero.w*p.profile.width/1000-70+1,'Hero type overflow: '+label);
+   }
+  }
  }
 });
 test('a harmless ampersand must be escaped in frame output',()=>{

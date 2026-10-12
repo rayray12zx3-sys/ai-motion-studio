@@ -68,3 +68,14 @@ Hosted CI on this stacked PR generates **two complete 360-frame synthetic silent
 
 ## P2 action-proof progression (isolated next Draft)
 The common scene compiler now requires an **authored, bounded gesture trajectory** for every product operation, plus an actual on-screen resultLabel. An animated cursor shows what the viewer is meant to click, drag or select; the exact operation frame updates the same stable hero entity, and the post-action message remains visible in the resulting shot. Atlas and Index use different triggers, on-screen origins and targets. This closes a genuine narrative-evidence defect: a state transition in JSON does not by itself depict a believable UI operation. However these are still synthetic, schematic UI panels, **not** genuine authorized screenshots, realistic product compositing, polished easing/camera/materials, or an artistic approval. Never infer clickability or actual product functionality from fictional onscreen content.
+
+
+## Art-composition iteration from actual two full-film internal rejection
+From **actual fully encoded** silent review MP4 contact samples, both previous films were visually rejected internally despite complete CI. The shared weaknesses were excessive empty canvas, marginal small-type product information, a task gesture that did not move the task into its real date target, and an audio selection that had no selected-source region. Rather than repaint one video, this experimental stage changes the **shared scene composition rules**:
+- Responsive headline/subheadline scale and structured reading hierarchy;
+- A date-planning workspace with visible choice rows and emphasized selected Tuesday target;
+- A waveform source panel with explicit selected range after the causal UI operation;
+- A drag result terminal pose inherited exactly at the next shot's first frame, so the semantic card no longer teleports when scene changes;
+- Slightly larger and deliberately foregrounded product entity label/state.
+
+These are purposeful product-story improvements, **not a new style copied from any reference video**. They still lack licensed real product footage/photos, sophisticated hierarchy/materials and cinematic quality. Per-shot visual change/legibility/temporal fit must be inspected again using decoded full MP4 contact samples. The internal art verdict must remain **REJECTED / human approval PENDING** until actual film viewing supports improvement; never infer it from test success.

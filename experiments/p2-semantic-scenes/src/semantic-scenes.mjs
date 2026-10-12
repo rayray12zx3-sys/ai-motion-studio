@@ -152,6 +152,15 @@ export function compileSemanticScenes(spec) {
     shots,operations,artStatus:'PENDING_HUMAN',rightsStatus:'PENDING_OTHER_MEDIA_REVIEW',
     limitation:'SVG frame contract, not a watched MP4 or independently audited sound mix'});
 }
+function terminalHero(plan,shot) {
+  const operation=plan.operations.find(o=>o.shotId===shot.id && o.trigger==='drag');
+  if(!operation)return shot.hero;
+  // A dragged persistent semantic object occupies its real target in UI space.
+  // This terminal pose is inherited across the next shot boundary; no snap.
+  return {...shot.hero,
+    x:operation.gesture.to.x-shot.hero.w/2,
+    y:operation.gesture.to.y-shot.hero.h/2};
+}
 export function inspectFrame(plan,frame) {
   integer(frame,0,plan.profile.frames-1,'seek frame');
   const shot=plan.shots.find(s=>s.start<=frame&&frame<s.end);
@@ -160,7 +169,15 @@ export function inspectFrame(plan,frame) {
   const previous=plan.shots[plan.shots.indexOf(shot)-1];
   const blend=previous&&shot.bridge!=='establish'?smooth((frame-shot.start)/Math.max(1,Math.round(plan.profile.fps*.38))):1;
   const hero={};
-  for(const k of ['x','y','w','h'])hero[k]=mix(previous?.hero[k]??shot.hero[k],shot.hero[k],blend);
+  const fromPose=previous?terminalHero(plan,previous):shot.hero;
+  for(const k of ['x','y','w','h'])hero[k]=mix(fromPose[k],shot.hero[k],blend);
+  const drag=plan.operations.find(o=>o.shotId===shot.id && o.trigger==='drag');
+  if(drag&&frame>=drag.gesture.start){
+    const q=smooth((frame-drag.gesture.start)/Math.max(1,drag.frame-drag.gesture.start));
+    const destination=terminalHero(plan,shot);
+    hero.x=mix(shot.hero.x,destination.x,q);
+    hero.y=mix(shot.hero.y,destination.y,q);
+  }
   return {frame,shotId:shot.id,shot,state,hero,blend,operations:plan.operations.filter(o=>o.frame<=frame)};
 }
 const box=(x,y,w,h,fill,rx=20,stroke='none')=>
@@ -174,7 +191,15 @@ export function renderSvgFrame(plan,frame) {
   const hx=f.hero.x*w/1000,hy=f.hero.y*h/1000,hw=f.hero.w*w/1000,hh=f.hero.h*h/1000;
   const unit=w/1080, tx=62*unit, top=115*unit;
   const fade=smooth((frame-s.start)/(p.fps*.26));
+  // Measure-free bounded role hierarchy: fit a single-line editorial headline
+  // to the current video profile rather than shrinking every treatment to one
+  // timid fixed 66px type size. Font portability is STILL an open gate.
+  const titleSize=Math.min(88*unit,(w-2*tx-22*unit)/Math.max(4,s.title.length*.78));
+  const subtitleSize=Math.min(36*unit,(w-2*tx-22*unit)/Math.max(4,s.subtitle.length*.63));
   const e=plan.entities.find(q=>q.id===s.focusId);
+  const heroTextWidth=Math.max(1,hw-70*unit);
+  const entityFont=Math.min(48*unit,heroTextWidth/Math.max(1,e.label.length*.72));
+  const entityStatusFont=Math.min(33*unit,heroTextWidth/Math.max(1,f.state[e.id].length*.67));
   const action=plan.operations.find(o=>o.entityId===e.id&&frame>=o.frame);
   const rendered=[
     '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'">',
@@ -182,30 +207,49 @@ export function renderSvgFrame(plan,frame) {
     label('AI MOTION STUDIO  /  ORIGINAL SEMANTIC STUDY',tx,top,18*unit,t.muted,650),
     box(tx,top+24*unit,w-2*tx,2*unit,t.muted,0),
     '<g opacity="'+fade.toFixed(4)+'">',
-    label(s.title,tx,top+157*unit,66*unit,t.onBackground,800),
-    label(s.subtitle,tx,top+215*unit,28*unit,t.muted,450),
+    label(s.title,tx,top+172*unit,titleSize,t.onBackground,800),
+    label(s.subtitle,tx,top+245*unit,subtitleSize,t.muted,520),
     '</g>'
   ];
   if(s.layout==='board'){
-    rendered.push(box(tx,h*.57,w-2*tx,h*.23,t.surface,26*unit));
-    s.context.forEach((v,i)=>rendered.push(label(v,tx+33*unit,h*.625+i*49*unit,29*unit,t.ink,570)));
+    // A product-semantic board has a visible target for the user's drag,
+    // not just three disjoint text labels under the cursor.
+    const bx=tx,by=h*.565,bw=w-2*tx,rowH=h*.083;
+    rendered.push(box(bx,by,bw,h*.31,t.surface,28*unit,t.muted),
+      label('CHOOSE A DATE / WORKSPACE',bx+30*unit,by+61*unit,25*unit,t.surfaceMuted,710));
+    s.context.forEach((v,i)=>{
+      const cy=by+87*unit+i*rowH;
+      rendered.push(box(bx+24*unit,cy,bw-48*unit,rowH-12*unit,
+        i===1&&action?'#F5E7DF':t.background,14*unit,
+        i===1?t.accent:'none'),
+        label(v,bx+48*unit,cy+51*unit,32*unit,t.onBackground,690));
+    });
   }else if(s.layout==='track'){
-    rendered.push(box(tx,h*.61,w-2*tx,h*.17,t.surface,26*unit));
+    rendered.push(box(tx,h*.585,w-2*tx,h*.225,t.surface,26*unit),
+      label('SOURCE RANGE  /  EDIT TIMELINE',tx+29*unit,h*.622,24*unit,t.surfaceMuted,700),
+      box(tx+29*unit,h*.651,w-2*tx-58*unit,3*unit,t.surfaceMuted,0));
     const wave=[];
-    for(let i=0;i<49;i++){const amp=(.25+.75*Math.abs(Math.sin(i*.41)*Math.cos(i*.19)))*h*.08;
-      wave.push(box(tx+24*unit+i*((w-2*tx-48*unit)/49),h*.69-amp*.5,
+    for(let i=0;i<49;i++){const amp=(.25+.75*Math.abs(Math.sin(i*.41)*Math.cos(i*.19)))*h*.072;
+      wave.push(box(tx+24*unit+i*((w-2*tx-48*unit)/49),h*.724-amp*.5,
         Math.max(3,5*unit),amp,t.accent,3*unit));}
     rendered.push(...wave);
-    s.context.forEach((v,i)=>rendered.push(label(v,tx+12*unit,h*.84+i*47*unit,24*unit,t.onBackground,570)));
+    if(action){
+      rendered.push('<rect id="selected-source-range" data-entity="'+esc(e.id)+
+        '" x="'+(tx+(.47*(w-2*tx)))+'" y="'+(h*.673)+'" width="'+((w-2*tx)*.23)+
+        '" height="'+(h*.103)+'" fill="'+t.accent+'" fill-opacity=".24" stroke="'+t.accent+
+        '" stroke-width="'+(3*unit)+'" rx="'+(9*unit)+'"/>');
+    }
+    s.context.forEach((v,i)=>rendered.push(label(v,tx+12*unit,h*.85+i*47*unit,28*unit,t.onBackground,570)));
   }else{
-    rendered.push(box(tx,h*.59,w-2*tx,h*.25,t.surface,27*unit));
-    s.context.forEach((v,i)=>rendered.push(label(v,tx+30*unit,h*.655+i*55*unit,30*unit,t.ink,580)));
+    rendered.push(box(tx,h*.565,w-2*tx,h*.297,t.surface,27*unit),
+      label('DETAILS  /  VERIFIED FICTIONAL STATE',tx+30*unit,h*.613,24*unit,t.surfaceMuted,660));
+    s.context.forEach((v,i)=>rendered.push(label(v,tx+30*unit,h*.675+i*72*unit,35*unit,t.ink,625)));
   }
   rendered.push('<g id="persistent-hero" data-entity="'+esc(e.id)+'">',
     box(hx,hy,hw,hh,t.surface,24*unit,t.accent),
     box(hx+12*unit,hy+11*unit,8*unit,Math.max(8,hh-22*unit),t.accent,4*unit),
-    label(e.label,hx+36*unit,hy+Math.min(hh*.4,65*unit),Math.min(37*unit,hh*.26),t.ink,750),
-    label(f.state[e.id],hx+36*unit,hy+Math.min(hh*.74,112*unit),Math.min(25*unit,hh*.18),
+    label(e.label,hx+36*unit,hy+Math.min(hh*.4,81*unit),Math.min(entityFont,hh*.30),t.ink,750),
+    label(f.state[e.id],hx+36*unit,hy+Math.min(hh*.74,140*unit),Math.min(entityStatusFont,hh*.18),
       action?t.accentText:t.surfaceMuted,600),'</g>');
   // A product film has to SHOW the interaction rather than merely updating
   // a variable off-screen. The same generic cursor/feedback treatment uses
