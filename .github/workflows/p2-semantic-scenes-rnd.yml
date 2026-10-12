@@ -22,15 +22,19 @@ jobs:
         run: |
           node --check experiments/p2-semantic-scenes/src/semantic-scenes.mjs
           node --check experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs
+          node --check experiments/p2-semantic-scenes/scripts/score-cues.mjs
           node --check experiments/p2-semantic-scenes/examples/two-original-briefs.mjs
           node --test experiments/p2-semantic-scenes/tests/*.test.mjs
           python3 -m py_compile experiments/p2-semantic-scenes/scripts/render_video.py
+          python3 -m py_compile experiments/p2-semantic-scenes/scripts/score_soundtrack.py
           python3 -m py_compile experiments/p2-semantic-scenes/scripts/av_audit.py
           python3 -m unittest discover -s experiments/p2-semantic-scenes/tests -p 'test_*.py'
       - name: Emit deterministic sampled SVGs and causal manifests
         run: |
           node experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs board
           node experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs caption
+          node experiments/p2-semantic-scenes/scripts/score-cues.mjs board
+          node experiments/p2-semantic-scenes/scripts/score-cues.mjs caption
           test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/samples/0165.svg
           test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/samples/0168.svg
       - name: Actually encode two FULL 360-frame silent H264 films and inspect every frame (NOT art QA)
