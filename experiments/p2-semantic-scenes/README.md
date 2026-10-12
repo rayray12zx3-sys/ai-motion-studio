@@ -40,7 +40,7 @@ The optional music path recognizes only the established Kevin MacLeod CC BY 4.0 
 - Current text uses platform sans-serif fonts; cross-platform deterministic typography and commercial font rights are NOT cleared. Complicated paragraph fitting remains absent.
 - Symbolic panels/track/waveform are schematic product interface work, not mature art direction or a professional reference-quality film.
 - BPM does not establish phase agreement to the actual audio. Audio, claims, visuals and rights must be independently audited from full MP4s before any user art request.
-- Dedicated CI runs Node tests and a short actual codec smoke clip. It is not a full 360-frame audiovisual QA; optional full local export needs its own inspection and licensing review.
+- Dedicated CI on this stacked R&D now renders **both complete 360-frame silent H.264 MP4s** and decodes every frame through a signal-only audit. It does not test soundtrack synchronization or professional aesthetics; full-speed viewing, real authorized musical mix and legal review still remain open.
 - This does not replace ARC/FOCUS v3, add a model or API, change the root package, modify main, touch frozen M11/M12, or merge any Draft.
 
 ## Product Charter five-field gate
@@ -64,4 +64,4 @@ Optionally feed a local hand-authored JSON list of film-intended cue frames, tra
 
 The analyzer uses FFmpeg to decode **every actual frame** to a small grayscale proxy for blank/luma-jump candidates, analyzes decoded mono audio RMS-energy increases, and notes whether cue-proximate rises are found. It checks real streams, not just authored screenshots. All findings are **advisory** and have explicit NOT APPROVED status: a giant luminosity change may be an intentional motivated cut; a matching loudness peak is not musical synchrony; grayscale cannot assess microtypography, palette, expression, full-speed emotional rhythm or license validity. Full-speed watching/listening and human product/art/rights checks remain separate. It must not emit ART_PASS or auto-publish.
 
-Hosted CI currently invokes this on two **12-frame silent codec smokes**, not the entire original v3 pair, and uploads only synthetic derived QA evidence. To check entire films, explicitly run the full render path on authorized local media and analyze exact 360 frames; do not relabel a 12-frame smoke as a finished full-film quality audit.
+Hosted CI on this stacked PR generates **two complete 360-frame synthetic silent MP4s**, decodes every actual frame with this analyzer and uploads technical reports and films. **It does not decode the private original v3 media inside public CI**, has no music so cannot check sonic alignment, and does not constitute professional artistic or rights approval. The original full v3 media are separately available to the user and require genuine audiovisual/full-speed review.
