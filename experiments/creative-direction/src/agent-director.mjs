@@ -38,7 +38,7 @@ export function validateDirectorBrief(input){
  if(input.assetPolicy!=='original-only')fail('This experiment accepts original-only assets');
  if(!Array.isArray(input.constraints)||input.constraints.length<1||input.constraints.length>12||input.constraints.some(x=>typeof x!=='string'||x.trim().length<5||x.length>180))fail('Bounded creative constraints required');
  if(!Array.isArray(input.claims)||input.claims.length>15||input.claims.some(c=>!c||typeof c.text!=='string'||c.text.length>220||!['illustrative','needs-evidence','verified-by-owner'].includes(c.status)))fail('Every factual claim requires an explicit evidence status');
- if(/https?:\/\/i.test(JSON.stringify(input)))fail('Do not send reference URLs or remote asset pointers to the creative model');
+ if(new RegExp('https?:/{2}','i').test(JSON.stringify(input)))fail('Do not send reference URLs or remote asset pointers to the creative model');
  return Object.freeze({id:input.id,objective:input.objective,goal,audience,message,profile:Object.freeze({...input.profile}),rhythmPreference:input.rhythmPreference||'unspecified',assetPolicy:'original-only',constraints:Object.freeze([...input.constraints]),claims:Object.freeze(input.claims.map(x=>Object.freeze({text:x.text,status:x.status})))});
 }
 const briefs={
