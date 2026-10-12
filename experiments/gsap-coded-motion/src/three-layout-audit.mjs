@@ -39,3 +39,34 @@ export function htmlRectToCanvasDesign(rect,canvasRect,width,height){
           right:(rect.right-canvasRect.left)*width/canvasRect.width,
           bottom:(rect.bottom-canvasRect.top)*height/canvasRect.height};
 }
+
+/** Pick ONE stable object scale for the WHOLE FILM from all camera states.
+ * Do not animate the scale to dodge a title frame-by-frame: that creates pumping.
+ * Reject the composition if even the lower bound cannot clear safe zones.
+ */
+export function fitFixedHeroScale({THREE,rigs,protectedRegions,width,height,frames,lower=.25,upper=.85,iterations=10,safetyMargin=24}) {
+  if(!Array.isArray(rigs)||!rigs.length||!Number.isInteger(frames)||frames<=0)throw Error('Film rigs and frames required');
+  if(!Number.isFinite(lower)||!Number.isFinite(upper)||lower<=0||lower>=upper||iterations<1)throw Error('Invalid fit range');
+  const padded=protectedRegions.map(({name,bounds})=>({name,bounds:{
+    left:bounds.left-safetyMargin,top:bounds.top-safetyMargin,
+    right:bounds.right+safetyMargin,bottom:bounds.bottom+safetyMargin}}));
+  const pass=(scale)=>{
+    for (const rig of rigs) {
+      rig.hero.scale.setScalar(scale);
+      for(let f=0;f<frames;f++) {
+        rig.seekFrame(f);
+        const hero=projectHeroBounds({THREE,object:rig.hero,camera:rig.camera,width,height});
+        if(!assertNoProtectedOcclusion({hero,protectedRegions:padded}).passed)return false;
+      }
+    }
+    return true;
+  };
+  if(!pass(lower))throw Error('No valid constant hero scale fits the protected regions');
+  let lo=lower,hi=upper;
+  for(let i=0;i<iterations;i++){
+    const mid=(lo+hi)/2;
+    if(pass(mid))lo=mid;else hi=mid;
+  }
+  for(const rig of rigs){rig.hero.scale.setScalar(lo);rig.seekFrame(0)}
+  return Object.freeze({scale:lo,framesChecked:frames,rigCount:rigs.length,safetyMargin});
+}
