@@ -7,7 +7,7 @@
 export function createThreeDepthRig({THREE,width=1080,height=1920,fps=30,frames=300,palette='mint'}={}){
  if(!THREE?.Scene||!THREE?.MeshPhysicalMaterial||!THREE?.PerspectiveCamera)throw Error('Real Three.js runtime required');
  if(![width,height,fps,frames].every(x=>Number.isInteger(x)&&x>0))throw Error('Positive integer frame profile required');
- const color={mint:0x79f6d9,lavender:0xaa9cff}[palette];if(!color)throw Error('Unknown licensed original palette');
+ const color={mint:0x79f6d9,lavender:0xaa9cff,copper:0xf7b47c}[palette];if(!color)throw Error('Unknown licensed original palette');
  const scene=new THREE.Scene();scene.background=new THREE.Color(0x07111e);
  const camera=new THREE.PerspectiveCamera(35,width/height,.08,90);camera.position.set(0,0,12);
  const stage=new THREE.Group();stage.name='object-parent-rig';scene.add(stage);
@@ -27,7 +27,7 @@ export function createThreeDepthRig({THREE,width=1080,height=1920,fps=30,frames=
  const key=new THREE.SpotLight(0xc7fffa,90,36,Math.PI/5,.5,1);key.position.set(5,5,9);key.target=hero;scene.add(key);
  const fill=new THREE.PointLight(0x819cff,25,25);fill.position.set(-5,-3,3);scene.add(fill);
  scene.add(new THREE.AmbientLight(0x7894af,1.3));
- const uniforms={uTime:{value:0},uHue:{value:palette==='mint'?0.43:0.71},uStrength:{value:.6}};
+ const uniforms={uTime:{value:0},uHue:{value:palette==='mint'?0.43:palette==='copper'?0.92:0.71},uStrength:{value:.6}};
  const shaderMaterial=new THREE.ShaderMaterial({
   uniforms,
   vertexShader:`varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,

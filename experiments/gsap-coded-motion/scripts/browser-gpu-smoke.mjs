@@ -65,8 +65,37 @@ try {
   if(samples[2].sha256!==samples[5].sha256)throw Error('Full GPU pixel buffer not identical after out-of-order seeking');
   if(errors.length||outside.length)throw Error(`JS/console errors or external requests: ${JSON.stringify({errors,outside})}`);
   const screenshot=await page.screenshot({type:'png'});
+  // A second original authored THREE-shot sequence exercises TWO separate real
+  // WebGL shader handoffs and random-order replay with the same stage adapter.
+  await page.goto('http://127.0.0.1:'+server.address().port+'/examples/depth-field.html?variation=three',{waitUntil:'load'});
+  await page.waitForFunction(()=>typeof window.seekFrame==='function'&&window.threeAudit?.shots?.length===3,null,{timeout:70000});
+  const threeAudit=await page.evaluate(()=>window.threeAudit);
+  if(threeAudit.variation!=='three'||threeAudit.transitions.length!==2||threeAudit.rigCount!==3)throw Error('3-shot program not connected to GPU');
+  const threeSamples=[];
+  for(const n of [0,102,105,115,125,199,207,219,270,299,105,207]){
+    const shot=await page.evaluate(frame=>{
+      const s=window.seekFrame(frame),audit=window.auditProtectedRegions();
+      if(!audit.rigChecks?.every(r=>r.passed))throw Error('3D hero overlaps protected film text at '+frame);
+      const canvas=document.querySelector('canvas#view'),gl=canvas.getContext('webgl2');
+      if(!gl||gl.getError()!==gl.NO_ERROR)throw Error('Invalid WebGL scene at '+frame);
+      const reduced=document.createElement('canvas');reduced.width=70;reduced.height=125;
+      const c=reduced.getContext('2d',{willReadFrequently:true});c.drawImage(canvas,0,0,70,125);
+      const pixels=Array.from(c.getImageData(0,0,70,125).data),colors=new Set();
+      for(let j=0;j<pixels.length;j+=4)colors.add(pixels[j]+':'+pixels[j+1]+':'+pixels[j+2]);
+      return {active:s.shot.active,progress:s.shot.progress,colors:colors.size,pixels};
+    },n);
+    const sha256=createHash('sha256').update(Uint8Array.from(shot.pixels)).digest('hex');
+    if(shot.colors<16)throw Error('Flat 3-shot GPU scene at frame '+n);
+    threeSamples.push({frame:n,active:shot.active,progress:shot.progress,colors:shot.colors,sha256});
+  }
+  if(threeSamples[2].sha256!==threeSamples[10].sha256||threeSamples[6].sha256!==threeSamples[11].sha256)throw Error('3-shot pixel replay is not deterministic');
+  if(threeSamples[1].active.length!==2||threeSamples[6].active.length!==2||threeSamples[9].active.length!==1)throw Error('3-shot timetable does not select GPU handoffs correctly');
+  const threeFrame=await page.evaluate(()=>window.seekFrame(207));
+  await mkdir('out',{recursive:true});
+  await writeFile('out/three-3shot-frame207.png',await page.screenshot({type:'png'}));
+  await writeFile('out/three-3shot-audit.json',JSON.stringify({realWebGL:true,shotCount:3,shaderHandoffs:2,audit:threeAudit,samples:threeSamples,frame207:threeFrame,source:'original 3-shot research, not visual approval'},null,2));
   await mkdir('out',{recursive:true});await writeFile('out/three-frame-143.png',screenshot);
   const report={realWebGL:true,shaderTransitionTested:true,renderProfile:{width:1080,height:1920,fps:30,frames:300},chrome:exe,audit,frames:samples,consoleWarnings:logs,externalRequests:outside,jsErrors:errors,source:'original R&D, not a creative acceptance'};
   await writeFile('out/three-gpu-audit.json',JSON.stringify(report,null,2));
-  console.log(JSON.stringify({GPU_BROWSER_PASS:true,frames:samples.map(({frame,sha256,distinctColors})=>({frame,sha256:sha256.slice(0,14),distinctColors})),warnings:logs}));
+  console.log(JSON.stringify({GPU_BROWSER_PASS:true,THREE_SHOT_BROWSER_PASS:true,frames:samples.map(({frame,sha256,distinctColors})=>({frame,sha256:sha256.slice(0,14),distinctColors})),warnings:logs}));
 } finally {await browser?.close();await new Promise(r=>server.close(r));}
