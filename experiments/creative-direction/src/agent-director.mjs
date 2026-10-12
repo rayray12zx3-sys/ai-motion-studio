@@ -49,7 +49,7 @@ const briefs={
 const hint=(brief,route,previous='')=>
  'Create ONE ORIGINAL JSON creative proposal, not source code. Brief: '+JSON.stringify(brief)+
  '\nDirection lens: '+briefs[route]+
- '\nReturn an object {briefId,interpretation,designReason,treatment}. treatment MUST satisfy creative-treatment-rnd-v1: profile matches brief exactly, rights.assetPolicy original-only, scene techniques svg-gsap/html-css/threejs, short readable text and contiguous nonempty 2–10 authored shots with motivated bridges; signature references a real shot. Beat-led uses original-synth and integer bpm/offsetFrame, cinematic uses silent and no bpm. Begin with establish, identify preceding hero for every non-cut, and show why every focal action moves. Use bounded named fields, never URLs/HTML/JS/references. Art, rights and output remain unapproved.'+
+ '\nReturn an object {briefId,interpretation,designReason,treatment}. treatment MUST satisfy creative-treatment-rnd-v1: profile matches brief exactly, rights.assetPolicy original-only, scene techniques svg-gsap/html-css/threejs, short readable text and contiguous nonempty 2–10 authored shots with motivated bridges; signature references a real shot. Beat-led uses original-synth and integer bpm/offsetFrame, cinematic uses silent and no bpm. Begin with establish, identify preceding hero for every non-cut, and show why every focal action moves. For product-explainer also include 1–8 productProof entries [{shotId,resultShotId,trigger:type|click|drag|select|scroll|long-press,before,after,why}], with an observable fictional UI change that matches its shot and a real causal user interaction. Do not invent measurable product performance. Use bounded named fields, never URLs/HTML/JS/references. Art, rights and output remain unapproved.'+
  (previous?'\nPrevious attempt was rejected; correct these specific errors without discarding the narrative brief: '+previous:'');
 function structuralFingerprint(v){
  const t=v.treatment;
@@ -68,12 +68,27 @@ function isDistinct(a,b){
  }
  return diff>=2&&structuralFingerprint(a)!==structuralFingerprint(b);
 }
+const uiEvents=new Set(['type','click','drag','select','scroll','long-press']);
+function validateProductProof(candidate,brief){
+ if(brief.objective!=='product-explainer')return;
+ const proof=candidate.productProof;
+ if(!Array.isArray(proof)||proof.length<1||proof.length>8)fail('A product film needs 1-8 causal UI action→visible-result links');
+ const t=candidate.treatment,shots=t.shots.map(s=>s.id);
+ for(const [i,e] of proof.entries()){
+  if(!e||!uiEvents.has(e.trigger)||!shots.includes(e.shotId)||!shots.includes(e.resultShotId))fail('Product proof needs valid trigger/shot names');
+  if(shots.indexOf(e.resultShotId)<shots.indexOf(e.shotId))fail('Visible result cannot precede its source action');
+  const before=textField(e.before,'product input state '+i,200),after=textField(e.after,'visible product result '+i,200);
+  textField(e.why,'product proof purpose '+i,250);
+  if(before.toLowerCase()===after.toLowerCase())fail('Product action must change an observable UI state');
+ }
+}
 function auditCandidate(raw,brief){
  const x=assertJsonOnly(raw);
  if(x.briefId!==brief.id)fail('Candidate does not belong to requested brief');
  textField(x.interpretation,'interpretation',800);
  textField(x.designReason,'original design reason',800);
  if(!x.treatment||x.treatment.profile?.fps!==brief.profile.fps||x.treatment.profile?.frames!==brief.profile.frames||x.treatment.profile?.width!==brief.profile.width||x.treatment.profile?.height!==brief.profile.height)fail('Wrong output profile');
+ validateProductProof(x,brief);
  const checked=preflightCreativeTreatment(x.treatment);
  if(x.treatment.rights.assetPolicy!=='original-only'||checked.quality!=='PENDING_HUMAN')fail('Creative or rights approval cannot be inferred');
  if(brief.rhythmPreference!=='unspecified'&&x.treatment.rhythm.mode!==brief.rhythmPreference)fail('Ignore no requested rhythm preference');

@@ -5,6 +5,7 @@ export const threaded={
  briefId:'clearflow-fictional',
  interpretation:'Make an unformed thought into a single continuous visual thread, then use that thread to explain the next action.',
  designReason:'The position and path of one line remain recognizable as planning UI expands around it; the tool is never just a collection of disconnected effects.',
+ productProof:[{shotId:'ink-becomes-route',resultShotId:'route-reveals-steps',trigger:'drag',before:'A fictional unsorted note is shown without explicit next steps',after:'A dragged decision point becomes a clear step and ordered timeline item',why:'The visible drag binds the sketch route to an actionable product state'}],
  treatment:{
   version:'creative-treatment-rnd-v1',id:'thread-to-decision',concept:'An unfinished pencil stroke becomes the path that connects an idea to its next practical action.',
   audience:'Viewers exploring a fictional creative planning workflow',
@@ -34,6 +35,7 @@ export const aperture={
  briefId:'clearflow-fictional',
  interpretation:'Present the same imaginary tool through an editorial window that reveals one choice at a time rather than tracing a line.',
  designReason:'The story is about subtracting noise. A reusable aperture and changing text hierarchy make the reduction legible without the preceding proposal\'s path metaphor.',
+ productProof:[{shotId:'mask-finds-order',resultShotId:'thought-becomes-choice',trigger:'select',before:'Several fictional priorities compete in a crowded overview',after:'One selected option appears in a newly focused editable planning workspace',why:'The actual selection is the cause of the subsequent focused UI state'}],
  treatment:{
   version:'creative-treatment-rnd-v1',id:'quiet-window-of-focus',concept:'A crowded editorial frame narrows into one luminous selection window where an actionable idea remains.',
   audience:'Viewers looking for clarity in a fictional creative workflow',

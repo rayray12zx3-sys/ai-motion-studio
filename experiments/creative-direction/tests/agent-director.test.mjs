@@ -8,7 +8,7 @@ const brief=(profile,objective='product-explainer')=>({
  profile,assetPolicy:'original-only',constraints:['Create original visuals only','Never invent evidence for advertised performance'],
  rhythmPreference:'unspecified',claims:[{text:'Results are illustrative only',status:'illustrative'}]
 });
-const pack=(b,t,kind='a')=>({briefId:b.id,interpretation:'An original visual statement showing cause and effect',designReason:'Objects move only when they communicate a purpose',treatment:{...structuredClone(t),id:'original-'+kind}});
+const pack=(b,t,kind='a')=>({briefId:b.id,interpretation:'An original visual statement showing cause and effect',designReason:'Objects move only when they communicate a purpose',productProof:[{shotId:'signal-intro',resultShotId:'form-change',trigger:'click',before:'An unorganized fictional idea remains a single glyph',after:'The idea transforms into a selectable visual node',why:'The click demonstrates one cause and one visible product state change'}],treatment:{...structuredClone(t),id:'original-'+kind}});
 function varied(original) {
  const x=structuredClone(original);
  x.id='original-variant';
@@ -63,6 +63,15 @@ test('a superficial recolor with unchanged shots is not acceptable as a second d
  }});
  assert.equal(run.status,'BLOCKED');
  assert.match(run.reason,/cosmetic/);
+});
+test('a product film without causal input→result UI proof fails even when its geometric animation passes',async()=>{
+ const b=brief(kinetic.profile);
+ const candidate=pack(b,kinetic);delete candidate.productProof;
+ const result=await runCreativeDirector({brief:b,maxRevisions:0,complete:async()=>candidate});
+ assert.equal(result.status,'BLOCKED');assert.match(result.reason,/causal UI/);
+ const wrong=pack(b,kinetic);wrong.productProof[0].after=wrong.productProof[0].before;
+ const x=await runCreativeDirector({brief:b,maxRevisions:0,complete:async()=>wrong});
+ assert.equal(x.status,'BLOCKED');assert.match(x.reason,/observable UI state/);
 });
 test('does not allow remote URL/JS payloads, wrong profiles, or invented commercial rights',async()=>{
  const b=brief(kinetic.profile);

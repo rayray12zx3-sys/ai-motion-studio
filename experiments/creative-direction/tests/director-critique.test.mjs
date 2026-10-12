@@ -7,7 +7,7 @@ const brief={id:'fictional-comms',objective:'product-explainer',goal:'An origina
  audience:'New users who deserve clear communication',message:'Turn an idea into a meaningful visual plan',
  profile:kinetic.profile,rhythmPreference:'unspecified',assetPolicy:'original-only',constraints:['Original art and no reference scenes'],claims:[{text:'Product works five times faster',status:'needs-evidence'}]};
 const pack=(t)=>({briefId:brief.id,interpretation:'A distinctive original purposeful visual story',
- designReason:'A clear original action results in another visible state',treatment:t});
+ designReason:'A clear original action results in another visible state',productProof:[{shotId:'signal-intro',resultShotId:'form-change',trigger:'click',before:'An unorganized fictional idea remains a single glyph',after:'The idea transforms into a selectable visual node',why:'The click demonstrates one cause and one visible product state change'}],treatment:t});
 const alternate=structuredClone(kinetic);alternate.id='an-actual-alternate';alternate.concept='An original cinematic alternative grounded in editorial reveals and action choices';
 alternate.shots[0].camera.move='track';alternate.shots[1].camera.move='locked';alternate.shots[2].camera.move='arc';
 async function directed(){
