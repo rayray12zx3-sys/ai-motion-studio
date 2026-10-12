@@ -23,6 +23,15 @@ const gestures = new Set(['click','drag','select','type','scroll']);
 const bridges = new Set(['establish','carry','transform']);
 const kinds = new Set(['task','clip','note','caption']);
 const fields = new Set(['status']);
+// Minimum contrast for text roles, including the dark-background variant.
+const luminance = hex => {
+ const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255);
+ return rgb.map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4)
+   .reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+};
+const contrast = (a,b) => {const x=luminance(a),y=luminance(b);
+ return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);
+};
 function pose(v,name) {
   object(v,name);
   const x=integer(v.x,0,1000,name+'.x'),y=integer(v.y,0,1000,name+'.y');
@@ -48,7 +57,13 @@ export function compileSemanticScenes(spec) {
   const fps=integer(p.fps,24,60,'fps'),frames=integer(p.frames,120,3600,'frames');
   if(frames%fps!==0)fail('Duration must be whole seconds in this pilot');
   const theme=object(x.theme,'theme');
-  for(const k of ['background','surface','ink','accent','muted'])if(!color(theme[k]))fail('Invalid palette '+k);
+  for(const k of ['background','surface','ink','accent','muted','onBackground','surfaceMuted','accentText'])
+    if(!color(theme[k]))fail('Invalid palette '+k);
+  for(const [foreground,background] of [['onBackground','background'],['muted','background'],
+    ['ink','surface'],['surfaceMuted','surface'],['accentText','surface']]) {
+    if(contrast(theme[foreground],theme[background])<4.5)
+      fail('Unreadable text contrast: '+foreground+' over '+background);
+  }
   const music=object(x.music,'music');
   if(music.mode!=='licensed-local'||music.licenseGate!=='PENDING_PUBLICATION_CREDIT')
     fail('Music requires an explicit local-license and credit gate');
@@ -153,7 +168,7 @@ export function renderSvgFrame(plan,frame) {
     label('AI MOTION STUDIO  /  ORIGINAL SEMANTIC STUDY',tx,top,18*unit,t.muted,650),
     box(tx,top+24*unit,w-2*tx,2*unit,t.muted,0),
     '<g opacity="'+fade.toFixed(4)+'">',
-    label(s.title,tx,top+157*unit,66*unit,t.ink,800),
+    label(s.title,tx,top+157*unit,66*unit,t.onBackground,800),
     label(s.subtitle,tx,top+215*unit,28*unit,t.muted,450),
     '</g>'
   ];
@@ -167,7 +182,7 @@ export function renderSvgFrame(plan,frame) {
       wave.push(box(tx+24*unit+i*((w-2*tx-48*unit)/49),h*.69-amp*.5,
         Math.max(3,5*unit),amp,t.accent,3*unit));}
     rendered.push(...wave);
-    s.context.forEach((v,i)=>rendered.push(label(v,tx+12*unit,h*.84+i*47*unit,24*unit,t.ink,570)));
+    s.context.forEach((v,i)=>rendered.push(label(v,tx+12*unit,h*.84+i*47*unit,24*unit,t.onBackground,570)));
   }else{
     rendered.push(box(tx,h*.59,w-2*tx,h*.25,t.surface,27*unit));
     s.context.forEach((v,i)=>rendered.push(label(v,tx+30*unit,h*.655+i*55*unit,30*unit,t.ink,580)));
@@ -177,7 +192,7 @@ export function renderSvgFrame(plan,frame) {
     box(hx+12*unit,hy+11*unit,8*unit,Math.max(8,hh-22*unit),t.accent,4*unit),
     label(e.label,hx+36*unit,hy+Math.min(hh*.4,65*unit),Math.min(37*unit,hh*.26),t.ink,750),
     label(f.state[e.id],hx+36*unit,hy+Math.min(hh*.74,112*unit),Math.min(25*unit,hh*.18),
-      action?t.accent:t.muted,600),'</g>');
+      action?t.accentText:t.surfaceMuted,600),'</g>');
   if(action&&frame-action.frame<p.fps*.85){
     const pulse=smooth((frame-action.frame)/(p.fps*.5));
     rendered.push('<circle cx="'+(hx+hw-20*unit)+'" cy="'+(hy+20*unit)+
