@@ -5,6 +5,7 @@
 <script type="module">
 import * as THREE from '../node_modules/three/build/three.module.js';
 import {createThreeDepthRig} from '../src/three-depth.mjs';
+import {createDataSculptureRig} from '../src/data-sculpture-rig.mjs';
 import {createShaderTransition} from '../src/shader-transition.mjs';
 import {compileShotChoreography} from '../src/shot-choreography.mjs';
 import {compileCameraChoreography,auditCameraMotion} from '../src/camera-choreography.mjs';
@@ -23,7 +24,7 @@ const cameraLavender=compileCameraChoreography({frames:300,keys:[
 ]});
 if(!auditCameraMotion(cameraMint).passed||!auditCameraMotion(cameraLavender).passed)throw Error('3D cinematic camera motion exceeds safe speed');
 const first=createThreeDepthRig({THREE,width:1080,height:1920,fps:30,frames:300,palette:'mint',cameraPath:cameraMint});
-const second=createThreeDepthRig({THREE,width:1080,height:1920,fps:30,frames:300,palette:'lavender',cameraPath:cameraLavender});
+const second=createDataSculptureRig({THREE,width:1080,height:1920,fps:30,frames:300,cameraPath:cameraLavender});
 const film=compileShotChoreography({fps:30,frames:300,shots:[
  {id:'orbital-arrival',rig:'mint',start:0,end:153,titleHold:[15,95]},
  {id:'orbital-resolution',rig:'lavender',start:127,end:300,titleHold:[175,280]}
@@ -61,6 +62,6 @@ window.auditProtectedRegions=()=>{
   return {first:assertNoProtectedOcclusion({hero:firstBounds,protectedRegions:regions}),second:assertNoProtectedOcclusion({hero:secondBounds,protectedRegions:regions}),regions,firstBounds,secondBounds};
 };
 window.addEventListener('hf-seek',e=>seekFrame(Math.min(299,Math.max(0,Math.floor(e.detail.time*30)))));
-window.threeAudit={version:THREE.REVISION,actualWebGL:renderer.isWebGLRenderer,frameCount:300,objects:first.hero.children.length,shader:true,fit,cameraPaths:true,gsapHybrid:true,gsapVersion:window.gsap.version,shots:film.shots.map(({id,start,end})=>({id,start,end})),transitions:film.transitions.map(({from,to,start,end})=>({from,to,start,end}))};
+window.threeAudit={version:THREE.REVISION,actualWebGL:renderer.isWebGLRenderer,frameCount:300,objects:first.hero.children.length,shader:true,fit,cameraPaths:true,gsapHybrid:true,distinct3dRigs:true,gsapVersion:window.gsap.version,shots:film.shots.map(({id,start,end})=>({id,start,end})),transitions:film.transitions.map(({from,to,start,end})=>({from,to,start,end}))};
 seekFrame(0);
 </script></body></html>
