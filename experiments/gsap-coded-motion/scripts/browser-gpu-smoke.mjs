@@ -37,7 +37,7 @@ try {
   await page.goto(`http://127.0.0.1:${server.address().port}/examples/depth-field.html`,{waitUntil:'load'});
   await page.waitForFunction(()=>typeof window.seekFrame==='function',null,{timeout:70000});
   const audit=await page.evaluate(()=>window.threeAudit);
-  if(!audit?.actualWebGL||!audit.shader||audit.frameCount!==300||audit.shots?.length!==2||audit.transitions?.length!==1)throw Error('Real WebGL/shader timeline not initialized');
+  if(!audit?.actualWebGL||!audit.shader||audit.frameCount!==300||audit.shots?.length!==2||audit.transitions?.length!==1||audit.cameraPaths!==true)throw Error('Real WebGL/shader timeline not initialized');
   const samples=[];
   for (const frame of [0,133,143,151,299,143]) {
     const sample=await page.evaluate((n)=>{
