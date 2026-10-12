@@ -103,6 +103,25 @@ test('unmotivated tiny or reversed gesture trajectory is rejected',()=>{
    assert.throws(()=>compileSemanticScenes(ex));
  }
 });
+test('long editorial titles and persistent entity text conservatively fit the visible frame',()=>{
+ for(const p of [b,c]){
+  for(const frame of [35,140,180,280,359]){
+   const svg=renderSvgFrame(p,frame);
+   const view=inspectFrame(p,frame);
+   const shot=view.shot;
+   const titleFontMatch=svg.match(new RegExp('font-size="([0-9.]+)"[^>]*>'+shot.title.replace(/[.*+?^$\{\}()|[\]\\]/g,'\\test('a harmless ampersand must be escaped in frame output',()=>{')+'</text>'));
+   assert.ok(titleFontMatch,'Headline must have a measurable font size');
+   assert.ok(Number(titleFontMatch[1])*shot.title.length*.78 <=p.profile.width-124+1,'Headline must not overflow');
+   const ent=p.entities.find(e=>e.id===shot.focusId);
+   const all=[ent.label,view.state[ent.id]];
+   for(const phrase of all){
+    const hit=svg.match(new RegExp('font-size="([0-9.]+)"[^>]*>'+phrase.replace(/[.*+?^$\{\}()|[\]\\]/g,'\\test('a harmless ampersand must be escaped in frame output',()=>{')+'</text>'));
+    assert.ok(hit,'Semantic card label/status present');
+    assert.ok(Number(hit[1])*phrase.length*(phrase===ent.label?.72:.67) <= view.hero.w*p.profile.width/1000-70+1,'Hero type must not bleed beyond card');
+   }
+  }
+ }
+});
 test('a harmless ampersand must be escaped in frame output',()=>{
  const ex=copy(boardBrief);ex.entities[0].label='Plan & schedule';
  const p=compileSemanticScenes(ex);
