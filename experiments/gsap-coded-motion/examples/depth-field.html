@@ -11,6 +11,7 @@ import {compileShotChoreography} from '../src/shot-choreography.mjs';
 import {compileCameraChoreography,auditCameraMotion} from '../src/camera-choreography.mjs';
 import {projectHeroBounds,assertNoProtectedOcclusion,htmlRectToCanvasDesign} from '../src/three-layout-audit.mjs';
 import {fitPerShotHeroLayout} from '../src/shot-layout-solver.mjs';
+import {attachPersistentMatchAnchor} from '../src/persistent-match-anchor.mjs';
 const cameraMint=compileCameraChoreography({frames:300,keys:[
  {frame:0,x:-.55,y:.12,z:12.3,lookX:0,lookY:0,lookZ:0},
  {frame:100,x:.30,y:.20,z:11.8,lookX:.10,lookY:.03,lookZ:0},
@@ -30,6 +31,7 @@ const film=compileShotChoreography({fps:30,frames:300,shots:[
  {id:'orbital-arrival',rig:'mint',start:0,end:153,titleHold:[15,95]},
  {id:'orbital-resolution',rig:'lavender',start:127,end:300,titleHold:[175,280]}
 ]});
+const matchAnchor=attachPersistentMatchAnchor({THREE,first,second,width:1080,height:1920,start:127,end:153,x:.5,y:.57,radiusPixels:76,fadeFrames:20});
 const cv=document.querySelector('#view');const cvRect=cv.getBoundingClientRect();
 const protectedRegions=['.title','.footer'].map(sel=>({name:sel.slice(1),bounds:htmlRectToCanvasDesign(document.querySelector(sel).getBoundingClientRect(),cvRect,1080,1920)}));
 const fit=fitPerShotHeroLayout({THREE,entries:[{id:'orbital-arrival',rig:first,start:0,end:153},{id:'data-sculpture-resolution',rig:second,start:127,end:300}],protectedRegions,width:1080,height:1920});
@@ -44,12 +46,13 @@ const wipe=createShaderTransition({THREE,renderer,width:1080,height:1920});
 const seekFrame=(frame)=>{
  if(!Number.isInteger(frame)||frame<0||frame>=300)throw Error('Bad frame');
  const a=first.seekFrame(frame),b=second.seekFrame(frame),shot=film.at(frame);
+ const anchorState=matchAnchor.seekFrame(frame);
  // One continuous display color pipeline for every frame; p=0/1 produce
  // first/second scene using the SAME compositor as overlapping frames.
  const displayProgress=shot.active.length===1?(shot.rigs[0]==='mint'?0:1):shot.progress;
  wipe.render(first,second,displayProgress);
  typeTimeline.time(frame/30,true);
- return {frame,a,b,shot,typography:titleState(),shaderProgress:wipe.uniforms.uProgress.value};
+ return {frame,a,b,shot,anchorState,typography:titleState(),shaderProgress:wipe.uniforms.uProgress.value};
 };
 window.seekFrame=seekFrame;
 window.auditProtectedRegions=()=>{
@@ -63,6 +66,6 @@ window.auditProtectedRegions=()=>{
   return {first:assertNoProtectedOcclusion({hero:firstBounds,protectedRegions:regions}),second:assertNoProtectedOcclusion({hero:secondBounds,protectedRegions:regions}),regions,firstBounds,secondBounds};
 };
 window.addEventListener('hf-seek',e=>seekFrame(Math.min(299,Math.max(0,Math.floor(e.detail.time*30)))));
-window.threeAudit={version:THREE.REVISION,actualWebGL:renderer.isWebGLRenderer,frameCount:300,objects:first.hero.children.length,shader:true,fit,cameraPaths:true,gsapHybrid:true,distinct3dRigs:true,gsapVersion:window.gsap.version,shots:film.shots.map(({id,start,end})=>({id,start,end})),transitions:film.transitions.map(({from,to,start,end})=>({from,to,start,end}))};
+window.threeAudit={version:THREE.REVISION,actualWebGL:renderer.isWebGLRenderer,frameCount:300,objects:first.hero.children.length,shader:true,fit,cameraPaths:true,gsapHybrid:true,distinct3dRigs:true,persistentMatchedObject:true,gsapVersion:window.gsap.version,shots:film.shots.map(({id,start,end})=>({id,start,end})),transitions:film.transitions.map(({from,to,start,end})=>({from,to,start,end}))};
 seekFrame(0);
 </script></body></html>
