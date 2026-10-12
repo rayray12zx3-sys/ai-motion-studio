@@ -103,13 +103,30 @@ test('unmotivated tiny or reversed gesture trajectory is rejected',()=>{
    assert.throws(()=>compileSemanticScenes(ex));
  }
 });
-test('long editorial titles and persistent entity text conservatively fit the visible frame',()=>{
+test('long editorial titles and persistent entity text fit frame/card bounds',()=>{
+ const getSize=(svg,phrase)=>{
+  const ending='>'+phrase+'</text>';
+  const end=svg.indexOf(ending);
+  assert.ok(end>=0,'Missing rendered text '+phrase);
+  const tagStart=svg.lastIndexOf('<text ',end);
+  const attr=svg.slice(tagStart,end).match(/font-size="([0-9.]+)"/);
+  assert.ok(attr,'Missing rendered font size');
+  return Number(attr[1]);
+ };
  for(const p of [b,c]){
   for(const frame of [35,140,180,280,359]){
-   const svg=renderSvgFrame(p,frame);
-   const view=inspectFrame(p,frame);
-   const shot=view.shot;
-   const titleFontMatch=svg.match(new RegExp('font-size="([0-9.]+)"[^>]*>'+shot.title.replace(/[.*+?^$\{\}()|[\]\\]/g,'\\test('a harmless ampersand must be escaped in frame output',()=>{')+'</text>'));
+   const svg=renderSvgFrame(p,frame),v=inspectFrame(p,frame),s=v.shot;
+   const titlePx=getSize(svg,s.title);
+   assert.ok(titlePx*s.title.length*.78<=p.profile.width-124+1,'Title overflow: '+s.title);
+   const e=p.entities.find(x=>x.id===s.focusId);
+   for(const [label,multiplier] of [[e.label,.72],[v.state[e.id],.67]]){
+    const labelPx=getSize(svg,label);
+    assert.ok(labelPx*label.length*multiplier<=v.hero.w*p.profile.width/1000-70+1,'Hero type overflow: '+label);
+   }
+  }
+ }
+});
+test('a harmless ampersand must be escaped in frame output',()=>{')+'</text>'));
    assert.ok(titleFontMatch,'Headline must have a measurable font size');
    assert.ok(Number(titleFontMatch[1])*shot.title.length*.78 <=p.profile.width-124+1,'Headline must not overflow');
    const ent=p.entities.find(e=>e.id===shot.focusId);
