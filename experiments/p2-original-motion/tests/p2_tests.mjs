@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-const code=fs.readFileSync(new URL('./film.js',import.meta.url),'utf8');
-const html=fs.readFileSync(new URL('./film.html',import.meta.url),'utf8');
+const code=fs.readFileSync(new URL('../film.js',import.meta.url),'utf8');
+const html=fs.readFileSync(new URL('../film.html',import.meta.url),'utf8');
 test('real authored deterministic 1080x1920 360-frame seek contract exists',()=>{
  assert.match(code,/const W=1080,H=1920,FPS=30,DURATION=12,FRAMES=FPS\*DURATION/);
  assert.match(code,/window\.seekFrame=seekFrame/);
