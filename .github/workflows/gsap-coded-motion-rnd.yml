@@ -25,6 +25,8 @@ jobs:
         run: npm run check
       - name: Real Chromium WebGL2 shader compilation, full-frame pixel and seek check
         run: node scripts/browser-gpu-smoke.mjs
+      - name: Render contiguous 300-frame genuine GPU H264 review-only film
+        run: node scripts/render-gpu-film.mjs
       - name: Save isolated GPU evidence (not a creative acceptance)
         if: always()
         uses: actions/upload-artifact@v4
