@@ -1,0 +1,55 @@
+name: P2 semantic product scenes R&D
+on:
+  pull_request:
+    paths:
+      - 'experiments/p2-semantic-scenes/**'
+      - '.github/workflows/p2-semantic-scenes-rnd.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  semantic-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Check compiler and both independent briefs
+        run: |
+          node --check experiments/p2-semantic-scenes/src/semantic-scenes.mjs
+          node --check experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs
+          node --check experiments/p2-semantic-scenes/examples/two-original-briefs.mjs
+          node --test experiments/p2-semantic-scenes/tests/*.test.mjs
+          python3 -m py_compile experiments/p2-semantic-scenes/scripts/render_video.py
+      - name: Emit deterministic sampled SVGs and causal manifests
+        run: |
+          node experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs board
+          node experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs caption
+          test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/samples/0165.svg
+          test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/samples/0168.svg
+      - name: Actual offline H264 short codec proof (NOT full or art QA)
+        run: |
+          python3 -m venv /tmp/p2-svg-venv
+          . /tmp/p2-svg-venv/bin/activate
+          python -m pip --disable-pip-version-check install CairoSVG==2.7.1
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          ffmpeg -version | head -n 1
+          python experiments/p2-semantic-scenes/scripts/render_video.py board --smoke-frames 12
+          python experiments/p2-semantic-scenes/scripts/render_video.py caption --smoke-frames 12
+          test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/smoke-qc.json
+          test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/smoke-qc.json
+      - name: Publish synthetic engineering evidence only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: p2-semantic-original-codec-smoke
+          path: |
+            experiments/p2-semantic-scenes/artifacts/*/smoke.mp4
+            experiments/p2-semantic-scenes/artifacts/*/smoke-qc.json
+            experiments/p2-semantic-scenes/artifacts/*/samples/manifest.json
+          retention-days: 2
+          if-no-files-found: error
