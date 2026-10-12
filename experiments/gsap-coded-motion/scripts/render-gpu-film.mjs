@@ -32,6 +32,8 @@ const findChrome=async()=>{
 let browser,encoder;
 await new Promise(ok=>server.listen(0,'127.0.0.1',ok));
 try{
+ const encoderAvailable=spawnSync('ffmpeg',['-version'],{encoding:'utf8'});
+ if(encoderAvailable.status!==0)throw Error('Research FFmpeg is missing; full MP4 proof NOT verified');
  const chrome=await findChrome(),out=resolve(root,'out','three-film-10s-540x960.mp4');
  await mkdir(resolve(root,'out'),{recursive:true});
  browser=await chromium.launch({executablePath:chrome,headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-angle=swiftshader','--enable-webgl','--ignore-gpu-blocklist','--disable-dev-shm-usage']});
