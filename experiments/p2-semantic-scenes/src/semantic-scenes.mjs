@@ -194,9 +194,12 @@ export function renderSvgFrame(plan,frame) {
   // Measure-free bounded role hierarchy: fit a single-line editorial headline
   // to the current video profile rather than shrinking every treatment to one
   // timid fixed 66px type size. Font portability is STILL an open gate.
-  const titleSize=Math.min(94*unit,(w-2*tx)/Math.max(4,s.title.length*.56));
-  const subtitleSize=Math.min(36*unit,(w-2*tx)/Math.max(4,s.subtitle.length*.51));
+  const titleSize=Math.min(88*unit,(w-2*tx-22*unit)/Math.max(4,s.title.length*.78));
+  const subtitleSize=Math.min(36*unit,(w-2*tx-22*unit)/Math.max(4,s.subtitle.length*.63));
   const e=plan.entities.find(q=>q.id===s.focusId);
+  const heroTextWidth=Math.max(1,hw-70*unit);
+  const entityFont=Math.min(48*unit,heroTextWidth/Math.max(1,e.label.length*.72));
+  const entityStatusFont=Math.min(33*unit,heroTextWidth/Math.max(1,f.state[e.id].length*.67));
   const action=plan.operations.find(o=>o.entityId===e.id&&frame>=o.frame);
   const rendered=[
     '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'">',
@@ -245,8 +248,8 @@ export function renderSvgFrame(plan,frame) {
   rendered.push('<g id="persistent-hero" data-entity="'+esc(e.id)+'">',
     box(hx,hy,hw,hh,t.surface,24*unit,t.accent),
     box(hx+12*unit,hy+11*unit,8*unit,Math.max(8,hh-22*unit),t.accent,4*unit),
-    label(e.label,hx+36*unit,hy+Math.min(hh*.4,81*unit),Math.min(48*unit,hh*.30),t.ink,750),
-    label(f.state[e.id],hx+36*unit,hy+Math.min(hh*.74,140*unit),Math.min(33*unit,hh*.18),
+    label(e.label,hx+36*unit,hy+Math.min(hh*.4,81*unit),Math.min(entityFont,hh*.30),t.ink,750),
+    label(f.state[e.id],hx+36*unit,hy+Math.min(hh*.74,140*unit),Math.min(entityStatusFont,hh*.18),
       action?t.accentText:t.surfaceMuted,600),'</g>');
   // A product film has to SHOW the interaction rather than merely updating
   // a variable off-screen. The same generic cursor/feedback treatment uses
