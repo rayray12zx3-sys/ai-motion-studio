@@ -123,6 +123,20 @@ export function compileSemanticScenes(spec) {
     }
     operations.push({id:o.id,shotId:o.shotId,resultShotId:o.resultShotId,entityId:o.entityId,
       trigger:o.trigger,field:o.field,frame,from:o.from,to:o.to,accent:o.accent===true,
+      gesture:(()=>{
+        const g=object(o.gesture,'visible action trajectory');
+        const start=integer(g.start,shot.start,frame-6,'gesture.start');
+        if(frame-start>fps*2)fail('Action gesture is too long to read');
+        const point=(p,name)=>{
+          object(p,name);
+          return {x:integer(p.x,30,970,name+'.x'),y:integer(p.y,130,920,name+'.y')};
+        };
+        const fromPoint=point(g.from,'gesture.from'),toPoint=point(g.to,'gesture.to');
+        if(Math.hypot(fromPoint.x-toPoint.x,fromPoint.y-toPoint.y)<30)
+          fail('Gesture must depict observable pointer motion toward product target');
+        return {start,from:fromPoint,to:toPoint};
+      })(),
+      resultLabel:str(o.resultLabel,'on-screen product response',4,39),
       reason:str(o.reason,'action cause/effect',8,220)});
   }
   operations.sort((a,b)=>a.frame-b.frame);
@@ -193,6 +207,31 @@ export function renderSvgFrame(plan,frame) {
     label(e.label,hx+36*unit,hy+Math.min(hh*.4,65*unit),Math.min(37*unit,hh*.26),t.ink,750),
     label(f.state[e.id],hx+36*unit,hy+Math.min(hh*.74,112*unit),Math.min(25*unit,hh*.18),
       action?t.accentText:t.surfaceMuted,600),'</g>');
+  // A product film has to SHOW the interaction rather than merely updating
+  // a variable off-screen. The same generic cursor/feedback treatment uses
+  // each director-authored cause→response trajectory and persistent entity ID.
+  const current=plan.operations.find(o=>o.shotId===s.id && o.entityId===e.id);
+  if(current && frame>=current.gesture.start && frame<=current.frame+Math.round(p.fps*.38)){
+    const g=current.gesture;
+    const progress=smooth((frame-g.start)/Math.max(1,current.frame-g.start));
+    const gx=mix(g.from.x,g.to.x,progress)*w/1000;
+    const gy=mix(g.from.y,g.to.y,progress)*h/1000;
+    const remain=frame>current.frame?1-smooth((frame-current.frame)/(p.fps*.38)):1;
+    rendered.push('<g id="causal-action" data-entity="'+esc(e.id)+'" data-gesture="'+esc(current.trigger)+
+      '" opacity="'+remain.toFixed(4)+'">',
+      '<path d="M '+(g.from.x*w/1000)+' '+(g.from.y*h/1000)+' L '+(g.to.x*w/1000)+
+      ' '+(g.to.y*h/1000)+'" stroke="'+t.accent+'" stroke-width="'+(3*unit)+
+      '" stroke-dasharray="'+(9*unit)+' '+(9*unit)+'" fill="none"/>',
+      '<g transform="translate('+gx+' '+gy+') scale('+unit+')">',
+      '<path d="M0 0 L0 40 L11 31 L22 50 L31 45 L20 26 L37 25 Z" stroke="'+
+      t.background+'" stroke-width="3" fill="'+t.onBackground+'"/></g>','</g>');
+  }
+  if(action && frame>=action.frame){
+    rendered.push('<g id="visible-product-response" data-entity="'+esc(e.id)+'">',
+      box(tx,h*.885,w-2*tx,65*unit,t.surface,14*unit,t.accent),
+      label(action.resultLabel,tx+24*unit,h*.885+41*unit,27*unit,t.ink,700),
+      '</g>');
+  }
   if(action&&frame-action.frame<p.fps*.85){
     const pulse=smooth((frame-action.frame)/(p.fps*.5));
     rendered.push('<circle cx="'+(hx+hw-20*unit)+'" cy="'+(hy+20*unit)+

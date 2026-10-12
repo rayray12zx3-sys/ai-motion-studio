@@ -25,6 +25,8 @@ export const boardBrief={
  ],
  operations:[{id:'schedule-task',shotId:'move-the-work',resultShotId:'see-its-place',frame:165,
   trigger:'drag',entityId:'atlas-card',field:'status',from:'Unscheduled',to:'Tuesday / scheduled',
+  gesture:{start:133,from:{x:480,y:477},to:{x:530,y:680}},
+  resultLabel:'DROPPED INTO TUESDAY',
   accent:true,reason:'The drag visibly assigns a date to the original task, not merely an aesthetic change.'}]
 };
 export const captionBrief={
@@ -48,6 +50,8 @@ export const captionBrief={
  ],
  operations:[{id:'select-transcript',shotId:'choose-phrase',resultShotId:'carry-caption',frame:168,
   trigger:'select',entityId:'spoken-moment',field:'status',from:'Not selected',to:'Caption draft ready',
+  gesture:{start:132,from:{x:420,y:465},to:{x:645,y:665}},
+  resultLabel:'CAPTION READY FOR REVIEW',
   accent:true,reason:'The source selection yields a visible editable caption candidate, not a generic effect.'}]
 };
 export const sampleBriefs=[boardBrief,captionBrief];

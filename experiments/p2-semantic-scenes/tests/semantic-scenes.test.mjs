@@ -68,6 +68,33 @@ test('illegal external source or malicious surface text is never accepted',()=>{
   assert.throws(()=>compileSemanticScenes(example));
  }
 });
+test('a genuine product gesture is visibly drawn before the event and yields separate UI result',()=>{
+ for(const p of [b,c]) {
+  const op=p.operations[0];
+  const before=renderSvgFrame(p,op.gesture.start+3);
+  const after=renderSvgFrame(p,op.frame);
+  const later=renderSvgFrame(p,p.shots[2].start+25);
+  assert.match(before,/id="causal-action"/);
+  assert.ok(before.includes('data-gesture="'+op.trigger+'"'));
+  assert.doesNotMatch(before,/id="visible-product-response"/);
+  assert.match(after,/id="visible-product-response"/);
+  assert.ok(after.includes(op.resultLabel));
+  assert.ok(later.includes(op.resultLabel));
+  assert.ok(renderSvgFrame(p,op.frame).includes('id="causal-action"'));
+ }
+});
+test('unmotivated tiny or reversed gesture trajectory is rejected',()=>{
+ for(const mutate of [
+   op=>{op.gesture.from.x=op.gesture.to.x;op.gesture.from.y=op.gesture.to.y;},
+   op=>{op.gesture.start=op.frame;},
+   op=>{op.gesture.start=op.frame-80;},
+   op=>{op.gesture.to.x=1001;},
+   op=>{delete op.resultLabel;}
+ ]){
+   const ex=copy(boardBrief);mutate(ex.operations[0]);
+   assert.throws(()=>compileSemanticScenes(ex));
+ }
+});
 test('a harmless ampersand must be escaped in frame output',()=>{
  const ex=copy(boardBrief);ex.entities[0].label='Plan & schedule';
  const p=compileSemanticScenes(ex);
