@@ -10,7 +10,7 @@ permissions:
 jobs:
   semantic-preflight:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -33,7 +33,7 @@ jobs:
           node experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs caption
           test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/samples/0165.svg
           test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/samples/0168.svg
-      - name: Actual offline H264 short codec proof (NOT full or art QA)
+      - name: Actually encode two FULL 360-frame silent H264 films and inspect every frame (NOT art QA)
         run: |
           python3 -m venv /tmp/p2-svg-venv
           . /tmp/p2-svg-venv/bin/activate
@@ -41,20 +41,20 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends ffmpeg
           ffmpeg -version | head -n 1
-          python experiments/p2-semantic-scenes/scripts/render_video.py board --smoke-frames 12
-          python experiments/p2-semantic-scenes/scripts/render_video.py caption --smoke-frames 12
-          python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/smoke.mp4 --expected-frames 12 --output experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/smoke-av-audit.json
-          python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/smoke.mp4 --expected-frames 12 --output experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/smoke-av-audit.json
-          test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/smoke-qc.json
-          test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/smoke-qc.json
+          python experiments/p2-semantic-scenes/scripts/render_video.py board
+          python experiments/p2-semantic-scenes/scripts/render_video.py caption
+          python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review.mp4 --expected-frames 360 --output experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review-av-audit.json
+          python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review.mp4 --expected-frames 360 --output experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review-av-audit.json
+          test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review-qc.json
+          test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review-qc.json
       - name: Publish synthetic engineering evidence only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: p2-semantic-original-codec-smoke
+          name: p2-semantic-two-full-silent-engineering-films
           path: |
-            experiments/p2-semantic-scenes/artifacts/*/smoke.mp4
-            experiments/p2-semantic-scenes/artifacts/*/smoke-qc.json
-            experiments/p2-semantic-scenes/artifacts/*/smoke-av-audit.json
+            experiments/p2-semantic-scenes/artifacts/*/silent_review.mp4
+            experiments/p2-semantic-scenes/artifacts/*/silent_review-qc.json
+            experiments/p2-semantic-scenes/artifacts/*/silent_review-av-audit.json
             experiments/p2-semantic-scenes/artifacts/*/samples/manifest.json
           retention-days: 2
           if-no-files-found: error
