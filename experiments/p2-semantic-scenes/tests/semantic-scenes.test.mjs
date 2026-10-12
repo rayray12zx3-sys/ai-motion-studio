@@ -60,7 +60,9 @@ test('illegal external source or malicious surface text is never accepted',()=>{
   x=>x.operations[0].resultShotId='make-believe',
   x=>x.operations[0].frame=169,
   x=>x.operations[0].to=x.operations[0].from,
-  x=>x.music.auditioned=true
+  x=>x.music.auditioned=true,
+  x=>x.theme.onBackground='#FFFFFF',
+  x=>x.theme.surfaceMuted='#F4F4F4'
  ]){
   const example=copy(boardBrief);patch(example);
   assert.throws(()=>compileSemanticScenes(example));
