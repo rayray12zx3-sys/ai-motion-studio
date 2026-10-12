@@ -35,9 +35,14 @@ test('GPU scene-to-scene effect owns two render targets and explicit zero/one bo
  const sceneA=createThreeDepthRig({THREE,palette:'mint'}),sceneB=createThreeDepthRig({THREE,palette:'lavender'});
  sceneA.seekFrame(40);sceneB.seekFrame(40);
  transition.render(sceneA,sceneB,0);
- assert.equal(transition.uniforms.uProgress.value,0);assert.deepEqual(calls.filter(v=>v[0]==='target').map(v=>v[1]),['offscreen','offscreen','screen']);
+ assert.equal(transition.uniforms.uProgress.value,0);
+ assert.deepEqual(calls.filter(v=>v[0]==='target').map(v=>v[1]),['screen']);
+ transition.render(sceneA,sceneB,.5);
+ assert.deepEqual(calls.filter(v=>v[0]==='target').map(v=>v[1]),['screen','offscreen','offscreen','screen']);
  transition.render(sceneA,sceneB,1);assert.equal(transition.uniforms.uProgress.value,1);
+ assert.equal(calls.filter(v=>v[0]==='target').at(-1)[1],'screen');
  assert.ok(FRAGMENT.includes('uProgress')&&FRAGMENT.includes('texture2D')&&VERTEX.includes('gl_Position'));
+ assert.ok(FRAGMENT.includes('<tonemapping_fragment>')&&FRAGMENT.includes('<colorspace_fragment>'));
  assert.throws(()=>transition.render(sceneA,sceneB,1.1),/0..1/);
  transition.dispose();
 });

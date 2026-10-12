@@ -17,6 +17,10 @@ export const FRAGMENT=`precision highp float; varying vec2 vUv;
    vec4 a=texture2D(uFrom,vUv),b=texture2D(uTo,vUv);
    float edge=(1.-smoothstep(.01,.042,abs(threshold-.5)))*p*(1.-p)*2.0;
    gl_FragColor=mix(a,b,clean)+vec4(.10,.32,.30,0.)*edge;
+   // Resolve linear render-target pixels with the SAME ACES + output-colorspace
+   // pipeline as directly rendering either source scene to the screen.
+   #include <tonemapping_fragment>
+   #include <colorspace_fragment>
  }`;
 export function createShaderTransition({THREE,renderer,width,height}={}){
  if(!THREE?.WebGLRenderTarget||!THREE?.ShaderMaterial||!renderer?.render)throw Error('Three.js WebGL and renderer required');
@@ -27,9 +31,17 @@ export function createShaderTransition({THREE,renderer,width,height}={}){
  const camera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
  const render=(first,second,progress)=>{
   if(!Number.isFinite(progress)||progress<0||progress>1)throw Error('Transition progress must be 0..1');
+  uniforms.uProgress.value=progress;
+  // At exactly 0 and 1, bypass the compositor to ensure pixel-identical cuts.
+  if(progress===0||progress===1){
+   renderer.setRenderTarget(null);
+   const rig=progress===0?first:second;
+   renderer.render(rig.scene,rig.camera);
+   return;
+  }
   renderer.setRenderTarget(targetA);renderer.render(first.scene,first.camera);
   renderer.setRenderTarget(targetB);renderer.render(second.scene,second.camera);
-  uniforms.uProgress.value=progress;renderer.setRenderTarget(null);renderer.render(compositor,camera);
+  renderer.setRenderTarget(null);renderer.render(compositor,camera);
  };
  const dispose=()=>{targetA.dispose();targetB.dispose();quad.geometry.dispose();quad.material.dispose()};
  return Object.freeze({render,dispose,uniforms,compositor});
