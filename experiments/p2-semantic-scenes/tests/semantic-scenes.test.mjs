@@ -34,7 +34,15 @@ test('shared semantic hero position is continuous at shot boundaries',()=>{
   assert.equal(inspectFrame(p,second.start).hero.x,prior.hero.x);
   assert.equal(inspectFrame(p,second.start).hero.y,prior.hero.y);
   assert.ok(Math.abs(inspectFrame(p,second.start+13).hero.x-second.hero.x)<1);
-  assert.equal(inspectFrame(p,p.shots[2].start).hero.x,second.hero.x);
+  const lastSecond=inspectFrame(p,second.end-1).hero;
+  const firstThird=inspectFrame(p,p.shots[2].start).hero;
+  assert.equal(firstThird.x,lastSecond.x);
+  assert.equal(firstThird.y,lastSecond.y);
+  if(p.operations[0].trigger==='drag'){
+    assert.notEqual(lastSecond.y,second.hero.y);
+    assert.ok(renderSvgFrame(p,p.operations[0].frame).includes('id="visible-product-response"'));
+  }
+
  }
 });
 test('out-of-order frame evaluation and SVG export are byte-for-byte deterministic',()=>{
