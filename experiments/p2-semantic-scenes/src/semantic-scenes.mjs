@@ -240,9 +240,35 @@ export function renderSvgFrame(plan,frame) {
         '" stroke-width="'+(3*unit)+'" rx="'+(9*unit)+'"/>');
     }
     s.context.forEach((v,i)=>rendered.push(label(v,tx+12*unit,h*.85+i*47*unit,28*unit,t.onBackground,570)));
+  }else if(action){
+    // A product film's final narrative payoff must be a legible on-screen
+    // RESULT, not tiny metadata repeating the operation status. Both unrelated
+    // briefs use precisely this same compositing grammar and the true state
+    // of the persistent hero entity. No extra footage or invented app claims.
+    const by=h*.545,bw=w-2*tx,bh=h*.33;
+    const open=smooth((frame-s.start)/Math.max(1,p.fps*.72));
+    const status=f.state[e.id];
+    const resultFont=Math.min(78*unit,(bw-112*unit)/Math.max(1,status.length*.66));
+    const sourceFont=Math.min(42*unit,(bw-108*unit)/Math.max(1,e.label.length*.7));
+    rendered.push('<g id="product-result-stage" data-entity="'+esc(e.id)+
+      '" opacity="'+open.toFixed(4)+'" transform="translate(0 '+((1-open)*54*unit).toFixed(2)+')">',
+      box(tx,by,bw,bh,t.surface,32*unit,t.accent),
+      box(tx+35*unit,by+39*unit,10*unit,135*unit,t.accent,4*unit),
+      label('AFTER THE ACTION   /   '+s.layout.toUpperCase(),tx+70*unit,
+        by+88*unit,24*unit,t.surfaceMuted,710),
+      label(status,tx+48*unit,by+221*unit,resultFont,t.ink,800),
+      box(tx+48*unit,by+255*unit,bw-96*unit,2*unit,t.muted,0),
+      label('KEPT FROM THE ORIGINAL SOURCE',tx+48*unit,by+316*unit,22*unit,t.surfaceMuted,660),
+      label(e.label,tx+48*unit,by+379*unit,sourceFont,t.ink,710));
+    s.context.forEach((v,i)=>{
+      const contextFont=Math.min(31*unit,(bw-100*unit)/Math.max(1,v.length*.65));
+      rendered.push(label(v,tx+48*unit,by+(432+i*51)*unit,
+        contextFont,t.surfaceMuted,570));
+    });
+    rendered.push('</g>');
   }else{
     rendered.push(box(tx,h*.565,w-2*tx,h*.297,t.surface,27*unit),
-      label('DETAILS  /  VERIFIED FICTIONAL STATE',tx+30*unit,h*.613,24*unit,t.surfaceMuted,660));
+      label('DETAILS  /  ORIGINAL FICTIONAL SOURCE',tx+30*unit,h*.613,24*unit,t.surfaceMuted,660));
     s.context.forEach((v,i)=>rendered.push(label(v,tx+30*unit,h*.675+i*72*unit,35*unit,t.ink,625)));
   }
   rendered.push('<g id="persistent-hero" data-entity="'+esc(e.id)+'">',

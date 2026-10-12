@@ -104,12 +104,15 @@ test('unmotivated tiny or reversed gesture trajectory is rejected',()=>{
  }
 });
 test('long editorial titles and persistent entity text fit frame/card bounds',()=>{
- const getSize=(svg,phrase)=>{
+ const getSize=(svg,phrase,region='full')=>{
+  // An independent output panel may repeat the state at a larger visual
+  // size. Fit the persistent hero text within the HERO, not the whole frame.
+  const scoped=region==='hero'?svg.slice(svg.indexOf('<g id="persistent-hero"')):svg;
   const ending='>'+phrase+'</text>';
-  const end=svg.indexOf(ending);
+  const end=scoped.indexOf(ending);
   assert.ok(end>=0,'Missing rendered text '+phrase);
-  const tagStart=svg.lastIndexOf('<text ',end);
-  const attr=svg.slice(tagStart,end).match(/font-size="([0-9.]+)"/);
+  const tagStart=scoped.lastIndexOf('<text ',end);
+  const attr=scoped.slice(tagStart,end).match(/font-size="([0-9.]+)"/);
   assert.ok(attr,'Missing rendered font size');
   return Number(attr[1]);
  };
@@ -120,11 +123,30 @@ test('long editorial titles and persistent entity text fit frame/card bounds',()
    assert.ok(titlePx*s.title.length*.78<=p.profile.width-124+1,'Title overflow: '+s.title);
    const e=p.entities.find(x=>x.id===s.focusId);
    for(const [label,multiplier] of [[e.label,.72],[v.state[e.id],.67]]){
-    const labelPx=getSize(svg,label);
+    const labelPx=getSize(svg,label,'hero');
     assert.ok(labelPx*label.length*multiplier<=v.hero.w*p.profile.width/1000-70+1,'Hero type overflow: '+label);
    }
   }
  }
+});
+test('final payoff is an enlarged source-linked product result across unrelated original briefs',()=>{
+ for(const p of [b,c]){
+  const frame=p.shots[2].start+35,view=inspectFrame(p,frame);
+  const svg=renderSvgFrame(p,frame);
+  assert.match(svg,/id="product-result-stage"/);
+  assert.match(svg,/KEPT FROM THE ORIGINAL SOURCE/);
+  const hero=p.entities.find(e=>e.id===view.shot.focusId);
+  assert.ok(svg.includes(hero.label));
+  assert.ok(svg.includes(view.state[hero.id]));
+  const stage=svg.slice(svg.indexOf('id="product-result-stage"'),svg.indexOf('id="persistent-hero"'));
+  assert.ok(stage.includes('>'+view.state[hero.id]+'</text>'));
+  const statusTag=stage.slice(stage.lastIndexOf('<text ',stage.indexOf('>'+view.state[hero.id]+'</text>')));
+  const size=Number(statusTag.match(/font-size="([0-9.]+)"/)?.[1]);
+  assert.ok(size>=50,'Main product payoff must stay at a legible editorial size');
+ }
+ // BEFORE any operation the incoming note is not falsely displayed as done.
+ assert.doesNotMatch(renderSvgFrame(b,35),/id="product-result-stage"/);
+ assert.doesNotMatch(renderSvgFrame(c,35),/id="product-result-stage"/);
 });
 test('a harmless ampersand must be escaped in frame output',()=>{
  const ex=copy(boardBrief);ex.entities[0].label='Plan & schedule';
