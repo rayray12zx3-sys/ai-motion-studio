@@ -58,7 +58,7 @@ test('illegal external source or malicious surface text is never accepted',()=>{
   x=>x.shots[1].start=119,
   x=>x.shots[1].focusId='not-an-entity',
   x=>x.operations[0].resultShotId='make-believe',
-  x=>x.operations[0].frame=167,
+  x=>x.operations[0].frame=169,
   x=>x.operations[0].to=x.operations[0].from,
   x=>x.music.auditioned=true
  ]){
