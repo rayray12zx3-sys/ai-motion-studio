@@ -152,6 +152,15 @@ export function compileSemanticScenes(spec) {
     shots,operations,artStatus:'PENDING_HUMAN',rightsStatus:'PENDING_OTHER_MEDIA_REVIEW',
     limitation:'SVG frame contract, not a watched MP4 or independently audited sound mix'});
 }
+function terminalHero(plan,shot) {
+  const operation=plan.operations.find(o=>o.shotId===shot.id && o.trigger==='drag');
+  if(!operation)return shot.hero;
+  // A dragged persistent semantic object occupies its real target in UI space.
+  // This terminal pose is inherited across the next shot boundary; no snap.
+  return {...shot.hero,
+    x:operation.gesture.to.x-shot.hero.w/2,
+    y:operation.gesture.to.y-shot.hero.h/2};
+}
 export function inspectFrame(plan,frame) {
   integer(frame,0,plan.profile.frames-1,'seek frame');
   const shot=plan.shots.find(s=>s.start<=frame&&frame<s.end);
@@ -160,7 +169,15 @@ export function inspectFrame(plan,frame) {
   const previous=plan.shots[plan.shots.indexOf(shot)-1];
   const blend=previous&&shot.bridge!=='establish'?smooth((frame-shot.start)/Math.max(1,Math.round(plan.profile.fps*.38))):1;
   const hero={};
-  for(const k of ['x','y','w','h'])hero[k]=mix(previous?.hero[k]??shot.hero[k],shot.hero[k],blend);
+  const fromPose=previous?terminalHero(plan,previous):shot.hero;
+  for(const k of ['x','y','w','h'])hero[k]=mix(fromPose[k],shot.hero[k],blend);
+  const drag=plan.operations.find(o=>o.shotId===shot.id && o.trigger==='drag');
+  if(drag&&frame>=drag.gesture.start){
+    const q=smooth((frame-drag.gesture.start)/Math.max(1,drag.frame-drag.gesture.start));
+    const destination=terminalHero(plan,shot);
+    hero.x=mix(shot.hero.x,destination.x,q);
+    hero.y=mix(shot.hero.y,destination.y,q);
+  }
   return {frame,shotId:shot.id,shot,state,hero,blend,operations:plan.operations.filter(o=>o.frame<=frame)};
 }
 const box=(x,y,w,h,fill,rx=20,stroke='none')=>
