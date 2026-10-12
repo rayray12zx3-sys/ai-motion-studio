@@ -38,7 +38,9 @@ for title,name in [('cipher','ARC_Cipher'),('floating cities','FOCUS_Floating_Ci
  print('Fetching official catalog file',title,raw,flush=True)
  subprocess.run(['curl','--fail','--location','--silent','--show-error','--retry','2','--connect-timeout','12','--max-time','90',url,'--output',f'artifacts/{name}.mp3'],check=True)
  if os.path.getsize(f'artifacts/{name}.mp3')<100000:raise SystemExit('MP3 file unexpectedly small: '+name)
- subprocess.run(['ffprobe','-v','error','-select_streams','a:0','-show_entries','stream=codec_name,sample_rate,channels,duration','-of','default=noprint_wrappers=1',f'artifacts/{name}.mp3'],check=True)
+ mime=subprocess.check_output(['file','--brief','--mime-type',f'artifacts/{name}.mp3'],text=True).strip()
+ if mime not in ('audio/mpeg','audio/mp3'):raise SystemExit('Downloaded bytes are not an MP3: '+name+' '+mime)
+ print('Validated MIME:',mime,os.path.getsize(f'artifacts/{name}.mp3'),'bytes')
 import hashlib
 for p in sorted(__import__('pathlib').Path('artifacts').glob('*.mp3')):
  print('SHA256',p.name,hashlib.sha256(p.read_bytes()).hexdigest())
