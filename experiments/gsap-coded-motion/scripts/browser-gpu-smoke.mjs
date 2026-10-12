@@ -10,8 +10,6 @@ const allowed={'.html':'text/html; charset=utf-8','.js':'text/javascript; charse
 const server=createServer(async (req,res)=>{
   try{
     const url=new URL(req.url,'http://127.0.0.1');
-    // Chromium can request the default favicon outside the authored composition.
-    if(url.pathname==='/favicon.ico'){res.writeHead(204);res.end();return;}
     const requested=resolve(root,'.'+decodeURIComponent(url.pathname));
     if(!(requested===root||requested.startsWith(root+sep))) {res.writeHead(403);res.end();return;}
     if(!allowed[extname(requested)]) {res.writeHead(403);res.end();return;}
@@ -42,6 +40,8 @@ try {
   for (const frame of [0,133,143,151,299,143]) {
     const sample=await page.evaluate((n)=>{
       const s=window.seekFrame(n);
+      const layout=window.auditProtectedRegions();
+      if(!layout.first.passed || !layout.second.passed)throw Error('Projected hero overlaps protected title/footer: '+JSON.stringify({n,layout}));
       const webgl=document.querySelector('canvas#view');
       const gl=webgl.getContext('webgl2');
       if(!gl)throw new Error('WebGL2 context missing');

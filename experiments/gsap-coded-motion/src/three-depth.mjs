@@ -11,7 +11,7 @@ export function createThreeDepthRig({THREE,width=1080,height=1920,fps=30,frames=
  const scene=new THREE.Scene();scene.background=new THREE.Color(0x07111e);
  const camera=new THREE.PerspectiveCamera(35,width/height,.08,90);camera.position.set(0,0,12);
  const stage=new THREE.Group();stage.name='object-parent-rig';scene.add(stage);
- const hero=new THREE.Group();hero.name='hero-inner-group';stage.add(hero);
+ const hero=new THREE.Group();hero.name='hero-inner-group';hero.scale.setScalar(.70);hero.position.y=-.15;stage.add(hero);
  const glass=new THREE.MeshPhysicalMaterial({color,metalness:.32,roughness:.16,clearcoat:.95,clearcoatRoughness:.08,transparent:true,opacity:.93});
  const core=new THREE.Mesh(new THREE.IcosahedronGeometry(1.35,5),glass);core.name='central-hero';hero.add(core);
  const ringMaterial=new THREE.MeshStandardMaterial({color:0xe1fff8,metalness:.65,roughness:.3,emissive:color,emissiveIntensity:.11});
