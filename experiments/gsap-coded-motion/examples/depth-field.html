@@ -5,9 +5,14 @@
 import * as THREE from '../node_modules/three/build/three.module.js';
 import {createThreeDepthRig} from '../src/three-depth.mjs';
 import {createShaderTransition} from '../src/shader-transition.mjs';
+import {compileShotChoreography} from '../src/shot-choreography.mjs';
 import {projectHeroBounds,assertNoProtectedOcclusion,htmlRectToCanvasDesign,fitFixedHeroScale} from '../src/three-layout-audit.mjs';
 const first=createThreeDepthRig({THREE,width:1080,height:1920,fps:30,frames:300,palette:'mint'});
 const second=createThreeDepthRig({THREE,width:1080,height:1920,fps:30,frames:300,palette:'lavender'});
+const film=compileShotChoreography({fps:30,frames:300,shots:[
+ {id:'orbital-arrival',rig:'mint',start:0,end:153,titleHold:[15,95]},
+ {id:'orbital-resolution',rig:'lavender',start:127,end:300,titleHold:[175,280]}
+]});
 const cv=document.querySelector('#view');const cvRect=cv.getBoundingClientRect();
 const protectedRegions=['.title','.footer'].map(sel=>({name:sel.slice(1),bounds:htmlRectToCanvasDesign(document.querySelector(sel).getBoundingClientRect(),cvRect,1080,1920)}));
 const fit=fitFixedHeroScale({THREE,rigs:[first,second],protectedRegions,width:1080,height:1920,frames:300});
@@ -15,11 +20,10 @@ const renderer=first.makeRenderer({canvas:cv});
 const wipe=createShaderTransition({THREE,renderer,width:1080,height:1920});
 const seekFrame=(frame)=>{
  if(!Number.isInteger(frame)||frame<0||frame>=300)throw Error('Bad frame');
- const a=first.seekFrame(frame),b=second.seekFrame(frame),t=frame/30;
- if(t<4.25)renderer.render(first.scene,first.camera);
- else if(t>5.05)renderer.render(second.scene,second.camera);
- else {let p=(t-4.25)/.8; p=p*p*(3-2*p);wipe.render(first,second,p)}
- return {frame,a,b,shaderProgress:wipe.uniforms.uProgress.value};
+ const a=first.seekFrame(frame),b=second.seekFrame(frame),shot=film.at(frame);
+ if(shot.active.length===1){const rig=shot.rigs[0]==='mint'?first:second;renderer.render(rig.scene,rig.camera);}
+ else wipe.render(first,second,shot.progress);
+ return {frame,a,b,shot,shaderProgress:wipe.uniforms.uProgress.value};
 };
 window.seekFrame=seekFrame;
 window.auditProtectedRegions=()=>{
@@ -33,6 +37,6 @@ window.auditProtectedRegions=()=>{
   return {first:assertNoProtectedOcclusion({hero:firstBounds,protectedRegions:regions}),second:assertNoProtectedOcclusion({hero:secondBounds,protectedRegions:regions}),regions,firstBounds,secondBounds};
 };
 window.addEventListener('hf-seek',e=>seekFrame(Math.min(299,Math.max(0,Math.floor(e.detail.time*30)))));
-window.threeAudit={version:THREE.REVISION,actualWebGL:renderer.isWebGLRenderer,frameCount:300,objects:first.hero.children.length,shader:true,fit};
+window.threeAudit={version:THREE.REVISION,actualWebGL:renderer.isWebGLRenderer,frameCount:300,objects:first.hero.children.length,shader:true,fit,shots:film.shots.map(({id,start,end})=>({id,start,end})),transitions:film.transitions.map(({from,to,start,end})=>({from,to,start,end}))};
 seekFrame(0);
 </script></body></html>
