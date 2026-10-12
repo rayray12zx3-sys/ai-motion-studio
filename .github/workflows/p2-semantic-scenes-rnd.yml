@@ -25,6 +25,8 @@ jobs:
           node --check experiments/p2-semantic-scenes/examples/two-original-briefs.mjs
           node --test experiments/p2-semantic-scenes/tests/*.test.mjs
           python3 -m py_compile experiments/p2-semantic-scenes/scripts/render_video.py
+          python3 -m py_compile experiments/p2-semantic-scenes/scripts/av_audit.py
+          python3 -m unittest discover -s experiments/p2-semantic-scenes/tests -p 'test_*.py'
       - name: Emit deterministic sampled SVGs and causal manifests
         run: |
           node experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs board
@@ -41,6 +43,8 @@ jobs:
           ffmpeg -version | head -n 1
           python experiments/p2-semantic-scenes/scripts/render_video.py board --smoke-frames 12
           python experiments/p2-semantic-scenes/scripts/render_video.py caption --smoke-frames 12
+          python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/smoke.mp4 --expected-frames 12 --output experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/smoke-av-audit.json
+          python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/smoke.mp4 --expected-frames 12 --output experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/smoke-av-audit.json
           test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/smoke-qc.json
           test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/smoke-qc.json
       - name: Publish synthetic engineering evidence only
@@ -50,6 +54,7 @@ jobs:
           path: |
             experiments/p2-semantic-scenes/artifacts/*/smoke.mp4
             experiments/p2-semantic-scenes/artifacts/*/smoke-qc.json
+            experiments/p2-semantic-scenes/artifacts/*/smoke-av-audit.json
             experiments/p2-semantic-scenes/artifacts/*/samples/manifest.json
           retention-days: 2
           if-no-files-found: error
