@@ -36,6 +36,9 @@ jobs:
           python3 -m venv /tmp/p2-svg-venv
           . /tmp/p2-svg-venv/bin/activate
           python -m pip --disable-pip-version-check install CairoSVG==2.7.1
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          ffmpeg -version | head -n 1
           python experiments/p2-semantic-scenes/scripts/render_video.py board --smoke-frames 12
           python experiments/p2-semantic-scenes/scripts/render_video.py caption --smoke-frames 12
           test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/smoke-qc.json
