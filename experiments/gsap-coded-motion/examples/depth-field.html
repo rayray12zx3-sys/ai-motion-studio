@@ -9,7 +9,8 @@ import {createDataSculptureRig} from '../src/data-sculpture-rig.mjs';
 import {createShaderTransition} from '../src/shader-transition.mjs';
 import {compileShotChoreography} from '../src/shot-choreography.mjs';
 import {compileCameraChoreography,auditCameraMotion} from '../src/camera-choreography.mjs';
-import {projectHeroBounds,assertNoProtectedOcclusion,htmlRectToCanvasDesign,fitFixedHeroScale} from '../src/three-layout-audit.mjs';
+import {projectHeroBounds,assertNoProtectedOcclusion,htmlRectToCanvasDesign} from '../src/three-layout-audit.mjs';
+import {fitPerShotHeroLayout} from '../src/shot-layout-solver.mjs';
 const cameraMint=compileCameraChoreography({frames:300,keys:[
  {frame:0,x:-.55,y:.12,z:12.3,lookX:0,lookY:0,lookZ:0},
  {frame:100,x:.30,y:.20,z:11.8,lookX:.10,lookY:.03,lookZ:0},
@@ -31,7 +32,7 @@ const film=compileShotChoreography({fps:30,frames:300,shots:[
 ]});
 const cv=document.querySelector('#view');const cvRect=cv.getBoundingClientRect();
 const protectedRegions=['.title','.footer'].map(sel=>({name:sel.slice(1),bounds:htmlRectToCanvasDesign(document.querySelector(sel).getBoundingClientRect(),cvRect,1080,1920)}));
-const fit=fitFixedHeroScale({THREE,rigs:[first,second],protectedRegions,width:1080,height:1920,frames:300});
+const fit=fitPerShotHeroLayout({THREE,entries:[{id:'orbital-arrival',rig:first,start:0,end:153},{id:'data-sculpture-resolution',rig:second,start:127,end:300}],protectedRegions,width:1080,height:1920});
 if(!window.gsap||window.gsap.version!=='3.15.0')throw Error('Actual locally pinned GSAP 3.15 runtime missing');
 const typeTimeline=window.gsap.timeline({paused:true});
 typeTimeline.fromTo('#titleA',{opacity:0,y:52},{opacity:1,y:0,duration:.55,ease:'power4.out'},.10);
