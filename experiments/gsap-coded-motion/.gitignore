@@ -1,0 +1,6 @@
+node_modules/
+browser-evidence.json
+browser-audit.stdout
+examples/frame-*.png
+*.mp4
+*.mov
