@@ -53,3 +53,15 @@ The optional music path recognizes only the established Kevin MacLeod CC BY 4.0 
 | Next step and stop | Test full output and audiovisual QC; then improve layer composition, responsive typography, motivated camera, musical phrase mapping. Stop for real mature art/asset/license/major architecture approval only. |
 
 **Technical CI PASS never equals professional art approval.**
+
+
+## Full MP4 decoded-frame and audio signal review (new, advisory only)
+P2 provides a **common offline post-render analyzer** for user-authorized *local* H.264 MP4s:
+
+    python3 experiments/p2-semantic-scenes/scripts/av_audit.py /private/local/review.mp4 --expected-frames 360 --output /private/local/review-av-qc.json
+
+Optionally feed a local hand-authored JSON list of film-intended cue frames, transition/interaction types and their narrative reason via --cues /private/local/intended-cues.json. Never enter private Drive links, company media metadata, secret receipts, or review audio assets in public test fixtures or Issue comments.
+
+The analyzer uses FFmpeg to decode **every actual frame** to a small grayscale proxy for blank/luma-jump candidates, analyzes decoded mono audio RMS-energy increases, and notes whether cue-proximate rises are found. It checks real streams, not just authored screenshots. All findings are **advisory** and have explicit NOT APPROVED status: a giant luminosity change may be an intentional motivated cut; a matching loudness peak is not musical synchrony; grayscale cannot assess microtypography, palette, expression, full-speed emotional rhythm or license validity. Full-speed watching/listening and human product/art/rights checks remain separate. It must not emit ART_PASS or auto-publish.
+
+Hosted CI currently invokes this on two **12-frame silent codec smokes**, not the entire original v3 pair, and uploads only synthetic derived QA evidence. To check entire films, explicitly run the full render path on authorized local media and analyze exact 360 frames; do not relabel a 12-frame smoke as a finished full-film quality audit.
