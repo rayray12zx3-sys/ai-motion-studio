@@ -33,6 +33,8 @@ jobs:
           ffprobe -version | head -n 1
       - name: Render contiguous 300-frame genuine GPU H264 review-only film
         run: node scripts/render-gpu-film.mjs
+      - name: Decode 300 frames and reject abrupt one-frame shader pops
+        run: node scripts/audit-film-continuity.mjs
       - name: Save isolated GPU evidence (not a creative acceptance)
         if: always()
         uses: actions/upload-artifact@v4
