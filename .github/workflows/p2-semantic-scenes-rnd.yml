@@ -69,6 +69,10 @@ jobs:
           ffmpeg -hide_banner -loglevel error -f lavfi -i 'color=c=red@0.5:s=160x90:r=1:d=1,format=rgba' -frames:v 1 -update 1 experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha.png
           python3 experiments/p2-semantic-scenes/scripts/private_media_overlay.py --base experiments/p2-semantic-scenes/artifacts/private/synthetic-base.mp4 --asset experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha.png --output experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha-composite.mp4 --start-frame 5 --end-frame 25 --mode alpha --opacity 0.5 --private-preview-only
           test -f experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha-composite.private-qc.json
+          # Real ProRes-with-alpha decoding, generated from lavfi (not licensed/proprietary footage).
+          ffmpeg -hide_banner -loglevel error -f lavfi -i 'color=c=red@0.5:s=192x192:r=30:d=0.5,format=rgba' -frames:v 15 -c:v prores_ks -profile:v 4 -pix_fmt yuva444p10le -threads 2 /tmp/p2-synthetic-alpha.mov
+          python3 experiments/p2-semantic-scenes/scripts/private_media_overlay.py --base experiments/p2-semantic-scenes/artifacts/private/synthetic-base.mp4 --asset /tmp/p2-synthetic-alpha.mov --output experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha-mov-composite.mp4 --start-frame 5 --end-frame 19 --mode alpha --opacity 0.5 --private-preview-only
+          test -f experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha-mov-composite.private-qc.json
           # Privacy check: upload-artifact stanza below explicitly excludes all /private/ paths.
       - name: Publish synthetic engineering evidence only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
