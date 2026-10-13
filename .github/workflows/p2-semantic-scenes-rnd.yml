@@ -74,6 +74,17 @@ jobs:
           python3 experiments/p2-semantic-scenes/scripts/private_media_overlay.py --base experiments/p2-semantic-scenes/artifacts/private/synthetic-base.mp4 --asset /tmp/p2-synthetic-alpha.mov --output experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha-mov-composite.mp4 --start-frame 5 --end-frame 19 --mode alpha --opacity 0.5 --private-preview-only
           test -f experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha-mov-composite.private-qc.json
           # Privacy check: upload-artifact stanza below explicitly excludes all /private/ paths.
+      - name: Real decode/encode test of independent authored animation formats (generated fixtures only)
+        run: |
+          mkdir -p /tmp/p2-icons
+          ffmpeg -hide_banner -loglevel error -f lavfi -i 'testsrc2=size=96x96:rate=15:duration=0.8' -frames:v 12 /tmp/p2-icons/generated.gif
+          python3 experiments/p2-semantic-scenes/scripts/private_authored_icon_convert.py --source /tmp/p2-icons/generated.gif --kind gif --output experiments/p2-semantic-scenes/artifacts/private/synthetic-icon-gif.mov --authored-animation-reviewed --private-preview-only
+          mkdir -p /tmp/p2-icons/seq
+          ffmpeg -hide_banner -loglevel error -f lavfi -i 'testsrc2=size=96x96:rate=30:duration=0.4' -frames:v 12 /tmp/p2-icons/seq/icon_%05d.png
+          python3 experiments/p2-semantic-scenes/scripts/private_authored_icon_convert.py --source /tmp/p2-icons/seq --kind png-sequence --output experiments/p2-semantic-scenes/artifacts/private/synthetic-icon-png.mov --authored-animation-reviewed --private-preview-only
+          test -f experiments/p2-semantic-scenes/artifacts/private/synthetic-icon-gif.private-qc.json
+          test -f experiments/p2-semantic-scenes/artifacts/private/synthetic-icon-png.private-qc.json
+          # All created effects are isolated under ignored private/; no upload.
       - name: Publish synthetic engineering evidence only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
