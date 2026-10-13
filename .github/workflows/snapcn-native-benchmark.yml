@@ -1,0 +1,62 @@
+name: snapcn original-free motion QUALITY study (isolated)
+on:
+  pull_request:
+    paths:
+      - 'experiments/snapcn-native-benchmark/**'
+      - '.github/workflows/snapcn-native-benchmark.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-component-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # pinned
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # pinned
+        with:
+          node-version: '24.19.0'
+      - name: Pin upstream source and use upstream frozen dependency graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none https://github.com/shadcn-labs/snapcn.git "$RUNNER_TEMP/snapcn-eval"
+          git -C "$RUNNER_TEMP/snapcn-eval" checkout --detach afce9f0aa8c9d464409efd1e4d4f227ca4809c04
+          test "$(git -C "$RUNNER_TEMP/snapcn-eval" rev-parse HEAD)" = "afce9f0aa8c9d464409efd1e4d4f227ca4809c04"
+          npm install --global pnpm@10.33.0
+          cd "$RUNNER_TEMP/snapcn-eval"
+          pnpm install --frozen-lockfile --ignore-scripts
+      - name: Place original-only fixture and unmodified snapcn components in isolated checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          UP="$RUNNER_TEMP/snapcn-eval"
+          BENCH="experiments/snapcn-native-benchmark"
+          mkdir -p "$UP/public/ams-benchmark"
+          cp "$BENCH/atlas-planning.svg" "$UP/public/ams-benchmark/"
+          cp "$BENCH/index-source.svg" "$UP/public/ams-benchmark/"
+          cp "$BENCH/index-result.svg" "$UP/public/ams-benchmark/"
+          cp "$BENCH/entry.tsx" "$UP/src/remotion/ams-benchmark-entry.tsx"
+          cp "$BENCH/render.mts" "$UP/scripts/ams-benchmark-render.mts"
+          test -s "$UP/registry/snap-cn/phone-frame/index.tsx"
+          test -s "$UP/registry/snap-cn/hero-launch/index.tsx"
+          test -s "$UP/LICENSE"
+      - name: Render BOTH whole original component compositions; probe decoded video
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/snapcn-eval"
+          node --experimental-strip-types scripts/ams-benchmark-render.mts
+          test -s out/ams-original/AMSAtlasDevice.mp4
+          test -s out/ams-original/AMSIndexProductHero.mp4
+          test -s out/ams-original/engineering-report.json
+      - name: Preserve synthetic study output (not human ART_PASS, not commercial)
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pinned
+        with:
+          name: snapcn-upstream-native-two-synthetic-studies
+          path: ${{runner.temp}}/snapcn-eval/out/ams-original/
+          if-no-files-found: error
+          retention-days: 2
