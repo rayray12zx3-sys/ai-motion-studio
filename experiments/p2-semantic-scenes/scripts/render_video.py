@@ -19,6 +19,8 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('film',nargs='?',choices=['board','caption'])
     ap.add_argument('--spec',type=Path,help='Explicit local ChatGPT-authored original JSON scene')
+    ap.add_argument('--widescreen',action='store_true',
+                    help='Opt-in 1920x1080 split editorial R&D output (source scene spec remains unchanged)')
     ap.add_argument('--music-file',type=Path)
     ap.add_argument('--credits-file',type=Path)
     ap.add_argument('--music-offset',type=float,default=0)
@@ -46,21 +48,22 @@ def main():
         import cairosvg
     except ImportError as e:
         raise SystemExit('R&D converter missing: install CairoSVG in this isolated execution environment') from e
-    emit=['node',str(HERE/'scripts/emit-svg-frames.mjs')]
+    emit=['node',str(HERE/'scripts/emit-widescreen-frames.mjs' if opt.widescreen else HERE/'scripts/emit-svg-frames.mjs')]
     emit+=['--spec',str(opt.spec)] if opt.spec else [opt.film]
     emit+=['--all']
     # JSON metadata is emitted by our own known script after compiler preflight.
     emitted=json.loads(command(emit))
     film_id=emitted['film']
-    source=HERE/'artifacts'/film_id/'all'
+    source=HERE/'artifacts'/film_id/('widescreen-all' if opt.widescreen else 'all')
     manifest=json.loads((source/'manifest.json').read_text(encoding='utf-8'))
     count=manifest['profile']['frames']
     fps=manifest['profile']['fps']
     if opt.smoke_frames:
         if opt.smoke_frames<2 or opt.smoke_frames>=count:ap.error('Smoke must be 2..frames-1')
         count=opt.smoke_frames
-    target=HERE/'artifacts'/film_id/('smoke.mp4' if opt.smoke_frames else
-        ('licensed_music_review.mp4' if opt.music_file else 'silent_review.mp4'))
+    target=HERE/'artifacts'/film_id/(('widescreen_' if opt.widescreen else '')+
+        ('smoke.mp4' if opt.smoke_frames else
+        ('licensed_music_review.mp4' if opt.music_file else 'silent_review.mp4')))
     target.parent.mkdir(exist_ok=True,parents=True)
     if opt.spec and target.exists():
         raise FileExistsError('Preserve previous JSON-authored film; use another scene ID/version')
