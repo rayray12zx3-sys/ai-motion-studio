@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "kind": "original-motion-overlap",
+  "shots": [
+    {
+      "id": "explore",
+      "frames": 110,
+      "overlap_in_frames": 0,
+      "spec": {
+        "mode": "comparison",
+        "heading": "設計概念比較",
+        "left": "構想 A",
+        "right": "構想 B",
+        "placeholder": "兩種創意方向"
+      }
+    },
+    {
+      "id": "choose",
+      "frames": 120,
+      "overlap_in_frames": 18,
+      "spec": {
+        "mode": "interaction_focus",
+        "heading": "聚焦創意",
+        "indicator": "選擇方向",
+        "target_x": 655,
+        "target_y": 980,
+        "active_until_seconds": 3.45
+      }
+    },
+    {
+      "id": "reflect",
+      "frames": 150,
+      "overlap_in_frames": 18,
+      "spec": {
+        "mode": "recall_cycle",
+        "heading": "快速設計循環",
+        "question": "初步構想",
+        "recall": "概念迭代",
+        "revisit_labels": [
+          "草圖",
+          "修正",
+          "測試"
+        ],
+        "finish": "回到創意"
+      }
+    },
+    {
+      "id": "launch",
+      "frames": 115,
+      "overlap_in_frames": 18,
+      "spec": {
+        "mode": "cta_reveal",
+        "heading": "成果展示",
+        "headline": "新的創作方式",
+        "button": "查看作品"
+      }
+    }
+  ]
+}
