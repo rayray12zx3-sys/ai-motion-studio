@@ -1,0 +1,73 @@
+name: P2 native 16x9 two-brief semantic film research
+on:
+  pull_request:
+    paths:
+      - 'experiments/p2-semantic-scenes/**'
+      - '.github/workflows/p2-native-landscape-multibrief-rnd.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-semantic-landscape-two-original-films:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Syntax, negative contract and three original authored briefs
+        run: |
+          node --check experiments/p2-semantic-scenes/src/native-landscape-composition.mjs
+          node --check experiments/p2-semantic-scenes/scripts/emit-native-landscape-frames.mjs
+          python3 -m py_compile experiments/p2-semantic-scenes/scripts/render_video.py
+          node --test experiments/p2-semantic-scenes/tests/*.test.mjs
+          node experiments/p2-semantic-scenes/scripts/emit-native-landscape-frames.mjs board
+          node experiments/p2-semantic-scenes/scripts/emit-native-landscape-frames.mjs caption
+          test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/native-landscape-samples/0000.svg
+          test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/native-landscape-samples/0000.svg
+          grep -q 'id="native-persistent-hero"' experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/native-landscape-samples/0165.svg
+          grep -q 'id="native-source-selection"' experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/native-landscape-samples/0168.svg
+      - name: Encode two complete 360-frame native 1920x1080 scenes and independently decode
+        run: |
+          python3 -m venv /tmp/p2-native-landscape-venv
+          . /tmp/p2-native-landscape-venv/bin/activate
+          python -m pip --disable-pip-version-check install CairoSVG==2.7.1
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python experiments/p2-semantic-scenes/scripts/render_video.py board --native-landscape --review-package
+          python experiments/p2-semantic-scenes/scripts/render_video.py caption --native-landscape --review-package
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          root=Path('experiments/p2-semantic-scenes/artifacts')
+          for film in ('atlas-board-to-date','index-audio-to-caption'):
+              d=root/film
+              src=json.loads((d/'native-landscape-all/manifest.json').read_text())
+              qc=json.loads((d/'native_landscape_silent_review-qc.json').read_text())
+              review=json.loads((d/'native_landscape_silent_review-review-package.json').read_text())
+              mp4=d/'native_landscape_silent_review.mp4'
+              assert src['profile']=={'width':1920,'height':1080,'fps':30,'frames':360}
+              assert src['sourceContract']=='UNCHANGED' and src['publicSyntheticOnly']
+              assert qc['frames']==360 and qc['fps']==30 and qc['codec']=='h264'
+              assert hashlib.sha256(mp4.read_bytes()).hexdigest()==qc['sha256']
+              assert review['full_film_frames']==360 and review['technical_decode']=='PASS'
+              assert review['human_creative_approval']=='PENDING'
+              assert qc['art']=='PENDING_HUMAN'
+              assert mp4.stat().st_size>60000
+              print(film,'native landscape decoded 360f sha256',qc['sha256'])
+          PY
+      - name: Publish ONLY original synthetic complete films + technical manifests
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: p2-native-landscape-two-original-360frame-h264-films
+          path: |
+            experiments/p2-semantic-scenes/artifacts/*/native_landscape_silent_review.mp4
+            experiments/p2-semantic-scenes/artifacts/*/native_landscape_silent_review-qc.json
+            experiments/p2-semantic-scenes/artifacts/*/native_landscape_silent_review-av-audit.json
+            experiments/p2-semantic-scenes/artifacts/*/native_landscape_silent_review-review-package.json
+            experiments/p2-semantic-scenes/artifacts/*/native-landscape-samples/manifest.json
+          retention-days: 2
+          if-no-files-found: error
