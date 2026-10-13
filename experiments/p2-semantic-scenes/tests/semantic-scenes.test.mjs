@@ -134,7 +134,7 @@ test('final payoff is an enlarged source-linked product result across unrelated 
   const frame=p.shots[2].start+35,view=inspectFrame(p,frame);
   const svg=renderSvgFrame(p,frame);
   assert.match(svg,/id="product-result-stage"/);
-  assert.match(svg,/SOURCE OBJECT / STILL THE SAME/);
+  assert.ok(svg.includes('SOURCE OBJECT / STILL THE SAME'));
   const hero=p.entities.find(e=>e.id===view.shot.focusId);
   assert.ok(svg.includes(hero.label));
   assert.ok(svg.includes(view.state[hero.id]));
