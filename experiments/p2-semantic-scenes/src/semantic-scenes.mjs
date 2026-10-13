@@ -190,7 +190,16 @@ export function renderSvgFrame(plan,frame) {
   const coords=a=>a/1000;
   const hx=f.hero.x*w/1000,hy=f.hero.y*h/1000,hw=f.hero.w*w/1000,hh=f.hero.h*h/1000;
   const unit=w/1080, tx=62*unit, top=115*unit;
-  const fade=smooth((frame-s.start)/(p.fps*.26));
+  const fade=smooth((frame-s.start)/(p.fps*.50));
+  const isOpening=s.start===0;
+  const workspaceEntry=isOpening?
+    smooth((frame-s.start-p.fps*.60)/(p.fps*.85)):
+    smooth((frame-s.start)/(p.fps*.58));
+  // Reveal information in authored reading order, not as a full-screen
+  // instantaneous template card. Holds after the reveal are intentional.
+  const readingEntry=(index)=>smooth((frame-s.start-
+    p.fps*(1.18+index*.50))/(p.fps*.54));
+  const heroEntry=isOpening?smooth((frame-s.start)/(p.fps*.78)):1;
   // Measure-free bounded role hierarchy: fit a single-line editorial headline
   // to the current video profile rather than shrinking every treatment to one
   // timid fixed 66px type size. Font portability is STILL an open gate.
@@ -206,7 +215,8 @@ export function renderSvgFrame(plan,frame) {
     box(0,0,w,h,t.background,0),
     label('AI MOTION STUDIO  /  ORIGINAL SEMANTIC STUDY',tx,top,18*unit,t.muted,650),
     box(tx,top+24*unit,w-2*tx,2*unit,t.muted,0),
-    '<g opacity="'+fade.toFixed(4)+'">',
+    '<g opacity="'+fade.toFixed(4)+'" transform="translate(0 '+
+      ((1-fade)*45*unit).toFixed(2)+')">',
     label(s.title,tx,top+172*unit,titleSize,t.onBackground,800),
     label(s.subtitle,tx,top+245*unit,subtitleSize,t.muted,520),
     '</g>'
@@ -229,6 +239,9 @@ export function renderSvgFrame(plan,frame) {
   const camY=(cameraOriginY*(1-zoom)).toFixed(3);
   rendered.push('<g id="semantic-camera" data-shot="'+esc(s.id)+
     '" transform="translate('+camX+' '+camY+') scale('+zoom.toFixed(5)+')">');
+  rendered.push('<g id="workspace-progressive-reveal" opacity="'+
+    (incomingAction?1:workspaceEntry).toFixed(4)+'" transform="translate(0 '+
+    ((incomingAction?0:1-workspaceEntry)*41*unit).toFixed(2)+')">');
   if(s.layout==='board'){
     // A product-semantic board has a visible target for the user's drag,
     // not just three disjoint text labels under the cursor.
@@ -238,7 +251,7 @@ export function renderSvgFrame(plan,frame) {
     s.context.forEach((v,i)=>{
       const cy=by+87*unit+i*rowH;
       rendered.push(box(bx+24*unit,cy,bw-48*unit,rowH-12*unit,
-        i===1&&action?'#F5E7DF':t.background,14*unit,
+        i===1&&activeAction&&frame>=activeAction.gesture.start?'#F5E7DF':t.background,14*unit,
         i===1?t.accent:'none'),
         label(v,bx+48*unit,cy+51*unit,32*unit,t.onBackground,690));
     });
@@ -251,9 +264,21 @@ export function renderSvgFrame(plan,frame) {
       wave.push(box(tx+24*unit+i*((w-2*tx-48*unit)/49),h*.724-amp*.5,
         Math.max(3,5*unit),amp,t.accent,3*unit));}
     rendered.push(...wave);
-    if(action){
+    // A fictional source-scanning playhead visualizes the viewer's move
+    // toward one phrase. It does NOT represent a decoded original recording.
+    const phase=activeAction?
+      smooth((frame-activeAction.gesture.start)/
+        Math.max(1,activeAction.frame-activeAction.gesture.start)):
+      smooth((frame-s.start-p.fps*.75)/(p.fps*2.1));
+    const playX=tx+(w-2*tx)*mix(.10,.83,phase);
+    rendered.push('<line id="illustrative-source-playhead" x1="'+playX+
+      '" x2="'+playX+'" y1="'+h*.662+'" y2="'+h*.788+
+      '" stroke="'+t.ink+'" stroke-width="'+(3*unit)+'"/>');
+    if(activeAction&&frame>=activeAction.gesture.start){
+      const selectProgress=smooth((frame-activeAction.gesture.start)/
+        Math.max(1,activeAction.frame-activeAction.gesture.start));
       rendered.push('<rect id="selected-source-range" data-entity="'+esc(e.id)+
-        '" x="'+(tx+(.47*(w-2*tx)))+'" y="'+(h*.673)+'" width="'+((w-2*tx)*.23)+
+        '" x="'+(tx+(.47*(w-2*tx)))+'" y="'+(h*.673)+'" width="'+((w-2*tx)*.23*selectProgress)+
         '" height="'+(h*.103)+'" fill="'+t.accent+'" fill-opacity=".24" stroke="'+t.accent+
         '" stroke-width="'+(3*unit)+'" rx="'+(9*unit)+'"/>');
     }
@@ -329,14 +354,34 @@ export function renderSvgFrame(plan,frame) {
   }else{
     rendered.push(box(tx,h*.565,w-2*tx,h*.297,t.surface,27*unit),
       label('DETAILS  /  ORIGINAL FICTIONAL SOURCE',tx+30*unit,h*.613,24*unit,t.surfaceMuted,660));
-    s.context.forEach((v,i)=>rendered.push(label(v,tx+30*unit,h*.675+i*72*unit,35*unit,t.ink,625)));
+    s.context.forEach((v,i)=>rendered.push(
+      '<g class="reading-sequence" data-row="'+i+'" opacity="'+
+        (isOpening?readingEntry(i):1).toFixed(4)+'" transform="translate(0 '+
+        ((isOpening?1-readingEntry(i):0)*24*unit).toFixed(2)+')">',
+      label(v,tx+30*unit,h*.675+i*72*unit,35*unit,t.ink,625),'</g>'));
   }
-  rendered.push('<g id="persistent-hero" data-entity="'+esc(e.id)+'">',
+  rendered.push('</g>'); // workspace enters after the source hero, not teleported
+  // Scene one: original source object enters and holds before its contextual
+  // details assemble. Subsequent shots retain full entity presence on the cut.
+  rendered.push('<g id="persistent-hero" data-entity="'+esc(e.id)+
+    '" opacity="'+heroEntry.toFixed(4)+'" transform="translate(0 '+
+    ((1-heroEntry)*51*unit).toFixed(2)+')">',
     box(hx,hy,hw,hh,t.surface,24*unit,t.accent),
     box(hx+12*unit,hy+11*unit,8*unit,Math.max(8,hh-22*unit),t.accent,4*unit),
     label(e.label,hx+36*unit,hy+Math.min(hh*.4,81*unit),Math.min(entityFont,hh*.30),t.ink,750),
     label(f.state[e.id],hx+36*unit,hy+Math.min(hh*.74,140*unit),Math.min(entityStatusFont,hh*.18),
       action?t.accentText:t.surfaceMuted,600),'</g>');
+  if(isOpening && frame>=p.fps*1.7){
+    // Authored preparatory connection from the one source object down to
+    // the actual product context it will affect (board slot or source range).
+    const q=smooth((frame-p.fps*1.7)/(p.fps*1.55));
+    const startX=hx+hw*.5,fromY=hy+hh+9*unit,endY=h*.553;
+    rendered.push('<path id="opening-source-bridge" d="M '+startX+' '+fromY+
+      ' Q '+(startX+48*unit)+' '+(fromY+55*unit)+' '+(w*.52)+' '+endY+
+      '" fill="none" stroke="'+t.accent+'" stroke-width="'+(4*unit)+
+      '" stroke-dasharray="'+Math.round(360*q*unit)+' '+Math.round(370*unit)+
+      '" stroke-linecap="round"/>');
+  }
   // A product film has to SHOW the interaction rather than merely updating
   // a variable off-screen. The same generic cursor/feedback treatment uses
   // each director-authored cause→response trajectory and persistent entity ID.
