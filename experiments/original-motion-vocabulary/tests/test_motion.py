@@ -37,3 +37,21 @@ class OriginalMotionTests(unittest.TestCase):
         a=hashed(2.2);hashed(1.8);self.assertEqual(a,hashed(2.2))
 
 if __name__=='__main__':unittest.main()
+
+class DirectorPlanTests(unittest.TestCase):
+    def test_two_fully_different_director_plans_share_same_modules(self):
+        from render_director_plan import compile_director_plan
+        base=Path(__file__).resolve().parents[1]
+        edu=json.loads((base/'examples/director-plan-education.json').read_text())
+        creative=json.loads((base/'examples/director-plan-creative.json').read_text())
+        a=compile_director_plan(edu);b=compile_director_plan(creative)
+        self.assertEqual([v['start_frame'] for v in a['shots']],[0,150])
+        self.assertEqual(a['duration_frames'],270)
+        self.assertEqual(b['duration_frames'],240)
+        self.assertEqual(len({v['mode'] for v in a['shots']+b['shots']}),4)
+    def test_unapproved_sources_and_duplicate_shots_rejected(self):
+        from render_director_plan import compile_director_plan
+        spec={'version':1,'shots':[{'id':'a','spec':{'mode':'recall_cycle'}},{'id':'a','spec':{'mode':'cta_reveal'}}]}
+        with self.assertRaises(ValueError):compile_director_plan(spec)
+        spec['shots'][1]['id']='b';spec['shots'][1]['spec']['image_url']='https://outside.example'
+        with self.assertRaises(ValueError):compile_director_plan(spec)
