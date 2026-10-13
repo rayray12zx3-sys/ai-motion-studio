@@ -47,8 +47,8 @@ jobs:
           ffmpeg -version | head -n 1
           python experiments/p2-semantic-scenes/scripts/render_video.py board
           python experiments/p2-semantic-scenes/scripts/render_video.py caption
-          python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review.mp4 --expected-frames 360 --output experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review-av-audit.json
-          python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review.mp4 --expected-frames 360 --output experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review-av-audit.json
+          python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review.mp4 --expected-frames 360 --cues experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/score-cues.json --output experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review-av-audit.json
+          python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review.mp4 --expected-frames 360 --cues experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/score-cues.json --output experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review-av-audit.json
           test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review-qc.json
           test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review-qc.json
       - name: Publish synthetic engineering evidence only
@@ -59,6 +59,7 @@ jobs:
             experiments/p2-semantic-scenes/artifacts/*/silent_review.mp4
             experiments/p2-semantic-scenes/artifacts/*/silent_review-qc.json
             experiments/p2-semantic-scenes/artifacts/*/silent_review-av-audit.json
+            experiments/p2-semantic-scenes/artifacts/*/score-cues.json
             experiments/p2-semantic-scenes/artifacts/*/samples/manifest.json
           retention-days: 2
           if-no-files-found: error
