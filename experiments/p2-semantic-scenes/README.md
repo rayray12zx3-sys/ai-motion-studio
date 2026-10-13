@@ -122,3 +122,28 @@ The user-approved AI Creative Director is the **active ChatGPT conversation**. I
 4. Review actual decoded full-frame video, narrative scene purpose, object continuity, text layout, licensed sound/beat phrasing, and human art separately. `--spec` does **not** invoke the ChatGPT model from Node and tests do not demonstrate unattended creative generation. The local `artifacts` folder remains ignored, no client media is pushed to the repository. Score cues are authored decisions, not musical taste validation.
 
 **Reproducibility proof:** dedicated CI converts an original synthetic Atlas declarative example into JSON at runtime, then renders that complete 360-frame film from JSON. Index remains a separate JS-fixture control, and an independent test creates a third distinct synthetic JSON brief with no edits to production or film renderer source. Actual codec, audit and CI evidence remain separate from professional art acceptance.
+
+
+## Optional full-film local review package (isolated extension)
+
+The user-directed ChatGPT conversation authors the same local original-only JSON.
+**One offline command** now renders the actual complete MP4, the same
+director-authored source/transition/gesture/impact cue list, the existing
+independent *decoded* 360-frame AV advisory report, and a SHA-linked
+`silent_review-review-package.json`. This reuses the proven renderer and
+analyzer; it does **not** add an inference API, a second motion engine or a
+new creative style.
+
+    python3 experiments/p2-semantic-scenes/scripts/render_video.py --spec /local/original.json --review-package
+
+The manifest records the local input JSON and render-manifest SHA256,
+encoded MP4 SHA256, cue/report file names, actual decoded-frame count and
+explicit `PENDING` human-art/rights/music approval. A marker is written
+**only after** independent decode and hash checks succeed. The flag refuses
+`--smoke-frames` because a partial clip is not a complete human-review
+deliverable. The former CLI and existing separate commands remain valid.
+
+`--review-package` intentionally does **not** upload, share or prove
+browser playback in Google Drive. Human previews continue through the
+existing authorized private Drive workflow; no private review URLs, paid
+services, company source or licensed assets are put in public CI.
