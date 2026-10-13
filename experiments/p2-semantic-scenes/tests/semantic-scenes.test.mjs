@@ -134,7 +134,7 @@ test('final payoff is an enlarged source-linked product result across unrelated 
   const frame=p.shots[2].start+35,view=inspectFrame(p,frame);
   const svg=renderSvgFrame(p,frame);
   assert.match(svg,/id="product-result-stage"/);
-  assert.match(svg,/KEPT FROM THE ORIGINAL SOURCE/);
+  assert.match(svg,/SOURCE OBJECT / STILL THE SAME/);
   const hero=p.entities.find(e=>e.id===view.shot.focusId);
   assert.ok(svg.includes(hero.label));
   assert.ok(svg.includes(view.state[hero.id]));
@@ -147,6 +147,42 @@ test('final payoff is an enlarged source-linked product result across unrelated 
  // BEFORE any operation the incoming note is not falsely displayed as done.
  assert.doesNotMatch(renderSvgFrame(b,35),/id="product-result-stage"/);
  assert.doesNotMatch(renderSvgFrame(c,35),/id="product-result-stage"/);
+});
+test('camera tells a real action-to-result story without a spatial jump at the next shot',()=>{
+ for(const p of [b,c]){
+  const op=p.operations[0];
+  const svgBefore=renderSvgFrame(p,op.gesture.start-1);
+  const svgAt=renderSvgFrame(p,op.frame);
+  const svgAtCut=renderSvgFrame(p,p.shots[2].start);
+  const zoom=(svg)=>Number(svg.match(/id="semantic-camera"[^>]+scale\(([0-9.]+)\)/)?.[1]);
+  assert.equal(zoom(svgBefore),1);
+  assert.ok(zoom(svgAt)>1.04);
+  assert.ok(Math.abs(zoom(renderSvgFrame(p,op.frame+1))-zoom(svgAt))<.001);
+  assert.ok(Math.abs(zoom(svgAtCut)-zoom(renderSvgFrame(p,p.shots[1].end-1)))<.0001,
+    'The product space must not snap at the scene cut');
+  assert.equal(zoom(renderSvgFrame(p,p.shots[2].start+60)),1);
+ }
+});
+test('real source-linked result material differs by product kind, without copied/remote source',()=>{
+ for(const p of [b,c]){
+  const op=p.operations[0], last=renderSvgFrame(p,300);
+  const before=renderSvgFrame(p,op.frame-1);
+  assert.doesNotMatch(before,/id="product-result-stage"/);
+  assert.match(last,/id="source-to-result-continuity"/);
+  assert.match(last,/data-material="fictional-(calendar|caption-preview)/);
+  assert.match(last,/SOURCE OBJECT \/ STILL THE SAME/);
+  assert.match(last,/id="persistent-hero"/);
+  assert.match(last,/data-entity="/);
+  if(p.entities[0].kind==='task'){
+    assert.match(last,/id="original-calendar-result"/);
+    assert.match(last,/WEEK \/ NEW PLACEMENT/);
+    assert.doesNotMatch(last,/id="original-caption-result"/);
+  }else{
+    assert.match(last,/id="original-caption-result"/);
+    assert.match(last,/NOT REAL AUDIO/);
+    assert.doesNotMatch(last,/id="original-calendar-result"/);
+  }
+ }
 });
 test('a harmless ampersand must be escaped in frame output',()=>{
  const ex=copy(boardBrief);ex.entities[0].label='Plan & schedule';
