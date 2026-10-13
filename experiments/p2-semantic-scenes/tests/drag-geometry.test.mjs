@@ -24,7 +24,7 @@ test('reject source-detached drag cursors and partial off-screen landings',()=>{
     [x=>{x.operations[0].gesture.from.y=750},/Drag pointer must begin on the authored source object/],
     [x=>{x.operations[0].gesture.to.x=970},/Drag landing must keep the complete persistent object in frame/],
     [x=>{x.operations[0].gesture.to.x=30},/Drag landing must keep the complete persistent object in frame/],
-    [x=>{x.operations[0].gesture.to.y=970},/Drag landing must keep the complete persistent object in frame/]
+    [x=>{x.shots[1].hero.h=260;x.operations[0].gesture.to.y=920},/Drag landing must keep the complete persistent object in frame/]
   ]) {
     const bad=copy(boardBrief);edit(bad);
     assert.throws(()=>compileSemanticScenes(bad),diagnostic);
