@@ -83,13 +83,16 @@ test('incorrect profile and frame seek fail closed',()=>{
  assert.throws(()=>renderNativeLandscapeFrame(plan,360),/seek frame/);
 });
 
-test('dark result surface shows high-contrast visible result text and editorial title stays short',()=>{
- const plan=compileSemanticScenes(captionBrief),svg=renderNativeLandscapeFrame(plan,315);
+test('dark result surface has a visible, contrasting state and bounded headline',()=>{
+ const plan=compileSemanticScenes(captionBrief);
+ const svg=renderNativeLandscapeFrame(plan,315);
  const state=inspectFrame(plan,315).state[plan.entities[0].id];
- assert.ok(state==='Caption draft ready');
+ assert.equal(state,'Caption draft ready');
  assert.match(svg,/id="native-result-material"/);
- assert.match(svg,new RegExp('fill="'+plan.theme.onBackground+'"[^>]*>'+state.replace(/[-/\\^$*+?.()|[\\]{}]/g,'\\$&')+'</text>'));
- const title=svg.match(/id="native-landscape-editorial"[^>]*>([\\s\\S]*?)<\\/g>/);
- assert.ok(title);
- assert.equal((title[1].match(/<text /g)||[]).length<=6,true);
+ assert.ok(svg.includes('fill="'+plan.theme.onBackground+'">'+state+'</text>'),
+   'Result must use ink with validated dark-background contrast');
+ const part=svg.split('<g id="native-landscape-editorial"')[1]?.split('</g>')[0];
+ assert.ok(part);
+ const lines=(part.match(/<text /g)||[]).length;
+ assert.ok(lines>=2&&lines<=6,'Do not silently crop editorial title/subtitle');
 });
