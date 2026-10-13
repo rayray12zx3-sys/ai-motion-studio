@@ -145,7 +145,9 @@ export function renderOriginalLayers(plan,shot,frame,depth) {
   const rendered=[];
   for(const layer of shot.layers.filter(l=>l.depth===depth)){
     const p=activePose(shot,layer,frame,plan.profile,prior);
-    const alpha=f(layer.opacity*p.entry);
+    const last=prior?.layers?.find(x=>x.id===layer.id);
+    const change=last?ease((frame-shot.start)/Math.max(1,plan.profile.fps*.24)):1;
+    const alpha=f((last?lerp(last.opacity,layer.opacity,change):layer.opacity*p.entry));
     rendered.push('<g class="semantic-depth-layer" id="layer-'+layer.id+
       '" data-kind="'+layer.kind+'" data-depth="'+depth+
       '" opacity="'+alpha+'">',
