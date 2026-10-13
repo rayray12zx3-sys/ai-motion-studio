@@ -1,0 +1,70 @@
+name: Original transparent 4-shot timeline research
+on:
+  pull_request:
+    paths:
+      - 'experiments/original-motion-vocabulary/**'
+      - '.github/workflows/original-motion-overlap-rnd.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  two-full-original-four-shot-alpha-films:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Install isolated offline original-only render utilities
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg fonts-noto-cjk python3-venv
+          python3 -m venv /tmp/ams-overlap-venv
+          /tmp/ams-overlap-venv/bin/python -m pip --disable-pip-version-check install Pillow==12.3.0
+      - name: Test actual overlapped motion, replay and fail-closed inputs
+        run: |
+          . /tmp/ams-overlap-venv/bin/activate
+          cd experiments/original-motion-vocabulary
+          python -m py_compile render_motion_timeline.py render_motion.py
+          python -m unittest discover -s tests -v
+          python render_motion_timeline.py --plan examples/motion-education-four-shots.json --out out/simulate --dry-run
+          python render_motion_timeline.py --plan examples/motion-creative-four-shots.json --out out/simulate --dry-run
+      - name: Render BOTH distinct full 4-shot ProRes alpha films + H264 preview and decode all frames
+        run: |
+          . /tmp/ams-overlap-venv/bin/activate
+          cd experiments/original-motion-vocabulary
+          python render_motion_timeline.py --plan examples/motion-education-four-shots.json --out out/timeline-education
+          python render_motion_timeline.py --plan examples/motion-creative-four-shots.json --out out/timeline-creative
+          python - <<'PY'
+          import json,hashlib,subprocess
+          from pathlib import Path
+          for name,expected in [('timeline-education',415),('timeline-creative',441)]:
+              base=Path('out')/name
+              m=json.loads((base/'timeline_manifest.json').read_text())
+              assert m['duration_frames']==expected
+              assert len(m['shots'])==4 and m['technical_gate']=='TECH_PASS'
+              assert m['art']=='PENDING_HUMAN' and not m['user_media_loaded']
+              for output,kind in [('timeline_ALPHA.mov','alpha_mov'),('timeline_PREVIEW.mp4','preview_mp4')]:
+                  p=base/output
+                  probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames',
+                    '-show_entries','stream=width,height,codec_name,nb_read_frames,pix_fmt',
+                    '-of','json',str(p)]))['streams'][0]
+                  assert int(probe['nb_read_frames'])==expected
+                  assert probe['width']==1080 and probe['height']==1920
+                  assert probe['codec_name']==('prores' if kind=='alpha_mov' else 'h264')
+                  if kind=='alpha_mov': assert probe['pix_fmt'].startswith('yuva')
+                  assert hashlib.sha256(p.read_bytes()).hexdigest()==m['media'][kind]['sha256']
+              assert len(set(x['small_rgba_sha256'] for x in m['samples']))>=8
+              assert all(x['has_transparency'] and x['has_visible_pixels'] for x in m['samples'])
+              print(name,expected,'full decoded synthetic RGBA timeline SUCCESS')
+          PY
+      - name: Retain original-only 4-shot full-moving movie proof (no company media)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: original-mg-two-overlap-alpha-full-films
+          path: |
+            experiments/original-motion-vocabulary/out/timeline-*/timeline_ALPHA.mov
+            experiments/original-motion-vocabulary/out/timeline-*/timeline_PREVIEW.mp4
+            experiments/original-motion-vocabulary/out/timeline-*/timeline_manifest.json
+          retention-days: 2
+          if-no-files-found: error

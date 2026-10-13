@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "kind": "original-motion-overlap",
+  "shots": [
+    {
+      "id": "focus-question",
+      "frames": 150,
+      "overlap_in_frames": 0,
+      "spec": {
+        "mode": "recall_cycle",
+        "heading": "探究與回顧",
+        "question": "提出問題",
+        "recall": "主動思考",
+        "revisit_labels": [
+          "今天",
+          "一週後",
+          "再複習"
+        ],
+        "finish": "穩定回顧"
+      }
+    },
+    {
+      "id": "point-to-task",
+      "frames": 120,
+      "overlap_in_frames": 20,
+      "spec": {
+        "mode": "interaction_focus",
+        "heading": "找到關鍵內容",
+        "indicator": "動作重點",
+        "target_x": 505,
+        "target_y": 1120,
+        "active_until_seconds": 3.4
+      }
+    },
+    {
+      "id": "milestone",
+      "frames": 105,
+      "overlap_in_frames": 20,
+      "spec": {
+        "mode": "event_reward",
+        "heading": "完成一個里程碑"
+      }
+    },
+    {
+      "id": "summary",
+      "frames": 100,
+      "overlap_in_frames": 20,
+      "spec": {
+        "mode": "cta_reveal",
+        "heading": "接續下一階段",
+        "headline": "建立學習節奏",
+        "button": "開始練習"
+      }
+    }
+  ]
+}
