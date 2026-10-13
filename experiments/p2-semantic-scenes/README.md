@@ -147,3 +147,39 @@ deliverable. The former CLI and existing separate commands remain valid.
 browser playback in Google Drive. Human previews continue through the
 existing authorized private Drive workflow; no private review URLs, paid
 services, company source or licensed assets are put in public CI.
+
+
+## Original authored multi-depth scene studies (isolated, operator-authorized 2026-10-13)
+
+Two existing complete fictional product briefs now exercise an **optional additive**
+`shot.layers` composition vocabulary. These data live inside the original
+`p2-semantic-scenes-v1` isolated pilot, **not the production Canvas/S1 schema**.
+No user/product video, image generation model, new package, external reference
+frames or public source rights are used.
+
+Each original layer has a stable `id`, narrative `purpose`, bounded 1000-unit
+`bounds`, `drift`, opacity, a semantic tone, and a front/rear composition depth.
+The supported kinds are:
+- `spatial-grid`: authored receding planning-space grid, used to give Atlas's
+  calendar destination a sense of material space and continuity.
+- `signal-ribbon`: phase-continuous illustrated audio flow, used in Index to
+  carry the same source identity into a caption result, not an actual decoded recording.
+- `orbit-markers`: restrained point-of-interest emphasis near the task
+  destination or source selection; not a performance/product measurement.
+
+A shared layer ID keeps the same kind/depth/tone across shots. At a cut its
+normalized pose starts from the previous shot's **terminal** position, then
+transitions to the next shot pose with deterministic easing. Fresh layers
+fade in; each generated SVG frame is a pure function of authored JSON plus
+frame index, so out-of-order seek remains valid. The compiler rejects
+out-of-frame and drifting geometry, unsafe source content, duplicate IDs,
+unsupported shapes and identity shifts.
+
+These are source-first scene-composition building blocks rather than
+preapproved aesthetic templates. Existing `board`/`caption` CLI and JSON
+`--spec` now both render the authored depth layers through the SAME
+compiler and full-MP4 offline workflow. Old specs with no layers remain
+accepted. Full 360-frame outputs, cue/data contract, and negative tests
+remain the technical acceptance; human watching the *motion at full speed*,
+real font/material rights, artistic quality and official renderer adoption
+remain **PENDING**. Do not equate more layers with reference-quality motion.

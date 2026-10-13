@@ -3,6 +3,7 @@
  * NO model calls, runtime remote assets, vendor motion dependencies, or root
  * production renderer imports. Director is the active ChatGPT conversation.
  */
+import {compileOriginalLayers,auditLayerContinuity,renderOriginalLayers} from './original-depth-layers.mjs';
 const fail = message => { throw new Error(message); };
 const key = v => typeof v === 'string' && /^[a-z][a-z0-9-]{2,48}$/.test(v);
 const color = v => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v);
@@ -97,11 +98,13 @@ export function compileSemanticScenes(spec) {
       id:raw.id,start,end,focusId:raw.focusId,layout:raw.layout,bridge:raw.bridge,
       reason:str(raw.reason,'shot intention',8,220),
       title:str(raw.title,'headline',3,65),subtitle:str(raw.subtitle,'subtitle',4,120),
-      hero:pose(raw.hero,raw.id+'.hero'),context
+      hero:pose(raw.hero,raw.id+'.hero'),context,
+      layers:compileOriginalLayers(raw.layers,raw.id)
     };
     shots.push(shot);previous=shot;
   }
   if(previous.end!==frames)fail('Film has an incomplete ending');
+  auditLayerContinuity(shots);
   if(!Array.isArray(x.operations)||x.operations.length<1||x.operations.length>5)fail('Visible UI operation required');
   const operations=[], seenOp=new Set();
   for(const o of x.operations) {
@@ -235,6 +238,7 @@ export function renderSvgFrame(plan,frame) {
   const rendered=[
     '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'">',
     box(0,0,w,h,t.background,0),
+    ...(s.layers.length?[renderOriginalLayers(plan,s,frame,'rear')]:[]),
     label('AI MOTION STUDIO  /  ORIGINAL SEMANTIC STUDY',tx,top,18*unit,t.muted,650),
     box(tx,top+24*unit,w-2*tx,2*unit,t.muted,0),
     label('STORY / '+(plan.shots.indexOf(s)+1).toString().padStart(2,'0')+
@@ -397,6 +401,7 @@ export function renderSvgFrame(plan,frame) {
       label(v,tx+30*unit,h*.675+i*72*unit,35*unit,t.ink,625),'</g>'));
   }
   rendered.push('</g>'); // workspace enters after the source hero, not teleported
+  if(s.layers.length)rendered.push(renderOriginalLayers(plan,s,frame,'front'));
   // Scene one: original source object enters and holds before its contextual
   // details assemble. Subsequent shots retain full entity presence on the cut.
   rendered.push('<g id="persistent-hero" data-entity="'+esc(e.id)+
