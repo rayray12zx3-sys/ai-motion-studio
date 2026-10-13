@@ -56,13 +56,13 @@ def preflight(base, asset, output, mode, start_frame, end_frame, opacity):
     base, asset, output = (Path(p).expanduser().resolve() for p in (base, asset, output))
     if not base.is_file() or base.suffix.lower() != ".mp4":
         fail("Base must be a real local MP4")
-    if not asset.is_file() or asset.suffix.lower() not in (".mp4", ".png"):
-        fail("Asset must be a local MP4 or PNG, not an AE preset or URL")
+    if not asset.is_file() or asset.suffix.lower() not in (".mp4", ".mov", ".png"):
+        fail("Asset must be a local MP4, ProRes MOV or PNG, not an AE preset or URL")
     if inside(asset, P2.parents[1]) and not inside(asset, PRIVATE):
         fail("Third-party source media may not live in the public repo tree")
     if output.suffix.lower() != ".mp4" or not inside(output, PRIVATE):
         fail("Output must be MP4 inside ignored P2 artifacts/private")
-    if output.exists() or output in (base, asset):
+    if output.exists() or output.with_suffix(".private-qc.json").exists() or output in (base, asset):
         fail("Refuse to overwrite an input or existing private review")
     if mode not in ("screen", "alpha"):
         fail("Unsupported explicit compositing mode")
@@ -81,7 +81,8 @@ def preflight(base, asset, output, mode, start_frame, end_frame, opacity):
     if not (isinstance(start_frame, int) and isinstance(end_frame, int)
             and 0 <= start_frame < end_frame <= frames):
         fail("Overlay window is outside the decoded base film")
-    a = video_stream(probe(asset))
+    metadata = probe(asset)
+    a = video_stream(metadata)
     if not a or a.get("width", 0) < 2 or a.get("height", 0) < 2:
         fail("Could not decode local asset dimensions")
     if asset.suffix.lower() == ".png" and a.get("codec_name") != "png":
@@ -89,6 +90,15 @@ def preflight(base, asset, output, mode, start_frame, end_frame, opacity):
     if asset.suffix.lower() == ".mp4" and (a.get("codec_type") != "video" or
             a.get("codec_name") not in ("h264", "hevc", "mpeg4", "vp9", "av1", "prores")):
         fail("Unsupported local video codec")
+    if asset.suffix.lower() == ".mov" and a.get("codec_name") != "prores":
+        fail("MOV currently supports only local decoded ProRes footage")
+    if asset.suffix.lower() != ".png":
+        try:
+            duration = float(a.get("duration") or metadata.get("format", {}).get("duration") or 0)
+        except (ValueError, TypeError):
+            fail("Missing source video duration")
+        if not math.isfinite(duration) or duration <= 0 or (end_frame-start_frame) > duration * PROFILE[2] + .4:
+            fail("One-shot source is shorter than effect window; do not silently loop")
     if mode == "alpha" and not any(a.get("pix_fmt", "").startswith(v) for v in ALPHA):
         fail("Alpha mode requires decoded alpha pixels; use screen for black-background footage")
     return dict(base=base, asset=asset, output=output, frames=frames,
@@ -107,11 +117,11 @@ def filters(plan):
                 f"min(255,A+{opacity:.6f}*B*(255-A)/255),A)")
         return ("[0:v]fps=30,format=gbrp,setpts=PTS-STARTPTS[base];"
                 f"[1:v]fps=30,{resize}color=black,format=gbrp,"
-                f"setpts=PTS-STARTPTS[asset];"
-                f"[base][asset]blend=all_expr='{expr}',format=yuv420p[out]")
+                f"setpts=PTS-STARTPTS+{t0:.6f}/TB[asset];"
+                f"[base][asset]blend=all_expr='{expr}':shortest=0:repeatlast=0,format=yuv420p[out]")
     return ("[0:v]fps=30,format=rgba,setpts=PTS-STARTPTS[base];"
             f"[1:v]fps=30,{resize}color=black@0,format=rgba,"
-            f"colorchannelmixer=aa={opacity:.6f},setpts=PTS-STARTPTS[asset];"
+            f"colorchannelmixer=aa={opacity:.6f},setpts=PTS-STARTPTS+{t0:.6f}/TB[asset];"
             f"[base][asset]overlay=0:0:format=auto:"
             f"enable='between(t,{t0:.6f},{t1:.6f})',format=yuv420p[out]")
 
@@ -120,7 +130,7 @@ def render(plan):
     dest = plan["output"]
     dest.parent.mkdir(parents=True, exist_ok=True)
     asset_input = (["-loop", "1", "-framerate", "30"] if plan["asset"].suffix.lower() == ".png"
-                   else ["-stream_loop", "-1"])
+                   else [])
     args = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin", "-n",
             "-i", str(plan["base"]), *asset_input, "-i", str(plan["asset"]),
             "-filter_complex", filters(plan), "-map", "[out]",
