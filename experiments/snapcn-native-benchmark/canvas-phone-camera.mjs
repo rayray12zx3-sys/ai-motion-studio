@@ -87,6 +87,21 @@ export function paintFrame(frame,texture){
   // Dedicated source object is *not* replaced by title cards or simple rectangles.
   // Grid mesh warps the original plate and shell, preserving the phone plane.
   ctx.globalAlpha=cameraAt(frame).fade;
+  // Source-plane underpaint prevents subpixel cracks between anti-aliased
+  // mesh triangle edges. The underpaint is CLIPPED to the phone silhouette
+  // and is fully covered except where independent triangle rasterisation
+  // left hairline gaps. Without it the synthetic UI develops visible grids.
+  const [outerTL,outerTR,outerBR,outerBL]=projectTile(0,0,320,656,frame);
+  ctx.save();ctx.beginPath();
+  ctx.moveTo(outerTL.x,outerTL.y);ctx.lineTo(outerTR.x,outerTR.y);
+  ctx.lineTo(outerBR.x,outerBR.y);ctx.lineTo(outerBL.x,outerBL.y);
+  ctx.closePath();ctx.clip();
+  ctx.setTransform((outerTR.x-outerTL.x)/texture.width,
+    (outerTR.y-outerTL.y)/texture.width,
+    (outerBL.x-outerTL.x)/texture.height,
+    (outerBL.y-outerTL.y)/texture.height,
+    outerTL.x,outerTL.y);
+  ctx.drawImage(texture,0,0);ctx.restore();
   const nx=18,ny=25,sw=texture.width/nx,sh=texture.height/ny;
   for(let yi=0;yi<ny;yi++){
     for(let xi=0;xi<nx;xi++){
