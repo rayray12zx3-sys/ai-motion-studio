@@ -108,13 +108,16 @@ const warp=`perspective=${coords}:sense=destination:interpolation=cubic:eval=fra
 // Deliberately separate layers: early defocused media crossfades to sharp
 // media over source frames 4..22, while bezel/side buttons remain crisp.
 const filter=[
- `[0:v]format=rgba,${warp},fade=t=out:st=0.133333:d=0.6:alpha=1[blur]`,
- `[1:v]format=rgba,${warp},fade=t=in:st=0.133333:d=0.6:alpha=1[sharp]`,
- `[2:v]format=rgba,${warp}[bezel]`,
+ '[0:v]format=rgba,fade=t=out:st=0.133333:d=0.6:alpha=1[blur]',
+ '[1:v]format=rgba,fade=t=in:st=0.133333:d=0.6:alpha=1[sharp]',
  '[blur][sharp]overlay=x=0:y=0:format=auto:shortest=1:alpha=straight[screen]',
- '[screen][bezel]overlay=x=0:y=0:format=auto:shortest=1:alpha=straight,fade=t=in:st=0:d=0.4:alpha=1[device]',
+ '[2:v]format=rgba[shell]',
+ '[screen][shell]overlay=x=0:y=0:format=auto:shortest=1:alpha=straight[assembled]',
+ `[assembled]${warp},fade=t=in:st=0:d=0.4:alpha=1[device]`,
  '[3:v][device]overlay=x=0:y=0:format=auto:shortest=1:alpha=straight,format=yuv420p[out]'
 ].join(';');
+// The source screen and body are processed independently, then rasterized ONCE.
+// Only one 1080p perspective pass is needed; no triple-warp regression.
 const video=join(out,'AMSAtlasLayeredFfmpegPerspective.mp4');
 const args=['-hide_banner','-loglevel','error','-nostdin','-y',
  '-loop','1','-framerate','30','-i',screenBlur,
@@ -184,7 +187,7 @@ for(const n of review){
  h264_sha256:sha(readFileSync(video)),source_screen_clean_sha256:sha(readFileSync(screenClean)),
  source_screen_blurred_sha256:sha(readFileSync(screenBlur)),
  source_shell_sha256:sha(readFileSync(shell)),
- independent_screen_shell_layers:true,source_screen_only_blur:true,
+ independent_screen_shell_layers:true,source_screen_only_blur:true,one_perspective_pass:true,
  encoder_sha256:sha(readFileSync(bin)),actual_decoded_frames:Number(track.nb_read_frames),
  technical_decode:'PASS',sampled_original_ui_visible:seen,repeated_byte_for_byte:'PASS',artistic_acceptance:'PENDING',native_snapcn_pixel_parity:'UNVERIFIED',source_native_3d_parity:'NOT_CLAIMED',
  rights:'MIT original motion cues; commercial media rights still separate',
