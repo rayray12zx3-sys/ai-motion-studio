@@ -184,6 +184,29 @@ test('real source-linked result material differs by product kind, without copied
   }
  }
 });
+test('authored opening reveals the same source before product context in time',()=>{
+ for(const p of [b,c]) {
+  const first=renderSvgFrame(p,0);
+  const mid=renderSvgFrame(p,36);
+  const later=renderSvgFrame(p,98);
+  assert.match(first,/id="persistent-hero"[^>]+opacity="0.0000"/);
+  assert.match(first,/id="workspace-progressive-reveal" opacity="0.0000"/);
+  assert.match(mid,/id="persistent-hero"[^>]+opacity="1.0000"/);
+  assert.match(later,/id="workspace-progressive-reveal" opacity="1.0000"/);
+  assert.doesNotMatch(first,/id="opening-source-bridge"/);
+  assert.match(later,/id="opening-source-bridge"/);
+  assert.equal(first,renderSvgFrame(p,0));
+ }
+});
+test('track preview scan is illustrative, source selection precedes state update',()=>{
+ const p=c,op=p.operations[0];
+ assert.match(renderSvgFrame(p,35),/id="illustrative-source-playhead"/);
+ assert.doesNotMatch(renderSvgFrame(p,op.gesture.start-1),/id="selected-source-range"/);
+ assert.match(renderSvgFrame(p,op.gesture.start),/id="selected-source-range"/);
+ assert.match(renderSvgFrame(p,op.frame),/id="selected-source-range"/);
+ assert.match(renderSvgFrame(p,op.frame+10),/id="selected-source-range"/);
+ assert.doesNotMatch(renderSvgFrame(b,op.frame),/id="illustrative-source-playhead"/);
+});
 test('a harmless ampersand must be escaped in frame output',()=>{
  const ex=copy(boardBrief);ex.entities[0].label='Plan & schedule';
  const p=compileSemanticScenes(ex);
