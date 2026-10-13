@@ -199,3 +199,19 @@ From root in an already-authorized offline Node/CairoSVG/FFmpeg environment:
 The `--spec /private/authorized-original.json --widescreen` route accepts the **same local original-only authored JSON contract** as the existing vertical route. No new schema, brief-specific renderer JS, remote API or root media loader is added. Widescreen output is a **different filename** and separate SVG frame directory; original portrait artifacts and default CLI behavior remain unchanged. Each aspect receives actual full-length H.264 decode/QC reports. The human artistic gate stays **PENDING** and the landscape typography can still differ by OS font; this experiment must not be promoted to `main` or claimed to deliver commercial responsive quality without operator review.
 
 **Company/private media boundary:** Even if the owner provides current real app recordings for separate PRIVATE compatibility benchmarking, **only original synthetic fixtures enter this branch, CI, PR or public artifacts**. Source content and canonical version adoption remain with the separate private video-production workflow. This branch must not attempt to import production assets or update private State Engine approvals.
+
+
+## Native 16:9 semantic reflow follow-up (Draft R&D; not production)
+
+The prior `--widescreen` proof was a split editorial view embedding the old 9:16 film. This newer **additional, opt-in** `--native-landscape` mode uses the **same exact authored P2 shot/entity/gesture graph** but now renders each scene directly in 1920x1080 coordinates. It recomposes headings and context, moves the persistent hero and its action trajectory into a true landscape source/workspace, and reuses authored original spatial-depth layers. There is **no nested portrait SVG**. Separate Atlas/Index source objects show different board/track treatment with no film-specific branch or changed input schema.
+
+Existing default 9:16 and split `--widescreen` remain unchanged and independently testable. All variants keep the same 30fps, 360f, 12-second P2 R&D constraint:
+
+    node experiments/p2-semantic-scenes/scripts/emit-native-landscape-frames.mjs board
+    node experiments/p2-semantic-scenes/scripts/emit-native-landscape-frames.mjs caption
+    python3 experiments/p2-semantic-scenes/scripts/render_video.py board --native-landscape --review-package
+    python3 experiments/p2-semantic-scenes/scripts/render_video.py caption --native-landscape --review-package
+
+For a **new original-only**, validated local JSON brief, use `--spec /private/local/original.json --native-landscape --review-package`; an independently authored third brief is also exercised through the existing compiler in tests. The command refuses to combine `--native-landscape` and `--widescreen`, preserves its former full review package and writes a separate `native_landscape_silent_review.mp4` plus manifest instead of overwriting the existing 9:16 or split comparison. Generated media stay under ignored local `artifacts/`, with **public GitHub Actions using only original synthetic fixtures**.
+
+The native mode is a bounded geometry study, **not** an unrestricted landscape SceneSpec or approved artistic result. The compiler's source layouts are still limited to `board`, `track`, `reading`, synthetic object kinds and original-only assets; layout measurements use font-independent approximations and OS sans-serif, so text portability remains OPEN. All 360-frame technical decoding evidence is **engineering only**, not human full-speed film/Commercial/Premiere acceptance. No new model/provider, package, official Canvas/FFmpeg product integration, third-party company footage, external audio, licensed references or ad-state changes are included. No automatic Draft merging or creativity authority.
