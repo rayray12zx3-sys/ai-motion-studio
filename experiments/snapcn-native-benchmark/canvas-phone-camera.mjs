@@ -20,7 +20,7 @@ const keys={
 const cuts=[0,.1,.42,.62,.9,1];
 const clamp=x=>Math.max(0,Math.min(1,x));
 const ease=x=>x<.5?4*x*x*x:1-(-2*x+2)**3/2;
-const interpolate=(v,a,b,q)=>a+(b-a)*q;
+const interpolate=(a,b,q)=>a+(b-a)*q;
 const rad=d=>d*Math.PI/180;
 export function cameraAt(frame){
   if(!Number.isInteger(frame)||frame<0||frame>=SPEC.frames)throw Error('invalid frame');
