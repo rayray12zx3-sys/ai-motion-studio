@@ -21,6 +21,7 @@ jobs:
       - name: Check compiler and both independent briefs
         run: |
           node --check experiments/p2-semantic-scenes/src/semantic-scenes.mjs
+          node --check experiments/p2-semantic-scenes/src/original-depth-layers.mjs
           node --check experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs
           node --check experiments/p2-semantic-scenes/scripts/score-cues.mjs
           node --check experiments/p2-semantic-scenes/scripts/load-director-brief.mjs
@@ -42,6 +43,9 @@ jobs:
           node experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs --spec experiments/p2-semantic-scenes/artifacts/creative-director-original.json
           test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/samples/0165.svg
           test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/samples/0168.svg
+          # Actual authored SVG layer output from two different original briefs.
+          grep -q 'data-kind="spatial-grid"' experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/samples/0165.svg
+          grep -q 'data-kind="signal-ribbon"' experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/samples/0168.svg
       - name: Actually encode two FULL 360-frame silent H264 films and inspect every frame (NOT art QA)
         run: |
           python3 -m venv /tmp/p2-svg-venv
