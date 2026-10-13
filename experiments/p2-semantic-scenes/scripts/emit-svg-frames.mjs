@@ -48,7 +48,7 @@ const summary={film:plan.id,profile:plan.profile,renderedSvgFrames:picks.length,
   after:inspectFrame(plan,plan.operations[0].frame).state,
   artStatus:plan.artStatus,rightsStatus:plan.rightsStatus,
   audioAuditioned:false,
-  notes:'Original authored SVG scenes only. Codec, licensed music, art and all rights remain independent.';
+  notes:'Original authored SVG scenes only. Codec, licensed music, art and all rights remain independent.'
 };
 fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(summary,null,2));
 console.log(JSON.stringify({film:plan.id,frames:picks.length,output:out}));
