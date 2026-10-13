@@ -119,8 +119,17 @@ test('long editorial titles and persistent entity text fit frame/card bounds',()
  for(const p of [b,c]){
   for(const frame of [35,140,180,280,359]){
    const svg=renderSvgFrame(p,frame),v=inspectFrame(p,frame),s=v.shot;
-   const titlePx=getSize(svg,s.title);
-   assert.ok(titlePx*s.title.length*.78<=p.profile.width-124+1,'Title overflow: '+s.title);
+   const words=s.title.split(' ');
+   const options=words.slice(1).map((_,i)=>[
+     words.slice(0,i+1).join(' '),words.slice(i+1).join(' ')]);
+   const pieces=options.find(x=>x.every(part=>svg.includes('>'+part+'</text>')));
+   assert.ok(pieces&&pieces.length===2,'Editorial must use its own two readable title lines');
+   for(const part of pieces){
+     const titlePx=getSize(svg,part);
+     assert.ok(titlePx*part.length*.78<=p.profile.width-124+1,
+       'Editorial line overflow: '+part);
+     assert.ok(titlePx>=70,'Editorial headline too small: '+part);
+   }
    const e=p.entities.find(x=>x.id===s.focusId);
    for(const [label,multiplier] of [[e.label,.72],[v.state[e.id],.67]]){
     const labelPx=getSize(svg,label,'hero');
