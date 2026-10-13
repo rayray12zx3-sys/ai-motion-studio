@@ -45,7 +45,7 @@ test('fail closed for remote text, unsafe positions, invalid layers and lineage 
   for(const mutate of [
     x=>x.shots[0].layers[0].bounds.x=900,
     x=>x.shots[0].layers[0].drift.x=60,
-    x=>x.shots[0].layers[0].opacity=75,
+    x=>x.shots[0].layers[0].opacity=95,
     x=>x.shots[0].layers[0].kind='video',
     x=>x.shots[0].layers[0].purpose='https://untrusted.example/material',
     x=>x.shots[1].layers[0].kind='signal-ribbon',
