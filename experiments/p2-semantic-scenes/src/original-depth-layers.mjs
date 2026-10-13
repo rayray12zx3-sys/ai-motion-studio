@@ -42,7 +42,7 @@ export function compileOriginalLayers(input,shotId) {
        bounds.x+bounds.w+Math.max(0,drift.x)>1000||
        bounds.y+bounds.h+Math.max(0,drift.y)>1000)
       throw Error('Moving depth layer exceeds safe frame bounds');
-    const alpha=val(v.opacity,5,42,'layer.opacity')/100;
+    const alpha=val(v.opacity,5,78,'layer.opacity')/100;
     return {id:v.id,kind:v.kind,depth:v.depth,tone:v.tone,purpose:v.purpose,
       bounds,drift,opacity:alpha};
   });
