@@ -183,3 +183,19 @@ accepted. Full 360-frame outputs, cue/data contract, and negative tests
 remain the technical acceptance; human watching the *motion at full speed*,
 real font/material rights, artistic quality and official renderer adoption
 remain **PENDING**. Do not equate more layers with reference-quality motion.
+
+
+## Optional 16:9 two-brief editorial re-layout (isolated Draft R&D)
+
+This experiment tests one **reusable semantic animation plan** in two aspect-ratio presentations, and then across **two unrelated original product briefs**. The same existing `board` and `caption` authored data, source-to-gesture-to-result state/frames, and original 9:16 SVG player are retained. A separate landscape **1920x1080 split editorial view** places the unchanged portrait film on the left and adds data-driven shot headings, persistent object state and actual progress on the right. It is a responsive *presentation/composition* study, **not** complete true horizontal scene-by-scene spatial reflow or real APP media support.
+
+From root in an already-authorized offline Node/CairoSVG/FFmpeg environment:
+
+    node experiments/p2-semantic-scenes/scripts/emit-widescreen-frames.mjs board
+    node experiments/p2-semantic-scenes/scripts/emit-widescreen-frames.mjs caption
+    python3 experiments/p2-semantic-scenes/scripts/render_video.py board --widescreen --review-package
+    python3 experiments/p2-semantic-scenes/scripts/render_video.py caption --widescreen --review-package
+
+The `--spec /private/authorized-original.json --widescreen` route accepts the **same local original-only authored JSON contract** as the existing vertical route. No new schema, brief-specific renderer JS, remote API or root media loader is added. Widescreen output is a **different filename** and separate SVG frame directory; original portrait artifacts and default CLI behavior remain unchanged. Each aspect receives actual full-length H.264 decode/QC reports. The human artistic gate stays **PENDING** and the landscape typography can still differ by OS font; this experiment must not be promoted to `main` or claimed to deliver commercial responsive quality without operator review.
+
+**Company/private media boundary:** Even if the owner provides current real app recordings for separate PRIVATE compatibility benchmarking, **only original synthetic fixtures enter this branch, CI, PR or public artifacts**. Source content and canonical version adoption remain with the separate private video-production workflow. This branch must not attempt to import production assets or update private State Engine approvals.
