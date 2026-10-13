@@ -21,6 +21,8 @@ def main():
     ap.add_argument('--spec',type=Path,help='Explicit local ChatGPT-authored original JSON scene')
     ap.add_argument('--widescreen',action='store_true',
                     help='Opt-in 1920x1080 split editorial R&D output (source scene spec remains unchanged)')
+    ap.add_argument('--native-landscape',action='store_true',
+                    help='Opt-in 1920x1080 native landscape scene layout (isolated experimental path)')
     ap.add_argument('--music-file',type=Path)
     ap.add_argument('--credits-file',type=Path)
     ap.add_argument('--music-offset',type=float,default=0)
@@ -34,6 +36,8 @@ def main():
     if bool(opt.music_file)!=bool(opt.credits_file):
         ap.error('Music requires both local audio and explicit source/license credits')
     if opt.music_offset<0:ap.error('Music offset must be nonnegative')
+    if opt.widescreen and opt.native_landscape:
+        ap.error('Choose only one experimental landscape renderer')
     if opt.review_package and opt.smoke_frames:
         ap.error('A review package requires the complete film, not smoke frames')
     if opt.music_file:
@@ -48,20 +52,24 @@ def main():
         import cairosvg
     except ImportError as e:
         raise SystemExit('R&D converter missing: install CairoSVG in this isolated execution environment') from e
-    emit=['node',str(HERE/'scripts/emit-widescreen-frames.mjs' if opt.widescreen else HERE/'scripts/emit-svg-frames.mjs')]
+    emitter=('emit-native-landscape-frames.mjs' if opt.native_landscape else
+             'emit-widescreen-frames.mjs' if opt.widescreen else 'emit-svg-frames.mjs')
+    emit=['node',str(HERE/'scripts'/emitter)]
     emit+=['--spec',str(opt.spec)] if opt.spec else [opt.film]
     emit+=['--all']
     # JSON metadata is emitted by our own known script after compiler preflight.
     emitted=json.loads(command(emit))
     film_id=emitted['film']
-    source=HERE/'artifacts'/film_id/('widescreen-all' if opt.widescreen else 'all')
+    source=HERE/'artifacts'/film_id/('native-landscape-all' if opt.native_landscape else
+                                      'widescreen-all' if opt.widescreen else 'all')
     manifest=json.loads((source/'manifest.json').read_text(encoding='utf-8'))
     count=manifest['profile']['frames']
     fps=manifest['profile']['fps']
     if opt.smoke_frames:
         if opt.smoke_frames<2 or opt.smoke_frames>=count:ap.error('Smoke must be 2..frames-1')
         count=opt.smoke_frames
-    target=HERE/'artifacts'/film_id/(('widescreen_' if opt.widescreen else '')+
+    target=HERE/'artifacts'/film_id/(('native_landscape_' if opt.native_landscape else
+                                      'widescreen_' if opt.widescreen else '')+
         ('smoke.mp4' if opt.smoke_frames else
         ('licensed_music_review.mp4' if opt.music_file else 'silent_review.mp4')))
     target.parent.mkdir(exist_ok=True,parents=True)
