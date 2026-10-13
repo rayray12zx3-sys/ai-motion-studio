@@ -82,3 +82,14 @@ test('incorrect profile and frame seek fail closed',()=>{
  assert.throws(()=>renderNativeLandscapeFrame(plan,-1),/seek frame/);
  assert.throws(()=>renderNativeLandscapeFrame(plan,360),/seek frame/);
 });
+
+test('dark result surface shows high-contrast visible result text and editorial title stays short',()=>{
+ const plan=compileSemanticScenes(captionBrief),svg=renderNativeLandscapeFrame(plan,315);
+ const state=inspectFrame(plan,315).state[plan.entities[0].id];
+ assert.ok(state==='Caption draft ready');
+ assert.match(svg,/id="native-result-material"/);
+ assert.match(svg,new RegExp('fill="'+plan.theme.onBackground+'"[^>]*>'+state.replace(/[-/\\^$*+?.()|[\\]{}]/g,'\\$&')+'</text>'));
+ const title=svg.match(/id="native-landscape-editorial"[^>]*>([\\s\\S]*?)<\\/g>/);
+ assert.ok(title);
+ assert.equal((title[1].match(/<text /g)||[]).length<=6,true);
+});
