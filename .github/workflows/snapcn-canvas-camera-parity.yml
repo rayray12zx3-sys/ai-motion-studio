@@ -1,0 +1,51 @@
+name: isolated Canvas snapcn camera transfer proof
+on:
+  pull_request:
+    paths:
+      - "experiments/snapcn-native-benchmark/canvas-phone-camera*"
+      - "experiments/snapcn-native-benchmark/render-canvas-phone.mjs"
+      - "experiments/snapcn-native-benchmark/render-ffmpeg-phone.mjs"
+      - ".github/workflows/snapcn-canvas-camera-parity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  zero-paid-renderer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          # Run code from the actual PR HEAD, not GitHub's synthetic merge tree.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.19.0"
+          cache: npm
+      - name: Existing locked renderer dependencies only
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Independent actual frame and deterministic native canvas tests
+        run: |
+          node --check experiments/snapcn-native-benchmark/canvas-phone-camera.mjs
+          node --check experiments/snapcn-native-benchmark/render-canvas-phone.mjs
+          node --test experiments/snapcn-native-benchmark/canvas-phone-camera.test.mjs
+      - name: Provision existing hash-verified FFmpeg
+        run: node scripts/setup-encoder.mjs
+      - name: Create full 8s/240-frame original film with Canvas+FFmpeg
+        run: node experiments/snapcn-native-benchmark/render-canvas-phone.mjs
+      - name: Test whole-film FFmpeg perspective as seam-free alternative
+        run: |
+          node --check experiments/snapcn-native-benchmark/render-ffmpeg-phone.mjs
+          node experiments/snapcn-native-benchmark/render-ffmpeg-phone.mjs
+      - name: Preserve original-synthetic candidate; not art approval
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: snapcn-canvas-original-8sec-fidelity-test
+          path: |
+            out/snapcn-canvas-camera/
+            out/snapcn-ffmpeg-perspective/
+          if-no-files-found: error
+          retention-days: 2
