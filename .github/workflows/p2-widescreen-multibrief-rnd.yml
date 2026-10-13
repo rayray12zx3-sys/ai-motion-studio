@@ -1,0 +1,71 @@
+name: P2 isolated two-brief responsive widescreen film R&D
+on:
+  pull_request:
+    paths:
+      - 'experiments/p2-semantic-scenes/**'
+      - '.github/workflows/p2-widescreen-multibrief-rnd.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  two-complete-original-widescreen-films:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Validate shared semantic and alternate aspect renderer; no user media
+        run: |
+          node --check experiments/p2-semantic-scenes/src/widescreen-composition.mjs
+          node --check experiments/p2-semantic-scenes/scripts/emit-widescreen-frames.mjs
+          node --test experiments/p2-semantic-scenes/tests/*.test.mjs
+          python3 -m py_compile experiments/p2-semantic-scenes/scripts/render_video.py
+          node experiments/p2-semantic-scenes/scripts/emit-widescreen-frames.mjs board
+          node experiments/p2-semantic-scenes/scripts/emit-widescreen-frames.mjs caption
+          node experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs board
+          test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/widescreen-samples/0000.svg
+          test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/widescreen-samples/0000.svg
+          grep -q 'responsive-editorial-panel' experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/widescreen-samples/0168.svg
+      - name: Render both complete 360-frame 1920x1080 original-only films
+        run: |
+          python3 -m venv /tmp/p2-widescreen-venv
+          . /tmp/p2-widescreen-venv/bin/activate
+          python -m pip --disable-pip-version-check install CairoSVG==2.7.1
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python experiments/p2-semantic-scenes/scripts/render_video.py board --widescreen --review-package
+          python experiments/p2-semantic-scenes/scripts/render_video.py caption --widescreen --review-package
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('experiments/p2-semantic-scenes/artifacts')
+          expected={'atlas-board-to-date','index-audio-to-caption'}
+          for film in expected:
+              d=root/film
+              data=json.loads((d/'widescreen-all/manifest.json').read_text())
+              review=json.loads((d/'widescreen_silent_review-review-package.json').read_text())
+              qc=json.loads((d/'widescreen_silent_review-qc.json').read_text())
+              assert data['profile']=={'width':1920,'height':1080,'fps':30,'frames':360}
+              assert data['sourceContract']=='UNCHANGED'
+              assert review['full_film_frames']==360 and review['technical_decode']=='PASS'
+              assert review['human_creative_approval']=='PENDING'
+              assert qc['frames']==360 and qc['codec']=='h264'
+              assert (d/'widescreen_silent_review.mp4').stat().st_size>50000
+              print(film, '360 decoded frames / 1920x1080, sha',qc['sha256'])
+          PY
+      - name: Retain public ORIGINAL synthetic film and review evidence (not company assets)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: p2-original-two-briefs-widescreen-360-frame-films
+          path: |
+            experiments/p2-semantic-scenes/artifacts/*/widescreen_silent_review.mp4
+            experiments/p2-semantic-scenes/artifacts/*/widescreen_silent_review-qc.json
+            experiments/p2-semantic-scenes/artifacts/*/widescreen_silent_review-av-audit.json
+            experiments/p2-semantic-scenes/artifacts/*/widescreen_silent_review-review-package.json
+            experiments/p2-semantic-scenes/artifacts/*/widescreen-samples/manifest.json
+          retention-days: 2
+          if-no-files-found: error
