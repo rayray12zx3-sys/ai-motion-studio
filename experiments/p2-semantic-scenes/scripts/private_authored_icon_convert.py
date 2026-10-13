@@ -96,9 +96,12 @@ def validate(kind, source, output):
             reject("Authored animation must have 2..300 decoded GIF frames")
         raw = inspect(found[0])
         duration = float(raw.get("format", {}).get("duration") or 0)
-        if not 0 < duration <= 12:
-            reject("Bounded authored GIF must finish within 12s")
+        if not 0 < duration <= MAX_FRAMES / 30:
+            reject("Authored GIF duration exceeds 300-frame output cap; refuse silent truncation")
+    else:
+        duration = len(found) / 30
     return {"kind": kind, "source": src, "files": found, "output": out,
+            "source_duration": duration,
             "dimensions": [sample["width"], sample["height"]]}
 
 
@@ -128,6 +131,9 @@ def convert(plan):
             count = int(result.get("nb_read_frames") or 0)
             if not MIN_FRAMES <= count <= MAX_FRAMES:
                 reject("Converted MOV did not decode bounded frames")
+            expected = round(plan["source_duration"] * 30)
+            if abs(count - expected) > 1:
+                reject("30fps conversion length mismatch; never silently trim an authored animation")
             if result.get("avg_frame_rate") != "30/1":
                 reject("Converted MOV did not retain 30fps")
             # Technical alpha-capable format is not proof the source actually
