@@ -11,12 +11,12 @@ mod = importlib.util.module_from_spec(module_spec)
 module_spec.loader.exec_module(mod)
 
 
-def meta(codec="h264", dims=(1080, 1920), pix="yuv420p", frames="90"):
+def meta(codec="h264", dims=(1080, 1920), pix="yuv420p", frames="90", duration="3.0"):
     return {"streams": [{
         "codec_type": "video", "codec_name": codec,
         "width": dims[0], "height": dims[1],
         "pix_fmt": pix, "avg_frame_rate": "30/1",
-        "nb_read_frames": frames,
+        "nb_read_frames": frames, "duration": duration,
     }]}
 
 
@@ -61,6 +61,29 @@ class PrivateMediaTests(unittest.TestCase):
         self.assertIn("blend=all_expr=", filt)
         self.assertIn("between(T,0.500000,1.966667)", filt)
         self.assertIn("0.600000", filt)
+        self.assertIn("setpts=PTS-STARTPTS+0.500000/TB[asset]", filt)
+        self.assertIn("repeatlast=0", filt)
+
+    def test_local_prores_mov_real_alpha_and_short_source_window(self):
+        self.asset = self.local / "synthetic-transparent.mov"
+        self.asset.write_bytes(b"synthetic-prores")
+        mov = meta(codec="prores", dims=(900, 900), pix="yuva444p12le",
+                   duration="0.533333")
+        with patch.object(mod, "probe", side_effect=[meta(), mov]):
+            p = mod.preflight(self.base, self.asset, self.out, "alpha", 30, 44, .5)
+        self.assertIn("setpts=PTS-STARTPTS+1.000000/TB[asset]", mod.filters(p))
+        self.assertIn("overlay=0:0", mod.filters(p))
+        with patch.object(mod, "probe", side_effect=[meta(), mov]):
+            with self.assertRaisesRegex(ValueError, "shorter than effect window"):
+                mod.preflight(self.base, self.asset, self.out, "alpha", 30, 60, .5)
+
+    def test_missing_prores_alpha_denied(self):
+        self.asset = self.local / "opaque.mov"
+        self.asset.write_bytes(b"fake")
+        with patch.object(mod, "probe", side_effect=[
+            meta(), meta(codec="prores", pix="yuv422p10le")]):
+            with self.assertRaisesRegex(ValueError, "decoded alpha"):
+                mod.preflight(self.base, self.asset, self.out, "alpha", 10, 40, .5)
 
     def test_fail_closed_media_format_and_output_scope(self):
         for ext in ("ffx", "gif", "aep", "exe"):
