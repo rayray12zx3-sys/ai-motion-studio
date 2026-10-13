@@ -119,8 +119,17 @@ test('long editorial titles and persistent entity text fit frame/card bounds',()
  for(const p of [b,c]){
   for(const frame of [35,140,180,280,359]){
    const svg=renderSvgFrame(p,frame),v=inspectFrame(p,frame),s=v.shot;
-   const titlePx=getSize(svg,s.title);
-   assert.ok(titlePx*s.title.length*.78<=p.profile.width-124+1,'Title overflow: '+s.title);
+   const words=s.title.split(' ');
+   const options=words.slice(1).map((_,i)=>[
+     words.slice(0,i+1).join(' '),words.slice(i+1).join(' ')]);
+   const pieces=options.find(x=>x.every(part=>svg.includes('>'+part+'</text>')));
+   assert.ok(pieces&&pieces.length===2,'Editorial must use its own two readable title lines');
+   for(const part of pieces){
+     const titlePx=getSize(svg,part);
+     assert.ok(titlePx*part.length*.78<=p.profile.width-124+1,
+       'Editorial line overflow: '+part);
+     assert.ok(titlePx>=70,'Editorial headline too small: '+part);
+   }
    const e=p.entities.find(x=>x.id===s.focusId);
    for(const [label,multiplier] of [[e.label,.72],[v.state[e.id],.67]]){
     const labelPx=getSize(svg,label,'hero');
@@ -134,7 +143,7 @@ test('final payoff is an enlarged source-linked product result across unrelated 
   const frame=p.shots[2].start+35,view=inspectFrame(p,frame);
   const svg=renderSvgFrame(p,frame);
   assert.match(svg,/id="product-result-stage"/);
-  assert.match(svg,/KEPT FROM THE ORIGINAL SOURCE/);
+  assert.ok(svg.includes('SOURCE OBJECT / STILL THE SAME'));
   const hero=p.entities.find(e=>e.id===view.shot.focusId);
   assert.ok(svg.includes(hero.label));
   assert.ok(svg.includes(view.state[hero.id]));
@@ -147,6 +156,65 @@ test('final payoff is an enlarged source-linked product result across unrelated 
  // BEFORE any operation the incoming note is not falsely displayed as done.
  assert.doesNotMatch(renderSvgFrame(b,35),/id="product-result-stage"/);
  assert.doesNotMatch(renderSvgFrame(c,35),/id="product-result-stage"/);
+});
+test('camera tells a real action-to-result story without a spatial jump at the next shot',()=>{
+ for(const p of [b,c]){
+  const op=p.operations[0];
+  const svgBefore=renderSvgFrame(p,op.gesture.start-1);
+  const svgAt=renderSvgFrame(p,op.frame);
+  const svgAtCut=renderSvgFrame(p,p.shots[2].start);
+  const zoom=(svg)=>Number(svg.match(/id="semantic-camera"[^>]+scale\(([0-9.]+)\)/)?.[1]);
+  assert.equal(zoom(svgBefore),1);
+  assert.ok(zoom(svgAt)>1.04);
+  assert.ok(Math.abs(zoom(renderSvgFrame(p,op.frame+1))-zoom(svgAt))<.001);
+  assert.ok(Math.abs(zoom(svgAtCut)-zoom(renderSvgFrame(p,p.shots[1].end-1)))<.0001,
+    'The product space must not snap at the scene cut');
+  assert.equal(zoom(renderSvgFrame(p,p.shots[2].start+60)),1);
+ }
+});
+test('real source-linked result material differs by product kind, without copied/remote source',()=>{
+ for(const p of [b,c]){
+  const op=p.operations[0], last=renderSvgFrame(p,300);
+  const before=renderSvgFrame(p,op.frame-1);
+  assert.doesNotMatch(before,/id="product-result-stage"/);
+  assert.match(last,/id="source-to-result-continuity"/);
+  assert.match(last,/data-material="fictional-(calendar|caption-preview)/);
+  assert.match(last,/SOURCE OBJECT \/ STILL THE SAME/);
+  assert.match(last,/id="persistent-hero"/);
+  assert.match(last,/data-entity="/);
+  if(p.entities[0].kind==='task'){
+    assert.match(last,/id="original-calendar-result"/);
+    assert.match(last,/WEEK \/ NEW PLACEMENT/);
+    assert.doesNotMatch(last,/id="original-caption-result"/);
+  }else{
+    assert.match(last,/id="original-caption-result"/);
+    assert.match(last,/NOT REAL AUDIO/);
+    assert.doesNotMatch(last,/id="original-calendar-result"/);
+  }
+ }
+});
+test('authored opening reveals the same source before product context in time',()=>{
+ for(const p of [b,c]) {
+  const first=renderSvgFrame(p,0);
+  const mid=renderSvgFrame(p,36);
+  const later=renderSvgFrame(p,98);
+  assert.match(first,/id="persistent-hero"[^>]+opacity="0.0000"/);
+  assert.match(first,/id="workspace-progressive-reveal" opacity="0.0000"/);
+  assert.match(mid,/id="persistent-hero"[^>]+opacity="1.0000"/);
+  assert.match(later,/id="workspace-progressive-reveal" opacity="1.0000"/);
+  assert.doesNotMatch(first,/id="opening-source-bridge"/);
+  assert.match(later,/id="opening-source-bridge"/);
+  assert.equal(first,renderSvgFrame(p,0));
+ }
+});
+test('track preview scan is illustrative, source selection precedes state update',()=>{
+ const p=c,op=p.operations[0];
+ assert.match(renderSvgFrame(p,35),/id="illustrative-source-playhead"/);
+ assert.doesNotMatch(renderSvgFrame(p,op.gesture.start-1),/id="selected-source-range"/);
+ assert.match(renderSvgFrame(p,op.gesture.start),/id="selected-source-range"/);
+ assert.match(renderSvgFrame(p,op.frame),/id="selected-source-range"/);
+ assert.match(renderSvgFrame(p,op.frame+10),/id="selected-source-range"/);
+ assert.doesNotMatch(renderSvgFrame(b,op.frame),/id="illustrative-source-playhead"/);
 });
 test('a harmless ampersand must be escaped in frame output',()=>{
  const ex=copy(boardBrief);ex.entities[0].label='Plan & schedule';

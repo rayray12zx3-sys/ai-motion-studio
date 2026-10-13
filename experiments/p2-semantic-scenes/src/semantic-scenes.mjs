@@ -190,11 +190,30 @@ export function renderSvgFrame(plan,frame) {
   const coords=a=>a/1000;
   const hx=f.hero.x*w/1000,hy=f.hero.y*h/1000,hw=f.hero.w*w/1000,hh=f.hero.h*h/1000;
   const unit=w/1080, tx=62*unit, top=115*unit;
-  const fade=smooth((frame-s.start)/(p.fps*.26));
+  const fade=smooth((frame-s.start)/(p.fps*.50));
+  const isOpening=s.start===0;
+  const workspaceEntry=isOpening?
+    smooth((frame-s.start-p.fps*.60)/(p.fps*.85)):
+    smooth((frame-s.start)/(p.fps*.58));
+  // Reveal information in authored reading order, not as a full-screen
+  // instantaneous template card. Holds after the reveal are intentional.
+  const readingEntry=(index)=>smooth((frame-s.start-
+    p.fps*(1.18+index*.50))/(p.fps*.54));
+  const heroEntry=isOpening?smooth((frame-s.start)/(p.fps*.78)):1;
   // Measure-free bounded role hierarchy: fit a single-line editorial headline
   // to the current video profile rather than shrinking every treatment to one
   // timid fixed 66px type size. Font portability is STILL an open gate.
-  const titleSize=Math.min(88*unit,(w-2*tx-22*unit)/Math.max(4,s.title.length*.78));
+  // Editorial typesetting is a reusable composition decision, not separate
+  // per-brief title JS. Balance two clauses for a visible hierarchy and
+  // protect the bounded frame width even for long original title strings.
+  const words=s.title.split(/\s+/);
+  const splits=words.slice(1).map((_,i)=>[
+    words.slice(0,i+1).join(' '),words.slice(i+1).join(' ')]);
+  const titleLines=splits.length?
+    splits.sort((a,b)=>Math.max(...a.map(x=>x.length))-
+      Math.max(...b.map(x=>x.length)))[0]:[s.title];
+  const titleSize=Math.min(142*unit,(w-2*tx-22*unit)/
+    Math.max(4,Math.max(...titleLines.map(x=>x.length))*.78));
   const subtitleSize=Math.min(36*unit,(w-2*tx-22*unit)/Math.max(4,s.subtitle.length*.63));
   const e=plan.entities.find(q=>q.id===s.focusId);
   const heroTextWidth=Math.max(1,hw-70*unit);
@@ -206,11 +225,47 @@ export function renderSvgFrame(plan,frame) {
     box(0,0,w,h,t.background,0),
     label('AI MOTION STUDIO  /  ORIGINAL SEMANTIC STUDY',tx,top,18*unit,t.muted,650),
     box(tx,top+24*unit,w-2*tx,2*unit,t.muted,0),
-    '<g opacity="'+fade.toFixed(4)+'">',
-    label(s.title,tx,top+172*unit,titleSize,t.onBackground,800),
-    label(s.subtitle,tx,top+245*unit,subtitleSize,t.muted,520),
-    '</g>'
+    label('STORY / '+(plan.shots.indexOf(s)+1).toString().padStart(2,'0')+
+      '  ·  '+(plan.operations.some(o=>o.shotId===s.id)?'MAKE A CHOICE':
+      plan.operations.some(o=>o.resultShotId===s.id)?'SEE THE RESULT':'MEET THE SOURCE'),
+      tx,top+59*unit,24*unit,t.muted,700),
+    '<g id="editorial-title">',
+    '<g opacity="'+fade.toFixed(4)+'" transform="translate(0 '+
+      ((1-fade)*48*unit).toFixed(2)+')">',
+    label(titleLines[0],tx,top+207*unit,titleSize,t.onBackground,820),
+    '</g>',
+    ...(titleLines.length>1?(()=>{
+      const q=smooth((frame-s.start-p.fps*.18)/(p.fps*.5));
+      const emphasis=contrast(t.accent,t.background)>=3?t.accent:t.onBackground;
+      return ['<g opacity="'+q.toFixed(4)+'" transform="translate(0 '+
+        ((1-q)*41*unit).toFixed(2)+')">',
+        label(titleLines[1],tx,top+337*unit,titleSize,emphasis,820),'</g>'];
+    })():[]),
+    '<g opacity="'+smooth((frame-s.start-p.fps*.40)/(p.fps*.48)).toFixed(4)+'">',
+    label(s.subtitle,tx,top+(titleLines.length>1?415:290)*unit,
+      subtitleSize,t.muted,540),'</g></g>'
   ];
+  // Deliberate camera grammar tied to the persistent object and its actual
+  // action. No idle orbit/shake: the work area pushes in while a real UI gesture
+  // happens, then releases to give the RESULT editorial breathing room.
+  // Matching zoom at the action/result boundary keeps physical continuity.
+  const activeAction=plan.operations.find(o=>o.shotId===s.id && o.entityId===e.id);
+  const incomingAction=plan.operations.find(o=>o.resultShotId===s.id && o.entityId===e.id);
+  let zoom=1;
+  if(activeAction){
+    zoom=1+.045*smooth((frame-activeAction.gesture.start)/
+      Math.max(1,activeAction.frame-activeAction.gesture.start));
+  } else if(incomingAction) {
+    zoom=1+.045*(1-smooth((frame-s.start)/Math.max(1,p.fps*1.25)));
+  }
+  const cameraOriginX=w*.5,cameraOriginY=h*.61;
+  const camX=(cameraOriginX*(1-zoom)).toFixed(3);
+  const camY=(cameraOriginY*(1-zoom)).toFixed(3);
+  rendered.push('<g id="semantic-camera" data-shot="'+esc(s.id)+
+    '" transform="translate('+camX+' '+camY+') scale('+zoom.toFixed(5)+')">');
+  rendered.push('<g id="workspace-progressive-reveal" opacity="'+
+    (incomingAction?1:workspaceEntry).toFixed(4)+'" transform="translate(0 '+
+    ((incomingAction?0:1-workspaceEntry)*41*unit).toFixed(2)+')">');
   if(s.layout==='board'){
     // A product-semantic board has a visible target for the user's drag,
     // not just three disjoint text labels under the cursor.
@@ -220,7 +275,7 @@ export function renderSvgFrame(plan,frame) {
     s.context.forEach((v,i)=>{
       const cy=by+87*unit+i*rowH;
       rendered.push(box(bx+24*unit,cy,bw-48*unit,rowH-12*unit,
-        i===1&&action?'#F5E7DF':t.background,14*unit,
+        i===1&&activeAction&&frame>=activeAction.gesture.start?'#F5E7DF':t.background,14*unit,
         i===1?t.accent:'none'),
         label(v,bx+48*unit,cy+51*unit,32*unit,t.onBackground,690));
     });
@@ -233,50 +288,124 @@ export function renderSvgFrame(plan,frame) {
       wave.push(box(tx+24*unit+i*((w-2*tx-48*unit)/49),h*.724-amp*.5,
         Math.max(3,5*unit),amp,t.accent,3*unit));}
     rendered.push(...wave);
-    if(action){
+    // A fictional source-scanning playhead visualizes the viewer's move
+    // toward one phrase. It does NOT represent a decoded original recording.
+    const phase=activeAction?
+      smooth((frame-activeAction.gesture.start)/
+        Math.max(1,activeAction.frame-activeAction.gesture.start)):
+      smooth((frame-s.start-p.fps*.75)/(p.fps*2.1));
+    const playX=tx+(w-2*tx)*mix(.10,.83,phase);
+    rendered.push('<line id="illustrative-source-playhead" x1="'+playX+
+      '" x2="'+playX+'" y1="'+h*.662+'" y2="'+h*.788+
+      '" stroke="'+t.ink+'" stroke-width="'+(3*unit)+'"/>');
+    if(activeAction&&frame>=activeAction.gesture.start){
+      const selectProgress=smooth((frame-activeAction.gesture.start)/
+        Math.max(1,activeAction.frame-activeAction.gesture.start));
       rendered.push('<rect id="selected-source-range" data-entity="'+esc(e.id)+
-        '" x="'+(tx+(.47*(w-2*tx)))+'" y="'+(h*.673)+'" width="'+((w-2*tx)*.23)+
+        '" x="'+(tx+(.47*(w-2*tx)))+'" y="'+(h*.673)+'" width="'+((w-2*tx)*.23*selectProgress)+
         '" height="'+(h*.103)+'" fill="'+t.accent+'" fill-opacity=".24" stroke="'+t.accent+
         '" stroke-width="'+(3*unit)+'" rx="'+(9*unit)+'"/>');
     }
     s.context.forEach((v,i)=>rendered.push(label(v,tx+12*unit,h*.85+i*47*unit,28*unit,t.onBackground,570)));
   }else if(action){
-    // A product film's final narrative payoff must be a legible on-screen
-    // RESULT, not tiny metadata repeating the operation status. Both unrelated
-    // briefs use precisely this same compositing grammar and the true state
-    // of the persistent hero entity. No extra footage or invented app claims.
-    const by=h*.545,bw=w-2*tx,bh=h*.33;
-    const open=smooth((frame-s.start)/Math.max(1,p.fps*.72));
-    const status=f.state[e.id];
-    const resultFont=Math.min(78*unit,(bw-112*unit)/Math.max(1,status.length*.66));
-    const sourceFont=Math.min(42*unit,(bw-108*unit)/Math.max(1,e.label.length*.7));
+    // Product outcome is a COMPOSITION, not a data dump: source remains
+    // identified, the new state commands the first read, and the lower
+    // material demonstrates WHY that state matters in the fictional app.
+    const by=h*.53,bw=w-2*tx,bh=h*.348;
+    const open=smooth((frame-s.start)/Math.max(1,p.fps*1.1));
+    const status=f.state[e.id],interpolate=Math.max(0,Math.min(1,open));
+    const statusFont=Math.min(81*unit,(bw-116*unit)/Math.max(1,status.length*.65));
+    const sourceFont=Math.min(45*unit,(bw-116*unit)/Math.max(1,e.label.length*.72));
     rendered.push('<g id="product-result-stage" data-entity="'+esc(e.id)+
-      '" opacity="'+open.toFixed(4)+'" transform="translate(0 '+((1-open)*54*unit).toFixed(2)+')">',
-      box(tx,by,bw,bh,t.surface,32*unit,t.accent),
-      box(tx+35*unit,by+39*unit,10*unit,135*unit,t.accent,4*unit),
-      label('AFTER THE ACTION   /   '+s.layout.toUpperCase(),tx+70*unit,
-        by+88*unit,24*unit,t.surfaceMuted,710),
-      label(status,tx+48*unit,by+221*unit,resultFont,t.ink,800),
-      box(tx+48*unit,by+255*unit,bw-96*unit,2*unit,t.muted,0),
-      label('KEPT FROM THE ORIGINAL SOURCE',tx+48*unit,by+316*unit,22*unit,t.surfaceMuted,660),
-      label(e.label,tx+48*unit,by+379*unit,sourceFont,t.ink,710));
-    s.context.forEach((v,i)=>{
-      const contextFont=Math.min(31*unit,(bw-100*unit)/Math.max(1,v.length*.65));
-      rendered.push(label(v,tx+48*unit,by+(432+i*51)*unit,
-        contextFont,t.surfaceMuted,570));
-    });
-    rendered.push('</g>');
+      '" opacity="'+open.toFixed(4)+
+      '" transform="translate(0 '+((1-open)*74*unit).toFixed(2)+')">',
+      box(tx,by,bw,bh,t.surface,36*unit,t.accent),
+      box(tx+36*unit,by+36*unit,10*unit,125*unit,t.accent,5*unit),
+      label('RESULT  /  '+(plan.shots.indexOf(s)+1).toString().padStart(2,'0'),
+        tx+70*unit,by+87*unit,24*unit,t.surfaceMuted,710),
+      label(status,tx+49*unit,by+213*unit,statusFont,t.ink,800),
+      box(tx+49*unit,by+244*unit,bw-98*unit,2*unit,t.surfaceMuted,0),
+      label('SOURCE OBJECT / STILL THE SAME',tx+49*unit,by+287*unit,
+        23*unit,t.surfaceMuted,680),
+      label(e.label,tx+49*unit,by+343*unit,sourceFont,t.ink,700));
+    // Two meaningful MATERIALS from the same shared renderer. The graphics
+    // are original fictional UI, NOT authentic footage/transcript, a claim
+    // of actual software functionality, or a copied reference layout.
+    const mx=tx+48*unit,my=by+372*unit,mw=bw-96*unit,mh=215*unit;
+    if(e.kind==='task'||e.kind==='note'){
+      rendered.push('<g id="original-calendar-result" data-material="fictional-calendar">',
+        box(mx,my,mw,mh,t.background,20*unit),
+        label('WEEK / NEW PLACEMENT',mx+24*unit,my+43*unit,
+          22*unit,t.onBackground,700));
+      const innerW=(mw-48*unit)/3;
+      const days=['MON','TUE','WED'];
+      for(let i=0;i<3;i++){
+        const dx=mx+24*unit+i*innerW;
+        const selected=i===1;
+        rendered.push(box(dx,my+66*unit,innerW-10*unit,120*unit,
+          selected?t.accent:t.surface,13*unit),
+          label(days[i],dx+16*unit,my+104*unit,24*unit,
+            selected?'#FFFFFF':t.ink,740));
+        if(selected){
+          rendered.push(label('01  /  TASK',dx+16*unit,my+153*unit,
+            19*unit,'#FFFFFF',680));
+        }else{
+          rendered.push(label('OPEN',dx+16*unit,my+153*unit,
+            19*unit,t.surfaceMuted,580));
+        }
+      }
+      rendered.push('</g>');
+    }else{
+      rendered.push('<g id="original-caption-result" data-material="fictional-caption-preview">',
+        box(mx,my,mw,mh,t.background,20*unit),
+        label('ILLUSTRATED CAPTION PREVIEW / NOT REAL AUDIO',mx+22*unit,my+42*unit,
+          19*unit,t.onBackground,600),
+        box(mx+24*unit,my+66*unit,mw-48*unit,104*unit,t.surface,13*unit));
+      const quoteFont=Math.min(37*unit,(mw-104*unit)/Math.max(1,e.label.length*.61));
+      rendered.push(label(e.label,mx+43*unit,my+128*unit,
+          quoteFont,t.ink,770),
+        label('SOURCE RANGE  /  REVIEW DRAFT',mx+25*unit,my+196*unit,
+          20*unit,t.onBackground,650),'</g>');
+    }
+    // The preserved identity feeds the actual AFTER artifact. Reveal the
+    // witness line with the panel rather than cutting to unrelated geometry.
+    const connectY=by-36*unit;
+    rendered.push('<path id="source-to-result-continuity" d="M '+
+      (hx+hw*.5)+' '+(hy+hh)+' Q '+(hx+hw*.5)+' '+connectY+
+      ' '+(tx+bw*.5)+' '+by+'" fill="none" stroke="'+t.accent+
+      '" stroke-width="'+(4*unit)+'" stroke-dasharray="'+(10*unit)+
+      ' '+(8*unit)+'" opacity="'+interpolate.toFixed(3)+'"/>','</g>');
   }else{
     rendered.push(box(tx,h*.565,w-2*tx,h*.297,t.surface,27*unit),
       label('DETAILS  /  ORIGINAL FICTIONAL SOURCE',tx+30*unit,h*.613,24*unit,t.surfaceMuted,660));
-    s.context.forEach((v,i)=>rendered.push(label(v,tx+30*unit,h*.675+i*72*unit,35*unit,t.ink,625)));
+    s.context.forEach((v,i)=>rendered.push(
+      '<g class="reading-sequence" data-row="'+i+'" opacity="'+
+        (isOpening?readingEntry(i):1).toFixed(4)+'" transform="translate(0 '+
+        ((isOpening?1-readingEntry(i):0)*24*unit).toFixed(2)+')">',
+      label(v,tx+30*unit,h*.675+i*72*unit,35*unit,t.ink,625),'</g>'));
   }
-  rendered.push('<g id="persistent-hero" data-entity="'+esc(e.id)+'">',
+  rendered.push('</g>'); // workspace enters after the source hero, not teleported
+  // Scene one: original source object enters and holds before its contextual
+  // details assemble. Subsequent shots retain full entity presence on the cut.
+  rendered.push('<g id="persistent-hero" data-entity="'+esc(e.id)+
+    '" opacity="'+heroEntry.toFixed(4)+'" transform="translate(0 '+
+    ((1-heroEntry)*51*unit).toFixed(2)+')">',
     box(hx,hy,hw,hh,t.surface,24*unit,t.accent),
     box(hx+12*unit,hy+11*unit,8*unit,Math.max(8,hh-22*unit),t.accent,4*unit),
     label(e.label,hx+36*unit,hy+Math.min(hh*.4,81*unit),Math.min(entityFont,hh*.30),t.ink,750),
     label(f.state[e.id],hx+36*unit,hy+Math.min(hh*.74,140*unit),Math.min(entityStatusFont,hh*.18),
       action?t.accentText:t.surfaceMuted,600),'</g>');
+  if(isOpening && frame>=p.fps*1.7){
+    // Authored preparatory connection from the one source object down to
+    // the actual product context it will affect (board slot or source range).
+    const q=smooth((frame-p.fps*1.7)/(p.fps*1.55));
+    const startX=hx+hw*.5,fromY=hy+hh+9*unit,endY=h*.553;
+    rendered.push('<path id="opening-source-bridge" d="M '+startX+' '+fromY+
+      ' Q '+(startX+48*unit)+' '+(fromY+55*unit)+' '+(w*.52)+' '+endY+
+      '" fill="none" stroke="'+t.accent+'" stroke-width="'+(4*unit)+
+      '" stroke-dasharray="'+Math.round(360*q*unit)+' '+Math.round(370*unit)+
+      '" stroke-linecap="round"/>');
+  }
   // A product film has to SHOW the interaction rather than merely updating
   // a variable off-screen. The same generic cursor/feedback treatment uses
   // each director-authored cause→response trajectory and persistent entity ID.
@@ -308,6 +437,7 @@ export function renderSvgFrame(plan,frame) {
       '" r="'+mix(7,47,pulse)*unit+'" stroke="'+t.accent+
       '" stroke-width="'+(5*unit)+'" fill="none" opacity="'+(1-pulse).toFixed(4)+'"/>');
   }
+  rendered.push('</g>'); // end semantic-camera; frame/footer typography stays pinned
   rendered.push(label((plan.shots.indexOf(s)+1)+' / '+plan.shots.length+
     '    •    '+s.layout.toUpperCase(),tx,h-88*unit,19*unit,t.muted,600),
     '</svg>');
