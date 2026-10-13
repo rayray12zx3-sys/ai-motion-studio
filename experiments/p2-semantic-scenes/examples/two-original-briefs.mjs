@@ -25,7 +25,7 @@ export const boardBrief={
    reason:'Keep the same card identity while the planning result replaces its former unscheduled state.',
    title:'NOW IT HAS A PLACE.',subtitle:'One move creates an understandable next step.',
    hero:{x:95,y:360,w:810,h:137},context:['TUE  /  NEXT SLOT','Task count: 1 scheduled','One clear action for tomorrow'],
-   layers:[{id:'calendar-space',kind:'spatial-grid',depth:'rear',tone:'accent',purpose:'Hold calendar depth while the scheduling result becomes dominant.',bounds:{x:80,y:505,w:830,h:390},opacity:55,drift:{x:9,y:4}},
+   layers:[{id:'calendar-space',kind:'spatial-grid',depth:'rear',tone:'accent',purpose:'Hold calendar depth while the scheduling result becomes dominant.',bounds:{x:80,y:505,w:830,h:390},opacity:8,drift:{x:9,y:4}},
      {id:'date-target',kind:'orbit-markers',depth:'front',tone:'accent',purpose:'Retain the same spatial target through the result reveal.',bounds:{x:655,y:660,w:185,h:170},opacity:21,drift:{x:1,y:0}}]}
  ],
  operations:[{id:'schedule-task',shotId:'move-the-work',resultShotId:'see-its-place',frame:165,
@@ -55,7 +55,7 @@ export const captionBrief={
    reason:'The same phrase becomes a legible caption card with provenance to the edit range.',
    title:'WORDS WITH CONTEXT.',subtitle:'The selected phrase is now ready for caption review.',
    hero:{x:80,y:333,w:840,h:155},context:['CAPTION DRAFT  /  READY FOR REVIEW','SOURCE  03:20–03:25','No automatic accuracy claim'],
-   layers:[{id:'source-signal',kind:'signal-ribbon',depth:'rear',tone:'accent',purpose:'Carry source audio identity into the caption drafting result.',bounds:{x:69,y:515,w:855,h:278},opacity:62,drift:{x:7,y:2}},
+   layers:[{id:'source-signal',kind:'signal-ribbon',depth:'rear',tone:'accent',purpose:'Carry source audio identity into the caption drafting result.',bounds:{x:69,y:515,w:855,h:278},opacity:10,drift:{x:7,y:2}},
      {id:'selection-focus',kind:'orbit-markers',depth:'front',tone:'accent',purpose:'Carry the same phrase-selection focus into the editable caption.',bounds:{x:570,y:629,w:220,h:176},opacity:16,drift:{x:3,y:1}}]}
  ],
  operations:[{id:'select-transcript',shotId:'choose-phrase',resultShotId:'carry-caption',frame:168,
