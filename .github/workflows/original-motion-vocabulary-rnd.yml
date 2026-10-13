@@ -46,6 +46,20 @@ jobs:
               if t=='mov':assert data['pix_fmt'].startswith('yuva')
               assert hashlib.sha256(p.read_bytes()).hexdigest()==meta['renders'][t]['sha256']
           PY
+      - name: Two distinct motion techniques from one agent-authored 270-frame original film
+        run: |
+          . /tmp/motion-original-venv/bin/activate
+          cd experiments/original-motion-vocabulary
+          python render_director_plan.py --plan examples/director-plan-education.json --out out/director
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('out/director/director_manifest.json').read_text())
+          assert d['duration_frames']==270
+          assert d['technical_media_gate']=='TECH_PASS'
+          assert d['actual_video']['frames']==270
+          assert d['creative_gate']=='PENDING_HUMAN'
+          PY
       - name: Keep original-only synthetic sample and technical QC for two days
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -55,5 +69,7 @@ jobs:
             experiments/original-motion-vocabulary/out/recall_cycle_PREVIEW.mp4
             experiments/original-motion-vocabulary/out/recall_cycle_CONTACT.jpg
             experiments/original-motion-vocabulary/out/recall_cycle_QC.json
+            experiments/original-motion-vocabulary/out/director/director_full_preview.mp4
+            experiments/original-motion-vocabulary/out/director/director_manifest.json
           retention-days: 2
           if-no-files-found: error
