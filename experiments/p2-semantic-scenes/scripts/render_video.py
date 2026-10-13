@@ -17,13 +17,16 @@ def command(argv):
 
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument('film',choices=['board','caption'])
+    ap.add_argument('film',nargs='?',choices=['board','caption'])
+    ap.add_argument('--spec',type=Path,help='Explicit local ChatGPT-authored original JSON scene')
     ap.add_argument('--music-file',type=Path)
     ap.add_argument('--credits-file',type=Path)
     ap.add_argument('--music-offset',type=float,default=0)
     ap.add_argument('--smoke-frames',type=int,default=0,
                     help='R&D short proof only. Never claim full-film review for smoke.')
     opt=ap.parse_args()
+    if (opt.film is None)==(opt.spec is None):
+        ap.error('Choose exactly one of board, caption or --spec /local/original.json')
     if bool(opt.music_file)!=bool(opt.credits_file):
         ap.error('Music requires both local audio and explicit source/license credits')
     if opt.music_offset<0:ap.error('Music offset must be nonnegative')
@@ -39,8 +42,12 @@ def main():
         import cairosvg
     except ImportError as e:
         raise SystemExit('R&D converter missing: install CairoSVG in this isolated execution environment') from e
-    subprocess.run(['node',str(HERE/'scripts/emit-svg-frames.mjs'),opt.film,'--all'],check=True)
-    film_id='atlas-board-to-date' if opt.film=='board' else 'index-audio-to-caption'
+    emit=['node',str(HERE/'scripts/emit-svg-frames.mjs')]
+    emit+=['--spec',str(opt.spec)] if opt.spec else [opt.film]
+    emit+=['--all']
+    # JSON metadata is emitted by our own known script after compiler preflight.
+    emitted=json.loads(command(emit))
+    film_id=emitted['film']
     source=HERE/'artifacts'/film_id/'all'
     manifest=json.loads((source/'manifest.json').read_text(encoding='utf-8'))
     count=manifest['profile']['frames']
@@ -51,6 +58,8 @@ def main():
     target=HERE/'artifacts'/film_id/('smoke.mp4' if opt.smoke_frames else
         ('licensed_music_review.mp4' if opt.music_file else 'silent_review.mp4'))
     target.parent.mkdir(exist_ok=True,parents=True)
+    if opt.spec and target.exists():
+        raise FileExistsError('Preserve previous JSON-authored film; use another scene ID/version')
     args=['ffmpeg','-hide_banner','-loglevel','error','-y','-f','image2pipe',
         '-framerate',str(fps),'-vcodec','png','-i','pipe:0']
     if opt.music_file:
@@ -101,8 +110,9 @@ def main():
                              '-show_streams','-show_format','-of','json',str(target)]))
     stream=next(s for s in meta['streams'] if s['codec_type']=='video')
     assert stream['codec_name']=='h264'
-    assert (stream['width'],stream['height'])==(1080,1920)
+    assert (stream['width'],stream['height'])==(manifest['profile']['width'],manifest['profile']['height'])
     assert int(stream['nb_read_frames'])==count
+    assert stream['avg_frame_rate']==str(fps)+'/1' or float(stream['r_frame_rate'].split('/')[0])/float(stream['r_frame_rate'].split('/')[1])==fps
     if opt.music_file:assert any(s['codec_name']=='aac' for s in meta['streams'])
     else:assert not any(s['codec_type']=='audio' for s in meta['streams'])
     proof={
