@@ -71,7 +71,7 @@ const args=['-hide_banner','-loglevel','error','-nostdin','-y',
 '-loop','1','-framerate','30','-i',plane,
 '-loop','1','-framerate','30','-i',background,
 '-filter_complex',filter,'-map','[out]','-frames:v',String(SPEC.frames),
-'-an','-c:v','libx264','-threads','2','-preset','medium','-crf','18',
+'-an','-c:v','libx264','-filter_complex_threads','1','-threads','1','-preset','medium','-crf','18',
 '-movflags','+faststart','-map_metadata','-1',video];
 console.log('Perspective on the original PNG using pinned already-approved encoder');
 let err='';
@@ -81,7 +81,18 @@ await new Promise((resolve,reject)=>{
  child.on('error',reject);
  child.on('close',code=>code===0?resolve():reject(Error(`perspective encoder exit ${code}: ${err.slice(-1700)}`)));
 });
-const media=JSON.parse(execFileSync(ffprobePath,['-v','error','-count_frames','-show_streams',
+// Required repeatability: same approved static original plate, exact filter,
+ // same source checkout and pinned binary must yield identical MP4 bytes.
+ const rerender=join(out,'internal-repeat.mp4');
+ const replayArgs=[...args];replayArgs[replayArgs.length-1]=rerender;
+ let repeatErr='';
+ const replay=spawn(bin,replayArgs,{stdio:['ignore','ignore','pipe']});
+ replay.stderr.on('data',x=>{repeatErr+=x.toString()});
+ await new Promise((resolve,reject)=>{replay.on('error',reject);
+  replay.on('close',code=>code===0?resolve():reject(Error('repeat encode '+code+': '+repeatErr.slice(-1200))))});
+ if(sha(readFileSync(video))!==sha(readFileSync(rerender)))
+   throw Error('Non-deterministic exact-source native FFmpeg perspective render');
+ const media=JSON.parse(execFileSync(ffprobePath,['-v','error','-count_frames','-show_streams',
 '-of','json',video],{encoding:'utf8'}));
 const track=media.streams.find(x=>x.codec_type==='video');
 if(track?.codec_name!=='h264'||track.width!==SPEC.width||
@@ -100,7 +111,7 @@ const result={
  width:SPEC.width,height:SPEC.height,frames:SPEC.frames,fps:SPEC.fps,
  h264_sha256:sha(readFileSync(video)),source_png_sha256:sha(readFileSync(plane)),
  encoder_sha256:sha(readFileSync(bin)),actual_decoded_frames:Number(track.nb_read_frames),
- technical_decode:'PASS',artistic_acceptance:'PENDING',native_snapcn_pixel_parity:'UNVERIFIED',
+ technical_decode:'PASS',repeated_byte_for_byte:'PASS',artistic_acceptance:'PENDING',native_snapcn_pixel_parity:'UNVERIFIED',
  rights:'MIT original motion cues; commercial media rights still separate',
  all_media:'FICTIONAL_ORIGINAL_ONLY',paid_providers:0,remotion_runtime:false,
  native_user_device_playback:'UNVERIFIED'
