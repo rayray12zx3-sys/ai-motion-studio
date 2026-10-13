@@ -5,7 +5,7 @@
  * Copyright (c) 2026 Sri Nath (snap-cn).
  * No Remotion, Chromium, additional npm package or company media.
  */
-import {createCanvas} from '@napi-rs/canvas';
+import {createCanvas,loadImage} from '@napi-rs/canvas';
 import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
 import {spawn,execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
@@ -104,14 +104,34 @@ for(const n of review){
   '-vf',`select=eq(n\\,${n})`,'-vsync','vfr','-frames:v','1',
   join(out,`review-${String(n).padStart(3,'0')}.png`)]);
 }
-const result={
+// Independent actual-decoded pixel-content advisory in addition to metadata.
+ // A complete MP4 consisting only of the gradient would be an engineering
+ // regression even though ffprobe reports 240 decoded H.264 frames.
+ const seen=[];
+ for(const f of [30,120,239]){
+   const name=join(out,`review-${String(f).padStart(3,'0')}.png`);
+   const img=await loadImage(readFileSync(name));
+   const sample=createCanvas(90,160),c=sample.getContext('2d');
+   c.drawImage(img,0,0,90,160);
+   const data=c.getImageData(0,0,90,160).data;
+   let bright=0;
+   for(let i=0;i<data.length;i+=4){
+     if(data[i]>157&&data[i+1]>157&&data[i+2]>157)bright++;
+   }
+   if(bright<180)throw Error(`Decoded mobile UI absent/underexposed at frame ${f}`);
+   seen.push({frame:f,bright_original_ui_pixels_in_scaled_90x160:bright});
+ }
+ if(seen[0].bright_original_ui_pixels_in_scaled_90x160===
+    seen[2].bright_original_ui_pixels_in_scaled_90x160)
+   throw Error('No sampled evidence of phone-camera reframing');
+ const result={
  source_upstream:'shadcn-labs/snapcn@afce9f0aa8c9d464409efd1e4d4f227ca4809c04',
  prototype:'ffmpeg-perspective-synthetic-native-motion-cues',
  version:1,source_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}).trim(),
  width:SPEC.width,height:SPEC.height,frames:SPEC.frames,fps:SPEC.fps,
  h264_sha256:sha(readFileSync(video)),source_png_sha256:sha(readFileSync(plane)),
  encoder_sha256:sha(readFileSync(bin)),actual_decoded_frames:Number(track.nb_read_frames),
- technical_decode:'PASS',repeated_byte_for_byte:'PASS',artistic_acceptance:'PENDING',native_snapcn_pixel_parity:'UNVERIFIED',
+ technical_decode:'PASS',sampled_original_ui_visible:seen,repeated_byte_for_byte:'PASS',artistic_acceptance:'PENDING',native_snapcn_pixel_parity:'UNVERIFIED',
  rights:'MIT original motion cues; commercial media rights still separate',
  all_media:'FICTIONAL_ORIGINAL_ONLY',paid_providers:0,remotion_runtime:false,
  native_user_device_playback:'UNVERIFIED'
