@@ -85,6 +85,10 @@ function draw(layer,shape,color,frame,profile,scale) {
   if(layer.kind==='spatial-grid') {
     // A receding original spatial coordinate surface, not copied UI footage.
     const focusX=x0+ww*.54,focusY=y0+hh*.16;
+    // An authored perspective surface behind the real semantic source.
+    pieces.push('<path d="M '+f(focusX)+' '+f(focusY)+
+      ' L '+f(x0+ww)+' '+f(y0+hh)+' L '+f(x0)+' '+f(y0+hh)+
+      ' Z" fill="'+color+'" fill-opacity=".40"/>');
     for(let i=0;i<=7;i++){
       const b=x0+ww*i/7;
       pieces.push(line(focusX,focusY,b,y0+hh,color,sw));
