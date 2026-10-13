@@ -203,7 +203,17 @@ export function renderSvgFrame(plan,frame) {
   // Measure-free bounded role hierarchy: fit a single-line editorial headline
   // to the current video profile rather than shrinking every treatment to one
   // timid fixed 66px type size. Font portability is STILL an open gate.
-  const titleSize=Math.min(88*unit,(w-2*tx-22*unit)/Math.max(4,s.title.length*.78));
+  // Editorial typesetting is a reusable composition decision, not separate
+  // per-brief title JS. Balance two clauses for a visible hierarchy and
+  // protect the bounded frame width even for long original title strings.
+  const words=s.title.split(/\s+/);
+  const splits=words.slice(1).map((_,i)=>[
+    words.slice(0,i+1).join(' '),words.slice(i+1).join(' ')]);
+  const titleLines=splits.length?
+    splits.sort((a,b)=>Math.max(...a.map(x=>x.length))-
+      Math.max(...b.map(x=>x.length)))[0]:[s.title];
+  const titleSize=Math.min(142*unit,(w-2*tx-22*unit)/
+    Math.max(4,Math.max(...titleLines.map(x=>x.length))*.78));
   const subtitleSize=Math.min(36*unit,(w-2*tx-22*unit)/Math.max(4,s.subtitle.length*.63));
   const e=plan.entities.find(q=>q.id===s.focusId);
   const heroTextWidth=Math.max(1,hw-70*unit);
@@ -215,11 +225,25 @@ export function renderSvgFrame(plan,frame) {
     box(0,0,w,h,t.background,0),
     label('AI MOTION STUDIO  /  ORIGINAL SEMANTIC STUDY',tx,top,18*unit,t.muted,650),
     box(tx,top+24*unit,w-2*tx,2*unit,t.muted,0),
+    label('STORY / '+(plan.shots.indexOf(s)+1).toString().padStart(2,'0')+
+      '  ·  '+(plan.operations.some(o=>o.shotId===s.id)?'MAKE A CHOICE':
+      plan.operations.some(o=>o.resultShotId===s.id)?'SEE THE RESULT':'MEET THE SOURCE'),
+      tx,top+59*unit,24*unit,t.muted,700),
+    '<g id="editorial-title">',
     '<g opacity="'+fade.toFixed(4)+'" transform="translate(0 '+
-      ((1-fade)*45*unit).toFixed(2)+')">',
-    label(s.title,tx,top+172*unit,titleSize,t.onBackground,800),
-    label(s.subtitle,tx,top+245*unit,subtitleSize,t.muted,520),
-    '</g>'
+      ((1-fade)*48*unit).toFixed(2)+')">',
+    label(titleLines[0],tx,top+207*unit,titleSize,t.onBackground,820),
+    '</g>',
+    ...(titleLines.length>1?(()=>{
+      const q=smooth((frame-s.start-p.fps*.18)/(p.fps*.5));
+      const emphasis=contrast(t.accent,t.background)>=3?t.accent:t.onBackground;
+      return ['<g opacity="'+q.toFixed(4)+'" transform="translate(0 '+
+        ((1-q)*41*unit).toFixed(2)+')">',
+        label(titleLines[1],tx,top+337*unit,titleSize,emphasis,820),'</g>'];
+    })():[]),
+    '<g opacity="'+smooth((frame-s.start-p.fps*.40)/(p.fps*.48)).toFixed(4)+'">',
+    label(s.subtitle,tx,top+(titleLines.length>1?415:290)*unit,
+      subtitleSize,t.muted,540),'</g></g>'
   ];
   // Deliberate camera grammar tied to the persistent object and its actual
   // action. No idle orbit/shake: the work area pushes in while a real UI gesture
