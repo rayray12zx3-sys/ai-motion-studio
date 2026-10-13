@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<rect width="1600" height="1000" fill="#12243C"/><rect x="88" y="90" width="1424" height="820" rx="45" fill="#1C3656"/>
+<text x="146" y="200" fill="#FFFFFF" font-family="sans-serif" font-size="58" font-weight="700">Source audio</text>
+<text x="146" y="260" fill="#C3D5EA" font-family="sans-serif" font-size="29">ORIGINAL FICTIONAL RECORDING</text>
+<rect x="146" y="370" width="1308" height="240" rx="35" fill="#112A48"/>
+<g stroke="#85E1CA" stroke-width="20" stroke-linecap="round">
+<path d="M210 475v40 M300 420v140 M390 450v80 M480 392v195 M570 442v105 M660 370v232 M750 439v100 M840 406v161 M930 456v75 M1020 382v215 M1110 432v110 M1200 418v134 M1290 471v47 M1380 440v100"/>
+</g>
+<text x="146" y="735" fill="#E5F2FF" font-family="sans-serif" font-size="40" font-weight="600">00:12 – 00:17</text>
+<text x="146" y="810" fill="#9CBBD3" font-family="sans-serif" font-size="28">Preview input · no real audio</text>
+</svg>
