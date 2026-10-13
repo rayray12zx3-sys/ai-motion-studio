@@ -215,3 +215,20 @@ Existing default 9:16 and split `--widescreen` remain unchanged and independentl
 For a **new original-only**, validated local JSON brief, use `--spec /private/local/original.json --native-landscape --review-package`; an independently authored third brief is also exercised through the existing compiler in tests. The command refuses to combine `--native-landscape` and `--widescreen`, preserves its former full review package and writes a separate `native_landscape_silent_review.mp4` plus manifest instead of overwriting the existing 9:16 or split comparison. Generated media stay under ignored local `artifacts/`, with **public GitHub Actions using only original synthetic fixtures**.
 
 The native mode is a bounded geometry study, **not** an unrestricted landscape SceneSpec or approved artistic result. The compiler's source layouts are still limited to `board`, `track`, `reading`, synthetic object kinds and original-only assets; layout measurements use font-independent approximations and OS sans-serif, so text portability remains OPEN. All 360-frame technical decoding evidence is **engineering only**, not human full-speed film/Commercial/Premiere acceptance. No new model/provider, package, official Canvas/FFmpeg product integration, third-party company footage, external audio, licensed references or ad-state changes are included. No automatic Draft merging or creativity authority.
+
+## Deterministic first QA → revision → full-film feedback loop (isolated Draft R&D)
+
+A new **opt-in** native landscape preflight detects one specific cause of an unusable animation: a verified bounded scene's editorial title/subtitle copy would exceed the existing 3-row layout or constrained reading sizes. `planNativeQualityRevision(plan)` first evaluates the exact renderer's **standard** typography, selects the more compact alternative **only for shots with a diagnosed defect**, and records each original issue and selected correction. No user-authored copy, shot order, entity identity, gesture or SceneSpec value is altered.
+
+Technical rehearsal:
+
+    node experiments/p2-semantic-scenes/scripts/emit-native-landscape-frames.mjs board --auto-revise
+    python3 experiments/p2-semantic-scenes/scripts/render_video.py board --native-auto-revise --review-package
+
+For a genuinely original, local scene that would have failed the standard frame renderer because its copy is still within the v1 schema but too long for the initial presentation, use:
+
+    python3 experiments/p2-semantic-scenes/scripts/render_video.py --spec /private/local/authored-original.json --native-auto-revise --review-package
+
+The local `native-revised-all/manifest.json` includes a per-shot `nativeLayoutReview` with **failure before, selected bounded alternative, and heuristic verdict after**. `native_revised_silent_review.mp4` and its `--review-package` are created separately from all original vertical, split-landscape and native-layout media, and only after a full actual 360-frame decode is `technical_decode=PASS` recorded. Sample inputs and public CI must be **original/synthetic only**; a longer-copy original fictional third brief intentionally fails the original layout and is corrected without editing the input JSON. The two earlier unrelated briefs remain compatibility regressions.
+
+**Important limitations:** This is rule-based, not an autonomous LLM creative director. The text estimator is a deliberately conservative character-width check, **not a measurement of rendered glyph pixels**; silent audio/video signal QA does not determine visual rhythm, typography beauty, safe-area quality, font licenses or human professional judgment. Neither this preflight nor the decoded MP4 audit can assign `ART_PASS` or declare the animation system production-complete. No new package/provider, no private real APP media ingestion, no paid license, no official renderer/SceneSpec change or company-video-project edit.

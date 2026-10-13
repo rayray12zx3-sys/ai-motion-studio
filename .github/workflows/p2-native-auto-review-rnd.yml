@@ -1,0 +1,86 @@
+name: P2 isolated QA feedback to native layout revision R&D
+on:
+  pull_request:
+    paths:
+      - 'experiments/p2-semantic-scenes/**'
+      - '.github/workflows/p2-native-auto-review-rnd.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  genuine-original-brief-qc-repair-mp4:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Verify unchanged existing source and review/repair source
+        run: |
+          node --check experiments/p2-semantic-scenes/src/native-quality-revision.mjs
+          node --check experiments/p2-semantic-scenes/src/native-landscape-composition.mjs
+          node --check experiments/p2-semantic-scenes/scripts/emit-native-landscape-frames.mjs
+          python3 -m py_compile experiments/p2-semantic-scenes/scripts/render_video.py
+          node --test experiments/p2-semantic-scenes/tests/*.test.mjs
+          # Author a third fictional original-only brief at runtime, never real app source.
+          mkdir -p experiments/p2-semantic-scenes/artifacts
+          node --input-type=module <<'JS'
+          import {boardBrief} from './experiments/p2-semantic-scenes/examples/two-original-briefs.mjs';
+          import {writeFileSync} from 'node:fs';
+          const spec=structuredClone(boardBrief);
+          spec.id='third-original-longcopy-repair';
+          spec.shots[1].title='COMPLEX TASKS ACROSS MULTIPLE TYPES REQUIRE DETAILED PLANNING';
+          spec.shots[1].subtitle='A deliberately verbose sequence makes responsive storytelling constraints visible across many different motion layouts.';
+          writeFileSync('experiments/p2-semantic-scenes/artifacts/third-original-longcopy-repair.json',JSON.stringify(spec));
+          JS
+          # Sample-frame review must record repaired shots without altering author input.
+          node experiments/p2-semantic-scenes/scripts/emit-native-landscape-frames.mjs --spec experiments/p2-semantic-scenes/artifacts/third-original-longcopy-repair.json --auto-revise
+          node - <<'JS'
+          const fs=require('node:fs');
+          const d=JSON.parse(fs.readFileSync('experiments/p2-semantic-scenes/artifacts/third-original-longcopy-repair/native-revised-samples/manifest.json','utf8'));
+          if(d.nativeLayoutReview.revisedCount<1||d.nativeLayoutReview.sourceContract!=='UNCHANGED')process.exit(2);
+          if(d.nativeLayoutReview.pixelTypography!=='NOT_MEASURED')process.exit(2);
+          console.log('Validated authored defect and bounded fix:',d.nativeLayoutReview.decisions);
+          JS
+      - name: Actually encode entire third-original 360f film after deterministic repair and decode it
+        run: |
+          python3 -m venv /tmp/p2-repair-venv
+          . /tmp/p2-repair-venv/bin/activate
+          python -m pip --disable-pip-version-check install CairoSVG==2.7.1
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          python experiments/p2-semantic-scenes/scripts/render_video.py --spec experiments/p2-semantic-scenes/artifacts/third-original-longcopy-repair.json --native-auto-revise --review-package
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          base=Path('experiments/p2-semantic-scenes/artifacts/third-original-longcopy-repair')
+          source=json.loads((base/'native-revised-all/manifest.json').read_text())
+          review=json.loads((base/'native_revised_silent_review-review-package.json').read_text())
+          qc=json.loads((base/'native_revised_silent_review-qc.json').read_text())
+          mp4=base/'native_revised_silent_review.mp4'
+          assert source['nativeLayoutReview']['revisedCount']>=1
+          assert source['nativeLayoutReview']['sourceContract']=='UNCHANGED'
+          assert source['nativeLayoutReview']['fullSpeedArtReview']=='PENDING_HUMAN'
+          assert source['profile']=={'width':1920,'height':1080,'fps':30,'frames':360}
+          assert review['full_film_frames']==360 and review['technical_decode']=='PASS'
+          assert review['human_creative_approval']=='PENDING'
+          assert qc['frames']==360 and qc['fps']==30 and qc['codec']=='h264'
+          assert hashlib.sha256(mp4.read_bytes()).hexdigest()==qc['sha256']
+          assert mp4.stat().st_size>60000
+          print('QA-repaired source graph → full decoded 360-frame H264 sha256:',qc['sha256'])
+          PY
+      - name: Public only original synthetic repaired film and audit, no private media
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: p2-third-original-brief-layout-QA-revision-360f
+          path: |
+            experiments/p2-semantic-scenes/artifacts/third-original-longcopy-repair/native_revised_silent_review.mp4
+            experiments/p2-semantic-scenes/artifacts/third-original-longcopy-repair/native_revised_silent_review-qc.json
+            experiments/p2-semantic-scenes/artifacts/third-original-longcopy-repair/native_revised_silent_review-av-audit.json
+            experiments/p2-semantic-scenes/artifacts/third-original-longcopy-repair/native_revised_silent_review-review-package.json
+            experiments/p2-semantic-scenes/artifacts/third-original-longcopy-repair/native-revised-all/manifest.json
+          retention-days: 2
+          if-no-files-found: error

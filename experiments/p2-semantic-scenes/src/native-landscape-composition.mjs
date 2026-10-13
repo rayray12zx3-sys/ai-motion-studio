@@ -46,6 +46,44 @@ const heroBox=hero=>{
   const p=point(hero);return {...p,w:round(hero.w*MAP.w/1000),h:round(hero.h*MAP.h/1000*1.22)};
 };
 const labelSize=(s,w,upper=41)=>Math.min(upper,w/Math.max(5,Array.from(s).length*.63));
+
+const TYPOGRAPHY=Object.freeze({
+  standard:Object.freeze({titleChars:14,subtitleChars:34,titleCap:76,
+    subtitleCap:38,titleLeading:99,subtitleLeading:54,subtitleStart:407}),
+  compact:Object.freeze({titleChars:32,subtitleChars:60,titleCap:64,
+    subtitleCap:34,titleLeading:80,subtitleLeading:48,subtitleStart:410}),
+});
+/**
+ * Conservative, deterministic layout preflight. These are character-width
+ * estimates, NOT pixel measurements and never a human creative PASS.
+ * Uses exactly the same line wrapping and baselines as the SVG renderer.
+ */
+export function inspectNativeTypography(plan,shot,mode='standard'){
+  if(!TYPOGRAPHY[mode])throw Error('Unsupported native typography mode');
+  if(!plan?.shots?.includes(shot))throw Error('Typography review requires a compiled shot');
+  const style=TYPOGRAPHY[mode];
+  let title,subtitle;
+  try {
+    title=wrap(shot.title,style.titleChars,3);
+    subtitle=wrap(shot.subtitle,style.subtitleChars,3);
+  } catch {
+    return {shotId:shot.id,mode,status:'NEEDS_REVISION',
+      issue:'COPY_EXCEEDS_BOUNDED_ROWS'};
+  }
+  const sizes=title.map(line=>Math.min(style.titleCap,
+    690/Math.max(5,Array.from(line).length*.73)));
+  const subSizes=subtitle.map(line=>Math.min(style.subtitleCap,
+    739/Math.max(8,Array.from(line).length*.58)));
+  const titleEnd=323+(title.length-1)*style.titleLeading;
+  const subtitleStart=style.subtitleStart+title.length*style.titleLeading;
+  const subtitleEnd=subtitleStart+(subtitle.length-1)*style.subtitleLeading;
+  const issue=titleEnd+46>=subtitleStart?'EDITORIAL_COLLISION':
+    subtitleEnd>860?'EDITORIAL_SAFE_AREA':
+    Math.min(...sizes)<25||Math.min(...subSizes)<20?'TYPE_TOO_SMALL':null;
+  return {shotId:shot.id,mode,status:issue?'NEEDS_REVISION':'HEURISTIC_PASS',
+    issue,title,subtitle,sizes,subSizes,titleEnd,subtitleStart,subtitleEnd,
+    limitations:'Character-width preflight only; actual rendered glyph bounds and artistic legibility unverified'};
+}
 const stage=(plan,s,frame,state,action,hero)=>{
   const t=plan.theme,p=plan.profile;
   const shotFrame=frame-s.start, entry=ease(shotFrame/(p.fps*.48));
@@ -143,7 +181,7 @@ const stage=(plan,s,frame,state,action,hero)=>{
   pieces.push('</g>','</g>');
   return pieces.join('');
 };
-export function renderNativeLandscapeFrame(plan,frame){
+export function renderNativeLandscapeFrame(plan,frame,options={}){
   if(!plan||plan.profile?.width!==1080||plan.profile?.height!==1920||
     plan.profile?.fps!==30||plan.profile?.frames!==360)
     throw Error('Opt-in native-landscape research requires the validated 1080x1920 30fps/360f P2 graph');
@@ -153,8 +191,13 @@ export function renderNativeLandscapeFrame(plan,frame){
   const status=state.state[focus.id],position=heroBox(state.hero);
   const shotIndex=plan.shots.indexOf(shot);
   const q=ease((frame-shot.start)/(plan.profile.fps*.60));
-  const headline=wrap(shot.title,14,3);
-  const subtitle=wrap(shot.subtitle,34,3);
+  const mode=options?.shotModes?.[shot.id]??'standard';
+  const typography=inspectNativeTypography(plan,shot,mode);
+  if(typography.status!=='HEURISTIC_PASS')
+    throw Error('Native typography '+shot.id+': '+typography.issue);
+  const style=TYPOGRAPHY[mode];
+  const headline=typography.title;
+  const subtitle=typography.subtitle;
   const parts=[
     `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`,
     rectangle(0,0,W,H,t.background),
@@ -164,10 +207,10 @@ export function renderNativeLandscapeFrame(plan,frame){
     text('STORY  /  '+String(shotIndex+1).padStart(2,'0')+' OF '+String(plan.shots.length).padStart(2,'0'),
       91,203,33,t.muted,720),
     `<g id="native-landscape-editorial" opacity="${q.toFixed(4)}" transform="translate(0 ${round((1-q)*32)})">`,
-    ...headline.map((line,i)=>text(line,88,323+i*99,
-      Math.min(76,690/Math.max(5,Array.from(line).length*.73)),t.onBackground,810)),
-    ...subtitle.map((line,i)=>text(line,93,407+headline.length*99+i*54,
-      Math.min(38,739/Math.max(8,Array.from(line).length*.58)),t.muted,530)),
+    ...headline.map((line,i)=>text(line,88,323+i*style.titleLeading,
+      typography.sizes[i],t.onBackground,810)),
+    ...subtitle.map((line,i)=>text(line,93,typography.subtitleStart+i*style.subtitleLeading,
+      typography.subSizes[i],t.muted,530)),
     '</g>',
     stage(plan,shot,frame,status,action,position),
     text('SOURCE → ACTION → RESULT',92,933,25,t.muted,710),
