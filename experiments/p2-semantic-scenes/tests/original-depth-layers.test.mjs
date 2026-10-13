@@ -68,3 +68,21 @@ test('legacy no-layer scenes retain deterministic exact same output contract',()
     assert.equal(svg,renderSvgFrame(p,f));
   }
 });
+
+
+test('semantic depth does not abruptly snap or obstruct the result stage after the reveal',()=>{
+  for(const raw of [boardBrief,captionBrief]){
+    const plan=compileSemanticScenes(raw),id=plan.shots[1].layers[0].id;
+    const alphaAt=frame=>{
+      const s=renderSvgFrame(plan,frame),tag=s.match(new RegExp(
+        'id="layer-'+id+'"[^>]*opacity="([0-9.]+)"'));
+      assert.ok(tag,'Missing persistent authored depth');
+      return Number(tag[1]);
+    };
+    const first=plan.shots[2].start,last=first-1;
+    assert.ok(Math.abs(alphaAt(first)-alphaAt(last))<=.001,
+      'Layer presence cannot jump on a source-to-result cut');
+    assert.ok(alphaAt(first+10)<.11,'Result hierarchy must supersede decorative depth');
+    assert.equal(plan.shots[2].layers[0].id,id);
+  }
+});
