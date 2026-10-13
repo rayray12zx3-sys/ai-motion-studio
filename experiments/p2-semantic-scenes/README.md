@@ -103,3 +103,22 @@ For **private/local only** full H.264 engineering renders, use an already indepe
 For Index, use the distinct \`cipher\` track key with the verified Cipher MP3; its exact SHA, official source and original 12s excerpt offset are separately pinned. The offline mixer (a) refuses mismatched MP3 hashes or missing attribution/source/modification notice, (b) refuses overwriting originals, (c) **copies the original video bitstream** while replacing/adding genuine licensed soundtrack audio, (d) confirms actual AAC and full-frame H.264 decode via \`av_audit\`, and (e) records beat-grid distances as **unverified hypotheses**, not claims of true musical synchronization. Final public posting must carry attribution and change notice with the work.
 
 **Rights and quality:** verifying the bytes against the two earlier downloaded official sources and scanning credit text does not establish every downstream commercial right; it only checks one documented music lane. No song files, private video, private Google Drive references, receipts, artifacts or soundtrack waveforms are committed. CC BY license credits do not clear client footage, product UI, fonts or ad claims. Neither waveform RMS proximity nor theoretical BPM-grid proximity validates full-speed audible beat/phrase match. The existing two synthetic product films remain **INTERNALLY NOT ART-READY**; do not ask the owner to judge this engineering soundtrack test as a polished creative film. This addition affects neither the approved production engine nor prior v3 ARC/FOCUS.
+
+## Original ChatGPT-authored JSON brief → actual offline film (Draft R&D after #121)
+
+The user-approved AI Creative Director is the **active ChatGPT conversation**. It can propose and critique a distinct original concept, then author a **local JSON** file conforming to the already existing `p2-semantic-scenes-v1` input contract. Do not install model APIs, connect an external LLM, publish client/reference media, or add a JS scene branch per brief.
+
+1. Author an original-only JSON object using the fields exemplified by the two fictional `examples/two-original-briefs.mjs` records: `version, id, assetPolicy, profile, theme, music, entities, shots, operations`. Different briefs may change authored content, objects, timings and original UI treatments **within the presently supported scene layouts**. This is *bounded declarative authoring*, not a universal generative UI/layout designer.
+2. Save the spec **locally** as a `.json` file. It is explicit user-directed file input, not GitHub/API scraping. If it contains private user material, **do not commit it or upload it to public Actions**. To make review frames + cause/effect evidence:
+
+       node experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs --spec /local/original.json
+       node experiments/p2-semantic-scenes/scripts/score-cues.mjs --spec /local/original.json
+
+3. For an offline full 360-frame H.264 silent engineering film using the already available optional CairoSVG + FFmpeg:
+
+       python3 experiments/p2-semantic-scenes/scripts/render_video.py --spec /local/original.json
+
+   This route uses the **same compiler/renderer** as Atlas/Index, not a special new film branch. The supported encoded P2 JSON film profile is currently **1080×1920, 30fps, 360f**, and the original input must be `assetPolicy: original-only`. Other profiles, non-synthetic media, fonts, original music mixes and commercial output remain independent verification/rights gates. The script refuses to overwrite an existing JSON-authored MP4; use a new safe `id` for a version.
+4. Review actual decoded full-frame video, narrative scene purpose, object continuity, text layout, licensed sound/beat phrasing, and human art separately. `--spec` does **not** invoke the ChatGPT model from Node and tests do not demonstrate unattended creative generation. The local `artifacts` folder remains ignored, no client media is pushed to the repository. Score cues are authored decisions, not musical taste validation.
+
+**Reproducibility proof:** dedicated CI converts an original synthetic Atlas declarative example into JSON at runtime, then renders that complete 360-frame film from JSON. Index remains a separate JS-fixture control, and an independent test creates a third distinct synthetic JSON brief with no edits to production or film renderer source. Actual codec, audit and CI evidence remain separate from professional art acceptance.
