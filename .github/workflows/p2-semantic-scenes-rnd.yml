@@ -57,6 +57,19 @@ jobs:
           python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review.mp4 --expected-frames 360 --cues experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/score-cues.json --output experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review-av-audit.json
           test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review-qc.json
           test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review-qc.json
+      - name: Actually render a synthetic no-AE private-media compositing smoke (never upload its output)
+        run: |
+          # These are tiny GENERATED LAVFI test assets, not any user's purchased media.
+          mkdir -p experiments/p2-semantic-scenes/artifacts/private
+          ffmpeg -hide_banner -loglevel error -f lavfi -i 'color=c=black:s=1080x1920:r=30:d=1' -frames:v 30 -c:v libx264 -threads 2 -preset ultrafast -pix_fmt yuv420p experiments/p2-semantic-scenes/artifacts/private/synthetic-base.mp4
+          ffmpeg -hide_banner -loglevel error -f lavfi -i 'testsrc2=size=640x360:rate=30:duration=1' -frames:v 30 -c:v libx264 -threads 2 -preset ultrafast -pix_fmt yuv420p /tmp/p2-original-synthetic-effect.mp4
+          python3 experiments/p2-semantic-scenes/scripts/private_media_overlay.py --base experiments/p2-semantic-scenes/artifacts/private/synthetic-base.mp4 --asset /tmp/p2-original-synthetic-effect.mp4 --output experiments/p2-semantic-scenes/artifacts/private/synthetic-composite.mp4 --start-frame 5 --end-frame 25 --mode screen --opacity 0.45 --private-preview-only
+          test -f experiments/p2-semantic-scenes/artifacts/private/synthetic-composite.private-qc.json
+          # Also decode a genuinely RGBA PNG and encode the independent alpha path.
+          ffmpeg -hide_banner -loglevel error -f lavfi -i 'color=c=red@0.5:s=160x90:r=1:d=1,format=rgba' -frames:v 1 -update 1 experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha.png
+          python3 experiments/p2-semantic-scenes/scripts/private_media_overlay.py --base experiments/p2-semantic-scenes/artifacts/private/synthetic-base.mp4 --asset experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha.png --output experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha-composite.mp4 --start-frame 5 --end-frame 25 --mode alpha --opacity 0.5 --private-preview-only
+          test -f experiments/p2-semantic-scenes/artifacts/private/synthetic-alpha-composite.private-qc.json
+          # Privacy check: upload-artifact stanza below explicitly excludes all /private/ paths.
       - name: Publish synthetic engineering evidence only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
