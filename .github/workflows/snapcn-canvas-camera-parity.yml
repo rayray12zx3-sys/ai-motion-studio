@@ -5,6 +5,7 @@ on:
       - "experiments/snapcn-native-benchmark/canvas-phone-camera*"
       - "experiments/snapcn-native-benchmark/render-canvas-phone.mjs"
       - "experiments/snapcn-native-benchmark/render-ffmpeg-phone.mjs"
+      - "experiments/snapcn-native-benchmark/render-layered-ffmpeg-phone.mjs"
       - ".github/workflows/snapcn-canvas-camera-parity.yml"
   workflow_dispatch:
 
@@ -40,6 +41,10 @@ jobs:
         run: |
           node --check experiments/snapcn-native-benchmark/render-ffmpeg-phone.mjs
           node experiments/snapcn-native-benchmark/render-ffmpeg-phone.mjs
+      - name: Test separately blurred screen and sharp shell in 240-frame free layered film
+        run: |
+          node --check experiments/snapcn-native-benchmark/render-layered-ffmpeg-phone.mjs
+          node experiments/snapcn-native-benchmark/render-layered-ffmpeg-phone.mjs
       - name: Preserve original-synthetic candidate; not art approval
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -47,5 +52,6 @@ jobs:
           path: |
             out/snapcn-canvas-camera/
             out/snapcn-ffmpeg-perspective/
+            out/snapcn-layered-ffmpeg-perspective/
           if-no-files-found: error
           retention-days: 2
