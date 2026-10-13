@@ -32,5 +32,18 @@ class AuthoredInputTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 icons.sources("gif", candidate)
 
+
+    def test_gif_durations_that_exceed_output_frame_cap_are_rejected(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "authored.gif"
+            path.write_bytes(b"synthetic-only")
+            metadata = {"streams":[{"codec_type":"video", "codec_name":"gif",
+                                    "width":100, "height":100, "nb_read_frames":"100"}],
+                        "format":{"duration":"11.0"}}
+            with patch.object(icons, "inspect", return_value=metadata):
+                with self.assertRaisesRegex(ValueError, "silent truncation"):
+                    icons.validate("gif", path, icons.PRIVATE / "test" / "candidate.mov")
+
 if __name__ == "__main__":
     unittest.main()
