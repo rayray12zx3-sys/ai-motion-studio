@@ -37,3 +37,21 @@ The input base is verified as 1080x1920 H.264 / 30 fps and 30–3600 **decoded f
 
 ## CI
 Tests use synthetic fake file names and mocked media probes only. Public CI may validate the script's syntax/tests; it must not download a purchase, access cloud media links, render a proprietary effect, or publish private output and hashes. Any true private asset review happens locally and stays outside public GitHub, including raw/composited source bits.
+
+
+## Creator-authored animated icon source conversion (isolated next Draft)
+
+Some original animation sources intentionally distribute actual GIF animations or contiguous PNG frame sequences, **not only GIF effect previews**. Those may be converted locally without AE:
+
+```bash
+python3 experiments/p2-semantic-scenes/scripts/private_authored_icon_convert.py \
+  --source /private/verified/authored-animation.gif --kind gif \
+  --output experiments/p2-semantic-scenes/artifacts/private/authored-icon-review.mov \
+  --authored-animation-reviewed --private-preview-only
+```
+
+For a source folder of creator-authored `prefix_00001.png` style files, use `--kind png-sequence --source /private/frames-directory`. This route checks contiguous numbering, refuses a public output, caps input at 300 frames, outputs 30fps alpha-capable ProRes MOV with actual decoded output frame checks and private-only QC. It does not assume the original can be redistributed or commercially used just because it decodes. It does not identify or label a random template preview GIF as creator-approved artwork: the caller must have separately reviewed its distribution role and license. An alpha-capable pixel format **is not proof of non-opaque alpha pixels**; full-speed appearance/edge/placement and usage rights remain human review items.
+
+An explicit commercial-use license for one author's asset never automatically extends to another author, product, download tier or company collaborator. Free downloads are not by themselves evidence of permission for a commercial advertisement. Other seller-product license descriptions may suggest the author's general practice, but not prove a different SKU's granted rights. No official commercial-production claim flows out of this converter.
+
+**No cross-project write:** these private conversions are animation-R&D candidates only. The real video-production owner still decides which shot to use, checks supplier terms and signs off via its own State Engine and release gates. Never push raw third-party footage, editable source bundles or private locators to public branches/issues/CI artifacts.
