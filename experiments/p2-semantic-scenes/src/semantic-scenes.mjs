@@ -134,6 +134,18 @@ export function compileSemanticScenes(spec) {
         const fromPoint=point(g.from,'gesture.from'),toPoint=point(g.to,'gesture.to');
         if(Math.hypot(fromPoint.x-toPoint.x,fromPoint.y-toPoint.y)<30)
           fail('Gesture must depict observable pointer motion toward product target');
+        if(o.trigger==='drag') {
+          // A motion brief must not animate a detached cursor: the pointer
+          // starts on the authored visible source card, and the *whole card*
+          // must remain within the video frame after the target is reached.
+          // These are geometry checks, not human art/interaction approval.
+          const h=shot.hero, landingX=toPoint.x-h.w/2, landingY=toPoint.y-h.h/2;
+          if(fromPoint.x<h.x||fromPoint.x>h.x+h.w||
+             fromPoint.y<h.y||fromPoint.y>h.y+h.h)
+            fail('Drag pointer must begin on the authored source object');
+          if(landingX<0||landingY<0||landingX+h.w>1000||landingY+h.h>1000)
+            fail('Drag landing must keep the complete persistent object in frame');
+        }
         return {start,from:fromPoint,to:toPoint};
       })(),
       resultLabel:str(o.resultLabel,'on-screen product response',4,39),
