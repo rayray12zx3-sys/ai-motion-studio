@@ -40,10 +40,10 @@ function wrap(value,maxCharacters,maxRows){
   if(output.length>maxRows)throw Error('Native landscape text needs a new layout, refusing truncation');
   return output;
 }
-const MAP=Object.freeze({x:972,y:233,w:785,h:625});
+const MAP=Object.freeze({x:972,y:215,w:785,h:625});
 const point=p=>({x:round(MAP.x+p.x*MAP.w/1000),y:round(MAP.y+p.y*MAP.h/1000)});
 const heroBox=hero=>{
-  const p=point(hero);return {...p,w:round(hero.w*MAP.w/1000),h:round(hero.h*MAP.h/1000)};
+  const p=point(hero);return {...p,w:round(hero.w*MAP.w/1000),h:round(hero.h*MAP.h/1000*1.22)};
 };
 const labelSize=(s,w,upper=41)=>Math.min(upper,w/Math.max(5,Array.from(s).length*.63));
 const stage=(plan,s,frame,state,action,hero)=>{
@@ -91,8 +91,8 @@ const stage=(plan,s,frame,state,action,hero)=>{
       `<g id="native-result-material" opacity="${entry.toFixed(4)}">`,
       rectangle(972,652,780,204,t.background,21),
       text('RESULT  /  '+(s.layout.toUpperCase()),995,699,24,t.surfaceMuted,700),
-      text(state,995,765,labelSize(state,720,57),t.ink,790),
-      text('SAME OBJECT / '+s.focusId,995,821,23,t.surfaceMuted,650),
+      text(state,995,765,labelSize(state,720,57),t.onBackground,790),
+      text('SAME OBJECT / '+s.focusId,995,821,23,t.muted,650),
       '</g>'
     );
   }else{
@@ -153,7 +153,7 @@ export function renderNativeLandscapeFrame(plan,frame){
   const status=state.state[focus.id],position=heroBox(state.hero);
   const shotIndex=plan.shots.indexOf(shot);
   const q=ease((frame-shot.start)/(plan.profile.fps*.60));
-  const headline=wrap(shot.title,17,3);
+  const headline=wrap(shot.title,14,3);
   const subtitle=wrap(shot.subtitle,34,3);
   const parts=[
     `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`,
@@ -165,8 +165,8 @@ export function renderNativeLandscapeFrame(plan,frame){
       91,203,33,t.muted,720),
     `<g id="native-landscape-editorial" opacity="${q.toFixed(4)}" transform="translate(0 ${round((1-q)*32)})">`,
     ...headline.map((line,i)=>text(line,88,323+i*99,
-      Math.min(82,737/Math.max(5,Array.from(line).length*.61)),t.onBackground,810)),
-    ...subtitle.map((line,i)=>text(line,93,660+i*54,
+      Math.min(76,690/Math.max(5,Array.from(line).length*.73)),t.onBackground,810)),
+    ...subtitle.map((line,i)=>text(line,93,407+headline.length*99+i*54,
       Math.min(38,739/Math.max(8,Array.from(line).length*.58)),t.muted,530)),
     '</g>',
     stage(plan,shot,frame,status,action,position),
