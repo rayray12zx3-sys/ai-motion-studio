@@ -34,3 +34,15 @@ The five locally executed full animations produced actual decoded 1080×1920 30f
 ## Honest review notes
 
 The motion is visibly real and technique-specific; panel arrival, pointer path, nodes, starburst and CTA beats are all time-dependent, not Ken Burns stills. These samples still use **clean, schematic graphic design**, not demonstrated premium 3D graphics, generative characters or professional-quality artistic signoff. Safe-zone and compositing appearance must be reviewed against the approved target footage before adoption.
+
+## Author-directed multi-shot scene plan (not a proprietary model/provider)
+
+A conversation agent may generate a strictly bounded JSON plan selecting existing techniques and customizing per-shot title/target/event-cutoff. The offline compositor then executes exactly that review plan, preserves the individual transparent ProRes layers and writes one complete H264 full-speed preview with a manifest of frame boundaries and every source file SHA. This is **Agent-assisted** (the human-facing agent authors structured input), **not** an automatically running general natural-language model or an official production SceneSpec.
+
+```sh
+python render_director_plan.py --plan examples/director-plan-education.json --out out/education
+python render_director_plan.py --plan examples/director-plan-creative.json --out out/creative
+python render_director_plan.py --plan examples/director-plan-education.json --out /tmp/check-only --dry-run
+```
+
+Separate full moving example briefs: 9-second educational motion graph (270 frames) and 8-second abstract creative design overview (240 frames). The first example has been actually encoded offline and **independently decoded with 270/270 H264 frames** and shot-specific generated alpha layers. Both are original synthetic, not source video or advertising outputs. Media URLs, duplicated scene IDs, unsupported modes and unknown fields are rejected; no automatic public sharing, external audio, claims or third-party app uploads.
