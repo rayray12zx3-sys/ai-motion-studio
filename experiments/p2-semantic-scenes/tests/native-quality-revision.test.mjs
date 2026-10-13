@@ -9,7 +9,7 @@ const stress=()=>{
   const b=structuredClone(boardBrief);
   b.id='third-original-longcopy-repair';
   b.shots[1].title='COMPLEX TASKS ACROSS MULTIPLE TYPES REQUIRE DETAILED PLANNING';
-  b.shots[1].subtitle='A deliberately verbose sequence makes the constraints of responsive storytelling visible across a wide range of different layouts.';
+  b.shots[1].subtitle='A deliberately verbose sequence makes responsive storytelling constraints visible across many different motion layouts.';
   return b;
 };
 
