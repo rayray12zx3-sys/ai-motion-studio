@@ -38,7 +38,7 @@ test('two different original user briefs reuse unchanged semantic film logic in 
  }
  assert.notEqual(outputs[0],outputs[1],'Differing briefs must have different visuals');
  assert.match(outputs[0],/GIVE IT A DAY/);
- assert.match(outputs[1],/CHOOSE/);
+ assert.match(outputs[1],/SELECT THE LINE/);
 });
 test('JSON third brief reuses same renderer, with Unicode and strict escaper',()=>{
  const path=mkdtempSync(join(tmpdir(),'p2-wide-'));
