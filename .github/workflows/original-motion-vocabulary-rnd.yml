@@ -1,0 +1,75 @@
+name: Original motion vocabulary isolated animation R&D
+on:
+  pull_request:
+    paths:
+      - 'experiments/original-motion-vocabulary/**'
+      - '.github/workflows/original-motion-vocabulary-rnd.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-moving-frames-alpha-full-film:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Install isolated graphics runtime, not the official renderer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg fonts-noto-cjk python3-venv
+          python3 -m venv /tmp/motion-original-venv
+          /tmp/motion-original-venv/bin/python -m pip --disable-pip-version-check install Pillow==12.3.0
+      - name: Test two independent briefs and time-dependent images
+        run: |
+          . /tmp/motion-original-venv/bin/activate
+          cd experiments/original-motion-vocabulary
+          python -m py_compile render_motion.py
+          python -m unittest discover -s tests -v
+      - name: Encode and independently decode 150-frame ProRes alpha and H264
+        run: |
+          . /tmp/motion-original-venv/bin/activate
+          cd experiments/original-motion-vocabulary
+          python render_motion.py --mode recall_cycle --out out
+          python - <<'PY'
+          import json,hashlib,subprocess
+          from pathlib import Path
+          root=Path('out')
+          meta=json.loads((root/'recall_cycle_QC.json').read_text())
+          for t,ext in [('mov','ALPHA'),('mp4','PREVIEW')]:
+              p=root/('recall_cycle_'+ext+'.'+t)
+              data=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-show_entries','stream=codec_name,width,height,nb_read_frames,r_frame_rate,pix_fmt','-of','json',str(p)]))['streams'][0]
+              assert int(data['nb_read_frames'])==150
+              assert [data['width'],data['height'],data['r_frame_rate']]==[1080,1920,'30/1']
+              assert data['codec_name']==('prores' if t=='mov' else 'h264')
+              if t=='mov':assert data['pix_fmt'].startswith('yuva')
+              assert hashlib.sha256(p.read_bytes()).hexdigest()==meta['renders'][t]['sha256']
+          PY
+      - name: Two distinct motion techniques from one agent-authored 270-frame original film
+        run: |
+          . /tmp/motion-original-venv/bin/activate
+          cd experiments/original-motion-vocabulary
+          python render_director_plan.py --plan examples/director-plan-education.json --out out/director
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('out/director/director_manifest.json').read_text())
+          assert d['duration_frames']==270
+          assert d['technical_media_gate']=='TECH_PASS'
+          assert d['actual_video']['frames']==270
+          assert d['creative_gate']=='PENDING_HUMAN'
+          PY
+      - name: Keep original-only synthetic sample and technical QC for two days
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: original-motion-synthetic-recall-alpha-tech-only
+          path: |
+            experiments/original-motion-vocabulary/out/recall_cycle_ALPHA.mov
+            experiments/original-motion-vocabulary/out/recall_cycle_PREVIEW.mp4
+            experiments/original-motion-vocabulary/out/recall_cycle_CONTACT.jpg
+            experiments/original-motion-vocabulary/out/recall_cycle_QC.json
+            experiments/original-motion-vocabulary/out/director/director_full_preview.mp4
+            experiments/original-motion-vocabulary/out/director/director_manifest.json
+          retention-days: 2
+          if-no-files-found: error
