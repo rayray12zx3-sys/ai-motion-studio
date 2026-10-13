@@ -15,7 +15,7 @@ const f=n=>Number(n.toFixed(3));
 const pos=(v,name)=>{
   if(!v||typeof v!=='object'||Array.isArray(v))throw Error('Invalid '+name);
   const box={x:val(v.x,0,960,name+'.x'),y:val(v.y,0,960,name+'.y'),
-    w:val(v.w,60,850,name+'.w'),h:val(v.h,60,850,name+'.h')};
+    w:val(v.w,60,900,name+'.w'),h:val(v.h,60,900,name+'.h')};
   if(box.x+box.w>1000||box.y+box.h>1000)throw Error('Depth layer outside frame');
   return box;
 };
