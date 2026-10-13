@@ -66,16 +66,35 @@ export async function makeDeviceTexture(){
   // The source plate is original synthetic and contains no real company APP UI.
   const img=await loadImage(readFileSync(join(DIR,'atlas-planning.svg')));
   const device=createCanvas(640,1312),c=device.getContext('2d');
+  // Premium original light-metal edge treatment, closer to the user-approved
+  // native PhoneFrame source aesthetic. It is an original Canvas drawing,
+  // not the upstream React/CSS implementation, and includes no licensed media.
   roundedRect(c,7,7,626,1298,107);
-  c.shadowColor='rgba(0,0,0,.65)';c.shadowBlur=16;c.shadowOffsetY=11;
-  c.fillStyle='#1A2030';c.fill();c.shadowColor='transparent';c.shadowBlur=0;
-  roundedRect(c,24,24,592,1264,88);c.fillStyle='#111722';c.fill();
-  c.save();roundedRect(c,28,28,584,1256,78);c.clip();
-  c.drawImage(img,28,28,584,1256);
+  c.shadowColor='rgba(0,0,0,.72)';c.shadowBlur=20;c.shadowOffsetY=11;
+  c.fillStyle='#F2F6FA';c.fill();
+  c.shadowColor='transparent';c.shadowBlur=0;
+  c.strokeStyle='rgba(255,255,255,.95)';c.lineWidth=5;
+  roundedRect(c,10,10,620,1292,104);c.stroke();
+  const metallic=c.createLinearGradient(0,0,640,1312);
+  metallic.addColorStop(0,'#F9FCFF');
+  metallic.addColorStop(.40,'#D9E0E8');
+  metallic.addColorStop(.75,'#FFFFFF');
+  metallic.addColorStop(1,'#ACBACD');
+  roundedRect(c,16,16,608,1280,99);c.fillStyle=metallic;c.fill();
+  roundedRect(c,25,25,590,1262,85);c.fillStyle='#0C1017';c.fill();
+  c.save();roundedRect(c,29,29,582,1254,76);c.clip();
+  c.drawImage(img,29,29,582,1254);
   c.restore();
   roundedRect(c,254,31,132,35,18);c.fillStyle='#080B11';c.fill();
   c.fillStyle='#C9D5E5';c.globalAlpha=.30;c.beginPath();c.arc(359,48,5,0,Math.PI*2);c.fill();c.globalAlpha=1;
-  c.strokeStyle='rgba(245,250,255,.38)';c.lineWidth=3;roundedRect(c,9,9,622,1294,105);c.stroke();
+  // Thin physical side controls make the side-angle shot read as a device,
+  // rather than a floating rounded app screenshot.
+  c.fillStyle='#C5CED9';
+  roundedRect(c,4,210,5,76,2);c.fill();
+  roundedRect(c,4,316,5,48,2);c.fill();
+  roundedRect(c,631,294,5,115,2);c.fill();
+  c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=2;
+  roundedRect(c,17,17,606,1278,99);c.stroke();
   return device;
 }
 export function paintFrame(frame,texture){
