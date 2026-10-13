@@ -102,31 +102,22 @@ export function paintFrame(frame,texture){
     (outerBL.y-outerTL.y)/texture.height,
     outerTL.x,outerTL.y);
   ctx.drawImage(texture,0,0);ctx.restore();
-  const nx=18,ny=25,sw=texture.width/nx,sh=texture.height/ny;
-  for(let yi=0;yi<ny;yi++){
-    for(let xi=0;xi<nx;xi++){
-      const sx=xi*sw,sy=yi*sh;
-      const [tl,tr,br,bl]=projectTile(sx/2,sy/2,sw/2,sh/2,frame);
-      // Two affine triangles approximate the source-to-destination perspective
-      // projection. No Canvas or Remotion 3D dependence is added.
-      for(const tri of [[tl,tr,bl,[sx,sy],[sx+sw,sy],[sx,sy+sh]],
-                         [br,bl,tr,[sx+sw,sy+sh],[sx,sy+sh],[sx+sw,sy]]]){
-        const [a,b,c,sa,sb,sc]=tri;
-        const det=(sb[0]-sa[0])*(sc[1]-sa[1])-(sc[0]-sa[0])*(sb[1]-sa[1]);
-        if(Math.abs(det)<1e-5)throw Error('Degenerate source grid');
-        const A=((b.x-a.x)*(sc[1]-sa[1])-(c.x-a.x)*(sb[1]-sa[1]))/det;
-        const C=((c.x-a.x)*(sb[0]-sa[0])-(b.x-a.x)*(sc[0]-sa[0]))/det;
-        const B=((b.y-a.y)*(sc[1]-sa[1])-(c.y-a.y)*(sb[1]-sa[1]))/det;
-        const D=((c.y-a.y)*(sb[0]-sa[0])-(b.y-a.y)*(sc[0]-sa[0]))/det;
-        const E=a.x-A*sa[0]-C*sa[1],F=a.y-B*sa[0]-D*sa[1];
-        ctx.save();ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
-        ctx.lineTo(c.x,c.y);ctx.closePath();ctx.clip();
-        ctx.setTransform(A,B,C,D,E,F);
-        // Draw ONLY the source tile, rather than redraw entire huge source texture.
-        ctx.drawImage(texture,sx,sy,sw,sh,sx,sy,sw,sh);
-        ctx.restore();
-      }
-    }
+  // Use one perspective-warped vertical strip per narrow column, avoiding
+  // the raster anti-alias hairlines created by a grid of independently clipped
+  // triangles. No new binary or rendering library is required.
+  const nx=96,sw=texture.width/nx,fullH=texture.height;
+  for(let col=0;col<nx;col++){
+    const sx=col*sw;
+    const [tl,tr,br,bl]=projectTile(sx/2,0,sw/2,656,frame);
+    const a=(tr.x-tl.x)/sw,b=(tr.y-tl.y)/sw;
+    const c=(bl.x-tl.x)/fullH,d=(bl.y-tl.y)/fullH;
+    const e=tl.x-a*sx,f=tl.y-b*sx;
+    ctx.save();
+    ctx.beginPath();ctx.moveTo(tl.x,tl.y);ctx.lineTo(tr.x,tr.y);
+    ctx.lineTo(br.x,br.y);ctx.lineTo(bl.x,bl.y);ctx.closePath();ctx.clip();
+    ctx.setTransform(a,b,c,d,e,f);
+    ctx.drawImage(texture,sx,0,sw,fullH,sx,0,sw,fullH);
+    ctx.restore();
   }
   ctx.globalAlpha=1;
   return screen;
