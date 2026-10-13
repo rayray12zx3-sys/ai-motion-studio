@@ -23,6 +23,7 @@ jobs:
           node --check experiments/p2-semantic-scenes/src/semantic-scenes.mjs
           node --check experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs
           node --check experiments/p2-semantic-scenes/scripts/score-cues.mjs
+          node --check experiments/p2-semantic-scenes/scripts/load-director-brief.mjs
           node --check experiments/p2-semantic-scenes/examples/two-original-briefs.mjs
           node --test experiments/p2-semantic-scenes/tests/*.test.mjs
           python3 -m py_compile experiments/p2-semantic-scenes/scripts/render_video.py
@@ -35,6 +36,10 @@ jobs:
           node experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs caption
           node experiments/p2-semantic-scenes/scripts/score-cues.mjs board
           node experiments/p2-semantic-scenes/scripts/score-cues.mjs caption
+          # Public original synthetic fixture only: prove JSON input without new per-brief JS.
+          node --input-type=module -e "import {boardBrief} from './experiments/p2-semantic-scenes/examples/two-original-briefs.mjs'; import {writeFileSync} from 'node:fs'; writeFileSync('experiments/p2-semantic-scenes/artifacts/creative-director-original.json',JSON.stringify(boardBrief))"
+          node experiments/p2-semantic-scenes/scripts/score-cues.mjs --spec experiments/p2-semantic-scenes/artifacts/creative-director-original.json
+          node experiments/p2-semantic-scenes/scripts/emit-svg-frames.mjs --spec experiments/p2-semantic-scenes/artifacts/creative-director-original.json
           test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/samples/0165.svg
           test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/samples/0168.svg
       - name: Actually encode two FULL 360-frame silent H264 films and inspect every frame (NOT art QA)
@@ -45,7 +50,8 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends ffmpeg
           ffmpeg -version | head -n 1
-          python experiments/p2-semantic-scenes/scripts/render_video.py board
+          # Same full 360-frame Atlas film is now rendered from plain JSON, with no scene JS added.
+          python experiments/p2-semantic-scenes/scripts/render_video.py --spec experiments/p2-semantic-scenes/artifacts/creative-director-original.json
           python experiments/p2-semantic-scenes/scripts/render_video.py caption
           python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review.mp4 --expected-frames 360 --cues experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/score-cues.json --output experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review-av-audit.json
           python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review.mp4 --expected-frames 360 --cues experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/score-cues.json --output experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review-av-audit.json

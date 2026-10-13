@@ -3,8 +3,7 @@
  * Cue reason, action and timing are concrete. They do not establish musical
  * phrase agreement or human audiovisual artistic quality.
  */
-import {compileSemanticScenes} from '../src/semantic-scenes.mjs';
-import {boardBrief,captionBrief} from '../examples/two-original-briefs.mjs';
+import {loadDirectorBrief} from './load-director-brief.mjs';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 
@@ -33,9 +32,12 @@ export function scoreCues(plan) {
 }
 
 if(process.argv[1] && import.meta.url === new URL('file://'+process.argv[1]).href) {
-  const film=process.argv[2];
-  if(!['board','caption'].includes(film)) throw new Error('Choose board or caption');
-  const plan=compileSemanticScenes(film==='board'?boardBrief:captionBrief);
+  const args=process.argv.slice(2);
+  if(!((args.length===1&&['board','caption'].includes(args[0]))||
+       (args.length===2&&args[0]==='--spec'))) {
+    throw new Error('Choose board, caption or --spec /local/original.json');
+  }
+  const plan=loadDirectorBrief(args[0],args[1]);
   const dir=join(import.meta.dirname,'..','artifacts',plan.id);
   mkdirSync(dir,{recursive:true});
   const out=join(dir,'score-cues.json');
