@@ -51,9 +51,11 @@ jobs:
           sudo apt-get install -y --no-install-recommends ffmpeg
           ffmpeg -version | head -n 1
           # Same full 360-frame Atlas film is now rendered from plain JSON, with no scene JS added.
-          python experiments/p2-semantic-scenes/scripts/render_video.py --spec experiments/p2-semantic-scenes/artifacts/creative-director-original.json
+          python experiments/p2-semantic-scenes/scripts/render_video.py --spec experiments/p2-semantic-scenes/artifacts/creative-director-original.json --review-package
           python experiments/p2-semantic-scenes/scripts/render_video.py caption
-          python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review.mp4 --expected-frames 360 --cues experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/score-cues.json --output experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review-av-audit.json
+          # New opt-in single-command review package already ran actual decoded MP4 audit for Atlas.
+          test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review-review-package.json
+          python -c "import json; p=json.load(open('experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review-review-package.json')); assert p['full_film_frames']==360 and p['technical_decode']=='PASS' and p['human_creative_approval']=='PENDING' and p['drive_preview_delivery']=='NOT_PERFORMED_BY_THIS_LOCAL_COMMAND'"
           python experiments/p2-semantic-scenes/scripts/av_audit.py experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review.mp4 --expected-frames 360 --cues experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/score-cues.json --output experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review-av-audit.json
           test -f experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/silent_review-qc.json
           test -f experiments/p2-semantic-scenes/artifacts/index-audio-to-caption/silent_review-qc.json
@@ -93,6 +95,7 @@ jobs:
             experiments/p2-semantic-scenes/artifacts/*/silent_review.mp4
             experiments/p2-semantic-scenes/artifacts/*/silent_review-qc.json
             experiments/p2-semantic-scenes/artifacts/*/silent_review-av-audit.json
+            experiments/p2-semantic-scenes/artifacts/*/silent_review-review-package.json
             experiments/p2-semantic-scenes/artifacts/*/score-cues.json
             experiments/p2-semantic-scenes/artifacts/*/samples/manifest.json
           retention-days: 2

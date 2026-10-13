@@ -24,12 +24,16 @@ def main():
     ap.add_argument('--music-offset',type=float,default=0)
     ap.add_argument('--smoke-frames',type=int,default=0,
                     help='R&D short proof only. Never claim full-film review for smoke.')
+    ap.add_argument('--review-package',action='store_true',
+                    help='Produce authored cues, decoded-MP4 audit and a reproducible local review manifest')
     opt=ap.parse_args()
     if (opt.film is None)==(opt.spec is None):
         ap.error('Choose exactly one of board, caption or --spec /local/original.json')
     if bool(opt.music_file)!=bool(opt.credits_file):
         ap.error('Music requires both local audio and explicit source/license credits')
     if opt.music_offset<0:ap.error('Music offset must be nonnegative')
+    if opt.review_package and opt.smoke_frames:
+        ap.error('A review package requires the complete film, not smoke frames')
     if opt.music_file:
         if not opt.music_file.is_file() or not opt.credits_file.is_file():
             ap.error('Local music/credit file missing')
@@ -126,6 +130,38 @@ def main():
         'rights':'PENDING_FULL_OUTPUT_REVIEW',
     }
     (target.parent/(target.stem+'-qc.json')).write_text(json.dumps(proof,indent=2))
+    if opt.review_package:
+        # Reuse the original semantic contract and existing ALL-FRAME media
+        # analyzer; do not invent a second QA implementation or an art verdict.
+        spec_args=['--spec',str(opt.spec)] if opt.spec else [opt.film]
+        command(['node',str(HERE/'scripts/score-cues.mjs'),*spec_args])
+        cue_path=target.parent/'score-cues.json'
+        if not cue_path.is_file():
+            raise RuntimeError('Review incomplete: authored score cues missing')
+        audit_path=target.parent/(target.stem+'-av-audit.json')
+        command([sys.executable,str(HERE/'scripts/av_audit.py'),str(target),
+                 '--expected-frames',str(count),'--cues',str(cue_path),
+                 '--output',str(audit_path)])
+        audited=json.loads(audit_path.read_text(encoding='utf-8'))
+        if audited.get('technical_decode')!='PASS' or audited.get('sha256')!=proof['sha256'] or (
+            audited.get('video',{}).get('decoded_frames')!=count):
+            raise RuntimeError('Review incomplete: post-render decoded media evidence mismatch')
+        review={
+            'schema':'p2-local-review-package-v1','film':film_id,
+            'spec_sha256':hashlib.sha256(opt.spec.read_bytes()).hexdigest() if opt.spec else None,
+            'render_manifest_sha256':hashlib.sha256((source/'manifest.json').read_bytes()).hexdigest(),
+            'video_filename':target.name,'video_sha256':proof['sha256'],
+            'cue_filename':cue_path.name,'audit_filename':audit_path.name,
+            'full_film_frames':count,'fps':fps,'technical_decode':'PASS',
+            'human_creative_approval':'PENDING','reference_quality':'NOT_VALIDATED',
+            'rights':'PENDING','music_audition':'PENDING' if opt.music_file else 'NO_AUDIO',
+            'drive_preview_delivery':'NOT_PERFORMED_BY_THIS_LOCAL_COMMAND',
+            'notes':'Synthetic original-only local R&D. Review manifest never proves artistic quality, source rights or a browser-playable Drive upload.'
+        }
+        # The manifest is written LAST: do not signal delivery if cue generation
+        # or the actual independent H.264 decode failed.
+        (target.parent/(target.stem+'-review-package.json')).write_text(
+            json.dumps(review,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(proof,indent=2))
 
 if __name__=='__main__': main()
