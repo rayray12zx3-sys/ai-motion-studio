@@ -4,6 +4,7 @@ on:
     paths:
       - "experiments/snapcn-native-benchmark/canvas-phone-camera*"
       - "experiments/snapcn-native-benchmark/render-canvas-phone.mjs"
+      - "experiments/snapcn-native-benchmark/render-ffmpeg-phone.mjs"
       - ".github/workflows/snapcn-canvas-camera-parity.yml"
   workflow_dispatch:
 
@@ -33,10 +34,16 @@ jobs:
         run: node scripts/setup-encoder.mjs
       - name: Create full 8s/240-frame original film with Canvas+FFmpeg
         run: node experiments/snapcn-native-benchmark/render-canvas-phone.mjs
+      - name: Test whole-film FFmpeg perspective as seam-free alternative
+        run: |
+          node --check experiments/snapcn-native-benchmark/render-ffmpeg-phone.mjs
+          node experiments/snapcn-native-benchmark/render-ffmpeg-phone.mjs
       - name: Preserve original-synthetic candidate; not art approval
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: snapcn-canvas-original-8sec-fidelity-test
-          path: out/snapcn-canvas-camera/
+          path: |
+            out/snapcn-canvas-camera/
+            out/snapcn-ffmpeg-perspective/
           if-no-files-found: error
           retention-days: 2
