@@ -6,17 +6,22 @@ import {fileURLToPath} from 'node:url';
 import {loadDirectorBrief} from './load-director-brief.mjs';
 import {inspectFrame} from '../src/semantic-scenes.mjs';
 import {renderNativeLandscapeFrame,NATIVE_LANDSCAPE_PROFILE} from '../src/native-landscape-composition.mjs';
+import {planNativeQualityRevision} from '../src/native-quality-revision.mjs';
 
 const args=process.argv.slice(2);
-const all=args.at(-1)==='--all', core=all?args.slice(0,-1):args;
+const all=args.at(-1)==='--all';
+const pre=all?args.slice(0,-1):args;
+const autoRevised=pre.at(-1)==='--auto-revise';
+const core=autoRevised?pre.slice(0,-1):pre;
 if(!((core.length===1&&['board','caption'].includes(core[0]))||
    (core.length===2&&core[0]==='--spec'))){
-  console.error('Usage: emit-native-landscape-frames.mjs board|caption [--all] OR --spec /local/original.json [--all]');
+  console.error('Usage: emit-native-landscape-frames.mjs board|caption [--auto-revise] [--all] OR --spec /local/original.json [--auto-revise] [--all]');
   process.exit(2);
 }
 const plan=loadDirectorBrief(core[0],core[1]);
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const out=path.join(root,'artifacts',plan.id,all?'native-landscape-all':'native-landscape-samples');
+const out=path.join(root,'artifacts',plan.id,all?(autoRevised?'native-revised-all':'native-landscape-all'):(autoRevised?'native-revised-samples':'native-landscape-samples'));
+const repair=autoRevised?planNativeQualityRevision(plan):null;
 fs.mkdirSync(out,{recursive:true});
 const samples=new Set([0,plan.profile.frames-1]);
 for(const shot of plan.shots){
@@ -30,9 +35,10 @@ const indices=all?Array.from({length:plan.profile.frames},(_,i)=>i):
   [...samples].filter(n=>n>=0&&n<plan.profile.frames).sort((a,b)=>a-b);
 for(const frame of indices){
   fs.writeFileSync(path.join(out,String(frame).padStart(4,'0')+'.svg'),
-    renderNativeLandscapeFrame(plan,frame),'utf8');
+    renderNativeLandscapeFrame(plan,frame,repair?{shotModes:repair.shotModes}:{}),'utf8');
 }
 const summary={film:plan.id,profile:NATIVE_LANDSCAPE_PROFILE,
+  nativeLayoutReview:repair||{status:'NOT_REQUESTED',fullSpeedArtReview:'PENDING_HUMAN'},
  sourceProfile:plan.profile,composition:'landscape-native-semantic-object-reflow-rnd',
  renderedSvgFrames:indices.length,frameList:indices,
  shotIds:plan.shots.map(s=>s.id),operationFrames:plan.operations.map(o=>o.frame),
