@@ -108,6 +108,12 @@ function draw(layer,shape,color,frame,profile,scale) {
       const period=Math.sin(q*7.4*Math.PI+frame*.075);
       points.push([x0+ww*q,y0+hh*.5+amplitude*period]);
     }
+    const band=hh*.11;
+    const upper=points.map(([a,b])=>[a,b-band]);
+    const lower=[...points].reverse().map(([a,b])=>[a,b+band]);
+    const surface='M '+[...upper,...lower].map(([a,b],i)=>
+      (i?'L ':'')+f(a)+' '+f(b)).join(' ')+' Z';
+    pieces.push('<path d="'+surface+'" fill="'+color+'" fill-opacity=".33"/>');
     pieces.push('<path d="M '+points.map(([a,b],i)=>(i?'L ':'')+f(a)+' '+f(b)).join(' ')+
       '" fill="none" stroke="'+color+'" stroke-width="'+f(sw*1.5)+
       '" stroke-linecap="round" stroke-linejoin="round"/>');
