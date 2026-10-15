@@ -11,7 +11,9 @@ const here=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(here,'
 const rendererRoot=process.env.HELIOS_INSTALL_DIR||path.join(os.tmpdir(),'helios-install');
 const req=createRequire(path.join(rendererRoot,'package.json'));
 const {Renderer}=await import(pathToFileURL(req.resolve('@helios-project/renderer')).href);
-const {chromium}=await import(pathToFileURL(req.resolve('playwright')).href);
+const playwrightModule=await import(pathToFileURL(req.resolve('playwright')).href);
+const chromium=playwrightModule.chromium ?? playwrightModule.default?.chromium;
+if(!chromium)throw Error('Cannot resolve Playwright chromium export');
 const html=await readFile(path.join(here,'composition.html'));
 const fontsDir=path.join(root,'node_modules/@fontsource/noto-sans-tc');
 const out=path.join(root,'out/helios-ci');await mkdir(out,{recursive:true});
