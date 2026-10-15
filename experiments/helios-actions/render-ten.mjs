@@ -118,7 +118,7 @@ try{
      '-an','-c:v','libx264','-preset','veryfast','-crf','20','-pix_fmt','yuv420p','-movflags','+faststart',preview],{stdio:'pipe'});
    previews.push(preview);
  }
- const playlist=previews.map(p=>'file '+JSON.stringify(p)).join('\n')+'\n';
+ const playlist=previews.map(p=>"file '"+p+"'").join('\n')+'\n';
   await writeFile(path.join(out,'preview-list.txt'),playlist);
   execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-f','concat','-safe','0','-i',path.join(out,'preview-list.txt'),'-c','copy',path.join(out,'00_ten_motion_preview.mp4')],{stdio:'pipe'});
   await writeFile(path.join(out,'acceptance.json'),JSON.stringify({engine:'@helios-project/renderer',count:results.length,
