@@ -93,11 +93,11 @@ if(id==='K01'){ // Per-glyph compression with anticipated recoil; no whole-card 
 }else if(id==='K09'){ // Punctuation anchor becomes precise reveal pivot for second sentence.
  const old=item('真的嗎？',278,207,104),next=item('你確定？',311,205,107);
  const dot=item('·',621,247,91,'soft');
- update=t=>{const inP=smooth((t-.04)/.35),handoff=smooth((t-.66)/.6),reveal=smooth((t-.75)/.65);
+ update=t=>{const inP=smooth((t-.04)/.35),handoff=smooth((t-.66)/.6),reveal=smooth((t-.56)/.52);
    at(old,-100*handoff,0,1-.13*handoff);show(old,inP*(1-smooth((t-.62)/.36)));
    next.style.clipPath='inset(0 '+(100-100*reveal).toFixed(4)+'% 0 0)';
    at(next,mix(34,0,reveal),0);show(next,reveal);
-   at(dot,-177*handoff,(-20)*handoff,1+1.2*Math.sin(Math.PI*handoff));
+   at(dot,-305*handoff,91*handoff,1+.55*Math.sin(Math.PI*handoff));
    show(dot,smooth((t-.27)/.23)*(1-smooth((t-1.29)/.26)));
  };
 }else if(id==='K10'){ // Text/counterpart rule link, composition changes without exiting scene.
@@ -117,7 +117,7 @@ if(id==='K01'){ // Per-glyph compression with anticipated recoil; no whole-card 
  const ln=rule(293,380,390,2);
  update=t=>{const p=smooth((t-.6)/.53),q=smooth((t-1.46)/.55);
    const fold=p*(1-q);
-   at(big,465*fold,-132*fold,1-.66*fold,0);
+   at(big,245*fold,-132*fold,1-.66*fold,0);
    show(big,smooth((t-.02)/.3));
    at(index,335*fold,-15*fold,1-.18*fold);
    show(index,smooth((t-.28)/.34)*(1-.65*fold));
