@@ -1,16 +1,43 @@
-# Helios — isolated GitHub Actions technical test
+# Helios R&D — ten real kinetic-typography render tests
 
-**Scope:** research branch only. It does not replace the approved Canvas+FFmpeg production renderer, touch the Konva editor, or alter the root dependency graph.
+**Production status:** **TECH_PASS / ART_PENDING / PREMIERE_NOT_TESTED**. This is a **Draft PR** only; `main` keeps its approved Canvas+FFmpeg renderer and Konva editor. This branch does **not** install Helios in the production dependency lockfile or publish a user-facing video tool.
 
-- Three original *synthetic* Traditional Chinese animated titles; no real company copy or third-party media.
-- The runner installs the version-pinned Helios renderer in its temporary directory. Existing pinned @fontsource/noto-sans-tc supplies actual Traditional Chinese glyphs.
-- Tests deterministic forward/reverse seek, runs the genuine Helios Renderer, creates lossless transparent intermediate, transcodes to ProRes 4444, checks ffprobe codec/profile/frame count and decoded alpha extremes.
-- CI synthetic artifact is ephemeral; there is no automatic Google Drive upload, persistent queue, or ChatGPT workflow-dispatch integration here. Those need a private data boundary and separate connector credentials.
-- **Art quality, exact Premiere import, company-media rights and Helios production adoption are not approved by codec-level PASS.**
-- Helios core is Elastic License 2.0 (ELv2), not the plugin/skill's Apache-2.0. Check actual usage before adopting it as a hosted commercial service.
+## Ten distinct synthetic animation concepts
 
-Trigger: push to experiment/helios-actions-synthetic-20261015. workflow_dispatch is available after a workflow is on the default branch and separately approved.
+| ID | Motion principle |
+| --- | --- |
+| K01 | Per-glyph compression and recoil |
+| K03 | Tracking (character-spacing) breathing |
+| K04 | Geometry-based horizontal slice recombination |
+| K05 | Word-by-word emphatic relay |
+| K06 | Collision between semantically opposed phrases |
+| K07 | Line break and semantic folding |
+| K09 | Punctuation handoff to the next phrase |
+| K10 | Typographic rule extends into a second line |
+| K13 | Main title folds into an information label |
+| K19 | Three event-paced typographic states |
 
-Proof: look at the exact SHA workflow run and its acceptance.json artifact. A failed workflow means the engine has NOT passed; do not claim it passed because the prior Chromium/FFmpeg PoC was green.
+Original public demonstration text only; **no user/company scripts, footage, private Google Drive URLs, job inputs, credentials or secret materials** in the public repo.
 
-**Product drift checklist:** The goal is to test a private cloud-capable rendering alternative for conversation-directed professional motion; the permitted scope is synthetic R&D, not a renderer swap or visual approval. This branch does not alter main or frozen artistic work. User review is still needed before any engine/adoption decision.
+Files:
+- `motion-recipes.json` — unique concept names, semantic intent, statuses.
+- `gallery.html` — hand-authored deterministic frame-state rendering for all ten, not decoration overlays.
+- `render-ten.mjs` — real `@helios-project/renderer@1.79.0`, pinned `@fontsource/noto-sans-tc`, frame-seek hash comparison, ProRes 4444 FFmpeg transcode and decoded Alpha validation, per-item MP4 and 25-second concatenated preview.
+- `.github/workflows/helios-isolated-technical.yml` — Linux GitHub Actions, technical verification, **short-lived synthetic** artifacts. This does not imply automatic private Drive delivery.
+- `PRIVATE-JOB-BOUNDARY.md` — controls and unresolved prerequisites for private rendering on a public-runner platform.
+
+## Verified baseline
+
+Successful synthetic GitHub Actions run: https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/38741776695
+
+All ten at **1280×720, 24 fps, 2.5 seconds, 60 frames**; each `ProRes 4444` MOV has decoded Alpha min 0 / max 255 and four fully transparent corners, mid-frame visible text and deterministic frame seeking. Ten individual MP4s and a 25-second concatenated preview are generated. The exact Git commit and SHA256 are recorded in the private Google Drive project's machine-readable manifest, not pasted into this public branch.
+
+The earlier K09 and K13 visual continuity problems were amended before the final technical pass. **These outputs have not yet received human art approval, subtitle/speech synchronization testing, or Premiere Pro native import testing.** Do not claim Claude-level visuals based on codec metadata.
+
+## Access, security, and future integration
+
+A public GitHub repository is acceptable for the program *only*. Protected Github→Google Drive workload identity, private per-job data, constrained workflow dispatch, non-public artifacts/logs, short-lived access, persisted job state, and safe delivery are **not yet provisioned**; until then this branch is for synthetic testing only. GitHub's standard job logs/artifacts must not be used to carry private customer/company clips.
+
+Helios is ELv2 source-available. Confirm usage/license terms before productizing or offering the renderer as a hosted third-party service. No new paid service, secrets, repository visibility change or production deployment was made. Do not merge the Draft PR without separate architecture/license/art review.
+
+**Definition of full completion**: secure private data pipeline, general-chat job trigger and result lookup, native Premiere QA and actual user visual acceptance. The ten rendered motion prototypes alone do not fulfill all those criteria.
