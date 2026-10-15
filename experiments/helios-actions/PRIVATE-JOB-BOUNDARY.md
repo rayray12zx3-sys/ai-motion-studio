@@ -1,6 +1,6 @@
 # Private Drive → public GitHub Actions boundary (proposed, NOT ENABLED)
 
-**Current status:** The 10-render benchmark uses only original synthetic text. No private/company assets or texts are accepted into the public workflow.
+**Current status:** The 10-render benchmark uses only original synthetic text. No private/company assets or texts are accepted into the public workflow. A strict UUID-only public dispatch contract and a scoped Google Drive transport adapter have been unit-tested with entirely fake data; **no real private credentials, authenticated transfer, protected environment, or job dispatch is configured**.
 
 ## Trust boundaries
 - Google Drive: private original footage, fonts, script, generated assets, review statuses.
@@ -20,6 +20,12 @@ Workflow dispatch receives only a random UUIDv4 (not a secret token, URL, custom
 6. Automatic cleanup on success/error; zero private files from public repo, public PR logs, public GitHub Pages and artifact storage.
 7. Test with **fake, non-sensitive** staging files first; audit that no company names/contents appear anywhere accessible publicly.
 8. Set explicit cost/cadence guardrails and reject untrusted PR event for private workflow. Branch/test workflow must never activate private-data permissions.
+
+## Tested (non-secret simulation only)
+- `private-job-contract.mjs` validates UUIDv4-only dispatch (rejects script text, URLs, arbitrary keys), strict effect IDs and constrained private job parameters; outputs a redacted public status.
+- `private-drive-adapter.mjs` can search a pinned Drive staging folder, validate exact UUID-named JSON, and upload MOV only to a pinned output folder using a Drive resumable session; host allowlisting prohibits arbitrary external upload URLs.
+- `private-job-contract.test.mjs` and `private-drive-adapter.test.mjs` run in a **contents:read-only** GitHub Actions workflow. Mock responses prove access boundaries; they **do not prove Google OAuth, Drive file permissions, large media throughput, cross-chat Job dispatch or any real upload**.
+- GCP WIF identities generally represent service accounts; permissions to a personal My Drive and the ability of service accounts to create files must be verified. Do not assume WIF automatically grants personal Google Drive write access. Alternative is securely authorized user OAuth or a compatible shared-drive setup, with credential storage explicitly approved.
 
 ## Blocked until external permissions exist
 No Google Workload Identity provider, GitHub protected environment, private Drive staging share, workflow_dispatch connector or user-visible on-demand job API is configured by this R&D branch. It is unsafe to pretend this is deployable merely because isolated Helios CI is green. Manual connector-mediated transfer of *synthetic* results to Drive is not the same as automatic private pipeline.
