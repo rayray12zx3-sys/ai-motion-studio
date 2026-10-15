@@ -56,10 +56,22 @@ try{
    if(!loaded)throw Error('Pinned Noto Sans TC not loaded');
    const times=[.18,.61,1.24,1.86,2.23];
    const hashes=async ts=>{
-      const a=[];for(const t of ts){await page.evaluate(t=>window.renderAt(t),t);a.push([t,crypto.createHash('sha256').update(await page.screenshot({omitBackground:true})).digest('hex')])}return a;
+      const a=[];for(const t of ts){
+        await page.evaluate(async t=>{
+          window.renderAt(t);
+          await document.fonts.ready;
+          void document.body.offsetHeight;
+          await new Promise(resolve=>requestAnimationFrame(resolve));
+          await new Promise(resolve=>requestAnimationFrame(resolve));
+        },t);
+        a.push([t,crypto.createHash('sha256').update(await page.screenshot({omitBackground:true})).digest('hex')]);
+      }return a;
    };
    const forward=await hashes(times),reverse=await hashes([...times].reverse());
-   if(JSON.stringify(forward)!==JSON.stringify([...reverse].reverse()))throw Error('Non-deterministic seek '+recipe);
+   if(JSON.stringify(forward)!==JSON.stringify([...reverse].reverse())){
+      console.error('SEEK_DIAGNOSTIC '+recipe,JSON.stringify({forward,reverse}));
+      throw Error('Non-deterministic seek '+recipe);
+    }
    await page.close();
    const intermediate=path.join(out,recipe+suffix+'-intermediate.mov'),final=path.join(out,recipe+suffix+'-alpha.mov'),preview=path.join(out,recipe+'-preview.mp4');
    const renderer=new Renderer({width,height,fps,durationInSeconds:duration,
