@@ -1,4 +1,4 @@
-name: Helios isolated synthetic render test
+name: Helios ten distinct kinetic typography tests
 
 on:
   push:
@@ -19,7 +19,7 @@ permissions:
 jobs:
   helios-render:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - name: Checkout original synthetic-only branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -50,15 +50,17 @@ jobs:
       - name: Render original synthetic motion and verify real Alpha
         shell: bash
         run: |
-          node --check experiments/helios-actions/render.mjs
-          HELIOS_INSTALL_DIR="$RUNNER_TEMP/helios-install" node experiments/helios-actions/render.mjs
+          node --check experiments/helios-actions/render-ten.mjs
+          HELIOS_INSTALL_DIR="$RUNNER_TEMP/helios-install" node experiments/helios-actions/render-ten.mjs
 
       - name: Publish short-lived synthetic technical evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: isolated-helios-synthetic-alpha
+          name: helios-ten-original-motion-alpha
           path: |
-            out/helios-ci/acceptance.json
-            out/helios-ci/*-alpha.mov
+            out/helios-ten/acceptance.json
+            out/helios-ten/*-alpha.mov
+            out/helios-ten/*-preview.mp4
+            out/helios-ten/00_ten_motion_preview.mp4
           if-no-files-found: error
           retention-days: 2
