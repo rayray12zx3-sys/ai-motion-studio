@@ -9,12 +9,6 @@ on:
       - 'experiments/helios-actions/motion-recipes.json'
       - 'experiments/helios-actions/render-ten.mjs'
       - '.github/workflows/helios-isolated-technical.yml'
-  pull_request:
-    paths:
-      - 'experiments/helios-actions/gallery.html'
-      - 'experiments/helios-actions/motion-recipes.json'
-      - 'experiments/helios-actions/render-ten.mjs'
-      - '.github/workflows/helios-isolated-technical.yml'
   workflow_dispatch:
 
 permissions:
