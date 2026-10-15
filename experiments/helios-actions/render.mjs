@@ -37,8 +37,14 @@ const origin='http://127.0.0.1:'+server.address().port;
 const browser=await chromium.launch({headless:true,args:['--disable-gpu']});
 const results=[];
 try{
- for(const recipe of ['K01','K09','K19']){
-   const page=await browser.newPage({viewport:{width:640,height:360},deviceScaleFactor:1});
+ // Maintain the previous tiny tests and add one authentic Full-HD export, with synthetic text only.
+ const specs=[
+  ...['K01','K09','K19'].map(recipe=>({recipe,width:640,height:360,fps:24,duration:1.5,suffix:''})),
+  {recipe:'K01',width:1920,height:1080,fps:30,duration:1.2,suffix:'-fullhd'}
+ ];
+ for(const spec of specs){
+   const {recipe,width,height,fps,duration,suffix}=spec;
+   const page=await browser.newPage({viewport:{width,height},deviceScaleFactor:1});
    const url=origin+'/composition?recipe='+recipe;
    await page.goto(url,{waitUntil:'networkidle'});
    const loaded=await page.evaluate(async()=>{await document.fonts.ready;return(await document.fonts.load("700 70px 'Noto Sans TC'",'真的假的？！')).length>0});
@@ -50,8 +56,8 @@ try{
    const forward=await hashes(times),reverse=await hashes([...times].reverse());
    if(JSON.stringify(forward)!==JSON.stringify([...reverse].reverse()))throw Error('Non-deterministic seek '+recipe);
    await page.close();
-   const intermediate=path.join(out,recipe+'-intermediate.mov'),final=path.join(out,recipe+'-alpha.mov');
-   const renderer=new Renderer({width:640,height:360,fps:24,durationInSeconds:1.5,
+   const intermediate=path.join(out,recipe+suffix+'-intermediate.mov'),final=path.join(out,recipe+suffix+'-alpha.mov');
+   const renderer=new Renderer({width,height,fps,durationInSeconds:duration,
       mode:'dom',videoCodec:'qtrle',pixelFormat:'argb',intermediateImageFormat:'png',
       browserConfig:{headless:true,gpu:false}});
    await renderer.render(url,intermediate);
@@ -60,15 +66,35 @@ try{
    const probe=JSON.parse(execFileSync('ffprobe',['-v','error','-select_streams','v:0','-count_frames',
       '-show_entries','stream=codec_name,profile,pix_fmt,width,height,nb_read_frames','-of','json',final],{encoding:'utf8'}));
    const st=probe.streams[0];
-   if(st.codec_name!=='prores'||st.profile!=='4444'||Number(st.nb_read_frames)!==36)throw Error('ProRes probe '+recipe+': '+JSON.stringify(st));
+   const expectedFrames=Math.round(fps*duration);
+   if(st.codec_name!=='prores'||st.profile!=='4444'||Number(st.nb_read_frames)!==expectedFrames
+      ||st.width!==width||st.height!==height)
+     throw Error('ProRes probe '+recipe+suffix+': '+JSON.stringify(st));
    const bytes=execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-i',final,
-      '-vf','alphaextract','-pix_fmt','gray','-f','rawvideo','-'],{maxBuffer:30*1024*1024});
-   let min=255,max=0;
-   for(let j=0;j<bytes.length;j++){if(bytes[j]<min)min=bytes[j];if(bytes[j]>max)max=bytes[j]}
+      '-vf','alphaextract','-pix_fmt','gray','-f','rawvideo','-'],{maxBuffer:200*1024*1024});
+   if(bytes.length!==width*height*expectedFrames)
+     throw Error('Decoded Alpha byte count mismatch: '+recipe+suffix);
+   let min=255,max=0,opaque=0;
+   const framePixels=width*height;
+   const midFrame=Math.floor(expectedFrames/2),midOffset=midFrame*framePixels;
+   let midVisible=0;
+   for(let j=0;j<bytes.length;j++){
+     const v=bytes[j];
+     if(v<min)min=v;if(v>max)max=v;
+     if(v>127){opaque++;if(j>=midOffset&&j<midOffset+framePixels)midVisible++}
+   }
+   if(midVisible<300)throw Error('Likely invisible title at middle frame '+recipe+suffix+': '+midVisible);
+   let maxCorner=0;
+   for(let frame=0;frame<expectedFrames;frame++){
+     const off=frame*framePixels;
+     for(const corner of [0,width-1,(height-1)*width,framePixels-1])
+       if(bytes[off+corner]>maxCorner)maxCorner=bytes[off+corner];
+   }
+   if(maxCorner>10)throw Error('Alpha leaked to frame corners '+recipe+suffix+': '+maxCorner);
    if(min!==0||max!==255)throw Error('Alpha invalid '+recipe+': '+min+'/'+max);
-   const result={recipe,fontLoaded:loaded,seek:'PASS',frames:36,codec:st.codec_name,profile:st.profile,
-      pixelFormat:st.pix_fmt,alphaMin:min,alphaMax:max,sha256:crypto.createHash('sha256').update(await readFile(final)).digest('hex')};
-   results.push(result);console.log(recipe,'PASS',JSON.stringify(result));
+   const result={recipe:recipe+suffix,width,height,fps,fontLoaded:loaded,seek:'PASS',frames:expectedFrames,codec:st.codec_name,profile:st.profile,
+      pixelFormat:st.pix_fmt,alphaMin:min,alphaMax:max,visibleMidPixels:midVisible,opaquePixelCount:opaque,cornerAlphaMax:maxCorner,sha256:crypto.createHash('sha256').update(await readFile(final)).digest('hex')};
+   results.push(result);console.log(recipe+suffix,'PASS',JSON.stringify(result));
  }
  await writeFile(path.join(out,'acceptance.json'),JSON.stringify({engine:'@helios-project/renderer',
    technical:'PASS',visual:'PENDING_HUMAN',premiere:'NOT_TESTED',results},null,2)+'\n');
