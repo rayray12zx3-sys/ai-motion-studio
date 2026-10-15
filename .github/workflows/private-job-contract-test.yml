@@ -7,11 +7,15 @@ on:
     paths:
       - 'experiments/helios-actions/private-job-contract.mjs'
       - 'experiments/helios-actions/private-job-contract.test.mjs'
+      - 'experiments/helios-actions/private-drive-adapter.mjs'
+      - 'experiments/helios-actions/private-drive-adapter.test.mjs'
       - '.github/workflows/private-job-contract-test.yml'
   pull_request:
     paths:
       - 'experiments/helios-actions/private-job-contract.mjs'
       - 'experiments/helios-actions/private-job-contract.test.mjs'
+      - 'experiments/helios-actions/private-drive-adapter.mjs'
+      - 'experiments/helios-actions/private-drive-adapter.test.mjs'
       - '.github/workflows/private-job-contract-test.yml'
 
 permissions:
@@ -33,4 +37,4 @@ jobs:
         with:
           node-version: '24.19.0'
       - name: Prove only UUID crosses public dispatch boundary
-        run: node --test experiments/helios-actions/private-job-contract.test.mjs
+        run: node --test experiments/helios-actions/private-job-contract.test.mjs experiments/helios-actions/private-drive-adapter.test.mjs
