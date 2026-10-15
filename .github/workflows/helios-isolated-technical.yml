@@ -42,6 +42,11 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/helios-install" --no-save --ignore-scripts --no-audit --no-fund @helios-project/renderer@1.79.0
           node "$RUNNER_TEMP/helios-install/node_modules/playwright/cli.js" install --with-deps chromium
 
+      - name: Provision system FFmpeg and ffprobe for explicit ProRes profile
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+
       - name: Render original synthetic motion and verify real Alpha
         shell: bash
         run: |
