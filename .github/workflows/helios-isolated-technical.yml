@@ -7,6 +7,10 @@ on:
     paths:
       - 'experiments/helios-actions/**'
       - '.github/workflows/helios-isolated-technical.yml'
+  pull_request:
+    paths:
+      - 'experiments/helios-actions/**'
+      - '.github/workflows/helios-isolated-technical.yml'
   workflow_dispatch:
 
 permissions:
