@@ -41,3 +41,7 @@ A public GitHub repository is acceptable for the program *only*. Protected Githu
 Helios is ELv2 source-available. Confirm usage/license terms before productizing or offering the renderer as a hosted third-party service. No new paid service, secrets, repository visibility change or production deployment was made. Do not merge the Draft PR without separate architecture/license/art review.
 
 **Definition of full completion**: secure private data pipeline, general-chat job trigger and result lookup, native Premiere QA and actual user visual acceptance. The ten rendered motion prototypes alone do not fulfill all those criteria.
+
+## Private task boundary progress (simulation, not activated)
+
+A strict UUIDv4-only dispatch schema and a pinned Google Drive reader/resumable-MOV-writer are in `private-job-contract.mjs` and `private-drive-adapter.mjs`. Their mock tests run in `.github/workflows/private-job-contract-test.yml` without OAuth, OIDC, GitHub secrets, private Drive data, or private Action artifacts. Google service account access to My Drive, credential provisioning, reliable private job dispatch, private write-back and user review are not validated. Nothing automatically sends personal data to the public repository.
