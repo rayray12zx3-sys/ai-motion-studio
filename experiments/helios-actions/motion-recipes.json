@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "classification": "Concept-driven typography; directions/speed/color are params, not extra effects",
+  "technical": "PROTOTYPE",
+  "art": "PENDING_HUMAN",
+  "source": "original synthetic text only",
+  "effects": [
+    {
+      "id": "K01",
+      "name": "字形壓縮回彈",
+      "text": "不可能",
+      "concept": "字寬蓄力釋放",
+      "family": "glyph deformation",
+      "direction": "字符受到擠壓後依序釋放並微幅振盪",
+      "duration_seconds": 2.5,
+      "frames": 60,
+      "fps": 24,
+      "status": "PROTOTYPE"
+    },
+    {
+      "id": "K03",
+      "name": "字距呼吸",
+      "text": "想清楚",
+      "concept": "間距脈衝",
+      "family": "tracking system",
+      "direction": "以閱讀中心為錨點，字距張開再聚合",
+      "duration_seconds": 2.5,
+      "frames": 60,
+      "fps": 24,
+      "status": "PROTOTYPE"
+    },
+    {
+      "id": "K04",
+      "name": "水平切片重組",
+      "text": "原來如此",
+      "concept": "幾何分層",
+      "family": "slice recombination",
+      "direction": "同一文字分成三段幾何切片沿不同軌道對齊",
+      "duration_seconds": 2.5,
+      "frames": 60,
+      "fps": 24,
+      "status": "PROTOTYPE"
+    },
+    {
+      "id": "K05",
+      "name": "重音接力",
+      "text": "這才是重點",
+      "concept": "詞組能量交棒",
+      "family": "accent baton",
+      "direction": "重音沿詞組轉移，以尺寸和位置形成焦點",
+      "duration_seconds": 2.5,
+      "frames": 60,
+      "fps": 24,
+      "status": "PROTOTYPE"
+    },
+    {
+      "id": "K06",
+      "name": "語意對撞",
+      "text": "太快！／等等！",
+      "concept": "雙詞撞擊",
+      "family": "semantic collision",
+      "direction": "對立詞組相向運動、壓縮再回到各自落點",
+      "duration_seconds": 2.5,
+      "frames": 60,
+      "fps": 24,
+      "status": "PROTOTYPE"
+    },
+    {
+      "id": "K07",
+      "name": "斷句折返",
+      "text": "想得美／做得更美",
+      "concept": "語義重排",
+      "family": "line folding",
+      "direction": "閱讀次序依語義從一句轉成上下兩行",
+      "duration_seconds": 2.5,
+      "frames": 60,
+      "fps": 24,
+      "status": "PROTOTYPE"
+    },
+    {
+      "id": "K09",
+      "name": "標點接力",
+      "text": "真的嗎？→你確定？",
+      "concept": "標點連續轉場",
+      "family": "punctuation handoff",
+      "direction": "句末標點點部成為下一句揭示的位置主角",
+      "duration_seconds": 2.5,
+      "frames": 60,
+      "fps": 24,
+      "status": "PROTOTYPE"
+    },
+    {
+      "id": "K10",
+      "name": "橫筆延伸",
+      "text": "請看這裡",
+      "concept": "字型與版面交接",
+      "family": "typographic rule",
+      "direction": "短橫線由文字焦點延長，成為下句排版軸線",
+      "duration_seconds": 2.5,
+      "frames": 60,
+      "fps": 24,
+      "status": "PROTOTYPE"
+    },
+    {
+      "id": "K13",
+      "name": "版面折疊",
+      "text": "還沒結束",
+      "concept": "構圖轉換",
+      "family": "layout fold",
+      "direction": "中央標題壓縮成角落欄位後再次展開",
+      "duration_seconds": 2.5,
+      "frames": 60,
+      "fps": 24,
+      "status": "PROTOTYPE"
+    },
+    {
+      "id": "K19",
+      "name": "節拍三幕",
+      "text": "先等等／注意／現在",
+      "concept": "多狀態事件節奏",
+      "family": "beat choreography",
+      "direction": "以三次不同落點、停頓與尺度建立語氣",
+      "duration_seconds": 2.5,
+      "frames": 60,
+      "fps": 24,
+      "status": "PROTOTYPE"
+    }
+  ]
+}
