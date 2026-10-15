@@ -47,7 +47,12 @@ try{
    const page=await browser.newPage({viewport:{width,height},deviceScaleFactor:1});
    const url=origin+'/gallery?recipe='+recipe;
    await page.goto(url,{waitUntil:'networkidle'});
-   const loaded=await page.evaluate(async()=>{await document.fonts.ready;return(await document.fonts.load("700 70px 'Noto Sans TC'",'真的假的？！')).length>0});
+   const loaded=await page.evaluate(async()=>{
+     const completeSample='不可能想清楚原來如此這才是重點太快等等想得美做得更美真的嗎你確定請看這裡還沒結束先注意現在開始？！／·';
+     const ready=await document.fonts.load("700 90px 'Noto Sans TC'",completeSample);
+     await document.fonts.ready;
+     return ready.length>0;
+   });
    if(!loaded)throw Error('Pinned Noto Sans TC not loaded');
    const times=[.18,.61,1.24,1.86,2.23];
    const hashes=async ts=>{
