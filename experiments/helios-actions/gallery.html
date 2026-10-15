@@ -87,7 +87,7 @@ if(id==='K01'){ // Per-glyph compression with anticipated recoil; no whole-card 
    at(a,mix(0,-11,p),mix(0,-82,p),mix(1,1.04,p));
    at(b,mix(0,-217,p),mix(0,80,p),mix(.88,1,p));
    show(a,q);show(b,smooth((t-.30)/.25));
-   line.style.transform='scaleX('+smooth((t-1.05)/.52).toFixed(5)+')';
+   line.style.width=Math.round(450*smooth((t-1.05)/.52))+'px';
    show(line,smooth((t-.96)/.25));
  };
 }else if(id==='K09'){ // Punctuation anchor becomes precise reveal pivot for second sentence.
