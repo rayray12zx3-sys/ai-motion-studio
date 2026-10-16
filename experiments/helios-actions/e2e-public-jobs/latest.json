@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "job_id": "a930119d-aacd-483b-a73a-d28ff4641998",
+  "synthetic_public": true,
+  "effect_id": "K09",
+  "text": "真的嗎？你確定？",
+  "resolution": "1920x1080",
+  "fps": 24,
+  "duration_seconds": 2.5,
+  "expected_output": [
+    "K09-alpha.mov",
+    "K09-preview.mp4"
+  ],
+  "art_approval": "PENDING_HUMAN",
+  "premiere_import": "NOT_TESTED"
+}
