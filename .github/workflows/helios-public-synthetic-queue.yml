@@ -51,7 +51,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/helios-install"
-          printf '{"private":true,"type":"module"}\\n' > "$RUNNER_TEMP/helios-install/package.json"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/helios-install/package.json"
           npm install --prefix "$RUNNER_TEMP/helios-install" --no-save --ignore-scripts --no-audit --no-fund @helios-project/renderer@1.79.0
           node "$RUNNER_TEMP/helios-install/node_modules/playwright/cli.js" install --with-deps chromium
       - name: Install FFmpeg and ffprobe
