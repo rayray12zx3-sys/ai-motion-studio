@@ -1,0 +1,76 @@
+name: Helios immutable public synthetic queue
+
+on:
+  push:
+    branches:
+      - experiment/helios-actions-synthetic-20261015
+    paths:
+      - 'experiments/helios-actions/e2e-public-jobs/queue/*.json'
+
+permissions:
+  contents: read
+
+# Each committed order is immutable; retries re-run that exact commit.
+concurrency:
+  group: helios-public-job-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  synthetic-queue-render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact job commit without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Validate one newly created immutable public synthetic job
+        shell: bash
+        run: |
+          set -euo pipefail
+          prefix="experiments/helios-actions/e2e-public-jobs/queue/"
+          mapfile -t changed < <(git diff-tree --no-commit-id --name-only -r HEAD -- "$prefix")
+          mapfile -t added < <(git diff-tree --no-commit-id --name-only --diff-filter=A -r HEAD -- "$prefix")
+          if [[ "${#changed[@]}" -ne 1 || "${#added[@]}" -ne 1 || "${changed[0]}" != "${added[0]}" ]]; then
+            echo "Expected exactly one newly added immutable queue job"; exit 1
+          fi
+          filename="${added[0]##*/}"
+          if [[ ! "$filename" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\\.json$ ]]; then
+            echo "Invalid queue filename"; exit 1
+          fi
+          echo "PUBLIC_SYNTHETIC_JOB_FILE=$filename" >> "$GITHUB_ENV"
+      - name: Set up Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Install pinned font and dependency lockfile
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install pinned real Helios renderer and Chromium
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/helios-install"
+          printf '{"private":true,"type":"module"}\\n' > "$RUNNER_TEMP/helios-install/package.json"
+          npm install --prefix "$RUNNER_TEMP/helios-install" --no-save --ignore-scripts --no-audit --no-fund @helios-project/renderer@1.79.0
+          node "$RUNNER_TEMP/helios-install/node_modules/playwright/cli.js" install --with-deps chromium
+      - name: Install FFmpeg and ffprobe
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+      - name: Render and validate the exact public synthetic job
+        shell: bash
+        run: |
+          node --check experiments/helios-actions/render-queue-public.mjs
+          HELIOS_INSTALL_DIR="$RUNNER_TEMP/helios-install" node experiments/helios-actions/render-queue-public.mjs
+      - name: Upload short-lived per-job synthetic deliverables
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: public-synthetic-${{ github.sha }}
+          path: |
+            out/helios-e2e-queue/acceptance.json
+            out/helios-e2e-queue/K09-alpha.mov
+            out/helios-e2e-queue/K09-preview.mp4
+            out/helios-e2e-queue/K09-check.png
+          if-no-files-found: error
+          retention-days: 2
