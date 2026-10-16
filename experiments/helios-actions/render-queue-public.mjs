@@ -41,7 +41,7 @@ const results=[];
 try{
   // Public synthetic job only. Never accept private text in a public repo or Actions inputs.
   const queueName=process.env.PUBLIC_SYNTHETIC_JOB_FILE;
-  if(typeof queueName!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\\.json$/.test(queueName))
+  if(typeof queueName!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.json$/.test(queueName))
     throw Error('Invalid public synthetic queue filename');
   const job=JSON.parse(await readFile(path.join(here,'e2e-public-jobs/queue',queueName)));
   if(job.job_id+'.json'!==queueName)throw Error('Job identity does not match immutable filename');
