@@ -37,7 +37,7 @@ jobs:
             echo "Expected exactly one newly added immutable queue job"; exit 1
           fi
           filename="${added[0]##*/}"
-          if [[ ! "$filename" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\\.json$ ]]; then
+          if [[ ! "$filename" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.json$ ]]; then
             echo "Invalid queue filename"; exit 1
           fi
           echo "PUBLIC_SYNTHETIC_JOB_FILE=$filename" >> "$GITHUB_ENV"
