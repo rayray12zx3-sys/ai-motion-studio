@@ -1,0 +1,60 @@
+name: K09 1080p public synthetic chat-order E2E
+
+on:
+  push:
+    branches:
+      - experiment/helios-actions-synthetic-20261015
+    paths:
+      - 'experiments/helios-actions/e2e-public-jobs/latest.json'
+      - 'experiments/helios-actions/render-e2e-public.mjs'
+      - '.github/workflows/helios-k09-e2e-public.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: helios-k09-e2e-public-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  public-synthetic-k09-1080p:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout research branch without persisting auth
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Install pinned public fonts and root dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install real isolated Helios renderer and headless Chromium
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/helios-install"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/helios-install/package.json"
+          npm install --prefix "$RUNNER_TEMP/helios-install" --no-save --ignore-scripts --no-audit --no-fund @helios-project/renderer@1.79.0
+          node "$RUNNER_TEMP/helios-install/node_modules/playwright/cli.js" install --with-deps chromium
+      - name: Install FFmpeg with ProRes encoder and ffprobe
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+      - name: Render exact agreed K09 synthetic order and validate new MOV
+        shell: bash
+        run: |
+          node --check experiments/helios-actions/render-e2e-public.mjs
+          HELIOS_INSTALL_DIR="$RUNNER_TEMP/helios-install" node experiments/helios-actions/render-e2e-public.mjs
+      - name: Upload public synthetic QA and new MOV/MP4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: k09-1080p-public-synthetic-e2e
+          path: |
+            out/helios-e2e/acceptance.json
+            out/helios-e2e/K09-alpha.mov
+            out/helios-e2e/K09-preview.mp4
+            out/helios-e2e/K09-check.png
+          if-no-files-found: error
+          retention-days: 2
