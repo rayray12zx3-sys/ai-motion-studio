@@ -58,7 +58,9 @@ export function normalizeDirectorPlan(input) {
   assert([24, 30].includes(fps), "unsupported fps");
   const frames = integer(render.frames, "render.frames", 48, 300);
   const direction = input.direction;
-  record(direction, ["seed", "techniqueIds", "visualLanguage"], "direction");
+  record(direction, ["seed", "techniqueIds", "visualLanguage", "visualMotif"], "direction");
+  const motif = direction.visualMotif ?? "semantic-graph";
+  assert(["semantic-graph", "evidence-cards"].includes(motif), "unsupported visualMotif");
   assert(Array.isArray(direction.techniqueIds) && direction.techniqueIds.length >= 1 && direction.techniqueIds.length <= 4, "direction.techniqueIds must contain 1-4 items");
   const techniqueIds = direction.techniqueIds.map((id, i) => {
     assert(typeof id === "string" && /^[a-z][a-z0-9-]{2,64}$/.test(id), "invalid technique ID " + i);
@@ -95,6 +97,7 @@ export function normalizeDirectorPlan(input) {
       seed: integer(direction.seed, "direction.seed", 0, 2147483647),
       techniqueIds,
       visualLanguage: text(direction.visualLanguage, "direction.visualLanguage", 48),
+      visualMotif: motif,
     },
     beats,
   };
