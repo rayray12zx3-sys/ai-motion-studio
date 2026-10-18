@@ -31,7 +31,7 @@ jobs:
         with:
           node-version: '24.19.0'
       - name: Offline contract and rejection tests (no npm, browser or media)
-        run: node --test experiments/cinetic-sidecar/adapter.test.mjs
+        run: node --test experiments/cinetic-sidecar/adapter.test.mjs experiments/cinetic-sidecar/semantic-graph.test.mjs
       - name: Compile approved original synthetic fixture only
         run: node experiments/cinetic-sidecar/adapter.mjs experiments/cinetic-sidecar/sample.plan.json out/cinetic-contract
       - name: Assert independent human and licensing gates remain closed
