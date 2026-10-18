@@ -74,7 +74,7 @@ const alphaReport = sampledFrames.map(index => {
   }
   return { index, visibleAlphaPixels: visible, opaqueMarginCornerPixels: corner, leftNonzero: left, rightNonzero: right, rgbaSHA256: hash(pixels) };
 });
-if (plan.direction.visualMotif === "evidence-cards") {
+if (["evidence-cards", "signal-ledger"].includes(plan.direction.visualMotif)) {
   assert.ok(alphaReport[0].visibleAlphaPixels > 1000, "Cinetic opening requires a visible synthetic story object from frame zero");
 } else {
   assert.equal(alphaReport[0].visibleAlphaPixels, 0, "legacy abstract graph requires an empty first frame");
