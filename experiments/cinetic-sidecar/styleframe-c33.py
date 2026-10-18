@@ -99,20 +99,36 @@ def first():
 
 def second():
     scene='<rect width="1280" height="720" fill="url(#paper)"/>'
-    scene+='<rect width="1280" height="720" fill="url(#grain)" opacity=".7"/>'
-    scene+='<path d="M0 0H1280V126H0Z" fill="#18323b"/>'
-    scene+='<rect x="75" y="207" width="525" height="330" fill="#f0eee4" opacity=".85"/>'
-    scene+='<rect x="75" y="207" width="6" height="330" fill="#bd5849"/>'
-    scene+=txt(115,331,"剪出節奏",76,"#18333c")
-    scene+=txt(115,385,"畫面相接",26,"#41646b",400)
-    scene+=txt(115,489,"02  /  ASSEMBLY",16,"#436169",400)
-    scene+='<rect x="630" y="210" width="560" height="334" rx="6" fill="#172b37"/>'
-    scene+='<rect x="634" y="214" width="552" height="30" fill="#e6e0d4"/>'
-    scene+='<rect x="634" y="506" width="552" height="30" fill="#e6e0d4"/>'
-    scene+=frame(650,292,0,.54)+frame(837,292,1,.54)+frame(1024,292,2,.54)
-    scene+=line("M922 244V515","#e9755e",4)
-    scene+='<polygon points="909,244 935,244 922,258" fill="#e9755e"/>'
-    scene+=line("M638 604H1184","#47666c",1)
+    scene+='<rect width="1280" height="720" fill="url(#grain)" opacity=".72"/>'
+    scene+='<path d="M0 0H1280V107H0Z" fill="#162b35"/>'
+    scene+=txt(79,69,"CUT / SEQUENCE",22,"#eceadd",400)
+    scene+=line("M79 137H1202","#8b9b9b",1.2)
+    scene+='<path d="M79 150H200" stroke="#e9755e" stroke-width="6"/>'
+    scene+='<rect x="80" y="187" width="6" height="211" fill="#cf6b56"/>'
+    scene+=txt(112,277,"剪出節奏",75,"#19343c")
+    scene+=txt(112,332,"畫面相接",27,"#4e6871",400)
+    scene+=line("M112 359H440","#647d80",1.5,'opacity=".58"')
+    scene+=txt(82,568,"02  /  EDITING",20,"#3c5864",400)
+    scene+='<rect x="496" y="184" width="743" height="364" rx="5" fill="#122b36" stroke="#476775" stroke-width="2"/>'
+    scene+='<rect x="503" y="189" width="729" height="31" fill="#e4dfd2"/>'
+    scene+='<rect x="503" y="479" width="729" height="31" fill="#e4dfd2"/>'
+    scene+=''.join('<rect x="%d" y="196" width="17" height="15" rx="2" fill="#1c3642"/>'%i+
+                   '<rect x="%d" y="484" width="17" height="17" rx="2" fill="#1c3642"/>'%i
+                   for i in range(515,1211,30))
+    scene+=frame(511,263,0,.73)+frame(750,263,1,.73)+frame(989,263,2,.73)
+    scene+=line("M873 220V511","#e9755e",4)
+    scene+='<polygon points="859,220 887,220 873,238" fill="#e9755e"/>'
+    scene+=txt(522,539,"SHOT 01",15,"#d1c6af",400)
+    scene+=txt(769,539,"SHOT 02",15,"#d1c6af",400)
+    scene+=txt(1008,539,"SHOT 03",15,"#d1c6af",400)
+    scene+='<rect x="80" y="630" width="1108" height="7" rx="3" fill="#869a95"/>'
+    scene+='<rect x="80" y="630" width="332" height="7" rx="3" fill="#406777"/>'
+    scene+='<rect x="418" y="630" width="414" height="7" rx="3" fill="#e9755e"/>'
+    scene+='<rect x="838" y="630" width="350" height="7" rx="3" fill="#406777"/>'
+    scene+=line("M412 617V650 M832 617V650","#29434b",2)
+    scene+=txt(80,677,"00:00",17,"#54696d",400)
+    scene+=txt(789,677,"05:24",17,"#54696d",400)
+    scene+=txt(1125,677,"08:00",17,"#54696d",400)
     return wrap(scene)
 
 def third():
