@@ -1,0 +1,83 @@
+name: Cinetic C2 isolated synthetic render
+
+on:
+  push:
+    branches:
+      - 'experiment/cinetic-director-adapter-*'
+    paths:
+      - 'experiments/cinetic-sidecar/prepare-render.mjs'
+      - 'experiments/cinetic-sidecar/probe.plan.json'
+      - 'experiments/cinetic-sidecar/verify-render.mjs'
+      - '.github/workflows/cinetic-c2-synthetic-render.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cinetic-c2-synthetic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  small-synthetic-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Install only existing production dependencies (locked)
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Run isolated contract regression and prepare pinned synthetic fonts
+        run: |
+          node --test experiments/cinetic-sidecar/adapter.test.mjs
+          node --check experiments/cinetic-sidecar/prepare-render.mjs
+          node --check experiments/cinetic-sidecar/verify-render.mjs
+          node experiments/cinetic-sidecar/prepare-render.mjs experiments/cinetic-sidecar/probe.plan.json out/cinetic-c2
+      - name: Verify hash-pinned encoders without changing production dependencies
+        run: |
+          node scripts/setup-encoder.mjs
+          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
+          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
+      - name: Verify isolated upstream HyperFrames npm tarball checksum
+        shell: bash
+        run: |
+          actual="$(npm view hyperframes@0.8.143 dist.shasum)"
+          test "$actual" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+          echo "Pinned HyperFrames CLI tarball metadata matched; transitive licensing NOT approved."
+      - name: Render C2 original 2-second Chinese demo with 0.8.143 (MP4)
+        run: |
+          cd out/cinetic-c2
+          npx --yes hyperframes@0.8.143 render -c index.html -o ./preview.mp4 --fps 24 --quality draft
+      - name: Render same C2 synthetic timeline as actual ProRes4444 Alpha
+        run: |
+          cd out/cinetic-c2
+          npx --yes hyperframes@0.8.143 render -c index-alpha.html -o ./overlay-alpha.mov --format mov --fps 24
+      - name: Decode both outputs and preserve independent review gate
+        run: node experiments/cinetic-sidecar/verify-render.mjs out/cinetic-c2
+      - name: Archive synthetic video evidence (EXCLUDE font binaries)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cinetic-c2-original-synthetic-MP4-MOV-QA
+          path: |
+            out/cinetic-c2/preview.mp4
+            out/cinetic-c2/overlay-alpha.mov
+            out/cinetic-c2/technical-report.json
+            out/cinetic-c2/font-qa.json
+            out/cinetic-c2/review-gates.json
+            out/cinetic-c2/validated-plan.json
+            out/cinetic-c2/timeline.json
+          retention-days: 2
+          if-no-files-found: error
+      - name: R&D-only clarification
+        run: |
+          echo 'Original public synthetic 48-frame sample only. No private media, paid runtime, upstream Cinetic Skill install or production main changes.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Technical PASS is not full Cinetic implementation, Visual Design QA, user art approval, commercial license clearance or Windows Premiere acceptance.' >> "$GITHUB_STEP_SUMMARY"
