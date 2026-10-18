@@ -29,6 +29,8 @@ jobs:
             ("iansui","https://raw.githubusercontent.com/ButTaiwan/iansui/main/fonts/ttf/Iansui-Regular.ttf","3dcc17971252ea3c23f1eac4e6277e762f4566d0","https://raw.githubusercontent.com/ButTaiwan/iansui/main/OFL.txt"),
             ("wenkai_tc","https://raw.githubusercontent.com/lxgw/LxgwWenKaiTC/main/fonts/TTF/LXGWWenKaiTC-Regular.ttf","badae37821982559892cd32082e139b248f8490a","https://raw.githubusercontent.com/lxgw/LxgwWenKaiTC/main/OFL.txt"),
             ("mantou","https://raw.githubusercontent.com/mant0u0/MantouSans/main/Font/MantouSans-Regular.ttf","31378b66447d79261e697ff2cd430cb63a8a87e2","https://raw.githubusercontent.com/mant0u0/MantouSans/main/OFL.txt"),
+            ("pixel7","https://raw.githubusercontent.com/scott0107000/BoutiqueBitmap7x7/main/BoutiqueBitmap7x7_1.71.ttf","e0c4ab243bb40b5d6cddadee52d6a169c9d4f5d5","https://raw.githubusercontent.com/scott0107000/BoutiqueBitmap7x7/main/OFL.txt"),
+            ("pixel9","https://raw.githubusercontent.com/scott0107000/BoutiqueBitmap9x9/main/BoutiqueBitmap9x9_1.93.ttf","61d05843a7aeb6251974cb9d51f127b9a1b11a45","https://raw.githubusercontent.com/scott0107000/BoutiqueBitmap9x9/main/OFL.txt"),
           ]
           out=pathlib.Path("fonts-audit"); report=[]
           chars="繁體中文，字型設計！影片動態？不同字距與清晰標點ABC123"
