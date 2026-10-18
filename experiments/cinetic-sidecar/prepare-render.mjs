@@ -51,7 +51,7 @@ export function prepareSyntheticRender(input, dir) {
     manifest.push({ name: fileName, sha256: sha256(contents), bytes: contents.length });
     fontCss += face
       .replace(/font-family:\s*(['"])Noto Sans TC\1\s*;/, "font-family:'PinnedNotoTC';")
-      .replace(/url\(\s*["']?\.\/files\//g, "url('./fonts/")
+      .replace(/url\(\s*["']?\.\/files\/([a-z0-9._-]+\.woff2)["']?\s*\)/gi, (_, file) => "url('./fonts/" + file + "')")
       .replace(/font-display:\s*swap;/g, "font-display:block;") + "\n";
   }
   let html = readFileSync(join(output, "index.html"), "utf8");
