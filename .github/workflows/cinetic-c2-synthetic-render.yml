@@ -7,6 +7,7 @@ on:
     paths:
       - 'experiments/cinetic-sidecar/prepare-render.mjs'
       - 'experiments/cinetic-sidecar/probe.plan.json'
+      - 'experiments/cinetic-sidecar/portrait.plan.json'
       - 'experiments/cinetic-sidecar/verify-render.mjs'
       - '.github/workflows/cinetic-c2-synthetic-render.yml'
   workflow_dispatch:
@@ -42,6 +43,7 @@ jobs:
           node --check experiments/cinetic-sidecar/prepare-render.mjs
           node --check experiments/cinetic-sidecar/verify-render.mjs
           node experiments/cinetic-sidecar/prepare-render.mjs experiments/cinetic-sidecar/probe.plan.json out/cinetic-c2
+          node experiments/cinetic-sidecar/prepare-render.mjs experiments/cinetic-sidecar/portrait.plan.json out/cinetic-c2-portrait
       - name: Verify hash-pinned encoders without changing production dependencies
         run: |
           node scripts/setup-encoder.mjs
@@ -61,8 +63,18 @@ jobs:
         run: |
           cd out/cinetic-c2
           npx --yes hyperframes@0.8.143 render -c index-alpha.html -o ./overlay-alpha.mov --format mov --fps 24
-      - name: Decode both outputs and preserve independent review gate
-        run: node experiments/cinetic-sidecar/verify-render.mjs out/cinetic-c2
+      - name: Render distinct original 9:16 portrait brief with same adapter (MP4)
+        run: |
+          cd out/cinetic-c2-portrait
+          npx --yes hyperframes@0.8.143 render -c index.html -o ./preview.mp4 --fps 24 --quality draft
+      - name: Render portrait sample as actual ProRes4444 Alpha
+        run: |
+          cd out/cinetic-c2-portrait
+          npx --yes hyperframes@0.8.143 render -c index-alpha.html -o ./overlay-alpha.mov --format mov --fps 24
+      - name: Decode outputs from both distinct briefs without promoting art approval
+        run: |
+          node experiments/cinetic-sidecar/verify-render.mjs out/cinetic-c2
+          node experiments/cinetic-sidecar/verify-render.mjs out/cinetic-c2-portrait
       - name: Archive synthetic video evidence (EXCLUDE font binaries)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -75,6 +87,13 @@ jobs:
             out/cinetic-c2/review-gates.json
             out/cinetic-c2/validated-plan.json
             out/cinetic-c2/timeline.json
+            out/cinetic-c2-portrait/preview.mp4
+            out/cinetic-c2-portrait/overlay-alpha.mov
+            out/cinetic-c2-portrait/technical-report.json
+            out/cinetic-c2-portrait/font-qa.json
+            out/cinetic-c2-portrait/review-gates.json
+            out/cinetic-c2-portrait/validated-plan.json
+            out/cinetic-c2-portrait/timeline.json
           retention-days: 2
           if-no-files-found: error
       - name: R&D-only clarification
