@@ -99,7 +99,7 @@ export function normalizeDirectorPlan(input) {
     beats,
   };
 }
-export function buildHtml(plan) {
+function buildHtml(plan) {
   const { width, height, fps, frames } = plan.render;
   const vertical = height > width;
   const fontSize = vertical ? 68 : 80;
