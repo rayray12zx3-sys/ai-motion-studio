@@ -44,6 +44,7 @@ test("semantic cause is mandatory and unsupported stages are blocked", () => {
   rejected((x) => { x.brief.audienceUnderstanding = ""; }, /nonempty/);
   rejected((x) => { x.beats[0].kind = "resolve"; }, /begin scattered/);
   rejected((x) => { x.beats[1].kind = "gsapEval"; }, /unsupported beat.kind/);
+  rejected((x) => { x.beats[1].id = "composition"; }, /reserved beat ID/);
 });
 
 test("strict 16:9 and 9:16 profiles; deterministic frame counts", () => {
@@ -115,12 +116,14 @@ test("deterministic artifacts, no mutation of input or production code", () => {
   const b = compile(x);
   assert.deepEqual(a, b);
   assert.equal(JSON.stringify(x), unchanged);
-  const dir = mkdtempSync(join(tmpdir(), "cinetic-contract-test-"));
+  const workspace = mkdtempSync(join(tmpdir(), "cinetic-contract-test-"));
+  const dir = join(workspace, "fresh-output");
   try {
     const out = writeArtifacts(x, dir);
     assert.equal(out.dir, dir);
     assert.deepEqual(readdirSync(dir).sort(), ["index.html", "review-gates.json", "timeline.json", "validated-plan.json"]);
     assert.equal(readFileSync(join(dir, "index.html"), "utf8"), a.html);
     assert.deepEqual(JSON.parse(readFileSync(join(dir, "review-gates.json"), "utf8")), a.review);
-  } finally { rmSync(dir, { recursive: true, force: true }); }
+    assert.throws(() => writeArtifacts(x, dir), /refusing overwrite/);
+  } finally { rmSync(workspace, { recursive: true, force: true }); }
 });
