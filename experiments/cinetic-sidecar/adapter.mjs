@@ -106,20 +106,59 @@ export function buildHtml(plan) {
     const duration = seconds(beat.endFrame - beat.startFrame, fps);
     return '  <div class="clip ' + beat.kind + '" id="' + beat.id +
       '" data-start="' + seconds(beat.startFrame, fps) + '" data-duration="' + duration +
-      '" data-track-index="' + (index + 1) + '" style="animation-duration:' + duration +
-      's">' + escapeHtml(beat.onScreenText) + "</div>";
+      '" data-track-index="' + (index + 1) + '">' + escapeHtml(beat.onScreenText) + "</div>";
   }).join("\n");
   const css = [
     "*{box-sizing:border-box}",
     "html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#0c1220}",
     "#composition{position:relative;overflow:hidden;width:" + width + "px;height:" + height + "px;background:#121d2b;color:#f8f4e8;font-family:sans-serif}",
     ".clip{position:absolute;left:8%;width:84%;font-size:" + fontSize + "px;line-height:1.26;font-weight:700;text-align:center;opacity:0}",
-    ".scatter{top:24%;letter-spacing:.16em;animation:scatter-arrival ease-out both}",
-    ".connect{top:42%;letter-spacing:.04em;animation:connect-arrival ease-in-out both;border-bottom:4px solid #88dbc5;padding-bottom:22px}",
-    ".resolve{top:57%;letter-spacing:0;animation:resolve-arrival ease-out both}",
-    "@keyframes scatter-arrival{0%{transform:translateX(-15%) scale(.9);opacity:0}26%{opacity:1}76%{opacity:1}100%{opacity:0;transform:translateX(10%) scale(.95)}}",
-    "@keyframes connect-arrival{0%{transform:scaleX(.25);opacity:0}22%{opacity:1}82%{opacity:1}100%{opacity:0;transform:scaleX(1)}}",
-    "@keyframes resolve-arrival{0%{transform:scale(.8);opacity:0}28%{opacity:1}100%{transform:scale(1);opacity:1}}",
+    ".scatter{top:24%;letter-spacing:.16em}",
+    ".connect{top:42%;letter-spacing:.04em;border-bottom:4px solid #88dbc5;padding-bottom:22px}",
+    ".resolve{top:57%;letter-spacing:0}",
+  ].join("\n");
+  // Upstream Cinetic explicitly forbids CSS keyframes. Every pose below is derived
+  // only from an integer frame supplied by HyperFrames' hf-seek event.
+  const seekData = JSON.stringify(plan.beats.map((b) => ({
+    id: b.id, kind: b.kind, startFrame: b.startFrame, endFrame: b.endFrame,
+  })));
+  const seekScript = [
+    "(function(){",
+    "  'use strict';",
+    "  const FPS = " + fps + ";",
+    "  const beats = " + seekData + ";",
+    "  const elements = beats.map(b => document.getElementById(b.id));",
+    "  const clamp = x => Math.max(0, Math.min(1, x));",
+    "  const ease = x => 1 - Math.pow(1 - clamp(x), 3);",
+    "  function setFrame(frame) {",
+    "    if (!Number.isFinite(frame)) return;",
+    "    const f = Math.max(0, Math.floor(frame));",
+    "    beats.forEach((b, i) => {",
+    "      const el = elements[i];",
+    "      const visible = f >= b.startFrame && f < b.endFrame;",
+    "      const p = clamp((f - b.startFrame) / Math.max(1, b.endFrame - b.startFrame - 1));",
+    "      const q = ease(p);",
+    "      let x = 0, s = 1, a = 0;",
+    "      if (b.kind === 'scatter') {",
+    "        x = -120 * (1 - q); s = 0.90 + 0.10 * q;",
+    "        a = p < .16 ? p / .16 : (p > .84 ? (1 - p) / .16 : 1);",
+    "      } else if (b.kind === 'connect') {",
+    "        x = 72 * (1 - q); s = .88 + .12 * q;",
+    "        a = p < .18 ? p / .18 : (p > .82 ? (1 - p) / .18 : 1);",
+    "      } else if (b.kind === 'resolve') {",
+    "        x = 0; s = .85 + .15 * q; a = Math.min(1, p / .24);",
+    "      }",
+    "      el.style.opacity = String(visible ? clamp(a) : 0);",
+    "      el.style.transform = 'translate(' + x.toFixed(3) + 'px,0px) scale(' + s.toFixed(4) + ')';",
+    "    });",
+    "  }",
+    "  window.addEventListener('hf-seek', (event) => {",
+    "    const time = Number(event && event.detail && event.detail.time);",
+    "    if (Number.isFinite(time)) setFrame(Math.round(time * FPS));",
+    "  });",
+    "  window.__cineticSetFrame = setFrame; // synthetic browser test hook only",
+    "  setFrame(0);",
+    "})();",
   ].join("\n");
   return [
     "<!doctype html>", '<html lang="zh-Hant"><head><meta charset="utf-8"/>',
@@ -129,7 +168,7 @@ export function buildHtml(plan) {
     '<div id="composition" data-composition-id="cinetic-synthetic" data-no-timeline data-start="0" data-duration="' + seconds(frames, fps) +
       '" data-width="' + width + '" data-height="' + height + '" data-fps="' + fps + '">',
     tracks,
-    "</div></body></html>",
+    "</div><script>", seekScript, "</script></body></html>",
   ].join("\n") + "\n";
 }
 export function compile(input) {
