@@ -79,6 +79,7 @@ def overlay(frame):
         d.line([(470,852),(525,852)],fill=AQUA+(a,),width=7)
         px=int(34-8*math.sin(p*math.pi)); py=int(743-491*p)
         d.ellipse((px-8,py-8,px+8,py+8),fill=(246,211,129,220))
+    d.rectangle((UI[0],UI[1],UI[2]-1,UI[3]-1),fill=(0,0,0,0))
     if im.getchannel("A").crop(UI).getbbox() is not None:
         raise RuntimeError("overlay violated source-UI pixel safety zone")
     return im
