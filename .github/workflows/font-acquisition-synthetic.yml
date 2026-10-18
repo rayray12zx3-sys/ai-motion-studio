@@ -1,0 +1,66 @@
+name: Isolated official font acquisition verification
+
+on:
+  push:
+    branches:
+      - experiment/helios-actions-synthetic-20261015
+    paths:
+      - '.github/workflows/font-acquisition-synthetic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  licensed-font-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Download immutable-verified official fonts and notices
+        shell: bash
+        run: |
+          python3 -m pip install --user --disable-pip-version-check --quiet fonttools
+          mkdir -p fonts-audit
+          cat > "$RUNNER_TEMP/audit.py" <<'PY'
+          import hashlib,json,pathlib,urllib.request
+          from fontTools.ttLib import TTFont
+          fonts=[
+            ("huninn","https://raw.githubusercontent.com/justfont/open-huninn-font/master/font/jf-openhuninn-2.1.ttf","49ce714ce7fcb394e89ab74de62d80f22ea41771","https://raw.githubusercontent.com/justfont/open-huninn-font/master/LICENSE"),
+            ("iansui","https://raw.githubusercontent.com/ButTaiwan/iansui/main/fonts/ttf/Iansui-Regular.ttf","3dcc17971252ea3c23f1eac4e6277e762f4566d0","https://raw.githubusercontent.com/ButTaiwan/iansui/main/OFL.txt"),
+            ("wenkai_tc","https://raw.githubusercontent.com/lxgw/LxgwWenKaiTC/main/fonts/TTF/LXGWWenKaiTC-Regular.ttf","badae37821982559892cd32082e139b248f8490a","https://raw.githubusercontent.com/lxgw/LxgwWenKaiTC/main/OFL.txt"),
+            ("mantou","https://raw.githubusercontent.com/mant0u0/MantouSans/main/Font/MantouSans-Regular.ttf","31378b66447d79261e697ff2cd430cb63a8a87e2","https://raw.githubusercontent.com/mant0u0/MantouSans/main/OFL.txt"),
+          ]
+          out=pathlib.Path("fonts-audit"); report=[]
+          chars="繁體中文，字型設計！影片動態？不同字距與清晰標點ABC123"
+          for id,url,pinned,license_url in fonts:
+            item={"id":id,"source":url,"official_git_blob_sha1":pinned}
+            try:
+              binary=urllib.request.urlopen(url,timeout=60).read()
+              h=hashlib.sha1(b"blob "+str(len(binary)).encode()+b"\0"+binary).hexdigest()
+              if h!=pinned:raise ValueError("IMMUTABLE_GIT_BLOB_SHA_MISMATCH: "+h)
+              item.update({"sha256":hashlib.sha256(binary).hexdigest(),"git_blob_verified":True,"byte_count":len(binary)})
+              label=out/(id+".ttf")
+              label.write_bytes(binary)
+              font=TTFont(label,lazy=True); cmap=font.getBestCmap() or {}
+              missing=[c for c in sorted(set(chars)) if c not in " \n" and ord(c) not in cmap]
+              item["font_parse"]=True;item["missing_chars"]=missing;item["cmap_count"]=len(cmap)
+              item["baseline_coverage_pass"]=len(missing)==0
+              license_text=urllib.request.urlopen(license_url,timeout=30).read().decode("utf-8-sig")
+              if "SIL OPEN FONT LICENSE" not in license_text.upper():raise ValueError("LICENSE_DOES_NOT_STATE_OFL")
+              (out/(id+"-OFL.txt")).write_text(license_text,encoding="utf-8")
+              item["license_verified"]=True
+            except Exception as exc:
+              item["error"]=str(exc)
+            report.append(item)
+          (out/"audit.json").write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding="utf-8")
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          if not all(p.get("git_blob_verified") and p.get("font_parse") and p.get("license_verified") for p in report):raise SystemExit("FONT_ACQUISITION_QA_FAILED")
+          PY
+          python3 "$RUNNER_TEMP/audit.py"
+      - name: Short-lived legally accompanied font artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: licensed-fonts-temporary-internal-QA
+          path: fonts-audit/
+          if-no-files-found: error
+          retention-days: 1
