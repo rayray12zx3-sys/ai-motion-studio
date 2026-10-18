@@ -8,12 +8,10 @@ FONTS = [
  ("chiron_round","昭源環方","chiron-fonts/chiron-go-round-tc","release","VAR_OTF/ChironGoRoundTCVF.otf","a928538495d1f7dc8a349422cedbbf996197a3fb","LICENSE.md","柔軟應變","round"),
  ("chiron_hei","昭源黑體","chiron-fonts/chiron-hei-hk","release","VAR_OTF/ChironHeiHKVF.otf","911772b9d88c0c96fef0daea6cd2e89e68c0db53","LICENSE.md","構築可能","modern"),
  ("chiron_sung","昭源宋體","chiron-fonts/chiron-sung-hk","release","VAR_OTF/ChironSungHKVF.otf","add9f3977179965416857be316ef8d3a58310c35","LICENSE.md","留白之間","editorial"),
- ("genwan","源雲明體","ButTaiwan/genwan-font","master","ttc/GenWanMin2-R.ttc","36100364IGNORE","SIL_Open_Font_License_1.1.txt","時間的質地","nostalgic"),
+ ("genwan","源雲明體","ButTaiwan/genwan-font","master","ttc/GenWanMin2-R.ttc","4d8b651a2c2f5d8a6ae24bd323a121128881b08d","SIL_Open_Font_License_1.1.txt","時間的質地","nostalgic"),
 ]
 # Source pins are authoritative raw Git-object hashes, not mutable branch names.
-FONTS[-1]=(*FONTS[-1][:5],"d8b651a2eab1a3baed3287c6ad5fd671133315ee",*FONTS[-1][6:]) if False else FONTS[-1]
 # Correct pinned Git-object hash for the GenWan TTC (read from official git tree).
-FONTS[-1]=(*FONTS[-1][:5],"4d8b651a2c2f5d8a6ae24bd323a121128881b08d",*FONTS[-1][6:])
 
 W,H,FPS,N=1280,720,24,60
 QA_TEXT="繁體中文，標題！影像設計與質感。字距、筆畫、變形？"
@@ -40,7 +38,7 @@ def run(font_record,ix,working):
     lic=fetch(licurl).decode("utf-8-sig")
     if "SIL OPEN FONT LICENSE" not in lic.upper() or "Version 1.1" not in lic:raise RuntimeError(f"{key}: license not verified")
     path=working/(key+(".ttc" if p.endswith(".ttc") else ".otf"));path.write_bytes(b)
-    ft=TTFont(path,fontNumber=0,lazy=True)
+    ft=TTFont(path,index=0,lazy=True)
     cmap=ft.getBestCmap() or {}
     missing=sorted(set(c for c in QA_TEXT+copy if not c.isspace() and ord(c) not in cmap))
     if missing:raise RuntimeError(f"{key} missing CJK glyphs: {missing}")
@@ -56,7 +54,7 @@ def run(font_record,ix,working):
     ff=subprocess.Popen(cmd,stdin=subprocess.PIPE,stderr=subprocess.PIPE)
     preview=[]
     old_boxes=[]
-    font=ImageFont.truetype(str(path),fontNumber=0,size=137)
+    font=ImageFont.truetype(str(path),index=0,size=137)
     variable_ok=False
     tags=list(axes)
     if "wght" in axes:
@@ -107,7 +105,7 @@ def run(font_record,ix,working):
             rgb=Image.new("RGB",(W,H),background);rgb.paste(rgba,mask=m)
             sm=rgb.resize((640,360),Image.Resampling.LANCZOS)
             dd=ImageDraw.Draw(sm)
-            dd.text((30,21),f"{ix+1:02d} / {title}",font=ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",25),fill=accent)
+            dd.text((30,21),f"{ix+1:02d} / {key.upper()}",font=ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",25),fill=accent)
             preview.append(sm)
     ff.stdin.close();err=ff.stderr.read().decode("utf-8","replace");code=ff.wait()
     if code:raise RuntimeError(f"{key}: ffmpeg error {err[-800:]}")
