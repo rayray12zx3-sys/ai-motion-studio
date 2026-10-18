@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "engine": "cinetic-hyperframes",
+  "contentClass": "public-synthetic",
+  "brief": {
+    "title": "知識逐漸成形",
+    "intent": "讓觀眾理解零散資訊可以逐步建立連結",
+    "trigger": "零散概念開始互相呼應",
+    "physicalResponse": "文字由分散狀態移動並建立清晰層次",
+    "audienceUnderstanding": "原本片段化的資訊形成可以理解的結構"
+  },
+  "render": {
+    "width": 1280,
+    "height": 720,
+    "fps": 24,
+    "frames": 144
+  },
+  "direction": {
+    "seed": 138,
+    "techniqueIds": [
+      "tr-velocity-handoff-cut"
+    ],
+    "visualLanguage": "簡潔資訊動態與清楚的空間層次"
+  },
+  "beats": [
+    {
+      "id": "scattered-ideas",
+      "kind": "scatter",
+      "startFrame": 0,
+      "endFrame": 48,
+      "meaning": "以分散狀態建立問題",
+      "onScreenText": "零散的想法"
+    },
+    {
+      "id": "meaningful-links",
+      "kind": "connect",
+      "startFrame": 48,
+      "endFrame": 96,
+      "meaning": "建立概念間的因果連結",
+      "onScreenText": "開始彼此連結"
+    },
+    {
+      "id": "knowledge-forms",
+      "kind": "resolve",
+      "startFrame": 96,
+      "endFrame": 144,
+      "meaning": "讓成果在畫面中可理解",
+      "onScreenText": "形成完整知識"
+    }
+  ]
+}
