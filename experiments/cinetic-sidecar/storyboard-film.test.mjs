@@ -21,7 +21,7 @@ test("new 8s 60fps layout is explicit and does not expand other motifs to 60fps"
 test("hand-drawn raindrop sequence, three persistent physical film cells, and alpha-safe borders",()=>{
  const output=generated();
  assert.match(output,/id="storyboard-film"/);
- assert.equal((output.match(/<g id="story-cell-/g)||[]).length,3);
+ assert.equal((output.match(/<g id="story-cell-[012]"/g)||[]).length,3);
  assert.match(output,/id="story-raindrop"/);
  assert.match(output,/id="story-ripple-0"/);
  assert.match(output,/id="story-filmrail"/);
