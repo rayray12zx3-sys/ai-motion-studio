@@ -66,3 +66,25 @@ test("frame-based waveforms and single conclusion are deterministic under nonseq
   assert.ok(Number(nodes.get("signal-closure").attrs.opacity)>0.99, "closure must be nearly fully settled at the sampled frame");
   for(const i of [0,1,2])assert.ok(nodes.get("signal-trace-"+i).attrs.d.startsWith("M625.00"));
 });
+
+
+test("observed heading entrance remains inside the 78px panel inset",()=>{
+  const html=generate();
+  const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+  assert.equal(scripts.length,2);
+  assert.match(scripts[1],/const EDITORIAL = true/);
+  const nodes=new Map(original.beats.map(x=>[x.id,{style:{}}]));
+  const callbacks={};
+  runInNewContext(scripts[1],{
+    window:{addEventListener(name,fn){callbacks[name]=fn;}},
+    document:{getElementById(id){return nodes.get(id);}}
+  });
+  for(const frame of [1,3,6,12,22,28]){
+    callbacks["hf-seek"]({detail:{time:frame/original.render.fps}});
+    const target=nodes.get("fragments").style;
+    const match=/translate\((-?[0-9.]+)px,0px\)/.exec(target.transform);
+    assert.ok(match,"missing heading transform");
+    assert.ok(Number(match[1])>=-27.001,"title escaped editorial inset");
+    assert.ok(Number(target.opacity)>=0 && Number(target.opacity)<=1);
+  }
+});
