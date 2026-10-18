@@ -62,7 +62,7 @@ export function addEvidenceCards(html, plan) {
     "  cards.forEach((el,i)=>{",
     "   const drift=phase===0?Math.sin(f*.037+i)*4:0;",
     "   el.setAttribute('transform','translate('+(pts[i][0]+drift).toFixed(2)+' '+pts[i][1].toFixed(2)+') scale('+compact.toFixed(4)+')');",
-    "   el.setAttribute('opacity',String(phase===0?Math.min(1,p*6):visible));",
+    "   el.setAttribute('opacity',String(phase===0?1:visible));",
     "  });",
     "  links.forEach((el,i)=>{",
     "   const a=pts[i],b=pts[(i+1)%3],my=(a[1]+b[1])/2-H*.055;",
