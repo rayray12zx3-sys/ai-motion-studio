@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "engine": "cinetic-hyperframes",
+  "contentClass": "public-synthetic",
+  "brief": {
+    "title": "觀察數據異常",
+    "intent": "讓使用者從數據波動理解需要採取行動的原因",
+    "trigger": "新的指標突然出現偏差",
+    "physicalResponse": "資訊從散落警示變成相互關聯的診斷結果",
+    "audienceUnderstanding": "知道數據變化可能揭露重要問題"
+  },
+  "render": {
+    "width": 720,
+    "height": 1280,
+    "fps": 24,
+    "frames": 48
+  },
+  "direction": {
+    "seed": 139,
+    "techniqueIds": [
+      "tr-velocity-handoff-cut"
+    ],
+    "visualLanguage": "直式數據敘事與清晰焦點"
+  },
+  "beats": [
+    {
+      "id": "alerts",
+      "kind": "scatter",
+      "startFrame": 0,
+      "endFrame": 16,
+      "meaning": "一開始呈現沒有原因的數據訊號",
+      "onScreenText": "出現異常"
+    },
+    {
+      "id": "diagnosis",
+      "kind": "connect",
+      "startFrame": 16,
+      "endFrame": 32,
+      "meaning": "逐步發現相關指標",
+      "onScreenText": "找到關聯"
+    },
+    {
+      "id": "answer",
+      "kind": "resolve",
+      "startFrame": 32,
+      "endFrame": 48,
+      "meaning": "讓觀眾理解警示背後的原因",
+      "onScreenText": "看懂變化"
+    }
+  ]
+}
