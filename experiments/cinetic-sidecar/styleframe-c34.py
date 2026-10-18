@@ -20,10 +20,12 @@ DARK="#0c1d29"
 
 def lettering(x,y,text,size=104,angle=0,color=IVORY,stroke=DARK):
     """Only real scene-dependent typography, with coordinates owned by story props."""
-    return ('<g data-scene-title="true" transform="translate(%d %d) rotate(%d)">'%(x,y,angle)
-      +'<text x="0" y="0" font-family="Noto Sans CJK TC, Noto Sans CJK, sans-serif" '
-      +'font-size="%d" font-weight="700" fill="%s" stroke="%s" stroke-width="2.5" '
-      +'stroke-linejoin="round" paint-order="stroke">%s</text></g>'%(size,color,stroke,text))
+    return (
+      '<g data-scene-title="true" transform="translate(%d %d) rotate(%d)">' % (x,y,angle)
+      + ('<text x="0" y="0" font-family="Noto Sans CJK TC, Noto Sans CJK, sans-serif" '
+         'font-size="%d" font-weight="700" fill="%s" stroke="%s" stroke-width="2.5" '
+         'stroke-linejoin="round" paint-order="stroke">%s</text></g>' % (size,color,stroke,text))
+    )
 
 def mist():
     return (
