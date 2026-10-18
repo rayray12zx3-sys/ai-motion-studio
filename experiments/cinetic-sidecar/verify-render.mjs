@@ -43,7 +43,12 @@ assert.equal(mov.codec_name, "prores");
 assert.equal(mov.codec_tag_string, "ap4h");
 assert.match(mov.pix_fmt, /^yuva444p/);
 
-const sampledFrames = [...new Set([0, 8, 24, 40, frames - 1].filter(n => n < frames))];
+const sampleCandidates = [
+  0, 8, Math.round(frames * .16), Math.round(frames * .33), Math.round(frames * .50),
+  Math.round(frames * .66), Math.round(frames * .83), frames - 1,
+  ...plan.beats.flatMap(b => [b.startFrame, Math.floor((b.startFrame+b.endFrame)/2), b.endFrame-1]),
+];
+const sampledFrames = [...new Set(sampleCandidates.filter(n => Number.isInteger(n) && n >= 0 && n < frames))].sort((a,b) => a-b);
 function frame(media, index, pix_fmt) {
   const path = join(folder, media);
   const result = execFileSync(ffmpeg, [
