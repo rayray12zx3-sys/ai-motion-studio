@@ -61,5 +61,5 @@ export function addSemanticGraph(html, plan) {
     " draw(0);",
     "})();"
   ].join("\n");
-  return html.replace("</div><script>", "</div>" + motif + "<script>" + script + "</script><script>");
+  return html.replace("</div><script>", motif + "</div><script>" + script + "</script><script>");
 }
