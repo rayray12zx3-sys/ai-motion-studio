@@ -30,8 +30,10 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/font-venv"
           "$RUNNER_TEMP/font-venv/bin/python" -m pip install --no-cache-dir --disable-pip-version-check pillow fonttools
-          ffmpeg -version | head -n 1
-          ffprobe -version | head -n 1
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          ffmpeg -version | sed -n '1p'
+          ffprobe -version | sed -n '1p'
       - name: Independently fetch eight pinned OFL font files and decode real ProRes4444 alpha
         shell: bash
         run: |
