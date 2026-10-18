@@ -12,15 +12,15 @@
 ## TREATMENT — One idea: relationships, not text, explain the shift
 **Logline:** 三個分散訊號建立連結，收束成可以理解的判斷。
 
-**Story device:** Three persistent information nodes (not disappearing at beat transitions). Exactly one visible link system develops in response to their mutual alignment; the final ring signifies a shared conclusion. This is the *same object across all acts*, not three unrelated cards.
+**Story device:** Three original **evidence cards** persist across the film and carry the viewer's attention. Their contents are strictly fictitious illustrative bars; links appear only as the cards move into related positions. All three cards then compact into one bounded result panel with a confirmation mark. The state change is an observable event, not a sequence of unrelated title cards.
 
 | Frames | Time | Picture / causal motion | Caption | Purpose |
 |---|---|---|---|---|
-| 0–71 | 0.0–2.4s | Independent nodes appear at separated screen locations; no fabricated data presented | 分散訊號 | Problem exists before explanation |
-| 72–161 | 2.4–5.4s | Nodes physically migrate inward; relation lines appear only when nodes relate | 找到關聯 | Observe the process, not a label |
-| 162–239 | 5.4–8.0s | Three relations close as one bounded system; result marker resolves and holds | 形成判讀 | Consequence readable in last shot |
+| 0–71 | 0.0–2.4s | Independent fictitious evidence cards appear at separated screen locations; no quantitative/real-data claim | 分散訊號 | Problem exists before explanation |
+| 72–161 | 2.4–5.4s | The same evidence cards physically migrate inward; connections form during their movement | 找到關聯 | Observe the process, not a label |
+| 162–239 | 5.4–8.0s | The same cards shrink and flow into a result panel, giving the viewer an identifiable consequence | 形成判讀 | Consequence readable in last shot |
 
-**Concrete technique choice:** A handoff from scattered positions to aligned relations (the upstream `tr-velocity-handoff-cut` technique ID is used as **reference metadata**, not proof of the exact Cinetic implementation). Animation source is custom original deterministic frame-seek SVG/CSS; no GSAP Studio GUI or upstream Cinetic scripts installed.
+**Concrete technique choice:** A handoff from separate evidence cards to one output panel (the upstream `tr-velocity-handoff-cut` technique ID is used as **reference metadata**, not proof of the exact Cinetic implementation). Animation source is custom original deterministic frame-seek SVG/CSS; no GSAP Studio GUI or upstream Cinetic scripts installed.
 
 ## Five gating checks
 1. **Artifact:** MP4 and actual alpha MOV `ap4h` / `yuva444p`, 30 fps, exactly 240 frames, fully public synthetic. Render twice only if artifact integrity tests warrant it.
