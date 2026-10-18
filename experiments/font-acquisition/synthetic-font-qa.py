@@ -40,7 +40,7 @@ def verify_and_render(record, tempdir):
     font_url = f"https://raw.githubusercontent.com/{repo}/{ref}/{path}"
     license_url = f"https://raw.githubusercontent.com/{repo}/{ref}/{license_path}"
     binary = fetch(font_url)
-    actual = hashlib.sha1(b"blob " + str(len(binary)).encode() + b"\\0" + binary).hexdigest()
+    actual = hashlib.sha1(b"blob " + str(len(binary)).encode() + b"\0" + binary).hexdigest()
     if actual != pinned:
         raise RuntimeError(f"{name}: Git blob pin mismatch ({actual})")
     notice = fetch(license_url).decode("utf-8-sig")
