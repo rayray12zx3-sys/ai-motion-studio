@@ -31,6 +31,8 @@ jobs:
             ("mantou","https://raw.githubusercontent.com/mant0u0/MantouSans/main/Font/MantouSans-Regular.ttf","31378b66447d79261e697ff2cd430cb63a8a87e2","https://raw.githubusercontent.com/mant0u0/MantouSans/main/OFL.txt"),
             ("pixel7","https://raw.githubusercontent.com/scott0107000/BoutiqueBitmap7x7/main/BoutiqueBitmap7x7_1.71.ttf","e0c4ab243bb40b5d6cddadee52d6a169c9d4f5d5","https://raw.githubusercontent.com/scott0107000/BoutiqueBitmap7x7/main/OFL.txt"),
             ("pixel9","https://raw.githubusercontent.com/scott0107000/BoutiqueBitmap9x9/main/BoutiqueBitmap9x9_1.93.ttf","61d05843a7aeb6251974cb9d51f127b9a1b11a45","https://raw.githubusercontent.com/scott0107000/BoutiqueBitmap9x9/main/OFL.txt"),
+            ("tasa_explorer","https://raw.githubusercontent.com/google/fonts/main/ofl/tasaexplorer/TASAExplorer%5Bwght%5D.ttf","2786199e97ff0cdd31c24d9a37f75cce3928ca06","https://raw.githubusercontent.com/google/fonts/main/ofl/tasaexplorer/OFL.txt"),
+            ("tasa_orbiter","https://raw.githubusercontent.com/google/fonts/main/ofl/tasaorbiter/TASAOrbiter%5Bwght%5D.ttf","5b8f847f89da118db69518c01ec82c8a4126140e","https://raw.githubusercontent.com/google/fonts/main/ofl/tasaorbiter/OFL.txt"),
           ]
           out=pathlib.Path("fonts-audit"); report=[]
           chars="繁體中文，字型設計！影片動態？不同字距與清晰標點ABC123"
