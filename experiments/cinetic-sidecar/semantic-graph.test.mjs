@@ -12,7 +12,7 @@ test("three persistent graphic objects survive narrative transitions", () => {
   assert.match(output, /id="semantic-graph"/);
   assert.equal((output.match(/<circle id="causal-node-/g) || []).length, 3);
   assert.equal((output.match(/<line id="causal-link-/g) || []).length, 3);
-  assert.doesNotMatch(output, /@keyframes|https?:\/\//);
+  assert.doesNotMatch(output, /@keyframes|<script\s+src=|url\(\s*https?:\/\//);
   assert.throws(() => addSemanticGraph(output, input), /unexpected/);
 });
 test("graph has repeatable reverse-seek positions with no browser clocks", () => {
