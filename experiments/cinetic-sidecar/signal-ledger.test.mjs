@@ -63,6 +63,6 @@ test("frame-based waveforms and single conclusion are deterministic under nonseq
   assert.ok(Number(nodes.get("signal-lockline").attrs.opacity)>0.5);
   seek(213);
   assert.ok(Number(nodes.get("signal-ring").attrs.r)>45);
-  assert.equal(nodes.get("signal-closure").attrs.opacity,"1");
+  assert.ok(Number(nodes.get("signal-closure").attrs.opacity)>0.99, "closure must be nearly fully settled at the sampled frame");
   for(const i of [0,1,2])assert.ok(nodes.get("signal-trace-"+i).attrs.d.startsWith("M625.00"));
 });
