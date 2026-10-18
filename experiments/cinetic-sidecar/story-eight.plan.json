@@ -20,7 +20,8 @@
     "techniqueIds": [
       "tr-velocity-handoff-cut"
     ],
-    "visualLanguage": "冷綠低彩度、資訊圖形逐步建立關係"
+    "visualLanguage": "冷綠低彩度、資訊圖形逐步建立關係",
+    "visualMotif": "evidence-cards"
   },
   "beats": [
     {
