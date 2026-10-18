@@ -38,7 +38,7 @@ def run(font_record,ix,working):
     lic=fetch(licurl).decode("utf-8-sig")
     if "SIL OPEN FONT LICENSE" not in lic.upper() or "Version 1.1" not in lic:raise RuntimeError(f"{key}: license not verified")
     path=working/(key+(".ttc" if p.endswith(".ttc") else ".otf"));path.write_bytes(b)
-    ft=TTFont(path,index=0,lazy=True)
+    ft=TTFont(path,fontNumber=0,lazy=True)
     cmap=ft.getBestCmap() or {}
     missing=sorted(set(c for c in QA_TEXT+copy if not c.isspace() and ord(c) not in cmap))
     if missing:raise RuntimeError(f"{key} missing CJK glyphs: {missing}")
