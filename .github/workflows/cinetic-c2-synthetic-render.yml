@@ -6,6 +6,8 @@ on:
       - 'experiment/cinetic-director-adapter-*'
     paths:
       - 'experiments/cinetic-sidecar/prepare-render.mjs'
+      - 'experiments/cinetic-sidecar/semantic-graph.mjs'
+      - 'experiments/cinetic-sidecar/semantic-graph.test.mjs'
       - 'experiments/cinetic-sidecar/probe.plan.json'
       - 'experiments/cinetic-sidecar/portrait.plan.json'
       - 'experiments/cinetic-sidecar/verify-render.mjs'
@@ -39,7 +41,7 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Run isolated contract regression and prepare pinned synthetic fonts
         run: |
-          node --test experiments/cinetic-sidecar/adapter.test.mjs
+          node --test experiments/cinetic-sidecar/adapter.test.mjs experiments/cinetic-sidecar/semantic-graph.test.mjs
           node --check experiments/cinetic-sidecar/prepare-render.mjs
           node --check experiments/cinetic-sidecar/verify-render.mjs
           node experiments/cinetic-sidecar/prepare-render.mjs experiments/cinetic-sidecar/probe.plan.json out/cinetic-c2
