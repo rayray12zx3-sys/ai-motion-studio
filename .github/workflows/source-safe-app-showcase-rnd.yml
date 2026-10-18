@@ -1,0 +1,107 @@
+name: Source-safe vertical app-motion specimen (public synthetic)
+
+on:
+  push:
+    branches:
+      - 'experiment/cinetic-director-adapter-*'
+    paths:
+      - 'experiments/app-showcase-lab/**'
+      - '.github/workflows/source-safe-app-showcase-rnd.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: source-safe-app-showcase
+  cancel-in-progress: true
+
+jobs:
+  original-synthetic-video:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6
+        with:
+          python-version: '3.12'
+      - name: Install temporary public-preview environment only
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk ffmpeg
+          python -m pip install --disable-pip-version-check --no-cache-dir 'Pillow==11.3.0'
+          fc-match -f '%{family}\n' 'Noto Sans CJK TC' | grep -F 'Noto Sans CJK TC'
+      - name: Confirm stage geometry and UI immutability in all sampled frames
+        run: |
+          python experiments/app-showcase-lab/learning-ui-motion.test.py
+          python -m py_compile experiments/app-showcase-lab/learning-ui-motion.py
+      - name: Render actual vertical 95f H264 preview and separate ProRes alpha overlay
+        run: |
+          FONT="$(fc-match -f '%{file}' 'Noto Sans CJK TC')"
+          test -f "$FONT"
+          python experiments/app-showcase-lab/learning-ui-motion.py out/app-showcase-original-95f --font "$FONT"
+      - name: Independently decode both movies and verify source/prores alpha
+        run: |
+          python - <<'PY'
+          import json,subprocess
+          from pathlib import Path
+          p=Path("out/app-showcase-original-95f")
+          def probe(name):
+              raw=subprocess.check_output(["ffprobe","-v","error","-select_streams","v:0",
+                      "-show_entries","stream=codec_name,codec_tag_string,width,height,r_frame_rate,nb_frames,pix_fmt",
+                      "-of","json",str(p/name)])
+              return json.loads(raw)["streams"][0]
+          a=probe("preview.mp4")
+          b=probe("overlay-alpha.mov")
+          assert a["codec_name"]=="h264" and (a["width"],a["height"],a["nb_frames"],a["r_frame_rate"])==(540,960,"95","30/1")
+          assert b["codec_name"]=="prores" and b["codec_tag_string"]=="ap4h"
+          assert b["nb_frames"]=="95" and b["r_frame_rate"]=="30/1"
+          assert b["pix_fmt"]=="yuva444p12le" or b["pix_fmt"]=="yuva444p10le",(b["pix_fmt"])
+          box=(105,102,435,844)
+          for n in (0,45,70,94):
+              buf=subprocess.check_output(["ffmpeg","-nostdin","-v","error","-i",str(p/"overlay-alpha.mov"),
+                "-vf",f"select=eq(n\\,{n}),format=rgba",
+                "-frames:v","1","-f","rawvideo","-pix_fmt","rgba","pipe:1"])
+              assert len(buf)==540*960*4,(n,len(buf))
+              alpha=buf[3::4]
+              if n==0:assert max(alpha)==0
+              if n in (45,70):assert max(alpha)>50
+              for y in range(box[1],box[3],6):
+                  for x in range(box[0],box[2],6):
+                      assert alpha[y*540+x]==0,("alpha crossed original UI source",n,x,y)
+          report=json.loads((p/"technical-manifest.json").read_text())
+          report["independent_decoder_qa"]={"status":"PASS","video":a,"overlay":b,
+            "sample_frames":[0,45,70,94],"real_app_ui":"NOT_IMPORTED"}
+          (p/"technical-manifest.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n")
+          print("SOURCE_SAFE_APP_VIDEO_AND_ALPHA_DECODE_PASS",a["nb_frames"])
+          PY
+      - name: Create full-motion GIF review and 8-frame contact sheet from actual MP4
+        run: |
+          ffmpeg -nostdin -y -v error -i out/app-showcase-original-95f/preview.mp4 \
+            -filter_complex '[0:v]fps=12,scale=270:-2:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer' \
+            -loop 0 out/app-showcase-original-95f/review.gif
+          ffmpeg -nostdin -y -v error -i out/app-showcase-original-95f/preview.mp4 \
+            -vf 'fps=2.5,scale=216:-2,tile=4x2' -frames:v 1 -update 1 out/app-showcase-original-95f/contact.png
+          test -s out/app-showcase-original-95f/contact.png
+          test -s out/app-showcase-original-95f/review.gif
+      - name: Upload synthetic evidence only, not UI recordings or fonts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: synthetic-vertical-learning-ui-95f-technical-study
+          path: |
+            out/app-showcase-original-95f/preview.mp4
+            out/app-showcase-original-95f/overlay-alpha.mov
+            out/app-showcase-original-95f/review.gif
+            out/app-showcase-original-95f/contact.png
+            out/app-showcase-original-95f/frame-*.png
+            out/app-showcase-original-95f/technical-manifest.json
+          retention-days: 3
+          if-no-files-found: error
+      - name: Keep all real product integration and art approvals closed
+        run: |
+          echo 'PUBLIC SYNTHETIC 95-frame 9:16 APP pattern only; fictional UI not product screenshots.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Actual APP footage, private company scripts, recorded cursor removal, artistic acceptance, native Premiere and commercial clearance remain unverified.' >> "$GITHUB_STEP_SUMMARY"
