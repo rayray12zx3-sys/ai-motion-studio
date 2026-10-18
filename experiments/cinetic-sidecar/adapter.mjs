@@ -54,13 +54,13 @@ export function normalizeDirectorPlan(input) {
   const width = integer(render.width, "render.width", 720, 1280);
   const height = integer(render.height, "render.height", 720, 1280);
   assert((width === 1280 && height === 720) || (width === 720 && height === 1280), "only independent 16:9 or 9:16 layouts allowed");
-  const fps = integer(render.fps, "render.fps", 24, 30);
-  assert([24, 30].includes(fps), "unsupported fps");
-  const frames = integer(render.frames, "render.frames", 48, 300);
+  const fps = integer(render.fps, "render.fps", 24, 60);
+  assert([24, 30].includes(fps) || (fps === 60 && input.direction?.visualMotif === "storyboard-film"), "unsupported fps");
+  const frames = integer(render.frames, "render.frames", 48, fps === 60 ? 600 : 300);
   const direction = input.direction;
   record(direction, ["seed", "techniqueIds", "visualLanguage", "visualMotif"], "direction");
   const motif = direction.visualMotif ?? "semantic-graph";
-  assert(["semantic-graph", "evidence-cards", "signal-ledger"].includes(motif), "unsupported visualMotif");
+  assert(["semantic-graph", "evidence-cards", "signal-ledger", "storyboard-film"].includes(motif), "unsupported visualMotif");
   assert(Array.isArray(direction.techniqueIds) && direction.techniqueIds.length >= 1 && direction.techniqueIds.length <= 4, "direction.techniqueIds must contain 1-4 items");
   const techniqueIds = direction.techniqueIds.map((id, i) => {
     assert(typeof id === "string" && /^[a-z][a-z0-9-]{2,64}$/.test(id), "invalid technique ID " + i);
@@ -130,7 +130,7 @@ function buildHtml(plan) {
     "(function(){",
     "  'use strict';",
     "  const FPS = " + fps + ";",
-    "  const EDITORIAL = " + (plan.direction.visualMotif === "signal-ledger" ? "true" : "false") + ";",
+    "  const EDITORIAL = " + (["signal-ledger", "storyboard-film"].includes(plan.direction.visualMotif) ? "true" : "false") + ";",
     "  const beats = " + seekData + ";",
     "  const elements = beats.map(b => document.getElementById(b.id));",
     "  const clamp = x => Math.max(0, Math.min(1, x));",
