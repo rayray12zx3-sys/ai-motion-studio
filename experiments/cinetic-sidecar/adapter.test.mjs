@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, mkdtempSync, rmSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { runInNewContext } from "node:vm";
 import { compile, normalizeDirectorPlan, writeArtifacts, ENGINE, STATUS, UPSTREAM_CINETIC_SHA } from "./adapter.mjs";
 
 const original = JSON.parse(readFileSync(new URL("./sample.plan.json", import.meta.url), "utf8"));
@@ -67,9 +68,33 @@ test("compiled HTML has flat named tracks and no external scripts/media", () => 
   assert.equal((x.html.match(/class="clip /g) || []).length, 3);
   assert.match(x.html, /data-no-timeline/);
   assert.match(x.html, /lang="zh-Hant"/);
-  assert.doesNotMatch(x.html, /<script|<iframe|<img|https?:\/\//i);
+  assert.match(x.html, /<script>[\s\S]*hf-seek/);
+  assert.doesNotMatch(x.html, /@keyframes|animation:|<script\s+src|<iframe|<img|https?:\/\//i);
   assert.equal(x.timeline.causalChain.intent, original.brief.intent);
   assert.equal(x.timeline.provenance.upstreamCineticCommit, UPSTREAM_CINETIC_SHA);
+});
+
+
+test("frame-driven hf-seek poses are deterministic even for reverse seeks", () => {
+  const compiled = compile(clone());
+  const script = compiled.html.match(/<script>([\s\S]*?)<\/script>/)[1];
+  const elements = new Map(original.beats.map((b) => [b.id, { style: {} }]));
+  const listeners = {};
+  const window = {
+    addEventListener(name, fn) { listeners[name] = fn; },
+  };
+  const document = { getElementById(id) { return elements.get(id); } };
+  runInNewContext(script, { window, document });
+  assert.equal(typeof listeners["hf-seek"], "function");
+  function pose(frame) {
+    listeners["hf-seek"]({ detail: { time: frame / original.render.fps } });
+    return JSON.stringify([...elements].map(([id, el]) => [id, el.style.opacity, el.style.transform]));
+  }
+  const final = pose(119);
+  const earlier = pose(35);
+  assert.notEqual(earlier, final);
+  assert.equal(pose(119), final);
+  assert.equal(pose(35), earlier);
 });
 
 test("independent visual review and user approval remain unconditionally pending", () => {
