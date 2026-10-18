@@ -32,6 +32,8 @@ test("render is pure frame seek: scattered cards move into connections then a re
     listeners["hf-seek"]({detail:{time:n/original.render.fps}});
     return JSON.stringify([...map].map(([id,el])=>[id,el.attrs]));
   }
+  frame(0);
+  assert.equal(map.get("evidence-card-0").attrs.opacity,"1", "frame zero should contain the story device");
   const start = frame(24);
   assert.equal(map.get("evidence-link-0").attrs.opacity,"0");
   assert.equal(map.get("evidence-result").attrs.opacity,"0");
