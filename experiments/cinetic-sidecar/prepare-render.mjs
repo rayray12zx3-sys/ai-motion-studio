@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { writeArtifacts } from "./adapter.mjs";
 import { addSemanticGraph } from "./semantic-graph.mjs";
 import { addEvidenceCards } from "./evidence-cards.mjs";
+import { addSignalLedger } from "./signal-ledger.mjs";
 
 function fail(message) { throw new Error(message); }
 function covered(cp, rangeText) {
@@ -61,7 +62,10 @@ export function prepareSyntheticRender(input, dir) {
   html = html.replace("font-family:sans-serif", "font-family:'PinnedNotoTC'")
     .replace("font-weight:700", "font-weight:400")
     .replace("</style>", fontCss + "</style>");
-  html = plan.direction.visualMotif === 'evidence-cards' ? addEvidenceCards(html, plan) : addSemanticGraph(html, plan);
+  html = plan.direction.visualMotif === "signal-ledger"
+    ? addSignalLedger(html, plan)
+    : plan.direction.visualMotif === "evidence-cards"
+      ? addEvidenceCards(html, plan) : addSemanticGraph(html, plan);
   // Every output font is local; only synthetic HTML/JSON/video gets archived.
   writeFileSync(join(output, "index.html"), html, { flag: "w" });
   let alpha = html.replaceAll("background:#0c1220", "background:transparent")
