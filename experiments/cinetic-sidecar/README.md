@@ -1,6 +1,6 @@
-# Cinetic director sidecar — bounded Phase C1 prototype
+# Cinetic director sidecar — C1 adapter + C2/C3 isolated synthetic render proof
 
-**Status:** implementation of a constrained **director-plan → HyperFrames-compatible HTML + review handoff** adapter only. This is **not** an installed/fully executed upstream Cinetic Skill, not a fully validated HyperFrames backend and **not** approval to ship commercial media.
+**Status 2026-10-18:** confined director-plan adapter plus two real separately encoded **16:9 and 9:16 2-second H.264 MP4 + ProRes 4444 Alpha MOV** samples on an isolated pinned CLI. Real decoded frames and transparent margins verified by [two-brief CI #39116273741](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39116273741). An additional **persistent three-node graph** now carries the visual object across beats, with actual render and technical checks passing at [CI #39116764337](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39116764337). **Not** upstream Cinetic Skill fully installed, **not** an approved production backend, and **not** approved art or commercial rights.
 
 ## Boundary and historical continuity
 - Planning and decision: [Issue #138](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/138); original [roadmap #4](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/4); project charter on `main`.
@@ -23,7 +23,16 @@ node --test experiments/cinetic-sidecar/adapter.test.mjs
 node experiments/cinetic-sidecar/adapter.mjs experiments/cinetic-sidecar/sample.plan.json out/cinetic-contract
 ```
 
-Four outputs: `validated-plan.json`, `timeline.json`, `index.html`, `review-gates.json`. `out/` is git-ignored. A passing test proves only the **contract and synthetic reverse-seek behavior**. It does **not** run Chrome/HyperFrames, render an MP4 or validate MOV alpha.
+Four contract outputs: `validated-plan.json`, `timeline.json`, `index.html`, `review-gates.json`. `out/` is git-ignored. Isolated render/QA continuation:
+
+```sh
+npm ci --ignore-scripts --no-audit --no-fund
+node experiments/cinetic-sidecar/prepare-render.mjs experiments/cinetic-sidecar/probe.plan.json out/cinetic-c2
+# Separate output: replace probe.plan.json with portrait.plan.json and out/cinetic-c2-portrait
+# Actual CLI render is exercised only by the pinned isolated workflow, NOT a default production command.
+```
+
+ A passing test proves only the **contract and synthetic reverse-seek behavior**. It does **not** run Chrome/HyperFrames, render an MP4 or validate MOV alpha.
 
 ## Reviewer authority
 1. Cinetic's director idea/technique selection: **proposal**, never final design decision.
@@ -32,8 +41,8 @@ Four outputs: `validated-plan.json`, `timeline.json`, `index.html`, `review-gate
 4. User: `USER_ART_APPROVED` only for exact verified output variant, never inherited.
 5. Native Windows Premiere and full commercial rights: independent gates.
 
-## Next implementation increment (C0/C2)
-Audit pinned upstream Cinetic scripts and HyperFrames/GSAP transitive license/version scope, add reproducible isolated CLI install only after rights review. Then render two separate *original* synthetic briefs in 16:9 and 9:16, check all decoded frames and transparent ProRes 4444, inspect full-speed motion, offer one combined preview GIF, and compare against the unchanged existing engine. Record explicit PASS/FAIL/BLOCKED and reproducible commit IDs. Keep the current approved render paths as default and fully reversible.
+## Next increment (C3 quality, C0 license finalization, C4 decision gate)
+Two original synthetic briefs in 16:9 and 9:16 **have been rendered and decoded** using the isolated R&D CLI. The initial contact sheets showed caption-only animation, so a persistent original semantic graphic was implemented and rendered in both profiles. **Full-speed independent Visual Design QA and actual user art acceptance remain open.** A two-second synthetic feasibility clip cannot establish the desired premium/meaningful six-to-ten-second art quality. Review the new asset at full speed, refine original scene-specific visual language rather than merely expanding generic effects, compare against the unchanged Python baseline, and finish [C0 license findings](C0-LICENSE-COMPATIBILITY.md) before any production adoption. Record explicit PASS/FAIL/BLOCKED and reproducible commit IDs. Keep the current approved render paths as default and fully reversible.
 
 ### Known limitations and do-not-claim list
 - CSS `font-family:sans-serif` is only a temporary **non-approved prototype**: deterministic licensed Taiwanese CJK font integration and framewise collision checks are required before actual commercial output.
