@@ -7,6 +7,9 @@ on:
     paths:
       - 'experiments/cinetic-sidecar/story-eight.plan.json'
       - 'experiments/cinetic-sidecar/semantic-graph.mjs'
+      - 'experiments/cinetic-sidecar/evidence-cards.mjs'
+      - 'experiments/cinetic-sidecar/evidence-cards.test.mjs'
+      - 'experiments/cinetic-sidecar/audit-upstream.mjs'
       - 'experiments/cinetic-sidecar/prepare-render.mjs'
       - 'experiments/cinetic-sidecar/verify-render.mjs'
       - '.github/workflows/cinetic-c3-story-rnd.yml'
@@ -30,6 +33,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+      - name: Fetch ONLY pinned upstream Cinetic source into ignored disposable workspace
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: Leonxlnx/cinetic
+          ref: ecfa6605de1adb9345ce937724810dc32267d068
+          path: out/upstream-cinetic-source
+          persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.19.0'
@@ -38,10 +48,12 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Check bounded agent contract and original source
         run: |
-          node --test experiments/cinetic-sidecar/adapter.test.mjs experiments/cinetic-sidecar/semantic-graph.test.mjs
+          node --test experiments/cinetic-sidecar/adapter.test.mjs experiments/cinetic-sidecar/semantic-graph.test.mjs experiments/cinetic-sidecar/evidence-cards.test.mjs
           node --check experiments/cinetic-sidecar/prepare-render.mjs
           node --check experiments/cinetic-sidecar/verify-render.mjs
           node experiments/cinetic-sidecar/prepare-render.mjs experiments/cinetic-sidecar/story-eight.plan.json out/cinetic-story8
+          node --check experiments/cinetic-sidecar/audit-upstream.mjs
+          node experiments/cinetic-sidecar/audit-upstream.mjs out/upstream-cinetic-source out/cinetic-story8/upstream-provenance.json
       - name: Expose verified local FFmpeg and FFprobe
         run: |
           node scripts/setup-encoder.mjs
@@ -76,6 +88,7 @@ jobs:
             out/cinetic-story8/overlay-alpha.mov
             out/cinetic-story8/review-only.gif
             out/cinetic-story8/technical-report.json
+            out/cinetic-story8/upstream-provenance.json
             out/cinetic-story8/font-qa.json
             out/cinetic-story8/review-gates.json
             out/cinetic-story8/validated-plan.json
