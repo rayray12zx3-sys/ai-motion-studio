@@ -1,4 +1,4 @@
-import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { readFileSync, mkdirSync, writeFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -86,6 +86,7 @@ export function normalizeDirectorPlan(input) {
   });
   assert(cursor === frames, "beats must cover all requested frames");
   assert(new Set(beats.map((b) => b.id)).size === beats.length, "duplicate beat IDs");
+  assert(!beats.some((b) => ["composition", "root", "main"].includes(b.id)), "reserved beat ID");
   assert(beats[0].kind === "scatter" && beats[beats.length - 1].kind === "resolve", "narrative must begin scattered and end resolved");
   return {
     schemaVersion: 1, engine: ENGINE, contentClass: "public-synthetic", brief: normalizedBrief,
@@ -192,11 +193,12 @@ export function compile(input) {
 export function writeArtifacts(input, outputDirectory) {
   const { plan, timeline, html, review } = compile(input);
   const dir = resolve(outputDirectory);
+  assert(!existsSync(dir), "output directory already exists: refusing overwrite of prior review artifacts");
   mkdirSync(dir, { recursive: true });
-  writeFileSync(resolve(dir, "validated-plan.json"), JSON.stringify(plan, null, 2) + "\n");
-  writeFileSync(resolve(dir, "timeline.json"), JSON.stringify(timeline, null, 2) + "\n");
-  writeFileSync(resolve(dir, "index.html"), html);
-  writeFileSync(resolve(dir, "review-gates.json"), JSON.stringify(review, null, 2) + "\n");
+  writeFileSync(resolve(dir, "validated-plan.json"), JSON.stringify(plan, null, 2) + "\n", { flag: "wx" });
+  writeFileSync(resolve(dir, "timeline.json"), JSON.stringify(timeline, null, 2) + "\n", { flag: "wx" });
+  writeFileSync(resolve(dir, "index.html"), html, { flag: "wx" });
+  writeFileSync(resolve(dir, "review-gates.json"), JSON.stringify(review, null, 2) + "\n", { flag: "wx" });
   return { dir, review };
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
