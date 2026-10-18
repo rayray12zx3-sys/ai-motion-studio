@@ -1,0 +1,45 @@
+name: Public synthetic portable font and Alpha MOV reproducibility
+
+on:
+  push:
+    branches:
+      - experiment/helios-actions-synthetic-20261015
+    paths:
+      - experiments/font-acquisition/synthetic-font-qa.py
+      - .github/workflows/font-portable-rebuild-qa.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-font-portable-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  portable-eight-font-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout synthetic public-only branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Isolate Python and install free testing dependencies
+        shell: bash
+        run: |
+          python3 -m venv "$RUNNER_TEMP/font-venv"
+          "$RUNNER_TEMP/font-venv/bin/python" -m pip install --no-cache-dir --disable-pip-version-check pillow fonttools
+          ffmpeg -version | head -n 1
+          ffprobe -version | head -n 1
+      - name: Independently fetch eight pinned OFL font files and decode real ProRes4444 alpha
+        shell: bash
+        run: |
+          "$RUNNER_TEMP/font-venv/bin/python" experiments/font-acquisition/synthetic-font-qa.py
+      - name: Retain JSON evidence only, no font software and no private content
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: synthetic-font-portable-rebuild-json-only
+          path: out/font-portable/qa.json
+          if-no-files-found: error
+          retention-days: 30
