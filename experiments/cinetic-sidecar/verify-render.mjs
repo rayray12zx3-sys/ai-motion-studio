@@ -74,7 +74,11 @@ const alphaReport = sampledFrames.map(index => {
   }
   return { index, visibleAlphaPixels: visible, opaqueMarginCornerPixels: corner, leftNonzero: left, rightNonzero: right, rgbaSHA256: hash(pixels) };
 });
-assert.equal(alphaReport[0].visibleAlphaPixels, 0, "first frame should begin with transparent background");
+if (plan.direction.visualMotif === "evidence-cards") {
+  assert.ok(alphaReport[0].visibleAlphaPixels > 1000, "Cinetic opening requires a visible synthetic story object from frame zero");
+} else {
+  assert.equal(alphaReport[0].visibleAlphaPixels, 0, "legacy abstract graph requires an empty first frame");
+}
 for (const x of alphaReport) {
   assert.equal(x.opaqueMarginCornerPixels, 0, "unwanted opaque corners");
   assert.equal(x.leftNonzero, 0, "left safe margin alpha leak");
