@@ -11,7 +11,7 @@
 ## Scope of this PR
 - The input **requires** `engine: "cinetic-hyperframes"` and `contentClass: "public-synthetic"`; no implicit/global interception of motion requests.
 - Validate an original, bounded Traditional Chinese **intent → trigger → physical response → audience understanding** narrative, with explicit causal beat sequence (scatter → connect → resolve), pinned technique provenance and integer frames.
-- Emit a flat-track self-contained **HTML prototype** for an isolated future HyperFrames CLI check, plus validated plan, deterministic timeline and a **fail-closed QA handoff**. The output uses simple placeholder CSS that **does not claim complete Cinetic choreography, licensed font parity, alpha support or production visual quality**.
+- Emit a flat-track self-contained **HTML prototype driven by deterministic integer-frame `hf-seek` events** for an isolated future HyperFrames CLI check, plus validated plan, deterministic timeline and a **fail-closed QA handoff**. The output uses bounded original HTML/CSS styling and inline frame-driven motion (no CSS keyframes) that **does not claim complete Cinetic choreography, licensed font parity, alpha support or production visual quality**.
 - QA is a separate reviewer: Visual Design Review checks decoded/timecoded output and typography; **only the user** approves artwork. Never self-upgrade to `USER_ART_APPROVED` from Cinetic self-critique or technical green CI.
 - No remote media, private text, Drive IDs/URLs, secrets, paid providers, root npm dependency modification, HyperFrames Studio/GSAP no-code editor, automatic public job dispatch or autonomous production publishing.
 
@@ -23,7 +23,7 @@ node --test experiments/cinetic-sidecar/adapter.test.mjs
 node experiments/cinetic-sidecar/adapter.mjs experiments/cinetic-sidecar/sample.plan.json out/cinetic-contract
 ```
 
-Four outputs: `validated-plan.json`, `timeline.json`, `index.html`, `review-gates.json`. `out/` is git-ignored. A passing test proves only the **contract behavior**. It does **not** run Chrome/HyperFrames, render an MP4 or validate MOV alpha.
+Four outputs: `validated-plan.json`, `timeline.json`, `index.html`, `review-gates.json`. `out/` is git-ignored. A passing test proves only the **contract and synthetic reverse-seek behavior**. It does **not** run Chrome/HyperFrames, render an MP4 or validate MOV alpha.
 
 ## Reviewer authority
 1. Cinetic's director idea/technique selection: **proposal**, never final design decision.
