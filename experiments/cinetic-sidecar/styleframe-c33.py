@@ -146,7 +146,7 @@ def generate(folder):
     folder.mkdir(parents=True)
     for meta,draw in zip(FRAMES,DRAW):
         svg=draw()
-        if "script" in svg or "<image" in svg or "http:" in svg or "https:" in svg:
+        if "<script" in svg or "<image" in svg or "<foreignObject" in svg or "href=" in svg or "url(http" in svg or "https://" in svg:
             raise ValueError("Disallowed remote/script source in SVG")
         (folder/("styleframe-"+meta["id"]+".svg")).write_text(svg,encoding="utf-8")
     manifest={
