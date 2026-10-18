@@ -55,6 +55,8 @@ def run(font_record,ix,working):
     preview=[]
     old_boxes=[]
     font=ImageFont.truetype(str(path),index=0,size=137)
+    label_font=ImageFont.truetype(str(path),index=0,size=24)
+    padg_seen=False
     variable_ok=False
     tags=list(axes)
     if "wght" in axes:
@@ -70,7 +72,8 @@ def run(font_record,ix,working):
         d=ImageDraw.Draw(rgba)
         if "wght" in axes:
             chosen=low+(high-low)*(.5-.5*math.cos(math.pi*t))
-            values=[chosen if tag=="wght" else axes[tag]["default"] for tag in tags]
+            values=[chosen if tag=="wght" else (axes[tag]["min"]+(axes[tag]["max"]-axes[tag]["min"])*(.5-.5*math.cos(math.pi*t)) if tag=="PADG" else axes[tag]["default"]) for tag in tags]
+            padg_seen=padg_seen or ("PADG" in axes and i==N-1 and values[tags.index("PADG")]>axes["PADG"]["min"])
             font.set_variation_by_axes(values);variable_ok=True
         box=d.textbbox((0,0),copy,font=font,stroke_width=0)
         tw,th=box[2]-box[0],box[3]-box[1]
@@ -105,7 +108,7 @@ def run(font_record,ix,working):
             rgb=Image.new("RGB",(W,H),background);rgb.paste(rgba,mask=m)
             sm=rgb.resize((640,360),Image.Resampling.LANCZOS)
             dd=ImageDraw.Draw(sm)
-            dd.text((30,21),f"{ix+1:02d} / {key.upper()}",font=ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",25),fill=accent)
+            dd.text((30,21),f"{ix+1:02d} · {title}",font=label_font,fill=accent)
             preview.append(sm)
     ff.stdin.close();err=ff.stderr.read().decode("utf-8","replace");code=ff.wait()
     if code:raise RuntimeError(f"{key}: ffmpeg error {err[-800:]}")
@@ -117,7 +120,7 @@ def run(font_record,ix,working):
     return {"id":key,"name":title,"sha256":hashlib.sha256(b).hexdigest(),"git_blob_sha1":actual,
             "license":"SIL OFL 1.1","license_sha256":hashlib.sha256(lic.encode()).hexdigest(),
             "role":"CJK","regional_variant":"TW/TC" if key in ("chiron_round","genwan") else "HK-derived: Taiwan-shaping visual review required",
-            "cmap_size":len(cmap),"fvar_axes":axes,"real_weight_axis_tested":variable_ok,"font_kind":sfnt_kind,
+            "cmap_size":len(cmap),"fvar_axes":axes,"real_weight_axis_tested":variable_ok,"real_padg_axis_varied":padg_seen,"font_kind":sfnt_kind,
             "technical_render":"PASS","prores":info,"alpha":"PASS","first_mid_last_bbox":old_boxes},preview
 
 def main():
@@ -126,7 +129,7 @@ def main():
         for i,z in enumerate(FONTS):
             a,b=run(z,i,pathlib.Path(p));results.append(a);previews+=b
             print("PASS",a["id"],a["font_kind"],a["fvar_axes"],flush=True)
-    durations=[100]*len(previews)
+    durations=[250]*len(previews)
     gif=OUT/"ONE_GIF_PREMIUM_FONTS.gif"
     previews[0].save(gif,save_all=True,append_images=previews[1:],duration=durations,loop=0,optimize=True)
     data={"status":"PASS","actual_fonts":len(results),"synthetic_only":True,"private_data_used":False,
