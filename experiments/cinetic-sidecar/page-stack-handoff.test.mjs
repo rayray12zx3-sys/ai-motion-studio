@@ -37,7 +37,7 @@ test("exactly one independent heading, two complete pages, one attached check",(
   assert.match(html,/data-no-timeline/);
 });
 test("outgoing moves up with check while pre-existing incoming rises and remains underneath",()=>{
-  const before=frameState(62),a=frameState(63),mid=frameState(70),late=frameState(76),after=frameState(94);
+  const before=frameState(62),a=frameState(63),mid=frameState(66),late=frameState(76),after=frameState(94);
   assert.ok(before.incoming.alpha>0 && before.outgoing.alpha>0);
   assert.equal(before.check.opacity,0);
   assert.ok(a.check.opacity>0 && mid.check.opacity>0);
@@ -46,7 +46,7 @@ test("outgoing moves up with check while pre-existing incoming rises and remains
   assert.ok(mid.incoming.y<a.incoming.y && mid.incoming.alpha>a.incoming.alpha);
   assert.ok(mid.incoming.alpha>0 && mid.outgoing.alpha>0);
   assert.equal(mid.check.attachedTo,FIXTURE.objects.outgoing.id);
-  assert.equal(late.outgoing.alpha,0);
+  assert.equal(frameState(70).outgoing.alpha,0); assert.equal(frameState(70).check.opacity,0);\n  assert.equal(late.outgoing.alpha,0);
   assert.ok(after.incoming.alpha>.99);
   assert.equal(after.check.opacity,0);
   assert.equal(after.artApproval,"PENDING_USER_APPROVAL");
