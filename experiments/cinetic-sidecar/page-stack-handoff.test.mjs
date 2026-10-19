@@ -46,7 +46,8 @@ test("outgoing moves up with check while pre-existing incoming rises and remains
   assert.ok(mid.incoming.y<a.incoming.y && mid.incoming.alpha>a.incoming.alpha);
   assert.ok(mid.incoming.alpha>0 && mid.outgoing.alpha>0);
   assert.equal(mid.check.attachedTo,FIXTURE.objects.outgoing.id);
-  assert.equal(frameState(70).outgoing.alpha,0); assert.equal(frameState(70).check.opacity,0);\n  assert.equal(late.outgoing.alpha,0);
+  assert.equal(frameState(70).outgoing.alpha,0); assert.equal(frameState(70).check.opacity,0);
+  assert.equal(late.outgoing.alpha,0);
   assert.ok(after.incoming.alpha>.99);
   assert.equal(after.check.opacity,0);
   assert.equal(after.artApproval,"PENDING_USER_APPROVAL");
