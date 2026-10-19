@@ -49,7 +49,7 @@ export function frameState(frame) {
   const pageReveal = smooth(36,51,f);
   const handoff = smooth(63,80,f);
   const exit = smooth(63,77,f);
-  const oldFade = 1-smooth(64,71,f);
+  const oldFade = 1-smooth(63,69,f);
   const actorRunning = f >= 46;
   const actorX = actorRunning ? lerp(508,144,clamp((f-46)/48)) : lerp(360,508,falling);
   const actorY = actorRunning ? 1002-3*Math.abs(Math.sin((f-46)*1.05)) : lerp(314,1002,falling);
