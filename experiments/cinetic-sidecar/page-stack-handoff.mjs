@@ -67,7 +67,7 @@ export function frameState(frame) {
 }
 
 function card(o, cssId, mark) {
-  const rows = o.options.map((t,i) => '<div class="answer" data-row="' + i + '">' +
+  const rows = o.options.map((t,i) => '<div class="answer" id="' + cssId + '-row-' + i + '" data-row="' + i + '">' +
     '<span>' + t + '</span>' + (mark && i === 0 ? '<span id="success-check" aria-label="complete">&#10003;</span>' : '') + '</div>').join("");
   return '<section id="' + cssId + '" class="page-parent" data-group="one-question-plus-four-options">' +
     '<header class="question">' + o.question + '</header><div class="answers">' + rows + '</div></section>';
@@ -78,7 +78,7 @@ export function compileHtml(fixture=FIXTURE) {
   const htmlScript=[
     "(function(){'use strict';",
     "const frameState = " + frameState.toString() + ";",
-    "const ids = ['launch-icon','mode-heading','courier-token','page-outgoing','page-incoming','success-check'];",
+    "const ids = ['launch-icon','mode-heading','courier-token','page-outgoing','page-incoming','success-check','page-outgoing-row-0'];",
     "const nodes = Object.fromEntries(ids.map(x=>[x,document.getElementById(x)]));",
     "function seek(frame){const p=frameState(frame);",
     "nodes['launch-icon'].style.transform='translate('+p.icon.x+'px,'+p.icon.y+'px) translate(-50%,-50%)';nodes['launch-icon'].style.opacity=p.icon.opacity;",
@@ -86,7 +86,7 @@ export function compileHtml(fixture=FIXTURE) {
     "nodes['courier-token'].style.transform='translate('+p.actor.x+'px,'+p.actor.y+'px) translate(-50%,-50%) rotate('+p.actor.angle+'deg)';nodes['courier-token'].style.opacity=p.actor.opacity;",
     "nodes['page-outgoing'].style.transform='translateY('+p.outgoing.y+'px) scale('+p.outgoing.scale+')';nodes['page-outgoing'].style.opacity=p.outgoing.alpha;",
     "nodes['page-incoming'].style.transform='translateY('+p.incoming.y+'px) scale('+p.incoming.scale+')';nodes['page-incoming'].style.opacity=p.incoming.alpha;",
-    "nodes['success-check'].style.opacity=p.check.opacity;",
+    "nodes['success-check'].style.opacity=p.check.opacity;nodes['page-outgoing-row-0'].style.background=p.frame>=63?'#327964':'#344f80';",
     "window.__pageStackPose=p;return p;}",
     "window.__pageStackSeek=seek;window.addEventListener('hf-seek',e=>{const t=Number(e&&e.detail&&e.detail.time);if(Number.isFinite(t))seek(Math.round(t*30));});seek(0);",
     "})();"
@@ -107,7 +107,7 @@ export function compileHtml(fixture=FIXTURE) {
     "#page-incoming{z-index:1}#page-outgoing{z-index:2}",
     ".question{width:100%;height:96px;border-radius:19px;background:#5072a2;display:grid;place-items:center;font-weight:800;font-size:43px;letter-spacing:.04em}",
     ".answers{margin-top:17px;display:grid;gap:9px}.answer{position:relative;height:61px;border:2px solid #819bc0;border-radius:13px;background:#344f80;padding:14px 18px;font-size:25px;font-weight:750}",
-    "#page-outgoing .answer:first-child{background:#327964}#success-check{position:absolute;right:16px;top:10px;border-radius:50%;background:#a2f5c2;color:#174e3f;width:36px;height:36px;text-align:center;line-height:36px;font-size:25px}",
+    "#page-outgoing .answer:first-child{background:#344f80}#success-check{position:absolute;right:16px;top:10px;border-radius:50%;background:#a2f5c2;color:#174e3f;width:36px;height:36px;text-align:center;line-height:36px;font-size:25px}",
     "#review-stamp{position:absolute;bottom:40px;left:0;width:720px;text-align:center;opacity:.42;font-size:17px;letter-spacing:.13em}",
     "</style></head><body><div id=\"composition\" data-composition-id=\"cinetic-synthetic-stack\" data-no-timeline data-start=\"0\" data-duration=\"3.166667\" data-width=\"720\" data-height=\"1280\" data-fps=\"30\">",
     '<div id="launch-icon" aria-label="synthetic icon">&#9670;</div>',
