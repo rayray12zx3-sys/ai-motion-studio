@@ -1,0 +1,11 @@
+# C4.0 — Actual HyperFrames 95f diagonal up-left, only original synthetic content
+
+**PUBLIC SYNTHETIC ONLY. Draft PR #140; do not merge; no product media / scripts / copy / private source ids.**
+
+- Purpose: correct previous synthetic "top only" card exit. Both full parent pages contain one heading and FOUR options each; the outgoing entire parent has a single check attached, and travels LEFT AND UP rather than just UP. The second actual synthetic page is already behind it, moves upward during the same frames.
+- Single clear title `NOVA RUN`, no generated English kicker/underline or duplicate heading; generic arrow-only actor faces right and moves +X after icon exit.
+- Deterministic 95-frame pose, reverse frame seek, distinct parent IDs, isolated `contentClass: public-synthetic` validation, no private media.
+- Initial C40 synthetic HyperFrames successful but its decoded f70 exhibited overlapping text; art gate BLOCKED despite technical pass. The next change moved the outgoing sheet rapidly farther left before fading, and delayed fading until the group was mostly clear. Corrected Node regression `mid` evidence timing.
+- **Exact tested source branch parent SHA `1f18b3bf718caa1a5191490023426b00d7a63c89`: real HyperFrames@0.8.143 CI run [39369105739](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39369105739), completed **success** with 95 decoded frames, H264 **720×1280 @ 30fps**, final MP4 SHA256 `042131cb7c73510b2a6aac16a4245943fcd8f88f182e1f2eb3e551359142c75e`. [The genuine GitHub Actions artifact](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39369105739/artifacts/12240528095) is time-limited.
+- **ART REVIEW BOUNDARY:** Inspection of actual decoded f70 confirms distinct pages moving diagonally without the earlier heavy transparent-text collision, but it is still a purely experimental design, **PENDING_USER_ART_APPROVAL**. No Chinese fonts, native APP pixels, Premiere or production use. Rendering here is a custom HyperFrames sidecar, not complete execution of upstream Leonxlnx/cinetic Skill or a commercial-license attestation. Avoid conflating C40 with the separately produced private S08 editorial v17.
+- Historical C3.8/C3.9 code and PR main unchanged. Keep old work, do not merge, no new paid tasks.
