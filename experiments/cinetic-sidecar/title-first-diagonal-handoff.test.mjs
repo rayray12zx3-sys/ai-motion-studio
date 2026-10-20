@@ -37,7 +37,7 @@ test("exactly one independent heading, two complete pages, one attached check",(
   assert.match(html,/data-no-timeline/);
 });
 test("outgoing moves up with check while pre-existing incoming rises and remains underneath",()=>{
-  const before=frameState(53),a=frameState(66),mid=frameState(71),late=frameState(83),after=frameState(94);
+  const before=frameState(53),a=frameState(66),mid=frameState(73),late=frameState(83),after=frameState(94);
   assert.ok(before.incoming.alpha>0 && before.outgoing.alpha>0);
   assert.equal(before.check.opacity,0);
   assert.ok(a.check.opacity>0 && mid.check.opacity>0);
