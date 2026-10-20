@@ -8,6 +8,12 @@ on:
       - 'experiments/cinetic-sidecar/title-first-right-run.mjs'
       - 'experiments/cinetic-sidecar/title-first-right-run.test.mjs'
       - '.github/workflows/cinetic-c39-page-stack-engine.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/cinetic-sidecar/title-first-right-run.mjs'
+      - 'experiments/cinetic-sidecar/title-first-right-run.test.mjs'
+      - '.github/workflows/cinetic-c39-title-first-right-run-engine.yml'
   workflow_dispatch:
 
 permissions:
