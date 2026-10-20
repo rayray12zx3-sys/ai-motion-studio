@@ -84,6 +84,8 @@ test("new output-only artifacts with independent acceptance gates",()=>{
 test("large single title and synthetic icon to rightward runner",()=>{
  const html=compileHtml();
  assert.match(html,/font-size:76px;font-weight:800/);
+ assert.match(html,/id="mode-heading">NOVA RUN/);
+ assert.doesNotMatch(html,/ORBIT TRANSIT/);
  assert.equal((html.match(/id="icon-avatar"/g)||[]).length,1);
  const a=frameState(28),b=frameState(46),c=frameState(94);
  assert.ok(Math.abs(a.actor.x-a.icon.x)<2);
