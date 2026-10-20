@@ -60,7 +60,7 @@ export function frameState(frame) {
     heading: {x:lerp(830,360,headingEnter),y:lerp(421,205,headingRise),opacity:f<10?0:smooth(10,16,f)},
     actor: {x:actorX,y:actorY,opacity:f<28?0:smooth(28,32,f),facing:"right",angle:actorRunning?2*Math.sin((f-46)*1.05):0},
     outgoing: {x:-610*exit,y:lerp(42,20,pageReveal)-280*exit,alpha:f<36?0:pageReveal*(f<66?1:oldFade),scale:1},
-    incoming: {y:lerp(65,48,pageReveal)-28*handoff,alpha:f<36?0:(.32+.68*smooth(72,86,f))*pageReveal,scale:lerp(.96,1,handoff)},
+    incoming: {y:lerp(65,48,pageReveal)-28*handoff,alpha:f<36?0:(.32+.68*smooth(66,86,f))*pageReveal,scale:lerp(.96,1,handoff)},
     check: {opacity:f<54?0:(f<66?1:oldFade),attachedTo:"page-outgoing"},
     pageClipTop:430,
     artApproval:"PENDING_USER_APPROVAL"
