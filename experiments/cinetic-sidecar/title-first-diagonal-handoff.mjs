@@ -49,8 +49,8 @@ export function frameState(frame) {
   const headingRise = smooth(31,50,f);
   const pageReveal = smooth(36,51,f);
   const handoff = smooth(66,88,f);
-  const exit = smooth(66,82,f);
-  const oldFade = 1-smooth(66,77,f);
+  const exit = smooth(66,76,f);
+  const oldFade = 1-smooth(71,80,f);
   const actorRunning = f >= 46;
   const actorX = actorRunning ? lerp(310,548,clamp((f-46)/48)) : lerp(360,310,falling);
   const actorY = actorRunning ? 1002-3*Math.abs(Math.sin((f-46)*1.05)) : lerp(314,1002,falling);
@@ -59,8 +59,8 @@ export function frameState(frame) {
     icon: {x:lerp(830,360,enter),y:310,opacity:f<6?0:(1-smooth(28,38,f)),clicked:click},
     heading: {x:lerp(830,360,headingEnter),y:lerp(421,205,headingRise),opacity:f<10?0:smooth(10,16,f)},
     actor: {x:actorX,y:actorY,opacity:f<28?0:smooth(28,32,f),facing:"right",angle:actorRunning?2*Math.sin((f-46)*1.05):0},
-    outgoing: {x:-250*exit,y:lerp(42,20,pageReveal)-280*exit,alpha:f<36?0:pageReveal*(f<66?1:oldFade),scale:1},
-    incoming: {y:lerp(65,48,pageReveal)-28*handoff,alpha:f<36?0:(.66+.34*handoff)*pageReveal,scale:lerp(.96,1,handoff)},
+    outgoing: {x:-610*exit,y:lerp(42,20,pageReveal)-280*exit,alpha:f<36?0:pageReveal*(f<66?1:oldFade),scale:1},
+    incoming: {y:lerp(65,48,pageReveal)-28*handoff,alpha:f<36?0:(.32+.68*smooth(72,86,f))*pageReveal,scale:lerp(.96,1,handoff)},
     check: {opacity:f<54?0:(f<66?1:oldFade),attachedTo:"page-outgoing"},
     pageClipTop:430,
     artApproval:"PENDING_USER_APPROVAL"
