@@ -67,6 +67,22 @@ jobs:
           test "$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 page-stack.mp4)" = "h264"
           ffmpeg -nostdin -hide_banner -loglevel error -i page-stack.mp4 -vf "select='eq(n,0)+eq(n,38)+eq(n,62)+eq(n,63)+eq(n,70)+eq(n,76)+eq(n,87)'" -vsync 0 evidence-%02d.png
           test "$(find . -maxdepth 1 -name 'evidence-*.png' | wc -l)" = "7"
+          # On the real rendered 0-based frame 70, gold headline must not touch
+          # 45px left/right safety margins within the heading's vertical band.
+          ffmpeg -nostdin -hide_banner -loglevel error -i page-stack.mp4 -vf "select='eq(n,70)'" -frames:v 1 -pix_fmt rgb24 -f rawvideo - | python3 -c '
+          import sys
+          b=sys.stdin.buffer.read()
+          w,h=720,1280
+          assert len(b)==w*h*3, ("decode",len(b))
+          bad=[]
+          for y in range(140,280):
+              for x in list(range(0,45))+list(range(675,720)):
+                  i=(y*w+x)*3
+                  r,g,bl=b[i:i+3]
+                  if r>160 and g>105 and bl<185: bad.append((x,y))
+          assert not bad, ("TITLE_CLIPPED_AT_FRAME_EDGE",bad[:10],len(bad))
+          print("C39 actual decoded frame70 headline edge-gate PASS")
+          '
           sha256sum page-stack.mp4 > page-stack.sha256
       - name: Technical only, no art or upstream Skill parity
         run: |
