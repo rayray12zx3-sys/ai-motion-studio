@@ -112,7 +112,7 @@ export function compileHtml(fixture=FIXTURE) {
     "#review-stamp{position:absolute;bottom:40px;left:0;width:720px;text-align:center;opacity:.42;font-size:17px;letter-spacing:.13em}",
     "</style></head><body><div id=\"composition\" data-composition-id=\"cinetic-synthetic-stack\" data-no-timeline data-start=\"0\" data-duration=\"3.166667\" data-width=\"720\" data-height=\"1280\" data-fps=\"30\">",
     '<div id="launch-icon" aria-label="synthetic icon"><span id="icon-avatar">&#8594;</span></div>',
-    '<div id="mode-heading">ORBIT TRANSIT</div>',
+    '<div id="mode-heading">NOVA RUN</div>',
     '<div id="page-stage">' + card(o.incoming,"page-incoming",false) + card(o.outgoing,"page-outgoing",true) + '</div>',
     '<div id="courier-token" aria-label="right-directed courier">&#8594;</div>',
     '<div id="review-stamp">FICTIONAL MOTION TEST • NOT A PRODUCT UI</div>',
