@@ -21,6 +21,8 @@ test('three questions, four choices each, one unique parent per question',()=>{
  for(let i=0;i<3;i++)assert.ok(code.includes('id="quiz-'+i+'"'));
  assert.doesNotMatch(code, /VocabKnow|APP_native|resilient|journey|accomplish|單字馬拉松|<script\s+src=|https?:\/\//i);
  assert.match(code,/data-no-timeline/);
+ assert.match(code,/data-composition-id="cinetic-fictional-three-step"/);
+ assert.match(code,/data-duration="3.166667"/);
 });
 test('icon fully identifiable for 15 frames, then runner moves right',()=>{
  for(let f=7;f<=21;f++)assert.equal(pose(f).icon.alpha,1);
