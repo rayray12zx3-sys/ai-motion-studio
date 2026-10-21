@@ -28,6 +28,7 @@ test('icon fully identifiable for 15 frames, then runner moves right',()=>{
  for(let f=7;f<=21;f++)assert.equal(pose(f).icon.alpha,1);
  assert.equal(pose(0).icon.alpha,0);assert.equal(pose(24).icon.alpha,0);
  assert.ok(pose(70).runner.x>pose(38).runner.x);
+ for(let f=7;f<=21;f++)assert.ok(pose(f).heading.y+100<340-69,'intro heading must not overlap icon at f='+f);
 });
 test('Q1 next state remains pressed through group exit without reverting',()=>{
  assert.equal(pose(44).cards[0].selected,true);
