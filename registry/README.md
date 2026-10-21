@@ -4,9 +4,9 @@ AI Motion Studio 的**唯讀來源索引**，供動畫導演與美術審查 Agen
 
 ## 覆蓋與授權
 - **Motion Prompt**：從 [official catalog.tsv](https://github.com/showheyohtaki/motion-prompt/blob/main/api/v1/en/catalog.tsv) 固定擷取 144 筆；6 packs（motion/camera/ui/lp/photo/motion2），原始欄位 id、分類、名稱、tags、摘要。上游 blob SHA：`8e1d64533ce3fbfa509a7619e972ff58bdffb3c6`，2026-10-21。原作 [MIT License © 2026 Shohei Ohtaki](https://github.com/showheyohtaki/motion-prompt/blob/main/LICENSE)。Prompt/規格/Canvas 參考**只存官方連結**；若使用原始程式碼必須保留 MIT 著作權授權聲明。
-- **Kittenjam Motion Library**：1 張連結與原創摘要卡，**未查證重製許可**，不複製 Prompt、預覽或程式碼。
-- **Prompt Motion 3D customize**：1 張連結與原創摘要卡，作者自有內容，**未查證重製許可**，不複製 Prompt、預覽或程式碼。
-- 資料含 146 張卡；`REFERENCE_ONLY` 表示查詢參考，**不是商用素材/美術核准/渲染支援證明**。兩站的完整批量索引仍需逐項驗證來源與權利；本版只有各 1 張入口卡。
+- **Kittenjam Motion Library**：8 張入口／分類卡片（1 個根入口加 7 種分類；分類不代表 7 個可獨立下載的動畫），**未查證重製許可**，不複製 Prompt、預覽或程式碼。
+- **Prompt Motion 3D customize**：5 張實際公開頁面參考卡（3D 與作品集模板、UI 形變、網頁運鏡、產品宣傳），作者自有內容，**未查證重製許可**，不複製 Prompt、預覽或程式碼。
+- 資料含 157 張卡；`REFERENCE_ONLY` 表示查詢參考，**不是商用素材/美術核准/渲染支援證明**。兩站的完整批量索引仍需逐項驗證來源與權利；Kittenjam 分類卡不得當成獨立動效數量，Prompt Motion 個別頁面不得視為授權重用。
 
 ## 本地查詢
 ```sh

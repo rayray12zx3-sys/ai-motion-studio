@@ -1,11 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { registry,validate,getEntry,search,review,tokenize } from "../registry/cli.mjs";
-test("snapshot is 144 MIT entries plus two link-only references",()=>{
+test("snapshot covers 144 MIT records plus thirteen link-only references",()=>{
   assert.deepEqual(validate(),[]);
-  assert.equal(registry.entries.length,146);
+  assert.equal(registry.entries.length,157);
   assert.equal(registry.entries.filter(e=>e.provider==="motion-prompt").length,144);
-  assert.equal(registry.entries.filter(e=>e.source_license==="NOT_VERIFIED").length,2);
+  assert.equal(registry.entries.filter(e=>e.source_license==="NOT_VERIFIED").length,13);
 });
 test("IDs resolve without corrupting source IDs",()=>{
   assert.equal(getEntry("5")?.id,"MP-005");
@@ -36,4 +36,16 @@ test("licensing guard blocks rights escalation",()=>{
 test("invalid limits and roles rejected",()=>{
   assert.throws(()=>search("type",{limit:0}),/limit/);
   assert.throws(()=>search("type",{role:"producer"}),/role/);
+});
+
+test("external references use truthful facets and verified source URLs",()=>{
+ assert.equal(registry.entries.filter(e=>e.provider==="kittenjam").length,8);
+ assert.equal(registry.entries.filter(e=>e.provider==="prompt-motion").length,5);
+ assert.equal(getEntry("KJ-FACET-CURSOR").reference_kind,"COLLECTION_FACET");
+ assert.equal(getEntry("PM-SHOWREEL-001").source_url,"https://prompt-motion.com/templates/showreel/customize");
+ for(const e of registry.entries.filter(e=>e.provider!=="motion-prompt")){
+  assert.equal(e.source_license,"NOT_VERIFIED");
+  assert.equal(e.source_code_reuse,"DO_NOT_COPY");
+  assert.equal(e.prompt_url,null);
+ }
 });

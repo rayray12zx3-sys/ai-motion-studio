@@ -18,7 +18,7 @@ From the repository root run:
 1. Ask for a scene's communication intent, actual trigger, audience consequence, text, aspect and time budget if missing.
 2. Search and return **at most three** candidates, including ID, originating URL, licensing status, relevant motion mechanics and reason; label broader semantic purpose as editorial, not source-guaranteed.
 3. For `MP-###`, read the linked canonical spec and prompt before attempting an implementation. **No automatic fetch is performed by this local skill.** Respect original MIT copyright/comment when porting source code.
-4. For Kittenjam / Prompt Motion: link to originals only, write independent original prompts; they are `REFERENCE_ONLY` and not permission to copy videos, code, or entire prompt texts.
+4. For Kittenjam / Prompt Motion: the 8 Kittenjam collection/facet cards and 5 verified Prompt Motion pages are reference-only. Link to originals only, write independent original prompts; they are `REFERENCE_ONLY` and not permission to copy videos, code, or entire prompt texts.
 5. Match the target renderer's confirmed features; do not infer Canvas/FFmpeg can render Three.js effects without a separate technical adoption decision.
 
 ## Art review workflow

@@ -80,7 +80,8 @@ export function validate(input=registry){
     if(!Array.isArray(e.review_rules)||!e.review_rules.length||e.production_status!=="REFERENCE_ONLY"||e.art_status!=="NOT_REVIEWED")errors.push("review gate invalid "+e.id);
   }
   if(input.entries.filter(e=>e.provider==="motion-prompt").length!==144)errors.push("not 144 canonical entries");
-  if(input.entries.filter(e=>e.provider!=="motion-prompt").length!==2)errors.push("not 2 external reference cards");
+  if(input.entries.filter(e=>e.provider==="kittenjam").length!==8)errors.push("not 8 Kittenjam root/facet references");
+  if(input.entries.filter(e=>e.provider==="prompt-motion").length!==5)errors.push("not 5 Prompt Motion page references");
   return errors;
 }
 const argv=process.argv.slice(2);
