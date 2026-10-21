@@ -32,7 +32,7 @@ export function pose(raw){
   return {frame:f,
     icon:{alpha:f>=7?(f<=21?1:1-s(21,24)):s(3,7),size:1+.045*Math.sin(f*.5)},
     heading:{alpha:s(12,19),y:218-24*s(15,30)},
-    runner:{alpha:s(20,25),x:214+3.5*Math.max(0,f-26),y:345+8*Math.abs(Math.sin(f*.62)),angle:3*Math.sin(f*.7)},
+    runner:{alpha:s(20,25),x:335+3.5*Math.max(0,f-26),y:345+8*Math.abs(Math.sin(f*.62)),angle:3*Math.sin(f*.7)},
     cards:[
       {x:-665*ex1,y:20-265*ex1,alpha:s(26,30)*(1-s(50,52)),scale:1,success:f>=45,pressed:f>=47,selected:f>=44},
       {x:-665*ex2,y:75-65*s(48,53)-265*ex2,alpha:s(26,31)*(1-s(71,73)),scale:.97+.03*s(48,53),success:f>=66,pressed:f>=68,selected:f>=65},
@@ -65,7 +65,7 @@ export function html(){
    '<style>*{box-sizing:border-box}body,html{margin:0;width:100%;height:100%;background:transparent;overflow:hidden;font-family:Arial,sans-serif}',
    '#scene{position:relative;width:720px;height:1280px;overflow:hidden;background:radial-gradient(circle at 46% 20%,#263c71,#142446 68%,#0f1d39);color:#f4f7ff}',
    '#heading{position:absolute;top:0;left:45px;width:630px;text-align:center;color:#f4d88b;font-size:62px;font-weight:900;letter-spacing:2px;z-index:7;white-space:nowrap}',
-   '#launch-icon{position:absolute;left:360px;top:180px;width:138px;height:138px;background:#5ed5af;border:7px solid #b0ffdc;border-radius:28px;box-shadow:0 10px 42px #15444d77;display:grid;place-items:center;color:#0a4447;font-weight:900;z-index:9}',
+   '#launch-icon{position:absolute;left:360px;top:340px;width:138px;height:138px;background:#5ed5af;border:7px solid #b0ffdc;border-radius:28px;box-shadow:0 10px 42px #15444d77;display:grid;place-items:center;color:#0a4447;font-weight:900;z-index:9}',
    '#launch-icon svg{width:106px;height:106px}#runner{position:absolute;left:0;top:0;width:72px;height:72px;z-index:8;filter:drop-shadow(0 7px 3px #0b1a3577)}#runner svg{width:72px;height:72px}',
    '#stack{position:absolute;left:68px;top:445px;width:584px;height:665px;overflow:hidden;z-index:6}',
    '.quiz-card{position:absolute;left:0;top:0;width:584px;height:585px;background:#22385e;border:3px solid #90accb;border-radius:29px;padding:25px 28px;box-shadow:0 15px 25px #080f2077;transform-origin:top center}',
