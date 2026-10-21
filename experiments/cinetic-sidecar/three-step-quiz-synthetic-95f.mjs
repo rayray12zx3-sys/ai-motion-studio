@@ -31,7 +31,7 @@ export function pose(raw){
   const ex1=s(48,52),ex2=s(69,73);
   return {frame:f,
     icon:{alpha:f>=7?(f<=21?1:1-s(21,24)):s(3,7),size:1+.045*Math.sin(f*.5)},
-    heading:{alpha:s(12,19),y:218-24*s(15,30)},
+    heading:{alpha:s(12,19),y:135-10*s(15,30)},
     runner:{alpha:s(20,25),x:335+3.5*Math.max(0,f-26),y:345+8*Math.abs(Math.sin(f*.62)),angle:3*Math.sin(f*.7)},
     cards:[
       {x:-665*ex1,y:20-265*ex1,alpha:s(26,30)*(1-s(50,52)),scale:1,success:f>=45,pressed:f>=47,selected:f>=44},
