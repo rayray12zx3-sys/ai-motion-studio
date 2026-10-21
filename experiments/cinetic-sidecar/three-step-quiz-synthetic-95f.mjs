@@ -78,13 +78,13 @@ export function html(){
    '.success-text{font-size:58px;font-weight:900;letter-spacing:3px;color:#e8fffa;margin-top:28px}.success-sub{font-size:28px;margin-top:10px;color:#c6eddf}',
    '.next-button{margin-top:38px;background:#f2a348;border:4px solid #ffe0a3;border-radius:13px;color:#392813;font-size:26px;font-weight:900;letter-spacing:1px;padding:18px 25px;transition:none}.next-button span{margin-left:16px}',
    '#footer{position:absolute;bottom:56px;width:720px;text-align:center;font-size:18px;letter-spacing:1.8px;color:#9faecc}',
-   '</style></head><body><main id="scene" data-no-timeline data-start="0" data-duration="3.166667" data-width="720" data-height="1280" data-fps="30">',
+   '</style></head><body><div id="scene" data-composition-id="cinetic-fictional-three-step" data-no-timeline data-start="0" data-duration="3.166667" data-width="720" data-height="1280" data-fps="30">',
    '<div id="launch-icon" aria-label="fictional icon"><svg viewBox="0 0 100 100"><circle cx="60" cy="19" r="12" fill="#12525b"/><path d="M57 31 L41 53 L29 68 M43 51 L69 66 L86 61 M45 42 L21 40 L12 48" stroke="#12525b" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>',
    '<div id="heading">MEMORY SPRINT</div>',
    '<div id="runner" aria-label="fictional runner"><svg viewBox="0 0 100 100"><circle cx="60" cy="19" r="12" fill="#67eac2"/><path d="M57 31 L41 53 L29 68 M43 51 L69 66 L86 61 M45 42 L21 40 L12 48" stroke="#67eac2" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>',
    '<div id="stack">'+SPEC.rounds.map(page).join('')+'</div>',
    '<div id="footer">PUBLIC SYNTHETIC MOTION PROOF · NOT AN APP RECORDING</div>',
-   '<script>'+script+'</script></main></body></html>\n'].join('\n');
+   '<script>'+script+'</script></div></body></html>\n'].join('\n');
 }
 export function build(dir){
   const root=resolve(dir);assert(!existsSync(root),'new output required');mkdirSync(root,{recursive:true});
