@@ -33,6 +33,50 @@ def page(body):
         '<body><h1>S08 一次性授權</h1>' + body + '</body></html>').encode()
 
 
+def verify_picker_access(token, source_id, folder_id):
+    """Read only metadata for the TWO explicit Picker selections.
+
+    Prove that the drive.file grant can download the original ZIP and add
+    children to the restricted destination BEFORE exporting refresh secrets.
+    No ZIP bytes, Drive listing, file names, token details or error bodies.
+    """
+    def metadata(file_id):
+        import re
+        if not re.fullmatch(r'[A-Za-z0-9_-]{15,160}', file_id):
+            return None
+        fields = 'id,mimeType,trashed,size,capabilities(canDownload,canAddChildren),permissions(type)'
+        url = ('https://www.googleapis.com/drive/v3/files/' + file_id +
+               '?fields=' + fields)
+        req = urllib.request.Request(url, headers={
+            'Authorization': 'Bearer ' + token, 'Accept': 'application/json'})
+        with urllib.request.build_opener(NoRedirect()).open(req, timeout=20) as r:
+            data = r.read(65537)
+        if len(data) > 65536:
+            return None
+        obj = json.loads(data)
+        return obj if isinstance(obj, dict) and obj.get('id') == file_id else None
+
+    try:
+        source = metadata(source_id)
+        if (not source or source.get('trashed', True) or
+            source.get('mimeType') != 'application/zip' or
+            str(source.get('size')) != '305622' or
+            not source.get('capabilities', {}).get('canDownload')):
+            return False
+        folder = metadata(folder_id)
+        if (not folder or folder.get('trashed', True) or
+            folder.get('mimeType') != 'application/vnd.google-apps.folder' or
+            not folder.get('capabilities', {}).get('canAddChildren') or
+            not isinstance(folder.get('permissions'), list) or
+            not folder['permissions'] or
+            any(p.get('type') != 'user' for p in folder['permissions'])):
+            return False
+        return True
+    except Exception:
+        # Deliberately do not print remote responses, IDs or OAuth credentials.
+        return False
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):
         pass  # A callback query contains an authorization code.
@@ -175,6 +219,11 @@ function loaded(){gapi.load('picker',()=>{document.getElementById('source').oncl
             elif self.path == '/finish':
                 if (q.get('selected_source') != [STATE['source_file_id']] or
                     q.get('selected_folder') != [STATE['destination_folder_id']]):
+                    raise ValueError()
+                stage = 'PICKER_GRANT_PREFLIGHT'
+                if (not STATE.get('access_token') or
+                    not verify_picker_access(STATE['access_token'],
+                        STATE['source_file_id'], STATE['destination_folder_id'])):
                     raise ValueError()
                 config = {k:STATE[k] for k in ('client_id','client_secret','refresh_token','source_file_id','destination_folder_id')}
                 config.update(auth_mode='oauth_refresh', scope=SCOPE, publishing_status='production')
