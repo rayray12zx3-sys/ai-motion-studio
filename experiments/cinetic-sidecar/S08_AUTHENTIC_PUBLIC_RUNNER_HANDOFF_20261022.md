@@ -1,3 +1,12 @@
+## 2026-10-22 follow-up — independent private QA filed; art/PR gate not approved
+
+- The independent technical/visual QA report has now been **uploaded and read back in the existing restricted private S08 output folder**. It records a full 95-frame decode, independently recomputed private media hashes, 29 representative sequence frames, 12 detailed frames, two success/Next states and the deliberately unanswered third question. The private filenames, direct URLs, media hashes, app screenshots and source materials are restricted to Google Drive CURRENT; **do not mirror them to this public repository**.
+- Technical evidence from real HyperFrames 0.8.143 and private Drive readback remains **PASS** (unchanged). No fresh rerender, paid service, OAuth request, source edit or branch merge occurred in this follow-up.
+- **Next acceptance gate is editorial, not an authorization retry:** decide whether the 95f/30fps sequence is intentionally a fast ≈3.17s insert within a longer ad, or should instead support reading multiple-choice content. If readability is required, create a *separately versioned*, longer revision using the existing private source and request an independent comparison; never overwrite the verified 95f baseline.
+- Mandatory outstanding checks before any final production claim: owner visual approval of the exact private output, Windows Premiere Pro import/playback, commercial-rights review and whole-ad pacing/audio review. Until then mark `TECH_RENDER_PASS / DRIVE_READBACK_PASS / USER_ART_PENDING / PREMIERE_NOT_TESTED`.
+
+---
+
 # 2026-10-22 S08 authentic 95f HyperFrames isolated render — TECHNICAL PASS, art approval pending
 
 This section supersedes the preceding PENDING_FILE_GRANT/no-render status. **No confidential source, output frame, real media SHA, Drive media ID, browser credentials, or Google OAuth tokens are published in this repository.** Exact private receipt/QA links and source SHA are retained in the authorized **private Google Drive S08 CURRENT** only.
