@@ -61,6 +61,20 @@ def refresh(c):
             set(obj.get("scope", SCOPE).split()) != {SCOPE}):
             raise ValueError()
         return token
+    except urllib.error.HTTPError as err:
+        # Only RFC-defined short public error names; never expose private
+        # descriptions, server response, token, or request body in Actions logs.
+        reason = "UNCLASSIFIED"
+        try:
+            body = err.read(8193)
+            if len(body) <= 8192:
+                name = json.loads(body).get("error")
+                if name in {"invalid_client", "invalid_grant", "invalid_request",
+                            "unauthorized_client", "invalid_scope", "access_denied"}:
+                    reason = name.upper()
+        except (ValueError, TypeError, AttributeError):
+            pass
+        raise TransferFailure("OAUTH_REFRESH_FAILED_" + reason) from None
     except Exception:
         raise TransferFailure("OAUTH_REFRESH_FAILED_REAUTHORIZE_NO_DETAILS_LOGGED") from None
 
