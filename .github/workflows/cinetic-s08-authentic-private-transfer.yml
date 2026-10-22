@@ -51,6 +51,14 @@ jobs:
       HYPERFRAMES_SKIP_SKILLS: '1'
       HYPERFRAMES_NO_UPDATE_CHECK: '1'
     steps:
+      - name: Refuse to allocate media runner without one protected Drive credential
+        env:
+          S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
+        run: |
+          if [ -z "$S08_DRIVE_CONFIG_JSON" ]; then
+            echo 'BLOCKED: S08_DRIVE_CONFIG_JSON_NOT_CONFIGURED'
+            exit 78
+          fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
