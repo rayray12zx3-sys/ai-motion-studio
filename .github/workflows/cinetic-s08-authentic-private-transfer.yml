@@ -1,0 +1,110 @@
+name: Cinetic S08 original private-material HyperFrames 95f
+
+on:
+  push:
+    branches:
+      - 'experiment/cinetic-director-adapter-*'
+    paths:
+      - 'experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py'
+      - 'experiments/cinetic-sidecar/test_s08_ephemeral_archive_gate.py'
+      - 'experiments/cinetic-sidecar/s08_drive_bridge.py'
+      - '.github/workflows/cinetic-s08-authentic-private-transfer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: authentic-s08-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-code-test:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Offline tests using fictional data and no media tokens
+        run: |
+          python3 -m py_compile experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py experiments/cinetic-sidecar/s08_drive_bridge.py
+          python3 -m unittest discover -s experiments/cinetic-sidecar -p 'test_s08_ephemeral_archive_gate.py' -v
+      - run: echo 'Only offline fictional tests. No actual company material downloaded.' >> "$GITHUB_STEP_SUMMARY"
+
+  real-s08:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[s08-real-ci]'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: s08-ephemeral-media
+    env:
+      CI: 'true'
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+      HYPERFRAMES_NO_UPDATE_CHECK: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Install audited dependencies without company content
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund >/dev/null 2>&1
+          node scripts/setup-encoder.mjs >/dev/null 2>&1
+          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
+          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
+          test "$(npm view hyperframes@0.8.143 dist.shasum)" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+      - name: Securely fetch and validate actual archived APP scene
+        env:
+          S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 experiments/cinetic-sidecar/s08_drive_bridge.py pull "$RUNNER_TEMP/original.zip"
+          python3 experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py "$RUNNER_TEMP/original.zip" "$RUNNER_TEMP/s08-scene"
+      - name: Private animation scene deterministic timeline checks
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/s08-scene"
+          node --check scene.js >/dev/null 2>&1 || { echo 'PRIVATE_SOURCE_SYNTAX_FAIL'; exit 1; }
+          node test_scene.cjs >/dev/null 2>&1 || { echo 'PRIVATE_SOURCE_TIMELINE_FAIL'; exit 1; }
+          node test_full_seek.cjs >/dev/null 2>&1 || { echo 'PRIVATE_SOURCE_FULL_SEEK_FAIL'; exit 1; }
+          echo 'PRIVATE_S08_SOURCE_95_FRAME_SEEK_PASS'
+      - name: REAL HyperFrames engine, never emit its logs publicly
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/s08-scene"
+          npx --yes hyperframes@0.8.143 render -c index.html -o "$RUNNER_TEMP/private-hf95.mp4" --fps 30 --quality draft > "$RUNNER_TEMP/private-render.log" 2>&1 || { echo 'PRIVATE_ENGINE_RENDER_FAIL'; exit 1; }
+      - name: Decode all 95 actual MP4 frames; produce technical receipt
+        run: |
+          set -euo pipefail
+          ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,codec_name,r_frame_rate,nb_read_frames -of json "$RUNNER_TEMP/private-hf95.mp4" > "$RUNNER_TEMP/profile.json"
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])
+          s=json.loads((p/'profile.json').read_text())['streams'][0]
+          assert (s['codec_name'],s['width'],s['height'],s['r_frame_rate'],int(s['nb_read_frames']))==('h264',540,960,'30/1',95),'BAD_HF_VIDEO_PROFILE'
+          v=p/'private-hf95.mp4'
+          r={'status':'GENUINE_HYPERFRAMES_95F_TECH_PASS','engine':'hyperframes@0.8.143','frames':95,'fps':30,'width':540,'height':960,'video_sha256':hashlib.sha256(v.read_bytes()).hexdigest(),'art':'USER_REVIEW_PENDING','rights':'REVIEW_PENDING','premiere':'NOT_TESTED'}
+          (p/'receipt.json').write_text(json.dumps(r,indent=2))
+          print('REAL_95_FRAME_METADATA_PASS')
+          PY
+          ffmpeg -nostdin -hide_banner -loglevel error -i "$RUNNER_TEMP/private-hf95.mp4" -f null - >/dev/null 2>&1 || { echo 'DECODE_FAIL'; exit 1; }
+          echo 'REAL_95_FRAME_FULL_DECODE_PASS'
+      - name: Transfer private MP4 and receipt directly to authorized Drive
+        env:
+          S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
+        run: |
+          set -euo pipefail
+          python3 experiments/cinetic-sidecar/s08_drive_bridge.py push "$RUNNER_TEMP/private-hf95.mp4" "$RUNNER_TEMP/receipt.json"
+      - name: Public report never carries private content
+        run: echo 'Real technical MP4 and QA saved directly to authorized private Drive; art approval remains pending.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Remove private files from disposable runner
+        if: always()
+        run: |
+          rm -rf -- "$RUNNER_TEMP/s08-scene" "$RUNNER_TEMP/original.zip" "$RUNNER_TEMP/private-hf95.mp4" "$RUNNER_TEMP/receipt.json" "$RUNNER_TEMP/profile.json" "$RUNNER_TEMP/private-render.log"
