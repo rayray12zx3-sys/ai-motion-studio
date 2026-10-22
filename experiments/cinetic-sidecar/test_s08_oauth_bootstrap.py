@@ -81,6 +81,34 @@ class BootstrapBoundaryTests(unittest.TestCase):
         self.assertEqual(self.send('/finish',bad)[0],400)
         good=urlencode({'csrf':app.CSRF,'selected_source':form['source_file_id'],'selected_folder':form['destination_folder_id']}).encode()
         self.assertEqual(self.send('/finish',good)[0],200)
+    def test_rfc6749_optional_scope_accepted_when_granted_scope_unchanged(self):
+        # RFC 6749 section 5.1: scope is optional when it equals the request.
+        app.STATE.update(oauth_state='fictional-state', client_id='fictional-client',
+                         client_secret='fictional-secret', verifier='fictional-verifier')
+        token={'access_token':'fictional-access', 'token_type':'Bearer',
+               'refresh_token':'fictional-refresh'}
+        with patch.object(app.urllib.request.OpenerDirector, 'open',
+                          return_value=io.BytesIO(json.dumps(token).encode())):
+            status,headers,body=self.send('/callback?state=fictional-state&code=fictional-code')
+        self.assertEqual(status,303)
+        self.assertEqual(headers['Location'],app.ORIGIN+'/picker')
+        self.assertEqual(app.STATE['refresh_token'],'fictional-refresh')
+        self.assertNotIn(b'fictional-refresh',body)
+
+    def test_extra_scopes_remain_refused_even_after_optional_scope_fix(self):
+        app.STATE.update(oauth_state='fictional-state', client_id='fictional-client',
+                         client_secret='fictional-secret', verifier='fictional-verifier')
+        token={'access_token':'fictional-access','token_type':'Bearer',
+               'refresh_token':'fictional-refresh',
+               'scope':app.SCOPE+' https://www.googleapis.com/auth/drive'}
+        with patch.object(app.urllib.request.OpenerDirector,'open',
+                          return_value=io.BytesIO(json.dumps(token).encode())):
+            status,headers,body=self.send('/callback?state=fictional-state&code=fictional-code')
+        self.assertEqual(status,303)
+        self.assertEqual(headers['Location'],app.ORIGIN+'/error')
+        self.assertNotIn('refresh_token',app.STATE)
+        self.assertEqual(app.STATE['error_stage'],'SCOPE_OR_REFRESH_TOKEN')
+
     def test_time_limited_grant_cannot_be_exported_as_long_term(self):
         app.STATE.update(oauth_state='fictional-state',client_id='fictional-client',client_secret='fictional-secret',verifier='fictional-verifier')
         token={'scope':app.SCOPE,'access_token':'fictional-access','refresh_token':'fictional-refresh','refresh_token_expires_in':604800}
