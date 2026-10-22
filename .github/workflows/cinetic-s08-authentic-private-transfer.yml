@@ -8,6 +8,7 @@ on:
       - 'experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py'
       - 'experiments/cinetic-sidecar/test_s08_ephemeral_archive_gate.py'
       - 'experiments/cinetic-sidecar/s08_drive_bridge.py'
+      - 'experiments/cinetic-sidecar/test_s08_drive_bridge.py'
       - '.github/workflows/cinetic-s08-authentic-private-transfer.yml'
   pull_request:
     branches: [main]
@@ -15,6 +16,7 @@ on:
       - 'experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py'
       - 'experiments/cinetic-sidecar/test_s08_ephemeral_archive_gate.py'
       - 'experiments/cinetic-sidecar/s08_drive_bridge.py'
+      - 'experiments/cinetic-sidecar/test_s08_drive_bridge.py'
       - '.github/workflows/cinetic-s08-authentic-private-transfer.yml'
   workflow_dispatch:
 
@@ -38,6 +40,7 @@ jobs:
         run: |
           python3 -m py_compile experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py experiments/cinetic-sidecar/s08_drive_bridge.py
           python3 -m unittest discover -s experiments/cinetic-sidecar -p 'test_s08_ephemeral_archive_gate.py' -v
+          python3 -m unittest discover -s experiments/cinetic-sidecar -p 'test_s08_drive_bridge.py' -v
       - run: echo 'Only offline fictional tests. No actual company material downloaded.' >> "$GITHUB_STEP_SUMMARY"
 
   real-s08:
