@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Original APP input is used only after checking a protected Actions credential.
 """Private Drive bridge for a manually authorized single S08 GitHub Actions run.
 Uses a short-lived OAuth access token stored ONLY in an Actions secret.
 Never emits access tokens, Drive IDs, source URLs, response bodies or media.
