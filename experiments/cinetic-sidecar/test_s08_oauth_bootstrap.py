@@ -80,7 +80,62 @@ class BootstrapBoundaryTests(unittest.TestCase):
         bad=urlencode({'csrf':app.CSRF,'selected_source':'unapproved','selected_folder':form['destination_folder_id']}).encode()
         self.assertEqual(self.send('/finish',bad)[0],400)
         good=urlencode({'csrf':app.CSRF,'selected_source':form['source_file_id'],'selected_folder':form['destination_folder_id']}).encode()
-        self.assertEqual(self.send('/finish',good)[0],200)
+        with patch.object(app,'verify_picker_access',return_value=True) as check:
+            self.assertEqual(self.send('/finish',good)[0],200)
+            check.assert_called_once_with('fictional-access', form['source_file_id'], form['destination_folder_id'])
+    def test_picker_preflight_metadata_only_source_and_folder(self):
+        source_id='fictionalSource12345'
+        folder_id='fictionalFolder12345'
+        source={'id':source_id,'mimeType':'application/zip','trashed':False,
+                'size':'305622','capabilities':{'canDownload':True}}
+        folder={'id':folder_id,'mimeType':'application/vnd.google-apps.folder',
+                'trashed':False,'capabilities':{'canAddChildren':True},
+                'permissions':[{'type':'user'}]}
+        with patch.object(app.urllib.request,'build_opener') as builder:
+            opener=builder.return_value
+            opener.open.side_effect=[io.BytesIO(json.dumps(source).encode()),
+                                     io.BytesIO(json.dumps(folder).encode())]
+            self.assertTrue(app.verify_picker_access('fictional-token',source_id,folder_id))
+            self.assertEqual(opener.open.call_count,2)
+            for call in opener.open.call_args_list:
+                req=call.args[0]
+                self.assertTrue(req.full_url.startswith('https://www.googleapis.com/drive/v3/files/'))
+                self.assertNotIn('alt=media',req.full_url)
+                self.assertEqual(req.get_header('Authorization'),'Bearer fictional-token')
+
+    def test_picker_preflight_denies_unreadable_source_and_public_folder(self):
+        source_id='fictionalSource12345'
+        folder_id='fictionalFolder12345'
+        good_source={'id':source_id,'mimeType':'application/zip','trashed':False,
+                     'size':'305622','capabilities':{'canDownload':True}}
+        folder={'id':folder_id,'mimeType':'application/vnd.google-apps.folder',
+                'trashed':False,'capabilities':{'canAddChildren':True},
+                'permissions':[{'type':'anyone'}]}
+        with patch.object(app.urllib.request,'build_opener') as builder:
+            builder.return_value.open.side_effect=[
+                io.BytesIO(json.dumps(good_source).encode()),
+                io.BytesIO(json.dumps(folder).encode())]
+            self.assertFalse(app.verify_picker_access('fictional-token',source_id,folder_id))
+        unreadable={**good_source,'capabilities':{'canDownload':False}}
+        with patch.object(app.urllib.request,'build_opener') as builder:
+            builder.return_value.open.return_value=io.BytesIO(json.dumps(unreadable).encode())
+            self.assertFalse(app.verify_picker_access('fictional-token',source_id,folder_id))
+            self.assertEqual(builder.return_value.open.call_count,1)
+
+    def test_finish_never_exports_grant_before_actual_drive_access(self):
+        app.STATE.update(access_token='fictional-token',refresh_token='SECRET_REFRESH',
+            client_id='fictional-client',client_secret='SECRET_CLIENT',
+            source_file_id='fictionalSource12345',destination_folder_id='fictionalFolder12345')
+        good=urlencode({'csrf':app.CSRF,'selected_source':app.STATE['source_file_id'],
+                        'selected_folder':app.STATE['destination_folder_id']}).encode()
+        with patch.object(app,'verify_picker_access',return_value=False) as check:
+            status,_,body=self.send('/finish',good)
+            self.assertEqual(status,400)
+            check.assert_called_once()
+        self.assertNotIn(b'SECRET_REFRESH',body)
+        self.assertNotIn(b'SECRET_CLIENT',body)
+        self.assertIn(b'PICKER_GRANT_PREFLIGHT',body)
+
     def test_rfc6749_optional_scope_accepted_when_granted_scope_unchanged(self):
         # RFC 6749 section 5.1: scope is optional when it equals the request.
         app.STATE.update(oauth_state='fictional-state', client_id='fictional-client',
