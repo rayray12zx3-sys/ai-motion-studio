@@ -1,3 +1,15 @@
+## 2026-10-22 live OAuth milestone — refresh verified, exact file grants blocked
+
+- After the operator's single official client-creation action and explicit permission to transfer credentials, Google authorization-code exchange succeeded. The user did not refill credentials. The exact drive.file offline grant is now encrypted in the existing s08-ephemeral-media environment secret S08_DRIVE_CONFIG_JSON.
+- Because the official docs.google.com Picker iframe remained a complete but empty document (both fixed-file and ordinary known-folder views), selection was NOT fabricated. The grant was preserved only as {status: PENDING_FILE_GRANT, protected_oauth_config: ...}. This wrapper is deliberately rejected by the ordinary media bridge. The existing /finish per-file metadata preflight remains mandatory; no ready grant was exported.
+- Live owner-only metadata probe [39782440325](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39782440325), request commit b8a56b62e12f0760b0d2f77a8f5ab413440c5dd6: OAUTH_REFRESH_PASS; SOURCE_METADATA_ACCESS_BLOCKED; DESTINATION_METADATA_ACCESS_BLOCKED; MEDIA_NOT_ACCESSED_GRANT_NOT_PROMOTED. Probe exit 3 / FAILURE is expected evidence of a blocked file grant, NOT overall success. Offline-code-test and isolated synthetic engine-preflight succeeded; real-s08 SKIPPED.
+- Source commit 9099e2b1e53d8c493df8cbbc35e7bc5a0e39608b adds stale/duplicate callback handling, an ordinary known-folder Picker entry, pending-grant preservation, and a metadata-only owner probe. 42/42 fictional tests pass, including refusal to use the pending wrapper for media access and no private error/URL/credential output.
+- The metadata probe requires a separate owner push changing ONLY s08_render_request.json with action=probe and a subject beginning S08_AUTH_PROBE:. It uses the same exact branch/environment restriction. It cannot download/upload media, promote the grant or run on PRs.
+- Authentic MP4 / private Drive media readback SHA / actual-frame Visual Design QA remain NOT_DONE. No company bytes were downloaded in this work. Do not rerun credential-entry forms, retrieve secrets from GitHub, disable browser protections, move token-bearing Picker URLs or remove per-file preflight to force completion.
+- Product drift gate: goal = preserve one-time authorization and localize the real render blocker; decision = operator-approved S08 scope, Draft #140 only; proof = actual refresh from protected Runner plus blocked metadata; tools/rights = existing runtime and same scope, no paid activation/main/merge/private repo; next gate = actual exact-file grant through a working official selection flow. This remains engineering progress, not a completed film.
+
+--- Earlier evidence retained below ---
+
 ## 2026-10-22 next-step evidence — reusable public OSS runtime, private local renderer blocked
 
 - Added `.github/workflows/cinetic-public-hyperframes-runtime-offline-handoff.yml` for packaging **open-source-only** pinned HyperFrames 0.8.143 npm modules on the existing public Ubuntu 24.04 runner. No APP images, private source, Google credentials, private video or fonts are in this public workflow or artifact.
