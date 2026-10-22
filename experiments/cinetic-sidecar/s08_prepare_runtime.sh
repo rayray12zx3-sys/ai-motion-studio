@@ -17,6 +17,9 @@ echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH
 node experiments/cinetic-sidecar/three-step-quiz-synthetic-95f.mjs "$RUNNER_TEMP/s08-preflight/s08-scene" >/dev/null
 cd "$RUNNER_TEMP/s08-preflight/s08-scene"
 hyperframes render -c index.html -o "$RUNNER_TEMP/s08-preflight/warmup.mp4" --fps 30 --quality draft >/dev/null 2>&1
+browser_path="$(find "$HOME/.cache" -type f -name chrome-headless-shell -print -quit)"
+test -n "$browser_path" && test -x "$browser_path"
+printf '%s' "$browser_path" > "$RUNNER_TEMP/s08-runtime/browser-path"
 cd "$GITHUB_WORKSPACE"
 bash experiments/cinetic-sidecar/s08_isolate.sh "$RUNNER_TEMP/s08-preflight" > "$RUNNER_TEMP/s08-preflight/synthetic-isolation.log" 2>&1 || {
   cat "$RUNNER_TEMP/s08-preflight/synthetic-isolation.log"
