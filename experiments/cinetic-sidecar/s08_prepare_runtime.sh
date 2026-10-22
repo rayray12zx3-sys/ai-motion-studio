@@ -18,5 +18,8 @@ node experiments/cinetic-sidecar/three-step-quiz-synthetic-95f.mjs "$RUNNER_TEMP
 cd "$RUNNER_TEMP/s08-preflight/s08-scene"
 hyperframes render -c index.html -o "$RUNNER_TEMP/s08-preflight/warmup.mp4" --fps 30 --quality draft >/dev/null 2>&1
 cd "$GITHUB_WORKSPACE"
-bash experiments/cinetic-sidecar/s08_isolate.sh "$RUNNER_TEMP/s08-preflight" >/dev/null 2>&1
+bash experiments/cinetic-sidecar/s08_isolate.sh "$RUNNER_TEMP/s08-preflight" > "$RUNNER_TEMP/s08-preflight/synthetic-isolation.log" 2>&1 || {
+  cat "$RUNNER_TEMP/s08-preflight/synthetic-isolation.log"
+  exit 1
+}
 echo 'SYNTHETIC_ENGINE_NETWORK_ISOLATION_PASS'
