@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "shots": [
+    {"id":"idea-comparison", "spec":{"mode":"comparison","heading":"創作前後的資訊結構","left":"第一版","right":"第二版","placeholder":"創意流程範例"}},
+    {"id":"abstract-reveal", "spec":{"mode":"cta_reveal","heading":"作品結尾動態","headline":"探索新構想","button":"繼續了解"}}
+  ]
+}
