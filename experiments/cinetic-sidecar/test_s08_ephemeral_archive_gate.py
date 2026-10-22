@@ -17,13 +17,14 @@ class ArchiveGateTests(unittest.TestCase):
             "manifest.json": json.dumps({
                 "schema": "s08-v22r-private-cinetic-hyperframes-job-v1",
                 "frames": 95, "fps": 30, "width": 540, "height": 960,
-                "assets": {}
+                "assets": {"layer_"+str(i)+".png":hashlib.sha256(b"synthetic").hexdigest() for i in range(20)}
             }),
             "index.html": '<div data-composition-id="demo" data-no-timeline data-duration="3.1666666667"></div>',
             "scene.js": 'window.addEventListener("hf-seek",()=>{});',
             "test_scene.cjs": "console.log('safe')",
             "test_full_seek.cjs": "console.log('safe')",
         }
+        files.update({"inputs/layer_"+str(i)+".png":b"synthetic" for i in range(20)})
         files.update(overrides or {})
         path = self.root / "test.zip"
         with zipfile.ZipFile(path, "w") as z:
@@ -63,9 +64,27 @@ class ArchiveGateTests(unittest.TestCase):
         p = self.make_zip({"manifest.json": json.dumps({
             "schema": "s08-v22r-private-cinetic-hyperframes-job-v1",
             "frames": 95, "fps": 30, "width": 540, "height": 960,
-            "assets": {"o0_0.png": "0" * 64}
+            "assets": {"layer_"+str(i)+".png":"0"*64 for i in range(20)}
         })})
         with self.assertRaisesRegex(ValueError, "ASSET_DIGEST_INVALID"):
+            gate.verify_extract(p, self.root / "out")
+
+    def test_missing_assets_rejected(self):
+        p = self.make_zip({"manifest.json":json.dumps({
+            "schema":"s08-v22r-private-cinetic-hyperframes-job-v1",
+            "frames":95,"fps":30,"width":540,"height":960,"assets":{}})})
+        with self.assertRaisesRegex(ValueError, "ASSET_COUNT_INVALID"):
+            gate.verify_extract(p, self.root / "out")
+
+    def test_symlink_rejected_before_extraction(self):
+        p = self.make_zip()
+        with zipfile.ZipFile(p, "a") as z:
+            i=zipfile.ZipInfo("inputs/link.png")
+            i.create_system=3
+            i.external_attr=(0o120777 << 16)
+            z.writestr(i, "../../escape")
+        gate.EXPECTED_SHA256=hashlib.sha256(p.read_bytes()).hexdigest()
+        with self.assertRaisesRegex(ValueError, "ARCHIVE_SYMLINK_REJECTED"):
             gate.verify_extract(p, self.root / "out")
 
 if __name__ == "__main__":

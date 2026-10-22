@@ -3,13 +3,20 @@ name: Cinetic S08 original private-material HyperFrames 95f
 on:
   push:
     branches:
-      - 'experiment/cinetic-director-adapter-*'
+      - 'experiment/cinetic-director-adapter-20261018'
     paths:
       - 'experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py'
       - 'experiments/cinetic-sidecar/test_s08_ephemeral_archive_gate.py'
       - 'experiments/cinetic-sidecar/s08_drive_bridge.py'
       - 'experiments/cinetic-sidecar/test_s08_drive_bridge.py'
       - '.github/workflows/cinetic-s08-authentic-private-transfer.yml'
+      - 'experiments/cinetic-sidecar/s08-runtime/**'
+      - 'experiments/cinetic-sidecar/s08_private_render.sh'
+      - 'experiments/cinetic-sidecar/s08_isolate.sh'
+      - 'experiments/cinetic-sidecar/s08_oauth_bootstrap.py'
+      - 'experiments/cinetic-sidecar/test_s08_oauth_bootstrap.py'
+      - 'experiments/cinetic-sidecar/s08_prepare_runtime.sh'
+      - 'experiments/cinetic-sidecar/s08_render_request.json'
   pull_request:
     branches: [main]
     paths:
@@ -18,6 +25,13 @@ on:
       - 'experiments/cinetic-sidecar/s08_drive_bridge.py'
       - 'experiments/cinetic-sidecar/test_s08_drive_bridge.py'
       - '.github/workflows/cinetic-s08-authentic-private-transfer.yml'
+      - 'experiments/cinetic-sidecar/s08-runtime/**'
+      - 'experiments/cinetic-sidecar/s08_private_render.sh'
+      - 'experiments/cinetic-sidecar/s08_isolate.sh'
+      - 'experiments/cinetic-sidecar/s08_oauth_bootstrap.py'
+      - 'experiments/cinetic-sidecar/test_s08_oauth_bootstrap.py'
+      - 'experiments/cinetic-sidecar/s08_prepare_runtime.sh'
+      - 'experiments/cinetic-sidecar/s08_render_request.json'
   workflow_dispatch:
 
 permissions:
@@ -29,7 +43,6 @@ concurrency:
 
 jobs:
   offline-code-test:
-    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -38,13 +51,28 @@ jobs:
           persist-credentials: false
       - name: Offline tests using fictional data and no media tokens
         run: |
-          python3 -m py_compile experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py experiments/cinetic-sidecar/s08_drive_bridge.py
-          python3 -m unittest discover -s experiments/cinetic-sidecar -p 'test_s08_ephemeral_archive_gate.py' -v
-          python3 -m unittest discover -s experiments/cinetic-sidecar -p 'test_s08_drive_bridge.py' -v
+          python3 -m py_compile experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py experiments/cinetic-sidecar/s08_drive_bridge.py experiments/cinetic-sidecar/s08_oauth_bootstrap.py
+          python3 -m unittest discover -s experiments/cinetic-sidecar -p 'test_s08_*.py' -v
       - run: echo 'Only offline fictional tests. No actual company material downloaded.' >> "$GITHUB_STEP_SUMMARY"
 
+  engine-preflight:
+    needs: offline-code-test
+    if: github.event_name != 'pull_request' && github.repository == 'rayray12zx3-sys/ai-motion-studio' && github.ref == 'refs/heads/experiment/cinetic-director-adapter-20261018'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+      - name: Real engine on public synthetic input only, no secrets
+        run: bash experiments/cinetic-sidecar/s08_prepare_runtime.sh
+
   real-s08:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[s08-real-ci]'))
+    needs: [offline-code-test, engine-preflight]
+    if: github.repository == 'rayray12zx3-sys/ai-motion-studio' && github.ref == 'refs/heads/experiment/cinetic-director-adapter-20261018' && github.actor_id == '307835058' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'S08_RENDER_REQUEST:')))
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     environment: s08-ephemeral-media
@@ -54,7 +82,29 @@ jobs:
       HYPERFRAMES_SKIP_SKILLS: '1'
       HYPERFRAMES_NO_UPDATE_CHECK: '1'
     steps:
-      - name: Refuse to allocate media runner without one protected Drive credential
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Require isolated owner render request; never render from PR or code-change push
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          p='experiments/cinetic-sidecar/s08_render_request.json'
+          r=json.load(open(p))
+          assert r.get('schema')=='s08-render-request-v1' and r.get('action')=='render' and type(r.get('sequence')) is int and r['sequence']>0,'RENDER_REQUEST_DISABLED'
+          if os.environ['EVENT_NAME']=='push':
+            paths=subprocess.check_output(['git','diff','--name-only','HEAD^','HEAD'],text=True).splitlines()
+            assert paths==[p],'RENDER_REQUEST_MUST_NOT_CHANGE_CODE'
+          PY
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+      - name: Install locked runtime and verify isolated synthetic engine before private input
+        run: bash experiments/cinetic-sidecar/s08_prepare_runtime.sh
+      - name: Refuse media access without the protected offline grant
         env:
           S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
         run: |
@@ -62,21 +112,6 @@ jobs:
             echo 'BLOCKED: S08_DRIVE_CONFIG_JSON_NOT_CONFIGURED'
             exit 78
           fi
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '24.19.0'
-          cache: npm
-      - name: Install audited dependencies without company content
-        run: |
-          set -euo pipefail
-          npm ci --ignore-scripts --no-audit --no-fund >/dev/null 2>&1
-          node scripts/setup-encoder.mjs >/dev/null 2>&1
-          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
-          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
-          test "$(npm view hyperframes@0.8.143 dist.shasum)" = "8761025aa327993c605a307ec2d9f01fe6bde047"
       - name: Securely fetch and validate actual archived APP scene
         env:
           S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
@@ -85,19 +120,12 @@ jobs:
           umask 077
           python3 experiments/cinetic-sidecar/s08_drive_bridge.py pull "$RUNNER_TEMP/original.zip"
           python3 experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py "$RUNNER_TEMP/original.zip" "$RUNNER_TEMP/s08-scene"
-      - name: Private animation scene deterministic timeline checks
+      - name: Private timeline checks and REAL engine inside loopback-only namespace
         run: |
           set -euo pipefail
-          cd "$RUNNER_TEMP/s08-scene"
-          node --check scene.js >/dev/null 2>&1 || { echo 'PRIVATE_SOURCE_SYNTAX_FAIL'; exit 1; }
-          node test_scene.cjs >/dev/null 2>&1 || { echo 'PRIVATE_SOURCE_TIMELINE_FAIL'; exit 1; }
-          node test_full_seek.cjs >/dev/null 2>&1 || { echo 'PRIVATE_SOURCE_FULL_SEEK_FAIL'; exit 1; }
-          echo 'PRIVATE_S08_SOURCE_95_FRAME_SEEK_PASS'
-      - name: REAL HyperFrames engine, never emit its logs publicly
-        run: |
-          set -euo pipefail
-          cd "$RUNNER_TEMP/s08-scene"
-          npx --yes hyperframes@0.8.143 render -c index.html -o "$RUNNER_TEMP/private-hf95.mp4" --fps 30 --quality draft > "$RUNNER_TEMP/private-render.log" 2>&1 || { echo 'PRIVATE_ENGINE_RENDER_FAIL'; exit 1; }
+          bash experiments/cinetic-sidecar/s08_isolate.sh "$RUNNER_TEMP" \
+            > "$RUNNER_TEMP/private-render.log" 2>&1 || { echo 'PRIVATE_ISOLATED_ENGINE_OR_TIMELINE_FAIL'; exit 1; }
+          echo 'PRIVATE_S08_SOURCE_95_FRAME_SEEK_AND_ENGINE_PASS'
       - name: Decode all 95 actual MP4 frames; produce technical receipt
         run: |
           set -euo pipefail

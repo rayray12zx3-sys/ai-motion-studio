@@ -1,3 +1,28 @@
+# S08 offline authorization integration update — 2026-10-22
+
+This section supersedes the short-lived-token and generic commit-marker instructions below.
+**Engineering implementation only; actual private S08 render remains NOT_RENDERED until a verified run and private Drive readback exist.**
+
+- `S08_DRIVE_CONFIG_JSON` must be an **environment secret** on `s08-ephemeral-media`, never a repository secret. New config requires `auth_mode=oauth_refresh`, `scope=https://www.googleapis.com/auth/drive.file`, `publishing_status=production`, `client_id`, `client_secret`, `refresh_token`, `source_file_id`, `destination_folder_id`. Do not publish values or private IDs.
+- One initial Google consent plus Picker selection grants the exact archive and destination folder. `s08_oauth_bootstrap.py` runs only on localhost:8765, with a fixed callback, state, PKCE, POST Origin/CSRF checks, Host check, disabled access logs, no-store and one-hour process lifetime. It keeps credentials only in memory and downloads no private media. Its copy button is solely for the protected environment-secret UI. Stop it after provisioning and clear the clipboard.
+- External OAuth Testing grants expire after seven days for Drive; configure the personal app as Production before consent. The helper rejects explicitly time-limited refresh grants. The publishing-status config is an operator attestation, not an API proof. Revocation, inactivity, token limits and policy can still require reauthorization: this is not an eternal grant.
+- GitHub OIDC/WIF is preferred when an organizational Shared Drive is available. It does not by itself authorize a personal user's Drive, and service accounts cannot own/upload new files into ordinary personal My Drive storage. Do not create paid Workspace, enable billing, or use domain-wide delegation for this personal-folder workflow.
+- All actions use the exact experimental branch. PR events have only fictional tests. Ordinary source pushes run fictional tests plus a real synthetic engine/network-namespace preflight; they cannot request private rendering.
+- Since the workflow is not on main, the UI Run workflow button may be unavailable. The bounded fallback is a **separate owner push**, changing **only** `s08_render_request.json`, setting action to render and incrementing sequence above zero, with commit subject starting `S08_RENDER_REQUEST:`. Exact repository, ref and numeric owner actor ID are required. A combined source-change/render-request push is rejected before secrets are referenced. The environment must allow only this exact branch and zero tags.
+- HyperFrames and all transitive dependencies use the isolated runtime lockfile. Installation and synthetic browser warmup happen before private input. Private source tests and engine execute with an empty environment, no new privileges, and a loopback-only Linux network namespace. If namespace/engine preflight fails, no private input is fetched. Private render logs are never printed/uploaded. MP4 profile/full decode and Drive byte SHA readback remain mandatory.
+- Local validation: 23/23 fictional tests PASS (11 transport, 7 archive, 5 HTTP-handler boundary tests). HTTP-handler tests use in-memory wire requests; live localhost browser consent is a separate required acceptance check. Linux namespace and exact-head CI remain pending until the new run succeeds.
+
+## Current required gates
+1. Source/HTTP safety regressions: local PASS; exact-head CI PENDING.
+2. Google app publishing and restricted Picker setup: IN_PROGRESS; no long-term Drive grant provisioned yet.
+3. Environment branch restriction: configured through GitHub UI; secret still absent.
+4. Actual private 95f H264 output / private Drive SHA readback: NOT_DONE.
+5. Full-speed/framewise Visual Design QA on the actual output: NOT_DONE; user art and Premiere remain separate.
+
+Product drift gate: goal is removing the repeated authorization blocker for real animation production; source is the operator's explicit scoped S08 request and Draft #140. Deliverables are bounded engineering until actual media exists. No root renderer/package changes, new Director/Art agents, main changes or merge; paid services forbidden. Next action is complete real consent, validate synthetic Linux isolation, then render/read back/review the actual private output.
+
+--- Historical implementation below ---
+
 # S08 real private APP assets in public GitHub Actions — implementation status
 
 **Status (2026-10-22): code installed and synthetic-only workflow gates PASS; real S08 has not yet been rendered.** This is not a public-media license or user art approval.

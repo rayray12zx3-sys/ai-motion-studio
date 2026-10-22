@@ -5,6 +5,7 @@ The repository contains no APP assets. Never print ZIP members or credentials.
 import hashlib
 import json
 import os
+import re
 from pathlib import Path, PurePosixPath
 import shutil
 import stat
@@ -55,7 +56,12 @@ def verify_extract(archive, destination):
             or manifest.get("frames") != 95 or manifest.get("fps") != 30 or
             manifest.get("width") != 540 or manifest.get("height") != 960):
             raise ValueError("SOURCE_TIMELINE_INVALID")
-        for filename, sha in manifest["assets"].items():
+        assets = manifest.get("assets")
+        if not isinstance(assets, dict) or len(assets) != 20:
+            raise ValueError("ASSET_COUNT_INVALID")
+        for filename, sha in assets.items():
+            if not re.fullmatch(r"[A-Za-z0-9_-]+\.png", filename) or not isinstance(sha, str) or not re.fullmatch(r"[0-9a-f]{64}", sha):
+                raise ValueError("ASSET_NAME_OR_DIGEST_INVALID")
             entry = "inputs/" + filename
             if entry not in names or hashlib.sha256(z.read(entry)).hexdigest() != sha:
                 raise ValueError("ASSET_DIGEST_INVALID")
@@ -80,6 +86,5 @@ if __name__ == "__main__":
             raise ValueError("USAGE_INPUT_ZIP_AND_NEW_OUTPUT_DIR")
         verify_extract(sys.argv[1], sys.argv[2])
     except Exception as e:
-        print("BLOCKED_NO_PASS:" + (str(e) if isinstance(e, ValueError) else
-              type(e).__name__), file=sys.stderr)
+        print("BLOCKED_NO_PASS:PRIVATE_ARCHIVE_VALIDATION_FAILED", file=sys.stderr)
         sys.exit(2)
