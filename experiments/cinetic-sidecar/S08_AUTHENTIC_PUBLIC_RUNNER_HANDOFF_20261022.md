@@ -1,3 +1,14 @@
+## Editorial purpose confirmed — 2026-10-22: fast APP-operation insert
+
+**USER-CONFIRMED creative intent:** S08 is a short, fast-moving APP-operation insert *within a longer advertisement*, not a standalone teaching segment or a long-form product demo intended for viewers to read every answer option.
+
+- Retain the genuine, already technical-QA-passed HyperFrames **95f / 30 fps / approximately 3.17s** private baseline as the candidate insert. Do **not** lengthen simply to make all choices fully readable; do not overwrite that verified original or start additional rendering merely for readability.
+- In-context visual acceptance targets: unmistakable phone APP multiple-choice interaction, answer selection and correct-feedback/Next cadence twice, followed by the unanswered third question; recognizable original APP/runner, adequate contrast and safe-area framing, no misleading implication that the third answer was completed, and clear cuts/audio sync into surrounding advertisement.
+- Earlier concerns about *full reading time* no longer block this **specific fast-insert use case**. Any concern about whether the APP action remains perceptible at native phone viewing size is still a valid editorial QA issue.
+- Creative-intent confirmation **does not equal** approval of this exact visual output, legal rights, or Windows Premiere integration. Keep `TECH_RENDER_PASS / DRIVE_READBACK_PASS / EDITORIAL_FAST_INSERT_CONFIRMED / USER_ART_PENDING / PREMIERE_NOT_TESTED`. Avoid merging Draft PR or modifying main; retain all proprietary media and private QA exclusively in Drive CURRENT.
+
+---
+
 ## 2026-10-22 follow-up — independent private QA filed; art/PR gate not approved
 
 - The independent technical/visual QA report has now been **uploaded and read back in the existing restricted private S08 output folder**. It records a full 95-frame decode, independently recomputed private media hashes, 29 representative sequence frames, 12 detailed frames, two success/Next states and the deliberately unanswered third question. The private filenames, direct URLs, media hashes, app screenshots and source materials are restricted to Google Drive CURRENT; **do not mirror them to this public repository**.
