@@ -1,3 +1,40 @@
+## 2026-10-23 NEW-CHAT CANONICAL HANDOFF (SAFE FOR PUBLIC GITHUB)
+
+**Purpose:** continue the existing **Cinetic-directed motion R&D + S08 private company APP fast-insert** project from authoritative live state, not from old chat guesses. **This existing file remains the ONE public GitHub handoff**; do not create competing CURRENT files. Read this top section, then the latest dated sections below, `C0-LICENSE-COMPATIBILITY.md`, `C3-INDEPENDENT-VISUAL-QA.md`, `README.md`, [Issue #138](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/138), and [Draft PR #140](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/140). **Afterward read the owner's sole PRIVATE Google Drive S08 CURRENT** for exact private output IDs, source ZIP hashes, media URLs, user art status and receipts. Public GitHub must NEVER mirror those confidential IDs, contents or links.
+
+### Binding user decisions
+
+1. **Continue completing executable work rather than stopping every few steps to request “繼續”.** If an unavoidable external gate remains (human aesthetic approval, a real Windows Premiere session, or commercial/legal sign-off), report exactly that limit without inventing approval or silently doing paid work.
+2. S08 is a **fast APP-operation insert within a longer advertisement**, not a standalone readable lesson. Keep **95 frames, 30 fps, 540×960, ~3.167 sec** unless the owner explicitly changes the brief. Required causal beats: two answer selections → success/Next twice → third question **unanswered**. Preserve authentic company APP/running character imagery.
+3. **v22r editorial Pillow/FFmpeg** is the visual-quality reference, not the render engine acceptance. First genuine HF was a visible visual regression. **v22s** repaired background glow/road/runner; **v22t** still failed old-card ghosting; latest **v22u** uses **atomic offscreen-card compositing** to avoid per-layer transparent overlays, has a new genuine HyperFrames@0.8.143 private render, verified private Drive readback and independent 16-keyframe numeric comparison.
+4. Numeric RGB MAE to v22r across the SAME 16 transition frames — card/road/whole: first HF **12.628/6.338/10.952**, v22s **12.593/2.262/6.866**, v22t **12.634/2.264/6.873**, v22u **7.807/2.262/5.294**. `s08_visual_parity_gate.py` requires **card <=10, road <=3, full <=7**. v22t fails and v22u passes **locally on decoded real videos**. Offline fictional tests passed at the last recorded checkpoint. The updated protected runner parity-gate wiring was **NOT independently rerun end-to-end after addition** at the last private CURRENT checkpoint: verify before claiming that particular new integration passed. Numeric parity PASS ≠ user art approval.
+5. **Retain** the original v22r, first true HF, v22s, v22t, v22u and their private QA outputs. Never overwrite, delete, republish or silently re-approve any. No new long-readable S08 version merely for legibility.
+
+### Cinetic staged assessment (separate from S08)
+
+- **C0 PARTIAL:** upstream `Leonxlnx/cinetic` pinned `ecfa6605de1adb9345ce937724810dc32267d068`, MIT source provenance; nine known upstream execution entrypoints reviewed statically. Unsafe default behaviors (dynamic preflight `eval`, `rm -rf`, optional npm install, HyperFrames 0.8.79 vs tested 0.8.143, postinstall copying GSAP/font files, Remotion alternative) mean **full upstream Cinetic Skill has not been installed or executed**. Exact downstream/commercial and font/codec/GSAP usage rights and complete executable/dependency inventory remain open. Do not silently install upstream scripts or claim production clearance.
+- **C1 R&D TECH PASS:** scoped opt-in meaning→director→frame contract. This is a **custom adapter**, not the full autonomous upstream Skill or a global animation-order route.
+- **C2 R&D TECH PASS:** original synthetic 16:9/9:16 HyperFrames H264 video and genuine decoded ProRes 4444 alpha MOV; no user art approval.
+- **C3 PARTIAL:** multiple semantic briefs and full rendered synthetic scenes exist, but creative specificity, full-speed visual review, baseline comparison and independent quality gates remain incomplete. Render success alone ≠ art PASS.
+- **C4.0/C4.1 TECH PASS only:** source-safe synthetic card handoff and private S08 true-engine renderer work; **commercial promotion / ordinary ChatGPT automatic ordering / human art / Premiere approval remain BLOCKED**.
+
+### Immediate next actions for new chat
+
+1. Re-read the **latest private Drive CURRENT** first, then verify **live PR HEAD, existing run IDs and protected media receipt**. Never assume dates/status from this prose outrank newer evidence.
+2. Independently inspect v22u **full-speed 1x at mobile viewing size** and critical frame boundaries (press→success→hold→exit→new populated card, third unanswered), compare with preserved v22r, record whether any visible ghost/cut/occlusion remains. Use actual decoded frames/video, not contact sheets alone. If a *real defect* remains, create a separately versioned private revision and re-run the existing restricted pipeline, with numeric and visual QA; do not overfit a metric.
+3. Verify current `s08_visual_parity_gate.py` integration / rollback / fail-closed behavior without publishing or caching private imagery. Avoid unnecessary repeated paid/token work and avoid automatic render-request commits unless required to complete a grounded new fix.
+4. Continue **C0 remaining static/sandbox source/dependency/license inventory** and **C3 independent full-speed multi-brief creative comparison**. Document exact PASS/FAIL/PENDING in existing files. Do **not** conflate Cinetic directing Skill with HyperFrames renderer.
+5. Complete all tool-accessible technical work. **Only** the owner may approve exact S08 artwork; actual Windows Premiere import/playback/export and use-specific commercial rights require separate real evidence. Do not fabricate those statuses. Update this SAME handoff + same private Drive CURRENT together.
+
+### Boundaries and privacy
+
+- Repo `rayray12zx3-sys/ai-motion-studio`, branch `experiment/cinetic-director-adapter-20261018`, **Draft PR #140**. **Do not merge, modify main, start new private repo, use Codex, trigger payment, add an unrelated Director/Art Agent, or alter pre-approved motion/font assets**.
+- Company APP originals, thumbnails, frames, ZIPs, source and media IDs/URLs, private SHA/QA and credentials **stay in restricted private Google Drive**. Public git/PR/issues/workflow logs/artifacts may carry only generic safe code, synthetic data, redacted counts and public Actions IDs. Do not copy Drive links from the private CURRENT into GitHub.
+- Existing **Production OAuth drive.file offline grant** is stored only in protected Actions environment `s08-ephemeral-media`; app-created scoped staging passed genuine source and destination access. **Do not ask user to reenter OAuth secrets or reopen the broken Picker form**, broaden scope, print tokens, or tamper with environment secrets. Owner-only isolated request-JSON commits gate private jobs, and private media never becomes a GitHub artifact.
+- Status terms remain separate: `TECH_RENDER_PASS / DRIVE_READBACK_PASS / LOCAL_NUMERIC_PARITY_PASS / OWNER_ART_PENDING / PREMIERE_WINDOWS_NOT_TESTED / COMMERCIAL_RIGHTS_NOT_CLEARED / UPSTREAM_CINETIC_PARTIAL`.
+
+---
+
 ## NEW CHAT CURRENT HANDOFF — 2026-10-23 — Cinetic & S08 (read this FIRST)
 
 **User instruction:** this conversation reached its length limit. All new conversations must resume from THIS ONE existing GitHub handoff and the latest branch/Actions, not from older chat summaries. Continue implementing all safely executable work; do not merely generate status updates or repeatedly ask the user to say "continue". Keep this handoff current IN PLACE; never invent competing canonical handoffs. Private company assets and links remain only in the PRIVATE Drive CURRENT, not in this public GitHub document.
