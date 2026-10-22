@@ -1,3 +1,10 @@
+## 2026-10-22 current — pre-secret per-file grant preflight
+
+- `s08_oauth_bootstrap.py` now verifies both exact Picker selections via **metadata-only** Drive `files.get` using the scoped in-memory access token **before** exporting the protected environment secret. The existing S08 source ZIP must be exactly `application/zip` of the pinned source size, not trashed and downloadable; the destination must be a writable, non-public Drive folder. Source media are never downloaded by the bootstrap.
+- If Google denies either metadata query, the local helper fails closed with the fixed stage `PICKER_GRANT_PREFLIGHT` instead of exporting a nonfunctional grant or echoing server errors. No new credential prompt or bypass of previously blocked Cloud-secret extraction was created.
+- Three fictional preflight regressions plus existing 32 tests: **35/35 PASS**, [GitHub Actions #39769639639](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39769639639), commit `87bb60edd8f507376915c1bcab790a44fc867f8f`. The engine-preflight and real-S08 jobs in that PR-triggered run are **SKIPPED**.
+- Remaining irreducible gate: real authorization-code exchange was not completed and no Google OAuth offline grant is stored in GitHub environment secrets; no authentic S08 HyperFrames MP4 or Drive round-trip QA exists. Do not ask the user to refill the previous failed form; identify a safe, owner-approved live authorization channel first.
+
 # S08 offline authorization integration update — 2026-10-22
 
 This section supersedes the short-lived-token and generic commit-marker instructions below.
