@@ -79,7 +79,8 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError()
                 token = json.loads(raw)
                 stage = 'SCOPE_OR_REFRESH_TOKEN'
-                if set(token['scope'].split()) != {SCOPE} or not token.get('refresh_token'):
+                if (set(token.get('scope', SCOPE).split()) != {SCOPE} or
+                    not token.get('refresh_token')):
                     raise ValueError()
                 if token.get('refresh_token_expires_in'):
                     stage = 'TIME_LIMITED_GRANT'
