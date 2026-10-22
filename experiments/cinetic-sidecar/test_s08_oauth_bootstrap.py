@@ -1,7 +1,9 @@
 import io
+import json
 import unittest
 from unittest.mock import patch
 from urllib.error import HTTPError
+from urllib.parse import urlencode
 from email.parser import BytesParser
 import s08_oauth_bootstrap as app
 
@@ -63,6 +65,29 @@ class BootstrapBoundaryTests(unittest.TestCase):
         self.assertNotEqual(app.STATE['verifier'],'old-verifier')
         self.assertNotIn('GOCSPX-',headers['Location'])
         self.assertNotIn(b'GOCSPX-',body)
+    def test_complete_fictional_consent_picker_and_export_flow(self):
+        form={'csrf':app.CSRF,'production':'yes','client_id':'fictional-client','client_secret':'GOCSPX-fictional','picker_key':'AIza-fictional','project_number':'123','source_file_id':'fictionalSource12345','destination_folder_id':'fictionalFolder12345'}
+        self.assertEqual(self.send('/start',urlencode(form).encode())[0],303)
+        token={'scope':app.SCOPE,'access_token':'fictional-access','refresh_token':'fictional-refresh'}
+        with patch.object(app.urllib.request.OpenerDirector,'open',return_value=io.BytesIO(json.dumps(token).encode())):
+            status,headers,_=self.send('/callback?'+urlencode({'state':app.STATE['oauth_state'],'code':'fictional-code'}))
+        self.assertEqual((status,headers['Location']),(303,app.ORIGIN+'/picker'))
+        status,_,body=self.send('/picker')
+        self.assertEqual(status,200)
+        # Google API contract: setFileIds accepts a comma-separated string, not an array.
+        self.assertIn(b'.setFileIds(folder?cfg.destination_folder_id:cfg.source_file_id)',body)
+        self.assertNotIn(b'fictional-refresh',body)
+        bad=urlencode({'csrf':app.CSRF,'selected_source':'unapproved','selected_folder':form['destination_folder_id']}).encode()
+        self.assertEqual(self.send('/finish',bad)[0],400)
+        good=urlencode({'csrf':app.CSRF,'selected_source':form['source_file_id'],'selected_folder':form['destination_folder_id']}).encode()
+        self.assertEqual(self.send('/finish',good)[0],200)
+    def test_time_limited_grant_cannot_be_exported_as_long_term(self):
+        app.STATE.update(oauth_state='fictional-state',client_id='fictional-client',client_secret='fictional-secret',verifier='fictional-verifier')
+        token={'scope':app.SCOPE,'access_token':'fictional-access','refresh_token':'fictional-refresh','refresh_token_expires_in':604800}
+        with patch.object(app.urllib.request.OpenerDirector,'open',return_value=io.BytesIO(json.dumps(token).encode())):
+            self.assertEqual(self.send('/callback?state=fictional-state&code=fictional-code')[0],303)
+        self.assertEqual(app.STATE['error_stage'],'TIME_LIMITED_GRANT')
+        self.assertNotIn('refresh_token',app.STATE)
 
 if __name__=='__main__':
     unittest.main()
