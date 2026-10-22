@@ -78,6 +78,18 @@ def verify_picker_access(token, source_id, folder_id):
 
 
 class Handler(BaseHTTPRequestHandler):
+    def config_page(self, pending=False):
+        config = {k:STATE[k] for k in ('client_id','client_secret','refresh_token','source_file_id','destination_folder_id')}
+        config.update(auth_mode='oauth_refresh', scope=SCOPE, publishing_status='production')
+        if pending:
+            # Intentionally incompatible with the media bridge's ready-config schema.
+            # Preserve the grant without authorizing any private input or rendering.
+            config = {'status':'PENDING_FILE_GRANT','protected_oauth_config':config}
+        self.reply(page('<p>'+('待驗證授權：不可啟用渲染。' if pending else '檔案權限預檢完成。')+
+            '僅複製到 GitHub s08-ephemeral-media environment 的 S08_DRIVE_CONFIG_JSON。</p>'
+            '<button id="copy">複製受保護設定</button><p id="s"></p><script>const secret='+json.dumps(json.dumps(config))+';'
+            'document.getElementById("copy").onclick=async()=>{await navigator.clipboard.writeText(secret);document.getElementById("s").textContent="已複製，請勿貼入聊天或公開內容";};</script>'))
+
     def log_message(self, *args):
         pass  # A callback query contains an authorization code.
 
@@ -109,8 +121,14 @@ class Handler(BaseHTTPRequestHandler):
             stage = 'STATE_CHECK'
             try:
                 q = parse_qs(parsed.query)
-                if not secrets.compare_digest(q.get('state', [''])[0], STATE.pop('oauth_state')):
+                incoming = q.get('state', [''])[0]
+                digest = hashlib.sha256(incoming.encode()).hexdigest()
+                if (STATE.get('access_token') and STATE.get('completed_state_digest') == digest):
+                    self.reply(b'',303,ORIGIN+'/picker')
+                    return
+                if not secrets.compare_digest(incoming, STATE.get('oauth_state','')) or not incoming:
                     raise ValueError()
+                STATE.pop('oauth_state')
                 payload = urlencode({'client_id':STATE['client_id'], 'client_secret':STATE['client_secret'],
                     'code':q['code'][0], 'redirect_uri':ORIGIN+'/callback',
                     'grant_type':'authorization_code','code_verifier':STATE.pop('verifier')}).encode()
@@ -130,6 +148,7 @@ class Handler(BaseHTTPRequestHandler):
                     stage = 'TIME_LIMITED_GRANT'
                     raise ValueError('TIME_LIMITED_GRANT_NOT_LONG_TERM')
                 STATE.update(access_token=token['access_token'], refresh_token=token['refresh_token'])
+                STATE['completed_state_digest'] = digest
                 self.reply(b'', 303, ORIGIN+'/picker')
             except Exception as exc:
                 if isinstance(exc, urllib.error.HTTPError):
@@ -154,17 +173,21 @@ class Handler(BaseHTTPRequestHandler):
             opts = json.dumps({k:STATE[k] for k in ('access_token','picker_key','project_number','source_file_id','destination_folder_id')})
             self.reply(page('''<p>依序只選取原 ZIP 及目標資料夾，不下載內容。</p>
 <button id="source">選取原 ZIP</button><button id="folder">選取目標資料夾</button>
+<button id="browse">從指定資料夾選取原 ZIP</button>
 <p id="status"></p><form method="post" action="/finish"><input type="hidden" name="csrf" value="'''+CSRF+'''">
 <input type="hidden" name="selected_source" id="ss"><input type="hidden" name="selected_folder" id="sf">
 <button>完成並準備 GitHub environment secret</button></form>
-<script>const cfg='''+opts+'''; function pick(folder){
-const view=new google.picker.DocsView().setIncludeFolders(folder).setSelectFolderEnabled(folder).setFileIds(folder?cfg.destination_folder_id:cfg.source_file_id);
+<form method="post" action="/preserve"><input type="hidden" name="csrf" value="'''+CSRF+'''">
+<button>僅保存待驗證授權，不啟用渲染</button></form>
+<script>const cfg='''+opts+'''; function pick(folder,browse=false){
+const view=new google.picker.DocsView().setIncludeFolders(folder).setSelectFolderEnabled(folder);
+if(browse)view.setParent(cfg.destination_folder_id);else view.setFileIds(folder?cfg.destination_folder_id:cfg.source_file_id);
 if(folder)view.setMimeTypes('application/vnd.google-apps.folder');
 new google.picker.PickerBuilder().addView(view).setOAuthToken(cfg.access_token).setDeveloperKey(cfg.picker_key)
 .setAppId(cfg.project_number).setOrigin(location.origin).setCallback(d=>{if(d.action==='picked'){
 const id=d.docs[0].id; if(id!==(folder?cfg.destination_folder_id:cfg.source_file_id)){document.getElementById('status').textContent='選取不符，拒絕。';return;}
 document.getElementById(folder?'sf':'ss').value=id;document.getElementById('status').textContent=folder?'資料夾已選取':'來源已選取';}}).build().setVisible(true);}
-function loaded(){gapi.load('picker',()=>{document.getElementById('source').onclick=()=>pick(false);document.getElementById('folder').onclick=()=>pick(true);});}
+function loaded(){gapi.load('picker',()=>{document.getElementById('source').onclick=()=>pick(false);document.getElementById('folder').onclick=()=>pick(true);document.getElementById('browse').onclick=()=>pick(false,true);});}
 </script><script src="https://apis.google.com/js/api.js?onload=loaded"></script>'''))
             return
         self.reply(page('''<p>只要求 drive.file；應用程式必須已設為正式版。憑證只保留於本機記憶體。</p>
@@ -216,6 +239,11 @@ function loaded(){gapi.load('picker',()=>{document.getElementById('source').oncl
                     'prompt':'consent', 'state':STATE['oauth_state'],
                     'code_challenge':challenge,'code_challenge_method':'S256'})
                 self.reply(b'',303,url)
+            elif self.path == '/preserve':
+                stage = 'PRESERVE_PENDING_GRANT'
+                if not STATE.get('access_token') or not STATE.get('refresh_token'):
+                    raise ValueError()
+                self.config_page(pending=True)
             elif self.path == '/finish':
                 if (q.get('selected_source') != [STATE['source_file_id']] or
                     q.get('selected_folder') != [STATE['destination_folder_id']]):
@@ -225,12 +253,7 @@ function loaded(){gapi.load('picker',()=>{document.getElementById('source').oncl
                     not verify_picker_access(STATE['access_token'],
                         STATE['source_file_id'], STATE['destination_folder_id'])):
                     raise ValueError()
-                config = {k:STATE[k] for k in ('client_id','client_secret','refresh_token','source_file_id','destination_folder_id')}
-                config.update(auth_mode='oauth_refresh', scope=SCOPE, publishing_status='production')
-                # Masked textarea prevents accidental UI snapshots from exposing credentials.
-                self.reply(page('<p>僅複製到 GitHub s08-ephemeral-media environment 的 S08_DRIVE_CONFIG_JSON。</p>'
-                    '<button id="copy">複製受保護設定</button><p id="s"></p><script>const secret='+json.dumps(json.dumps(config))+';'
-                    'document.getElementById("copy").onclick=async()=>{await navigator.clipboard.writeText(secret);document.getElementById("s").textContent="已複製，請勿貼入聊天或公開內容";};</script>'))
+                self.config_page()
             else:
                 raise ValueError()
         except Exception:
@@ -247,3 +270,4 @@ if __name__ == '__main__':
     finally:
         STATE.clear()
         server.server_close()
+

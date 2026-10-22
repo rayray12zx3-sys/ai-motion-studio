@@ -17,6 +17,8 @@ on:
       - 'experiments/cinetic-sidecar/test_s08_oauth_bootstrap.py'
       - 'experiments/cinetic-sidecar/s08_prepare_runtime.sh'
       - 'experiments/cinetic-sidecar/s08_render_request.json'
+      - 'experiments/cinetic-sidecar/s08_grant_probe.py'
+      - 'experiments/cinetic-sidecar/test_s08_grant_probe.py'
   pull_request:
     branches: [main]
     paths:
@@ -32,6 +34,8 @@ on:
       - 'experiments/cinetic-sidecar/test_s08_oauth_bootstrap.py'
       - 'experiments/cinetic-sidecar/s08_prepare_runtime.sh'
       - 'experiments/cinetic-sidecar/s08_render_request.json'
+      - 'experiments/cinetic-sidecar/s08_grant_probe.py'
+      - 'experiments/cinetic-sidecar/test_s08_grant_probe.py'
   workflow_dispatch:
 
 permissions:
@@ -169,3 +173,28 @@ jobs:
       - name: Remove private files from disposable runner
         if: always()
         run: rm -rf -- "$RUNNER_TEMP/s08-private"
+
+  pending-grant-probe:
+    needs: offline-code-test
+    if: github.repository == 'rayray12zx3-sys/ai-motion-studio' && github.ref == 'refs/heads/experiment/cinetic-director-adapter-20261018' && github.actor_id == '307835058' && github.event_name == 'push' && startsWith(github.event.head_commit.message, 'S08_AUTH_PROBE:')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    environment: s08-ephemeral-media
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Require isolated owner metadata request
+        run: |
+          python3 - <<'PY'
+          import json, subprocess
+          p='experiments/cinetic-sidecar/s08_render_request.json'
+          r=json.load(open(p))
+          assert r.get('schema')=='s08-render-request-v1' and r.get('action')=='probe' and type(r.get('sequence')) is int and r['sequence']>0
+          assert subprocess.check_output(['git','diff','--name-only','HEAD^','HEAD'],text=True).splitlines()==[p]
+          PY
+      - name: Refresh pending grant and query exact file metadata only
+        env:
+          S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
+        run: python3 experiments/cinetic-sidecar/s08_grant_probe.py

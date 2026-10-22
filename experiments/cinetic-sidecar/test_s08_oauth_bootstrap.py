@@ -1,11 +1,13 @@
 import io
 import json
+import re
 import unittest
 from unittest.mock import patch
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from email.parser import BytesParser
 import s08_oauth_bootstrap as app
+import s08_drive_bridge as bridge
 
 class Wire:
     def __init__(self, request):
@@ -17,6 +19,33 @@ class Wire:
         self.output.extend(data)
 
 class BootstrapBoundaryTests(unittest.TestCase):
+    def test_stale_callback_does_not_consume_live_state(self):
+        app.STATE.update(oauth_state='live-state',verifier='live-verifier')
+        self.send('/callback?state=stale-state&code=fictional')
+        self.assertEqual(app.STATE['oauth_state'],'live-state')
+        self.assertEqual(app.STATE['verifier'],'live-verifier')
+
+    def test_duplicate_completed_callback_does_not_exchange_again(self):
+        app.STATE.update(access_token='fictional-access',completed_state_digest=app.hashlib.sha256(b'completed-state').hexdigest())
+        with patch.object(app.urllib.request.OpenerDirector,'open') as network:
+            status,headers,_=self.send('/callback?state=completed-state&code=already-consumed')
+        self.assertEqual((status,headers['Location']),(303,app.ORIGIN+'/picker'))
+        network.assert_not_called()
+
+    def test_preserved_pending_grant_is_refused_by_media_bridge(self):
+        app.STATE.update(client_id='fictional-client',client_secret='GOCSPX-fictional',refresh_token='fictional-refresh',access_token='fictional-access',source_file_id='fictionalSource12345',destination_folder_id='fictionalFolder12345')
+        status,_,body=self.send('/preserve',('csrf='+app.CSRF).encode())
+        self.assertEqual(status,200)
+        encoded=re.search(r'const secret=(.*?);document',body.decode()).group(1)
+        config=json.loads(json.loads(encoded))
+        self.assertEqual(config['status'],'PENDING_FILE_GRANT')
+        self.assertNotIn('auth_mode',config)
+        with patch.dict(bridge.os.environ,{'S08_DRIVE_CONFIG_JSON':json.dumps(config)}):
+            with self.assertRaises(bridge.TransferFailure):
+                bridge.config()
+
+    def test_pending_preservation_requires_actual_refresh_grant(self):
+        self.assertEqual(self.send('/preserve',('csrf='+app.CSRF).encode())[0],400)
     def setUp(self):
         app.STATE.clear()
     def send(self,path='/',payload=None,host='localhost:8765',origin=app.ORIGIN):
@@ -174,3 +203,4 @@ class BootstrapBoundaryTests(unittest.TestCase):
 
 if __name__=='__main__':
     unittest.main()
+
