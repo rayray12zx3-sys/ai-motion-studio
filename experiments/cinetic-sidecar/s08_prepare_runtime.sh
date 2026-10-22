@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
+if ! command -v bwrap >/dev/null; then
+  sudo apt-get update -qq >/dev/null 2>&1
+  sudo apt-get install -y -qq bubblewrap >/dev/null 2>&1
+fi
 npm ci --ignore-scripts --no-audit --no-fund >/dev/null 2>&1
 node scripts/setup-encoder.mjs >/dev/null 2>&1
 export PATH="$(dirname "$(node -p "require('ffmpeg-static')")"):$(dirname "$(node -p "require('ffprobe-static').path")"):$RUNNER_TEMP/s08-runtime/node_modules/.bin:$PATH"

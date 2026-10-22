@@ -118,21 +118,26 @@ jobs:
         run: |
           set -euo pipefail
           umask 077
-          python3 experiments/cinetic-sidecar/s08_drive_bridge.py pull "$RUNNER_TEMP/original.zip"
-          python3 experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py "$RUNNER_TEMP/original.zip" "$RUNNER_TEMP/s08-scene"
+          python3 experiments/cinetic-sidecar/s08_drive_bridge.py pull "$RUNNER_TEMP/s08-private/original.zip"
+          python3 experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py "$RUNNER_TEMP/s08-private/original.zip" "$RUNNER_TEMP/s08-private/s08-scene"
       - name: Private timeline checks and REAL engine inside loopback-only namespace
         run: |
           set -euo pipefail
-          bash experiments/cinetic-sidecar/s08_isolate.sh "$RUNNER_TEMP" \
-            > "$RUNNER_TEMP/private-render.log" 2>&1 || { echo 'PRIVATE_ISOLATED_ENGINE_OR_TIMELINE_FAIL'; exit 1; }
+          bash experiments/cinetic-sidecar/s08_isolate.sh "$RUNNER_TEMP/s08-private" \
+            > "$RUNNER_TEMP/s08-private/private-render.log" 2>&1 || { echo 'PRIVATE_ISOLATED_ENGINE_OR_TIMELINE_FAIL'; exit 1; }
+          python3 - <<'PY'
+          import os,pathlib
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'s08-private'
+          assert all(not f.is_symlink() and (not f.is_file() or f.stat().st_nlink==1) for f in p.rglob('*')),'PRIVATE_SANDBOX_OUTPUT_LINK_REJECTED'
+          PY
           echo 'PRIVATE_S08_SOURCE_95_FRAME_SEEK_AND_ENGINE_PASS'
       - name: Decode all 95 actual MP4 frames; produce technical receipt
         run: |
           set -euo pipefail
-          ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,codec_name,r_frame_rate,nb_read_frames -of json "$RUNNER_TEMP/private-hf95.mp4" > "$RUNNER_TEMP/profile.json"
+          ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,codec_name,r_frame_rate,nb_read_frames -of json "$RUNNER_TEMP/s08-private/private-hf95.mp4" > "$RUNNER_TEMP/s08-private/profile.json"
           python3 - <<'PY'
           import hashlib,json,os,pathlib
-          p=pathlib.Path(os.environ['RUNNER_TEMP'])
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'s08-private'
           s=json.loads((p/'profile.json').read_text())['streams'][0]
           assert (s['codec_name'],s['width'],s['height'],s['r_frame_rate'],int(s['nb_read_frames']))==('h264',540,960,'30/1',95),'BAD_HF_VIDEO_PROFILE'
           v=p/'private-hf95.mp4'
@@ -140,17 +145,27 @@ jobs:
           (p/'receipt.json').write_text(json.dumps(r,indent=2))
           print('REAL_95_FRAME_METADATA_PASS')
           PY
-          ffmpeg -nostdin -hide_banner -loglevel error -i "$RUNNER_TEMP/private-hf95.mp4" -f null - >/dev/null 2>&1 || { echo 'DECODE_FAIL'; exit 1; }
+          ffmpeg -nostdin -hide_banner -loglevel error -i "$RUNNER_TEMP/s08-private/private-hf95.mp4" -f null - >/dev/null 2>&1 || { echo 'DECODE_FAIL'; exit 1; }
           echo 'REAL_95_FRAME_FULL_DECODE_PASS'
+          mkdir -m 700 "$RUNNER_TEMP/s08-private/s08-decoded"
+          ffmpeg -nostdin -hide_banner -loglevel error -i "$RUNNER_TEMP/s08-private/private-hf95.mp4" -frames:v 95 "$RUNNER_TEMP/s08-private/s08-decoded/f-%03d.png" > "$RUNNER_TEMP/s08-private/private-decode.log" 2>&1
+          ffmpeg -nostdin -hide_banner -loglevel error -i "$RUNNER_TEMP/s08-private/private-hf95.mp4" -filter_complex '[0:v]fps=30,scale=360:-1,split[a][b];[a]palettegen[p];[b][p]paletteuse' -loop 0 "$RUNNER_TEMP/s08-private/private-review.gif" >> "$RUNNER_TEMP/s08-private/private-decode.log" 2>&1
+          python3 - <<'PY'
+          import os,pathlib,zipfile
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'s08-private'
+          frames=sorted((p/'s08-decoded').glob('f-*.png'))
+          assert len(frames)==95,'DECODED_FRAME_SET_INVALID'
+          with zipfile.ZipFile(p/'private-decoded-95f.zip','w',compression=zipfile.ZIP_DEFLATED) as z:
+              for f in frames: z.write(f,f.name)
+          PY
       - name: Transfer private MP4 and receipt directly to authorized Drive
         env:
           S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
         run: |
           set -euo pipefail
-          python3 experiments/cinetic-sidecar/s08_drive_bridge.py push "$RUNNER_TEMP/private-hf95.mp4" "$RUNNER_TEMP/receipt.json"
+          python3 experiments/cinetic-sidecar/s08_drive_bridge.py push "$RUNNER_TEMP/s08-private/private-hf95.mp4" "$RUNNER_TEMP/s08-private/receipt.json" "$RUNNER_TEMP/s08-private/private-review.gif" "$RUNNER_TEMP/s08-private/private-decoded-95f.zip"
       - name: Public report never carries private content
         run: echo 'Real technical MP4 and QA saved directly to authorized private Drive; art approval remains pending.' >> "$GITHUB_STEP_SUMMARY"
       - name: Remove private files from disposable runner
         if: always()
-        run: |
-          rm -rf -- "$RUNNER_TEMP/s08-scene" "$RUNNER_TEMP/original.zip" "$RUNNER_TEMP/private-hf95.mp4" "$RUNNER_TEMP/receipt.json" "$RUNNER_TEMP/profile.json" "$RUNNER_TEMP/private-render.log"
+        run: rm -rf -- "$RUNNER_TEMP/s08-private"

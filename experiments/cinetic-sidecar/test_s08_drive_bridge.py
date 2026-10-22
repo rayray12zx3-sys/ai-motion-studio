@@ -82,6 +82,20 @@ class DriveBridgeTests(unittest.TestCase):
             with self.assertRaisesRegex(drive.TransferFailure, "^OAUTH_REFRESH_FAILED_REAUTHORIZE_NO_DETAILS_LOGGED$"):
                 drive.refresh({"client_id":"dummy", "client_secret":"dummy", "refresh_token":"dummy"})
 
+    def test_refresh_grant_fixed_endpoint_and_exact_scope(self):
+        cfg={"client_id":"dummy", "client_secret":"dummy", "refresh_token":"dummy"}
+        obj={"access_token":"synthetic-access","token_type":"Bearer","expires_in":3600,"scope":drive.SCOPE}
+        with patch.object(urllib.request,"build_opener") as factory:
+            factory.return_value.open.return_value=io.BytesIO(json.dumps(obj).encode())
+            self.assertEqual(drive.refresh(cfg),'synthetic-access')
+            req=factory.return_value.open.call_args.args[0]
+            self.assertEqual(req.full_url,'https://oauth2.googleapis.com/token')
+        obj['scope']=drive.SCOPE+' https://www.googleapis.com/auth/drive'
+        with patch.object(urllib.request,"build_opener") as factory:
+            factory.return_value.open.return_value=io.BytesIO(json.dumps(obj).encode())
+            with self.assertRaisesRegex(drive.TransferFailure,'OAUTH_REFRESH_FAILED'):
+                drive.refresh(cfg)
+
     def test_public_or_shared_link_folder_refused(self):
         for kind in ("anyone", "domain", "group"):
             obj = {"id": "B" * 25, "mimeType":"application/vnd.google-apps.folder", "trashed": False,

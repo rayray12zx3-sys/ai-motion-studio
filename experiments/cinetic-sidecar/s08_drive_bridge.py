@@ -160,7 +160,7 @@ def upload_one(token, folder, path, name, mime):
         raise TransferFailure("DRIVE_UPLOAD_READBACK_SHA_MISMATCH")
     return output_id
 
-def push(video, receipt):
+def push(video, receipt, *extras):
     token, _, folder = config()
     video = Path(video)
     receipt = Path(receipt)
@@ -168,7 +168,18 @@ def push(video, receipt):
     if not video.is_file() or not receipt.is_file():
         raise TransferFailure("OUTPUTS_MISSING")
     prefix = "S08_HF95_" + sha(video.read_bytes())[:12]
-    upload_one(token, folder, video, prefix + "_UNAPPROVED.mp4", "video/mp4")
+    output_id = upload_one(token, folder, video, prefix + "_UNAPPROVED.mp4", "video/mp4")
+    qa = json.loads(receipt.read_text())
+    qa["video_drive_file_id"] = output_id
+    qa["private_review_files"] = []
+    for extra in extras:
+        path = Path(extra)
+        if path.name not in {"private-review.gif", "private-decoded-95f.zip"} or not path.is_file():
+            raise TransferFailure("INVALID_PRIVATE_REVIEW_OUTPUT")
+        mime = "image/gif" if path.suffix == ".gif" else "application/zip"
+        extra_id = upload_one(token, folder, path, prefix + "_" + path.name, mime)
+        qa["private_review_files"].append({"id":extra_id,"sha256":sha(path.read_bytes()),"name":path.name})
+    receipt.write_text(json.dumps(qa, indent=2))
     upload_one(token, folder, receipt, prefix + "_TECH_QA.json", "application/json")
     print("PRIVATE_DRIVE_VIDEO_AND_QA_SHA_READBACK_PASS")
 
@@ -176,8 +187,8 @@ if __name__ == "__main__":
     try:
         if len(sys.argv) == 3 and sys.argv[1] == "pull":
             pull(sys.argv[2])
-        elif len(sys.argv) == 4 and sys.argv[1] == "push":
-            push(sys.argv[2], sys.argv[3])
+        elif 4 <= len(sys.argv) <= 6 and sys.argv[1] == "push":
+            push(*sys.argv[2:])
         else:
             raise TransferFailure("USAGE")
     except Exception as exc:

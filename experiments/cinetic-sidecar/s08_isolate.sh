@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# Linux-only namespace; source execution cannot reach Drive, npm or the Internet,
-# inherit secrets, or regain sudo privileges. No changes to host firewall.
-sudo unshare --net /bin/bash -c '
-  ip link set lo up
-  exec setpriv --reuid="$1" --regid="$2" --clear-groups --no-new-privs \
-    env -i PATH="$3" HOME="$4" RUNNER_TEMP="$5" CI=true \
-    HYPERFRAMES_NO_TELEMETRY=1 HYPERFRAMES_SKIP_SKILLS=1 HYPERFRAMES_NO_UPDATE_CHECK=1 \
-    /bin/bash "$6"
-' -- "$(id -u)" "$(id -g)" "$PATH" "$HOME" "$1" \
-  "$GITHUB_WORKSPACE/experiments/cinetic-sidecar/s08_private_render.sh"
+# Read-only host filesystem, private writable scene/output directory, isolated PID
+# and network namespaces. Child cannot tamper with the later credentialed bridge.
+mkdir -p "$1/home"
+sudo bwrap --unshare-net --unshare-pid --die-with-parent --new-session \
+  --ro-bind / / --dev /dev --proc /proc --tmpfs /tmp --bind "$1" "$1" \
+  --uid "$(id -u)" --gid "$(id -g)" --cap-drop ALL --clearenv \
+  --setenv PATH "$PATH" --setenv HOME "$1/home" --setenv RUNNER_TEMP "$1" \
+  --setenv CI true --setenv HYPERFRAMES_NO_TELEMETRY 1 \
+  --setenv HYPERFRAMES_SKIP_SKILLS 1 --setenv HYPERFRAMES_NO_UPDATE_CHECK 1 \
+  /usr/bin/setpriv --no-new-privs /bin/bash "$GITHUB_WORKSPACE/experiments/cinetic-sidecar/s08_private_render.sh"
