@@ -9,11 +9,33 @@ import s08_app_render_bridge as staged
 import s08_drive_bridge as bridge
 from s08_v22s_archive_gate import EXPECTED_SHA256
 
-stage.INPUT_NAME = "S08_HF95_APP_OWNED_INPUT_V22S_PRIVATE.zip"
-staged.EXPECTED_SOURCE_SIZE = "306735"
+from s08_v22s_stage import NEW_NAME
+EXPECTED_SOURCE_SIZE = "306735"
 
 def verified_ready():
-    return staged.stage_ready_config()
+    pending=stage.pending_config()
+    token=bridge.refresh(pending)
+    source=stage.exact_app_created(token,NEW_NAME,stage.INPUT_TYPE)
+    folder=stage.exact_app_created(token,stage.OUTPUT_NAME,stage.FOLDER_TYPE)
+    if not source or not folder or source==folder:
+        raise bridge.TransferFailure("V22S_PRIVATE_STAGING_MISSING")
+    src=json.loads(bridge.request(bridge.API+"/drive/v3/files/"+source+
+        "?fields=id,name,mimeType,trashed,size,parents,capabilities(canDownload)",token,limit=65536))
+    dst=json.loads(bridge.request(bridge.API+"/drive/v3/files/"+folder+
+        "?fields=id,name,mimeType,trashed,parents,capabilities(canAddChildren),permissions(type)",
+        token,limit=65536))
+    if (src.get("id")!=source or src.get("name")!=NEW_NAME or
+        src.get("mimeType")!=stage.INPUT_TYPE or src.get("trashed",True) or
+        str(src.get("size"))!=EXPECTED_SOURCE_SIZE or src.get("parents")!=[folder] or
+        not src.get("capabilities",{}).get("canDownload") or
+        dst.get("id")!=folder or dst.get("name")!=stage.OUTPUT_NAME or
+        dst.get("mimeType")!=stage.FOLDER_TYPE or dst.get("trashed",True) or
+        dst.get("parents")!=[pending["destination_folder_id"]] or
+        not dst.get("capabilities",{}).get("canAddChildren") or
+        not isinstance(dst.get("permissions"),list) or not dst["permissions"] or
+        any(p.get("type")!="user" for p in dst["permissions"])):
+        raise bridge.TransferFailure("V22S_PRIVATE_PARENT_OR_SCOPE_INVALID")
+    return dict(pending,source_file_id=source,destination_folder_id=folder)
 
 def run(action,paths):
     ready=verified_ready()
