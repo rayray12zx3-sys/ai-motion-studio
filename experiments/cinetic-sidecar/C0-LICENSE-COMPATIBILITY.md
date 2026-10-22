@@ -1,3 +1,13 @@
+## Brand supplied APP assets vs upstream Cinetic taste bans — 2026-10-23
+
+The immutable upstream `skills/cinetic/SKILL.md` at `ecfa6605de1adb9345ce937724810dc32267d068` was also checked: lines 14 and 53 expressly give a **user-supplied brand precedence over the default artistic bans**, and require the brief / source to document such exceptions. Its general color bans (including orange and glow) are **not** permission to redraw, recolor, or silently replace authenticated existing APP UI.
+
+S08's source UI colors, original orange success/Next controls, source runner/icon imagery, established vertical framing and verified question content must therefore be treated as **source-supplied identity and factual UI**, not newly invented Cinetic ornament. Applying a global linter without that brand exception would risk causing the exact visual regression the user reported. This remains an independent QA rule; it does not grant broader company asset redistribution rights or imply that the upstream 273 techniques have been installed or authored.
+
+Current official upstream project README identifies Cinetic as MIT and HyperFrames as Apache-2.0, but those statements do not clear optional Remotion, external GSAP usage classes, vendor font/media distribution, transitive dependencies or the intended commercial workflow. The project's actual private executable remains the isolated pinned HyperFrames CLI with original UI assets confined to private Drive, pending the separate rights review.
+
+---
+
 ## 2026-10-23 source-only executable inventory extension — full upstream tree enumerated, production still BLOCKED
 
 **Immutable review source:** [Leonxlnx/cinetic at `ecfa6605de1adb9345ce937724810dc32267d068`](https://github.com/Leonxlnx/cinetic/tree/ecfa6605de1adb9345ce937724810dc32267d068/skills/cinetic). Its complete Git tree was returned without truncation (**201 tree entries**). A filter of `skills/cinetic/` files with extensions `.sh/.py/.js/.mjs/.ts/.json` identified **74 files**, including fixtures/data, not 74 executables. This improves inventory completeness; it is **not** a full security/license audit or authorization to install those files.
