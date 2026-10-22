@@ -13,6 +13,7 @@ import secrets
 import time
 from urllib.parse import parse_qs, urlencode, urlsplit
 import urllib.request
+import urllib.error
 
 ORIGIN = 'http://localhost:8765'
 SCOPE = 'https://www.googleapis.com/auth/drive.file'
@@ -61,6 +62,7 @@ class Handler(BaseHTTPRequestHandler):
             return
         parsed = urlsplit(self.path)
         if parsed.path == '/callback':
+            stage = 'STATE_CHECK'
             try:
                 q = parse_qs(parsed.query)
                 if not secrets.compare_digest(q.get('state', [''])[0], STATE.pop('oauth_state')):
@@ -70,19 +72,37 @@ class Handler(BaseHTTPRequestHandler):
                     'grant_type':'authorization_code','code_verifier':STATE.pop('verifier')}).encode()
                 req = urllib.request.Request('https://oauth2.googleapis.com/token', data=payload,
                     headers={'Content-Type':'application/x-www-form-urlencoded'})
+                stage = 'TOKEN_ENDPOINT'
                 with urllib.request.build_opener(NoRedirect()).open(req, timeout=30) as r:
                     raw = r.read(65537)
                 if len(raw) > 65536:
                     raise ValueError()
                 token = json.loads(raw)
+                stage = 'SCOPE_OR_REFRESH_TOKEN'
                 if set(token['scope'].split()) != {SCOPE} or not token.get('refresh_token'):
                     raise ValueError()
                 if token.get('refresh_token_expires_in'):
+                    stage = 'TIME_LIMITED_GRANT'
                     raise ValueError('TIME_LIMITED_GRANT_NOT_LONG_TERM')
                 STATE.update(access_token=token['access_token'], refresh_token=token['refresh_token'])
                 self.reply(b'', 303, ORIGIN+'/picker')
-            except Exception:
-                self.reply(page('授權交換未完成。未輸出詳細錯誤或憑證；請重新授權。'), 400)
+            except Exception as exc:
+                if isinstance(exc, urllib.error.HTTPError):
+                    # Only fixed public OAuth error names; never echo descriptions/body.
+                    try:
+                        code = json.loads(exc.read(4096)).get('error')
+                        if code in {'invalid_client','invalid_grant','invalid_request','access_denied','unauthorized_client'}:
+                            stage = code.upper()
+                    except Exception:
+                        pass
+                STATE['error_stage'] = stage
+                self.reply(b'', 303, ORIGIN+'/error')
+            return
+        if parsed.path == '/error':
+            self.reply(page('授權交換未完成：'+html.escape(STATE.get('error_stage','UNKNOWN'))+
+                '。未顯示憑證或伺服器回應。<form method="post" action="/retry">'
+                '<input type="hidden" name="csrf" value="'+CSRF+'">'
+                '<button>以記憶體中相同設定重新授權</button></form>'),400)
             return
         if parsed.path == '/picker' and STATE.get('access_token'):
             # Tokens stay in this private loopback page. No media bytes are fetched.
@@ -127,15 +147,18 @@ function loaded(){gapi.load('picker',()=>{document.getElementById('source').oncl
             if not secrets.compare_digest(q['csrf'][0], CSRF):
                 raise ValueError()
             stage = 'FORM'
-            if self.path == '/start':
-                if q.get('production') != ['yes']:
-                    raise ValueError()
-                import re
-                for k in ('client_id','client_secret','picker_key','project_number','source_file_id','destination_folder_id'):
-                    value = q[k][0]
-                    if not value or len(value) > 4096 or any(ord(x)<32 for x in value):
+            if self.path in ('/start','/retry'):
+                if self.path == '/start':
+                    if q.get('production') != ['yes']:
                         raise ValueError()
-                    STATE[k] = value
+                    for k in ('client_id','client_secret','picker_key','project_number','source_file_id','destination_folder_id'):
+                        value = q[k][0]
+                        if not value or len(value) > 4096 or any(ord(x)<32 for x in value):
+                            raise ValueError()
+                        STATE[k] = value
+                import re
+                if not STATE.get('client_secret','').startswith('GOCSPX-') or not STATE.get('picker_key','').startswith('AIza'):
+                    raise ValueError()
                 for k in ('source_file_id','destination_folder_id'):
                     if not re.fullmatch(r'[A-Za-z0-9_-]{15,160}', STATE[k]):
                         raise ValueError()
@@ -174,4 +197,3 @@ if __name__ == '__main__':
     finally:
         STATE.clear()
         server.server_close()
-
