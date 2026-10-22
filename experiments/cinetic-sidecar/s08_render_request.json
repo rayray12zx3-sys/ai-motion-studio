@@ -1,1 +1,1 @@
-{"schema":"s08-render-request-v1","sequence":2,"action":"stage"}
+{"schema":"s08-render-request-v1","sequence":3,"action":"verify_staged"}
