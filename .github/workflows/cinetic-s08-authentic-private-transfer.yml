@@ -28,6 +28,10 @@ on:
       - 'experiments/cinetic-sidecar/s08_v22t_archive_gate.py'
       - 'experiments/cinetic-sidecar/s08_v22t_bridge.py'
       - 'experiments/cinetic-sidecar/test_s08_v22t_gate.py'
+      - 'experiments/cinetic-sidecar/s08_v22u_stage.py'
+      - 'experiments/cinetic-sidecar/s08_v22u_archive_gate.py'
+      - 'experiments/cinetic-sidecar/s08_v22u_bridge.py'
+      - 'experiments/cinetic-sidecar/test_s08_v22u_gate.py'
       - 'experiments/cinetic-sidecar/s08_render_request.json'
       - 'experiments/cinetic-sidecar/s08_grant_probe.py'
       - 'experiments/cinetic-sidecar/test_s08_grant_probe.py'
@@ -57,6 +61,10 @@ on:
       - 'experiments/cinetic-sidecar/s08_v22t_archive_gate.py'
       - 'experiments/cinetic-sidecar/s08_v22t_bridge.py'
       - 'experiments/cinetic-sidecar/test_s08_v22t_gate.py'
+      - 'experiments/cinetic-sidecar/s08_v22u_stage.py'
+      - 'experiments/cinetic-sidecar/s08_v22u_archive_gate.py'
+      - 'experiments/cinetic-sidecar/s08_v22u_bridge.py'
+      - 'experiments/cinetic-sidecar/test_s08_v22u_gate.py'
       - 'experiments/cinetic-sidecar/s08_render_request.json'
       - 'experiments/cinetic-sidecar/s08_grant_probe.py'
       - 'experiments/cinetic-sidecar/test_s08_grant_probe.py'
@@ -686,6 +694,160 @@ jobs:
         run: |
           set -euo pipefail
           python3 experiments/cinetic-sidecar/s08_v22t_bridge.py push "$RUNNER_TEMP/s08-private/private-hf95.mp4" "$RUNNER_TEMP/s08-private/receipt.json" "$RUNNER_TEMP/s08-private/private-review.gif" "$RUNNER_TEMP/s08-private/private-decoded-95f.zip"
+      - name: Public report never carries private content
+        run: echo 'Real technical MP4 and QA saved directly to authorized private Drive; art approval remains pending.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Remove private files from disposable runner
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/s08-private"
+
+  v22u-private-empty-stage:
+    needs: offline-code-test
+    if: github.repository == 'rayray12zx3-sys/ai-motion-studio' && github.ref == 'refs/heads/experiment/cinetic-director-adapter-20261018' && github.actor_id == '307835058' && github.event_name == 'push' && startsWith(github.event.head_commit.message, 'S08_V22U_STAGE:')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    environment: s08-ephemeral-media
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Require owner-only file request, never media, never code-edit
+        run: |
+          python3 - <<'PY'
+          import json,subprocess
+          p='experiments/cinetic-sidecar/s08_render_request.json'
+          r=json.load(open(p))
+          assert r.get('schema')=='s08-render-request-v1' and r.get('action')=='stage_v22u' and type(r.get('sequence')) is int and r['sequence']>10
+          assert subprocess.check_output(['git','diff','--name-only','HEAD^','HEAD'],text=True).splitlines()==[p]
+          PY
+      - name: Use existing offline grant only to create a new EMPTY v22u private ZIP placeholder
+        env:
+          S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
+        run: python3 experiments/cinetic-sidecar/s08_v22u_stage.py
+
+  v22u-private-grant-verify:
+    needs: offline-code-test
+    if: github.repository == 'rayray12zx3-sys/ai-motion-studio' && github.ref == 'refs/heads/experiment/cinetic-director-adapter-20261018' && github.actor_id == '307835058' && github.event_name == 'push' && startsWith(github.event.head_commit.message, 'S08_V22U_VERIFY:')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    environment: s08-ephemeral-media
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Require owner-only metadata request without code change
+        run: |
+          python3 - <<'PY'
+          import json,subprocess
+          p='experiments/cinetic-sidecar/s08_render_request.json'
+          r=json.load(open(p))
+          assert r.get('schema')=='s08-render-request-v1' and r.get('action')=='verify_v22u' and type(r.get('sequence')) is int and r['sequence']>10
+          assert subprocess.check_output(['git','diff','--name-only','HEAD^','HEAD'],text=True).splitlines()==[p]
+          PY
+      - name: Prove new private staged input and output scope using existing refresh grant
+        env:
+          S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
+        run: python3 experiments/cinetic-sidecar/s08_v22u_bridge.py probe
+
+  v22u-private-real-s08:
+    needs: [offline-code-test, engine-preflight]
+    if: github.repository == 'rayray12zx3-sys/ai-motion-studio' && github.ref == 'refs/heads/experiment/cinetic-director-adapter-20261018' && github.actor_id == '307835058' && github.event_name == 'push' && startsWith(github.event.head_commit.message, 'S08_V22U_RENDER:')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: s08-ephemeral-media
+    env:
+      CI: 'true'
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+      HYPERFRAMES_NO_UPDATE_CHECK: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Require isolated owner render request; never render from PR or code-change push
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          p='experiments/cinetic-sidecar/s08_render_request.json'
+          r=json.load(open(p))
+          assert r.get('schema')=='s08-render-request-v1' and r.get('action')=='render_v22u' and type(r.get('sequence')) is int and r['sequence']>0,'RENDER_REQUEST_DISABLED'
+          if os.environ['EVENT_NAME']=='push':
+            paths=subprocess.check_output(['git','diff','--name-only','HEAD^','HEAD'],text=True).splitlines()
+            assert paths==[p],'RENDER_REQUEST_MUST_NOT_CHANGE_CODE'
+          PY
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+      - name: Install locked runtime and verify isolated synthetic engine before private input
+        run: bash experiments/cinetic-sidecar/s08_prepare_runtime.sh
+      - name: Refuse media access without the protected offline grant
+        env:
+          S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
+        run: |
+          if [ -z "$S08_DRIVE_CONFIG_JSON" ]; then
+            echo 'BLOCKED: S08_DRIVE_CONFIG_JSON_NOT_CONFIGURED'
+            exit 78
+          fi
+      - name: Securely fetch and validate actual archived APP scene
+        env:
+          S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 experiments/cinetic-sidecar/s08_v22u_bridge.py pull "$RUNNER_TEMP/s08-private/original.zip"
+          python3 experiments/cinetic-sidecar/s08_v22u_archive_gate.py "$RUNNER_TEMP/s08-private/original.zip" "$RUNNER_TEMP/s08-private/s08-scene"
+      - name: Private timeline checks and REAL engine inside loopback-only namespace
+        run: |
+          set -euo pipefail
+          bash experiments/cinetic-sidecar/s08_isolate.sh "$RUNNER_TEMP/s08-private" \
+            > "$RUNNER_TEMP/s08-private/private-render.log" 2>&1 || { echo 'PRIVATE_ISOLATED_ENGINE_OR_TIMELINE_FAIL'; exit 1; }
+          python3 - <<'PY'
+          import os,pathlib
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'s08-private'
+          assert all(not f.is_symlink() and (not f.is_file() or f.stat().st_nlink==1) for f in p.rglob('*')),'PRIVATE_SANDBOX_OUTPUT_LINK_REJECTED'
+          PY
+          echo 'PRIVATE_S08_SOURCE_95_FRAME_SEEK_AND_ENGINE_PASS'
+      - name: Decode all 95 actual MP4 frames; produce technical receipt
+        run: |
+          set -euo pipefail
+          ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,codec_name,r_frame_rate,nb_read_frames -of json "$RUNNER_TEMP/s08-private/private-hf95.mp4" > "$RUNNER_TEMP/s08-private/profile.json"
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'s08-private'
+          s=json.loads((p/'profile.json').read_text())['streams'][0]
+          assert (s['codec_name'],s['width'],s['height'],s['r_frame_rate'],int(s['nb_read_frames']))==('h264',540,960,'30/1',95),'BAD_HF_VIDEO_PROFILE'
+          v=p/'private-hf95.mp4'
+          r={'status':'GENUINE_HYPERFRAMES_95F_TECH_PASS','engine':'hyperframes@0.8.143','frames':95,'fps':30,'width':540,'height':960,'video_sha256':hashlib.sha256(v.read_bytes()).hexdigest(),'art':'USER_REVIEW_PENDING','rights':'REVIEW_PENDING','premiere':'NOT_TESTED'}
+          (p/'receipt.json').write_text(json.dumps(r,indent=2))
+          print('REAL_95_FRAME_METADATA_PASS')
+          PY
+          ffmpeg -nostdin -hide_banner -loglevel error -i "$RUNNER_TEMP/s08-private/private-hf95.mp4" -f null - >/dev/null 2>&1 || { echo 'DECODE_FAIL'; exit 1; }
+          echo 'REAL_95_FRAME_FULL_DECODE_PASS'
+          mkdir -m 700 "$RUNNER_TEMP/s08-private/s08-decoded"
+          ffmpeg -nostdin -hide_banner -loglevel error -i "$RUNNER_TEMP/s08-private/private-hf95.mp4" -frames:v 95 "$RUNNER_TEMP/s08-private/s08-decoded/f-%03d.png" > "$RUNNER_TEMP/s08-private/private-decode.log" 2>&1
+          ffmpeg -nostdin -hide_banner -loglevel error -i "$RUNNER_TEMP/s08-private/private-hf95.mp4" -filter_complex '[0:v]fps=30,scale=360:-1,split[a][b];[a]palettegen[p];[b][p]paletteuse' -loop 0 "$RUNNER_TEMP/s08-private/private-review.gif" >> "$RUNNER_TEMP/s08-private/private-decode.log" 2>&1
+          python3 - <<'PY'
+          import os,pathlib,zipfile
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'s08-private'
+          frames=sorted((p/'s08-decoded').glob('f-*.png'))
+          assert len(frames)==95,'DECODED_FRAME_SET_INVALID'
+          with zipfile.ZipFile(p/'private-decoded-95f.zip','w',compression=zipfile.ZIP_DEFLATED) as z:
+              for f in frames: z.write(f,f.name)
+          PY
+      - name: Transfer private MP4 and receipt directly to authorized Drive
+        env:
+          S08_DRIVE_CONFIG_JSON: ${{ secrets.S08_DRIVE_CONFIG_JSON }}
+        run: |
+          set -euo pipefail
+          python3 experiments/cinetic-sidecar/s08_v22u_bridge.py push "$RUNNER_TEMP/s08-private/private-hf95.mp4" "$RUNNER_TEMP/s08-private/receipt.json" "$RUNNER_TEMP/s08-private/private-review.gif" "$RUNNER_TEMP/s08-private/private-decoded-95f.zip"
       - name: Public report never carries private content
         run: echo 'Real technical MP4 and QA saved directly to authorized private Drive; art approval remains pending.' >> "$GITHUB_STEP_SUMMARY"
       - name: Remove private files from disposable runner
