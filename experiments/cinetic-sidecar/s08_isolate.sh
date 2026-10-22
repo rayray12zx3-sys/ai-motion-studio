@@ -2,13 +2,14 @@
 set -euo pipefail
 # Read-only host filesystem, private writable scene/output directory, isolated PID
 # and network namespaces. Child cannot tamper with the later credentialed bridge.
-mkdir -p "$1/home"
+mkdir -p "$1/home" "$1/tmp"
 browser_path="$(cat "$RUNNER_TEMP/s08-runtime/browser-path")"
 test -x "$browser_path"
 sudo bwrap --unshare-net --unshare-pid --die-with-parent --new-session \
   --ro-bind / / --dev /dev --proc /proc --tmpfs /tmp --bind "$1" "$1" \
   --cap-drop ALL --cap-add CAP_SETUID --cap-add CAP_SETGID --cap-add CAP_SETPCAP --clearenv \
   --setenv PATH "$PATH" --setenv HOME "$1/home" --setenv RUNNER_TEMP "$1" \
+  --setenv TMPDIR "$1/tmp" \
   --setenv CI true --setenv HYPERFRAMES_NO_TELEMETRY 1 \
   --setenv HYPERFRAMES_BROWSER_PATH "$browser_path" \
   --setenv HYPERFRAMES_SKIP_SKILLS 1 --setenv HYPERFRAMES_NO_UPDATE_CHECK 1 \
