@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 import urllib.request
+from urllib.error import HTTPError
 
 import s08_drive_bridge as drive
 
@@ -81,6 +82,87 @@ class DriveBridgeTests(unittest.TestCase):
         with patch.object(urllib.request, "build_opener", side_effect=ValueError("private secret response")):
             with self.assertRaisesRegex(drive.TransferFailure, "^OAUTH_REFRESH_FAILED_REAUTHORIZE_NO_DETAILS_LOGGED$"):
                 drive.refresh({"client_id":"dummy", "client_secret":"dummy", "refresh_token":"dummy"})
+
+    def test_refresh_http_error_classified_without_secret_or_server_message(self):
+        err=HTTPError('https://oauth2.googleapis.com/token',400,'SECRET_ERR',{},
+            io.BytesIO(b'{"error":"invalid_client","error_description":"DO_NOT_ECHO_CREDENTIAL"}'))
+        with patch.object(urllib.request,"build_opener") as factory:
+            factory.return_value.open.side_effect=err
+            with self.assertRaisesRegex(drive.TransferFailure,'^OAUTH_REFRESH_FAILED_INVALID_CLIENT
+        cfg={"client_id":"dummy", "client_secret":"dummy", "refresh_token":"dummy"}
+        obj={"access_token":"synthetic-access","token_type":"Bearer","expires_in":3600,"scope":drive.SCOPE}
+        with patch.object(urllib.request,"build_opener") as factory:
+            factory.return_value.open.return_value=io.BytesIO(json.dumps(obj).encode())
+            self.assertEqual(drive.refresh(cfg),'synthetic-access')
+            req=factory.return_value.open.call_args.args[0]
+            self.assertEqual(req.full_url,'https://oauth2.googleapis.com/token')
+        obj['scope']=drive.SCOPE+' https://www.googleapis.com/auth/drive'
+        with patch.object(urllib.request,"build_opener") as factory:
+            factory.return_value.open.return_value=io.BytesIO(json.dumps(obj).encode())
+            with self.assertRaisesRegex(drive.TransferFailure,'OAUTH_REFRESH_FAILED'):
+                drive.refresh(cfg)
+
+    def test_public_or_shared_link_folder_refused(self):
+        for kind in ("anyone", "domain", "group"):
+            obj = {"id": "B" * 25, "mimeType":"application/vnd.google-apps.folder", "trashed": False,
+                "capabilities":{"canAddChildren":True}, "permissions":[{"type":kind}]}
+            with patch.object(drive, "request", return_value=json.dumps(obj).encode()):
+                with self.assertRaisesRegex(drive.TransferFailure, "PRIVATE_DESTINATION_VALIDATION_FAILED"):
+                    drive.validate_folder("dummy", "B" * 25)
+
+    def test_readback_mismatch_is_not_success(self):
+        f = self.root / "video.mp4"
+        f.write_bytes(b"synthetic")
+        with patch.object(drive, "request", side_effect=[json.dumps({"id":"C"*25}).encode(), b"different"]):
+            with self.assertRaisesRegex(drive.TransferFailure, "DRIVE_UPLOAD_READBACK_SHA_MISMATCH"):
+                drive.upload_one("dummy", "B"*25, f, "synthetic.mp4", "video/mp4")
+
+if __name__ == "__main__":
+    unittest.main()
+) as raised:
+                drive.refresh({"client_id":"a","client_secret":"SECRET","refresh_token":"DO_NOT_ECHO"})
+        self.assertNotIn("DO_NOT_ECHO",str(raised.exception))
+        self.assertNotIn("SECRET",str(raised.exception))
+
+    def test_refresh_unknown_error_never_reflects_untrusted_text(self):
+        err=HTTPError('https://oauth2.googleapis.com/token',400,'UNKNOWN',{},
+            io.BytesIO(b'{"error":"LEAK_ME","error_description":"LEAK_ME"}'))
+        with patch.object(urllib.request,"build_opener") as factory:
+            factory.return_value.open.side_effect=err
+            with self.assertRaisesRegex(drive.TransferFailure,'^OAUTH_REFRESH_FAILED_UNCLASSIFIED
+        cfg={"client_id":"dummy", "client_secret":"dummy", "refresh_token":"dummy"}
+        obj={"access_token":"synthetic-access","token_type":"Bearer","expires_in":3600,"scope":drive.SCOPE}
+        with patch.object(urllib.request,"build_opener") as factory:
+            factory.return_value.open.return_value=io.BytesIO(json.dumps(obj).encode())
+            self.assertEqual(drive.refresh(cfg),'synthetic-access')
+            req=factory.return_value.open.call_args.args[0]
+            self.assertEqual(req.full_url,'https://oauth2.googleapis.com/token')
+        obj['scope']=drive.SCOPE+' https://www.googleapis.com/auth/drive'
+        with patch.object(urllib.request,"build_opener") as factory:
+            factory.return_value.open.return_value=io.BytesIO(json.dumps(obj).encode())
+            with self.assertRaisesRegex(drive.TransferFailure,'OAUTH_REFRESH_FAILED'):
+                drive.refresh(cfg)
+
+    def test_public_or_shared_link_folder_refused(self):
+        for kind in ("anyone", "domain", "group"):
+            obj = {"id": "B" * 25, "mimeType":"application/vnd.google-apps.folder", "trashed": False,
+                "capabilities":{"canAddChildren":True}, "permissions":[{"type":kind}]}
+            with patch.object(drive, "request", return_value=json.dumps(obj).encode()):
+                with self.assertRaisesRegex(drive.TransferFailure, "PRIVATE_DESTINATION_VALIDATION_FAILED"):
+                    drive.validate_folder("dummy", "B" * 25)
+
+    def test_readback_mismatch_is_not_success(self):
+        f = self.root / "video.mp4"
+        f.write_bytes(b"synthetic")
+        with patch.object(drive, "request", side_effect=[json.dumps({"id":"C"*25}).encode(), b"different"]):
+            with self.assertRaisesRegex(drive.TransferFailure, "DRIVE_UPLOAD_READBACK_SHA_MISMATCH"):
+                drive.upload_one("dummy", "B"*25, f, "synthetic.mp4", "video/mp4")
+
+if __name__ == "__main__":
+    unittest.main()
+) as raised:
+                drive.refresh({"client_id":"a","client_secret":"x","refresh_token":"x"})
+        self.assertNotIn("LEAK_ME",str(raised.exception))
 
     def test_refresh_grant_fixed_endpoint_and_exact_scope(self):
         cfg={"client_id":"dummy", "client_secret":"dummy", "refresh_token":"dummy"}
