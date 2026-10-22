@@ -1,3 +1,26 @@
+## 2026-10-23 source-only executable inventory extension — full upstream tree enumerated, production still BLOCKED
+
+**Immutable review source:** [Leonxlnx/cinetic at `ecfa6605de1adb9345ce937724810dc32267d068`](https://github.com/Leonxlnx/cinetic/tree/ecfa6605de1adb9345ce937724810dc32267d068/skills/cinetic). Its complete Git tree was returned without truncation (**201 tree entries**). A filter of `skills/cinetic/` files with extensions `.sh/.py/.js/.mjs/.ts/.json` identified **74 files**, including fixtures/data, not 74 executables. This improves inventory completeness; it is **not** a full security/license audit or authorization to install those files.
+
+Beyond the nine existing entrypoints reviewed above, **eight more exact pinned source files** were read without execution:
+
+| Upstream source | Verified execution / asset behavior | Gate |
+| --- | --- | --- |
+| `scripts/add-font.mjs` | Invokes npm through `execFileSync` (Windows invocation with `shell: true`), supports `npm pack` to a disposable directory, local file copy/removal; new font binary and package provenance/notice checks are needed | BLOCK implicit adoption |
+| `scripts/outline-text.py` | Requires fontTools/Brotli/uharfbuzz; writes outlined SVG from a supplied font, separate licensed font input and output provenance | CONDITIONAL |
+| `scripts/pick.py` | Inspected as a local technique-selection source; keyword screening did not identify network/shell/process dispatch, but that scan is *not* a formal taint audit | SOURCE ONLY |
+| `scripts/probe.py` | Calls `ffprobe` and `ffmpeg` through Python `subprocess`, including a command with overwrite flag `-y` | Explicit output bounds required |
+| `scripts/audio/kit.py` | Invokes external Python/kit probes and optional **earshot** executable with subprocess and significant timeouts; availability and independent license/source must be reviewed | Not activated |
+| `scripts/accumulate.py` | Launches FFmpeg subprocess decoder/encoder, with output overwrite flag `-y` | Explicit output bounds required |
+| `scripts/brand-svg.ts` | Writes SVG files and executes a Python font-outline helper via `execFileSync`; depends on approved private font source and reviewed output paths | CONDITIONAL |
+| `scripts/check-sync.py` | Invokes FFmpeg to decode audio as floating samples; no native Premiere, playback, or sync certification is implied | SOURCE ONLY |
+
+**Audit discipline:** this only confirms the above source patterns, not exploitability or safety of arbitrarily supplied paths. All 74 candidates are not claimed as fully read; dependency transitive licenses, additional Remotion/audio/TypeScript tools, complete npm `postinstall` closure, and exact company commercial usage remain unapproved. Keep existing project-local `cinetic-synthetic-sidecar` isolated, do not run upstream `new-film.sh`, `hf-finish.sh`, font/audio installers or the Studio GUI on company materials.
+
+**C0 technical decision:** continue pinned independently tested `hyperframes@0.8.143` for experimental renders. Do not represent source-only upstream Cinetic metadata/technique references as its complete 273-technique implementation. The C4 commercial promotion gate remains **BLOCKED** until the remaining full dependency/script/license review, independent art acceptance and Windows Premiere test are separately evidenced.
+
+---
+
 ## 2026-10-23 source-pinned upstream executable audit (partial; no execution)
 
 The upstream tree at immutable `Leonxlnx/cinetic` commit `ecfa6605de1adb9345ce937724810dc32267d068` was inspected again as **source-only**. The actual R&D film does **not** execute or automatically install the upstream Skill scripts; the separately pinned HyperFrames 0.8.143 CLI is used under protected and isolated execution.
