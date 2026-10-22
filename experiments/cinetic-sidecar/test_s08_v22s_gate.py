@@ -17,7 +17,8 @@ class V22sIsolationTests(unittest.TestCase):
     def test_revision_has_separate_private_input(self):
         self.assertNotEqual(staging.NEW_NAME,
             "S08_HF95_APP_OWNED_INPUT_PENDING_20261022.zip")
-        self.assertEqual(bridge.stage.INPUT_NAME,staging.NEW_NAME)
+        self.assertEqual(bridge.NEW_NAME,staging.NEW_NAME)
+        self.assertNotEqual(bridge.stage.INPUT_NAME,bridge.NEW_NAME)
 
     def test_correct_staged_source_is_required(self):
         with patch.object(bridge, "verified_ready", return_value={
