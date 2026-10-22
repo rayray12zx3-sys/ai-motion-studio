@@ -32,7 +32,16 @@ def config():
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, request, fp, code, msg, headers, new_url):
-        raise TransferFailure("UNEXPECTED_AUTHENTICATED_REDIRECT")
+        from urllib.parse import urlsplit
+        p = urlsplit(new_url)
+        host = (p.hostname or "").lower()
+        google_media = (host.endswith(".googleusercontent.com") or
+                        host == "drive.usercontent.google.com" or
+                        host == "googleusercontent.com")
+        if p.scheme != "https" or not google_media:
+            raise TransferFailure("UNTRUSTED_DOWNLOAD_REDIRECT")
+        # Never forward the OAuth Authorization header across hosts.
+        return urllib.request.Request(new_url, headers={"Accept": "application/octet-stream"})
 
 def request(url, token, *, payload=None, mime=None, limit=SIZE_CAP):
     if not url.startswith(API + "/"):
