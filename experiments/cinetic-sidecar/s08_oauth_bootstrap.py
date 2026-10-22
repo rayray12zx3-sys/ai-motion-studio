@@ -28,7 +28,7 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 def page(body):
     return ('<!doctype html><html lang="zh-Hant"><meta charset="utf-8">'
-        '<meta name="referrer" content="same-origin"><title>S08 私人授權</title>'
+        '<meta name="referrer" content="strict-origin-when-cross-origin"><title>S08 私人授權</title>'
         '<body><h1>S08 一次性授權</h1>' + body + '</body></html>').encode()
 
 
@@ -42,7 +42,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Cache-Control', 'no-store')
         self.send_header('Content-Length', str(len(content)))
         self.send_header('Connection', 'close')
-        self.send_header('Referrer-Policy', 'same-origin')
+        self.send_header('Referrer-Policy', 'strict-origin-when-cross-origin')
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.send_header('Content-Security-Policy', "frame-ancestors 'none'; base-uri 'none'")
         if location:
