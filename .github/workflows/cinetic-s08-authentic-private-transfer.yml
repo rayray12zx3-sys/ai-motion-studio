@@ -32,6 +32,8 @@ on:
       - 'experiments/cinetic-sidecar/s08_v22u_archive_gate.py'
       - 'experiments/cinetic-sidecar/s08_v22u_bridge.py'
       - 'experiments/cinetic-sidecar/test_s08_v22u_gate.py'
+      - 'experiments/cinetic-sidecar/s08_visual_parity_gate.py'
+      - 'experiments/cinetic-sidecar/test_s08_visual_parity_gate.py'
       - 'experiments/cinetic-sidecar/s08_render_request.json'
       - 'experiments/cinetic-sidecar/s08_grant_probe.py'
       - 'experiments/cinetic-sidecar/test_s08_grant_probe.py'
@@ -65,6 +67,8 @@ on:
       - 'experiments/cinetic-sidecar/s08_v22u_archive_gate.py'
       - 'experiments/cinetic-sidecar/s08_v22u_bridge.py'
       - 'experiments/cinetic-sidecar/test_s08_v22u_gate.py'
+      - 'experiments/cinetic-sidecar/s08_visual_parity_gate.py'
+      - 'experiments/cinetic-sidecar/test_s08_visual_parity_gate.py'
       - 'experiments/cinetic-sidecar/s08_render_request.json'
       - 'experiments/cinetic-sidecar/s08_grant_probe.py'
       - 'experiments/cinetic-sidecar/test_s08_grant_probe.py'
@@ -841,6 +845,22 @@ jobs:
           assert len(frames)==95,'DECODED_FRAME_SET_INVALID'
           with zipfile.ZipFile(p/'private-decoded-95f.zip','w',compression=zipfile.ZIP_DEFLATED) as z:
               for f in frames: z.write(f,f.name)
+          PY
+      - name: Independently reject decoded visual-regression frames before private upload
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os,pathlib,subprocess,sys
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])/'s08-private'
+          baseline=list((root/'s08-scene').glob('baseline_*.mp4'))
+          assert len(baseline)==1,'PRIVATE_REFERENCE_MISSING_OR_AMBIGUOUS'
+          subprocess.run([sys.executable,
+            'experiments/cinetic-sidecar/s08_visual_parity_gate.py',
+            str(baseline[0]),str(root/'private-hf95.mp4'),
+            '--report',str(root/'numeric-parity.json')],check=True)
+          receipt=json.loads((root/'receipt.json').read_text())
+          receipt['numeric_parity']=json.loads((root/'numeric-parity.json').read_text())
+          (root/'receipt.json').write_text(json.dumps(receipt,indent=2))
           PY
       - name: Transfer private MP4 and receipt directly to authorized Drive
         env:
