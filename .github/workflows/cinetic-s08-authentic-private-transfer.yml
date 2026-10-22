@@ -9,6 +9,13 @@ on:
       - 'experiments/cinetic-sidecar/test_s08_ephemeral_archive_gate.py'
       - 'experiments/cinetic-sidecar/s08_drive_bridge.py'
       - '.github/workflows/cinetic-s08-authentic-private-transfer.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/cinetic-sidecar/s08_ephemeral_archive_gate.py'
+      - 'experiments/cinetic-sidecar/test_s08_ephemeral_archive_gate.py'
+      - 'experiments/cinetic-sidecar/s08_drive_bridge.py'
+      - '.github/workflows/cinetic-s08-authentic-private-transfer.yml'
   workflow_dispatch:
 
 permissions:
@@ -20,7 +27,7 @@ concurrency:
 
 jobs:
   offline-code-test:
-    if: github.event_name == 'push'
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
