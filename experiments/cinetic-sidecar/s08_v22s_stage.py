@@ -6,7 +6,6 @@ import s08_app_owned_stage as stage
 import s08_drive_bridge as bridge
 
 NEW_NAME = "S08_HF95_APP_OWNED_INPUT_V22S_PRIVATE.zip"
-stage.INPUT_NAME = NEW_NAME
 
 def main():
     pending = stage.pending_config()
