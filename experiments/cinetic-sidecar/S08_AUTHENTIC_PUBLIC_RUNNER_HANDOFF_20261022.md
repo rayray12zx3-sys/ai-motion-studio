@@ -1,3 +1,20 @@
+## 2026-10-23 CURRENT — privately reviewed v22u atomic-card group compositor
+
+This is the **latest** status; all prior v22t, v22s and first-engine failure descriptions below are preserved historical evidence, not the current gate.
+
+- Root cause of v22t's remaining card ghost: applying Canvas globalAlpha to each card shape, text layer and selection row separately, instead of drawing one complete RGBA card and then fading the **flattened group**. This creates inappropriate internal backdrop blending, unlike the earlier editorial baseline.
+- New v22u **private, separately hash-pinned** source uses a genuine deterministic 95-frame Canvas composition. A transparent offscreen layer flattens the complete quiz card, rows and existing correct-response treatment; a single group alpha handles the outgoing card. Previously corrected background light, animated road and runner remain. All 20 original client assets stay private; **there are no real images, animation frames, source ZIP bytes, Drive IDs, user account secrets or token data in this public branch or Actions artifacts**.
+- Protected isolated Linux job [#39817250398](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39817250398) **SUCCESS** using pinned real HyperFrames 0.8.143. ZIP+manifest verification, full 95-frame H.264 540x960 30fps decode, private Drive upload and SHA256 readback all passed; all original privately reviewed baselines remain intact.
+- Independent *locally decoded* representative A/B testing, fixed 16 transition frames and identical RGB ROIs against the earlier editorial baseline:
+  - first true HF: card/road/full MAE **12.628 / 6.338 / 10.952**
+  - v22s: **12.593 / 2.262 / 6.866**
+  - v22t: **12.634 / 2.264 / 6.873**
+  - v22u: **7.807 / 2.262 / 5.294** (card disparity 38.2% lower than v22t).
+- A new stdlib-only, local-files-only `s08_visual_parity_gate.py` + fictional regressions implements a **non-art-approval numeric gate** on the same 16 frames: card <=10, road <=3, full <=7. Previously released v22t fails this metric; v22u passes. The owner-only v22u protected Actions route now runs this comparison before private media upload for future requests. This never grants `USER_ART_APPROVED` or pretends the full upstream Cinetic agent system is executed.
+- Independent private QA report, receipt, 95 decoded frames and visual comparisons are recorded **ONLY** in the existing sole private Drive CURRENT; never paste their source identifiers into public repository docs.
+- **Remaining gates:** actual full-speed owner art sign-off, user-device 1x viewing, surrounding-ad editorial/sound sync, Windows Premiere import/export, remaining dependency/font/codec usage and full commercial-license review; no main merge. The user's creative intent is a fast in-ad APP insert, *not* a self-contained readable lesson.
+
+---
 ## Editorial purpose confirmed — 2026-10-22: fast APP-operation insert
 
 **USER-CONFIRMED creative intent:** S08 is a short, fast-moving APP-operation insert *within a longer advertisement*, not a standalone teaching segment or a long-form product demo intended for viewers to read every answer option.
