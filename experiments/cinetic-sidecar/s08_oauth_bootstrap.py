@@ -93,7 +93,7 @@ class Handler(BaseHTTPRequestHandler):
 <input type="hidden" name="selected_source" id="ss"><input type="hidden" name="selected_folder" id="sf">
 <button>完成並準備 GitHub environment secret</button></form>
 <script>const cfg='''+opts+'''; function pick(folder){
-const view=new google.picker.DocsView().setIncludeFolders(folder).setSelectFolderEnabled(folder).setFileIds([folder?cfg.destination_folder_id:cfg.source_file_id]);
+const view=new google.picker.DocsView().setIncludeFolders(folder).setSelectFolderEnabled(folder).setFileIds(folder?cfg.destination_folder_id:cfg.source_file_id);
 if(folder)view.setMimeTypes('application/vnd.google-apps.folder');
 new google.picker.PickerBuilder().addView(view).setOAuthToken(cfg.access_token).setDeveloperKey(cfg.picker_key)
 .setAppId(cfg.project_number).setOrigin(location.origin).setCallback(d=>{if(d.action==='picked'){
@@ -174,3 +174,4 @@ if __name__ == '__main__':
     finally:
         STATE.clear()
         server.server_close()
+
