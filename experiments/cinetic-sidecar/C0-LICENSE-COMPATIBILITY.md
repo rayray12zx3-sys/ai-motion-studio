@@ -1,3 +1,17 @@
+## 2026-10-23 source-pinned upstream executable audit (partial; no execution)
+
+The upstream tree at immutable `Leonxlnx/cinetic` commit `ecfa6605de1adb9345ce937724810dc32267d068` was inspected again as **source-only**. The actual R&D film does **not** execute or automatically install the upstream Skill scripts; the separately pinned HyperFrames 0.8.143 CLI is used under protected and isolated execution.
+
+A bounded static review read nine relevant upstream source/package entrypoints: `scripts/new-film.sh`, `hf-finish.sh`, `render.sh`, `render-chunks.sh`, `deliver.sh`, `grab.sh`, `brand-kit.sh`, `assets/hyperframes-starter/setup.mjs` and its `package.json`.
+
+- **External/install behavior:** `new-film.sh` optionally invokes `npm install` in the generated film folder; its dependencies' install scripts would be active unless deliberately disabled. The HyperFrames starter declares `postinstall: node setup.mjs` to copy vendor GSAP/font files. This does not establish license clearance for redistributed copies, nor is it appropriate to run on private client data by default.
+- **Command execution and deletion:** `hf-finish.sh` contains configurable preflight `eval "$PRE"` and performs cleanup of its working directory with `rm -rf`. The source's default HF CLI is `npx -y hyperframes@0.8.79` rather than the isolated tested `0.8.143`. Running that full script would add unreviewed shell execution, network/package-install and version-drift risks. The present protected sidecar does **not** use that script.
+- **Remotion alternative:** `render.sh` and `render-chunks.sh` use `npx remotion` and FFmpeg. This lane remains separate and requires its own production license decision, not an implicit fallback. `deliver.sh` also supports `npx remotion` and temp-file removal.
+- **Safe bounded conclusion:** the current project's script/CLI isolation is intentional and should remain. This is **not** a completed audit of all upstream executable Python/JS/TS scripts, transitive npm license notices, bundled fonts, FFmpeg distribution, or the user's exact commercial deployment/use model. Do not call C0 production-license PASS.
+- **Before full upstream adoption**, perform a sandboxed dependency and script inventory, pin all hashes, make preflight arguments strict without `eval`, disable implicit npm install/postinstall, validate 0.8.79→0.8.143 behavior against real synthetic frames, and have the actual intended commercial usage class and licenses reviewed. No upstream script was run or credentials/media accessed during this static inspection.
+
+---
+
 # C0 — Cinetic / HyperFrames runtime and design rights assessment (2026-10-18)
 
 **Scope:** synthetic-only isolated CLI evaluation. This is a bounded technical/usage-class audit, **not** a legal opinion or production-license clearance.
