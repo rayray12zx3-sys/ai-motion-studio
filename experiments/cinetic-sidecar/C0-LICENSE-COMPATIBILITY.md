@@ -1,3 +1,24 @@
+## 2026-10-23 additional upstream source inspection (14 more files, **not executed**)
+
+At immutable upstream `Leonxlnx/cinetic@ecfa6605de1adb9345ce937724810dc32267d068`, Git tree enumeration reconfirmed **201 entries**, including **74 candidate .sh/.py/.js/.mjs/.ts/.json** (many config, fixtures and data). Directly opened 14 additional files and inspected their source for execution, deletion, dependency and output patterns. This is a **bounded source-pattern inventory only**, not a control-flow/taint/dependency/license review.
+
+| File(s) newly reviewed | Observed source pattern | Required adoption gate |
+| --- | --- | --- |
+| `scripts/audio/listen.py` | `subprocess.run` executes constructed argument list; writes reports | Strict argument/path review, dependency and audio provenance |
+| `scripts/audio/master.py`, `scripts/audio/synth.py`, `scripts/audio/score.py` | File/audio synthesis and output writing; score.py removes a stale artifact via `os.remove` | Explicit output isolation / sound provenance, role-specific license |
+| `scripts/av-audit.py`, `scripts/forensics.py`, `scripts/measure-speed.py` | ffprobe/FFmpeg via subprocess and/or `Popen`; source-side decoding | Bound media inputs, timeouts and output locations; actual native execution not tested |
+| `scripts/dither-gradient.py`, `scripts/palette.py` | Read configuration and generate data/images; no command-launch match in this bounded search | Still verify imports, write targets and commercial assets |
+| `scripts/export-cues.ts` | `writeFileSync` plus directory creation for generated cues | Bound writable destination; validate input origin |
+| `scripts/grid-check.ts`, `scripts/lint-film.mjs` | Static lint/check tooling; lint includes remote-font URL detection patterns | Treat lint claims as diagnostics, not a sandbox or proof of no network access |
+| `scripts/layout-audit.sh` | Runs `npx tsx` and `npx remotion`; uses `rm -rf "$OUTDIR"` and deletes temp via trap | **BLOCK direct execution** pending fixed output path, clean temp containment, explicit dependency/Remotion rights |
+| `scripts/sheet.py` | `subprocess.run` launches `npx remotion`; uses `shutil.rmtree` on temporary directories | **BLOCK implicit adoption** until path containment and full dependency/license review |
+
+**Scope accounting:** 17 upstream files previously described as read + 14 newly directly opened here = **31 source-file reading events**, not 31 fully audited safe scripts, and some earlier nine include overlap with other descriptions. The other 43 candidate files are **not** represented as audited; many are package configuration, fixtures or datasets, so 74 is **not** an executable count. Dangerous matches above are implementation risks, not evidence of malicious code. No upstream commands were executed.
+
+**C0 gate remains PARTIAL:** full reachable-script and transitive dependency graph, variant-specific compatibility between 0.8.79 and 0.8.143, GSAP/Remotion/audio/font/FFmpeg actual commercial rights, safe use class and any output distribution notices remain open. Current opt-in pinned HyperFrames CLI stays isolated. Company S08 and the private Google Drive content are not used for this inventory.
+
+---
+
 ## Brand supplied APP assets vs upstream Cinetic taste bans — 2026-10-23
 
 The immutable upstream `skills/cinetic/SKILL.md` at `ecfa6605de1adb9345ce937724810dc32267d068` was also checked: lines 14 and 53 expressly give a **user-supplied brand precedence over the default artistic bans**, and require the brief / source to document such exceptions. Its general color bans (including orange and glow) are **not** permission to redraw, recolor, or silently replace authenticated existing APP UI.
