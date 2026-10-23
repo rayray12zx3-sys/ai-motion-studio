@@ -1,5 +1,26 @@
 # C3 visual/design and technical gate — 2026-10-18
 
+## 2026-10-23 C3 acceptance matrix (pre-registered; **not yet executed**)
+
+This section defines the missing evidence for the existing Issue #138, **not** another synthetic artifact or an automatic art signoff. The original 8-second 240f, 1280×720/30fps MP4/Alpha evidence remains TECH PASS; its earlier sampled-frame review remains NEEDS_REFINEMENT. No previously approved client art is modified.
+
+| Review category | Evidence to inspect (for EACH of two distinct, original 6–10s synthetic briefs and each selected renderer) | Stop condition |
+| --- | --- | --- |
+| Meaningful motion | Original storyboard with intent → trigger → physical response → audience result mapped to exact frame beats; 1× encoded MP4 and independently extracted key events | A label or subtitle changing without causal transformation; arbitrary geometric ornament |
+| Visual specificity | Named truthful original interaction and recurring object/graphic; reviewer can describe what changed without reading explanatory captions | Generic indistinguishable card/bar slideshow |
+| Typography & device | Actual Taiwan Traditional Chinese glyphs, title/options and subtitle at target screen scale, font provenance/hash, bounds and safe areas | Missing/incorrect glyph, clipped text, unsafe logo, overlapping UI |
+| Timing and continuity | Full 1× film (not contact-sheet-only), event timestamp defects and transitions; preserve intact object identity across cut | Flashback, alpha discontinuity, unreadable critical affordance, fake user interaction |
+| Media handoff | ffprobe/frame count/fps, real ProRes 4444 alpha and color/edge inspection (if delivery requires), reproducible SHA+receipt | Codec, frame, alpha, source integrity failure |
+| Comparative tradeoff | For the SAME two briefs, render through unchanged existing default where legal/available; side-by-side at 1×; tally revision count, actual compute/runtime/cost from receipts rather than estimates | Missing baseline must be marked BLOCKED, never zero cost or automatic Cinetic win |
+| Operator approval | Signed exact SHA or explicit rejection by the user, after actual playback | No surrogate self-approval by the renderer or static numeric gate |
+
+**Evidence format:** one review row per clip and format with exact SHA, source commit, target device, 1× viewer, observation timecodes, rating PASS/FAIL/PENDING, defects, repair variant and rerender receipt if needed; one cross-engine comparison row per common brief. A QA reviewer cannot turn incomplete user signoff into PASS. Use the already-installed `visual-design-review` v0.2.2 rather than inventing additional Director/Art Agents.
+
+**Allowed immediate next work:** source/static planning and audit of existing outputs are safe. Further rendering or remote Actions are opt-in and require checking exact permissions, privacy and cost. The protected real S08 v22u renderer/Drive upload is a separate C4 technical PASS, not proof that this two-brief C3 art gate passed.
+
+---
+
+
 **Media source:** original 8-second synthetic source from branch HEAD `06849d82701e30fba53016cf4fac9f2dd994ffb6` (before this documentation-only update). [Exact-source CI #39119764010](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39119764010), [two-day artifact #12134200142](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39119764010/artifacts/12134200142). No owner/client/company material used.
 
 ## Status (keep distinct)
