@@ -1,0 +1,101 @@
+name: Cinetic C3.9 synthetic page-stack real HyperFrames render
+
+on:
+  push:
+    branches:
+      - 'experiment/cinetic-director-adapter-*'
+    paths:
+      - 'experiments/cinetic-sidecar/title-first-right-run.mjs'
+      - 'experiments/cinetic-sidecar/title-first-right-run.test.mjs'
+      - '.github/workflows/cinetic-c39-page-stack-engine.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/cinetic-sidecar/title-first-right-run.mjs'
+      - 'experiments/cinetic-sidecar/title-first-right-run.test.mjs'
+      - '.github/workflows/cinetic-c39-title-first-right-run-engine.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cinetic-c39-synthetic-page-stack
+  cancel-in-progress: true
+
+jobs:
+  original-synthetic-page-stack-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CI: 'true'
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Existing lockfile only, no postinstall scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Validate unique parent groups and deterministic reverse seek
+        run: |
+          node --check experiments/cinetic-sidecar/title-first-right-run.mjs
+          node --test experiments/cinetic-sidecar/title-first-right-run.test.mjs
+          node experiments/cinetic-sidecar/title-first-right-run.mjs out/cinetic-c39-stack
+      - name: Setup existing verified ffmpeg/ffprobe pair
+        run: |
+          node scripts/setup-encoder.mjs
+          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
+          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
+      - name: Verify exact isolated HyperFrames package
+        run: |
+          test "$(npm view hyperframes@0.8.143 dist.shasum)" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+      - name: Render page-stack on REAL HyperFrames CLI
+        run: |
+          cd out/cinetic-c39-stack
+          npx --yes hyperframes@0.8.143 render -c index.html -o ./page-stack.mp4 --fps 30 --quality draft
+      - name: Decoder check actual 95 frames and extract handoff evidence
+        run: |
+          set -euo pipefail
+          cd out/cinetic-c39-stack
+          test "$(ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames -of default=noprint_wrappers=1:nokey=1 page-stack.mp4)" = "95"
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 page-stack.mp4)" = "720x1280"
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 page-stack.mp4)" = "h264"
+          ffmpeg -nostdin -hide_banner -loglevel error -i page-stack.mp4 -vf "select='eq(n,0)+eq(n,38)+eq(n,62)+eq(n,63)+eq(n,70)+eq(n,76)+eq(n,87)'" -vsync 0 evidence-%02d.png
+          test "$(find . -maxdepth 1 -name 'evidence-*.png' | wc -l)" = "7"
+          # On the real rendered 0-based frame 70, gold headline must not touch
+          # 45px left/right safety margins within the heading's vertical band.
+          ffmpeg -nostdin -hide_banner -loglevel error -i page-stack.mp4 -vf "select='eq(n,70)'" -frames:v 1 -pix_fmt rgb24 -f rawvideo - | python3 -c '
+          import sys
+          b=sys.stdin.buffer.read()
+          w,h=720,1280
+          assert len(b)==w*h*3, ("decode",len(b))
+          bad=[]
+          for y in range(140,280):
+              for x in list(range(0,45))+list(range(675,720)):
+                  i=(y*w+x)*3
+                  r,g,bl=b[i:i+3]
+                  if r>160 and g>105 and bl<185: bad.append((x,y))
+          assert not bad, ("TITLE_CLIPPED_AT_FRAME_EDGE",bad[:10],len(bad))
+          print("C39 actual decoded frame70 headline edge-gate PASS")
+          '
+          sha256sum page-stack.mp4 > page-stack.sha256
+      - name: Technical only, no art or upstream Skill parity
+        run: |
+          echo 'C3.9 = actual HyperFrames@0.8.143 renderer; custom page-stack adapter; not complete upstream Cinetic Skill implementation.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Company media: NONE. User art, typography, license, Windows Premiere: PENDING. No default renderer modification.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cinetic-c39-real-hyperframes-original-synthetic-95f
+          path: |
+            out/cinetic-c39-stack/page-stack.mp4
+            out/cinetic-c39-stack/page-stack.sha256
+            out/cinetic-c39-stack/evidence-*.png
+            out/cinetic-c39-stack/fixture.json
+            out/cinetic-c39-stack/review-gates.json
+          if-no-files-found: error
+          retention-days: 2

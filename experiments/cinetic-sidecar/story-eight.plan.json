@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "engine": "cinetic-hyperframes",
+  "contentClass": "public-synthetic",
+  "brief": {
+    "title": "線索成為判斷",
+    "intent": "以真實可見的因果流程說明零散訊號如何形成清晰判斷",
+    "trigger": "三組原創示意訊號彼此呼應",
+    "physicalResponse": "三個持續存在的資訊節點向共同中心匯聚並建立關聯",
+    "audienceUnderstanding": "觀眾看見關係建立的過程而不是只聽見結果"
+  },
+  "render": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "frames": 240
+  },
+  "direction": {
+    "seed": 140,
+    "techniqueIds": [
+      "tr-velocity-handoff-cut"
+    ],
+    "visualLanguage": "冷綠低彩度、資訊圖形逐步建立關係",
+    "visualMotif": "evidence-cards"
+  },
+  "beats": [
+    {
+      "id": "fragments",
+      "kind": "scatter",
+      "startFrame": 0,
+      "endFrame": 72,
+      "meaning": "開場用三個分離的物件展示難以理解的片段",
+      "onScreenText": "分散訊號"
+    },
+    {
+      "id": "evidence",
+      "kind": "connect",
+      "startFrame": 72,
+      "endFrame": 162,
+      "meaning": "資訊節點重新排列，顯示它們具有共同來源",
+      "onScreenText": "找到關聯"
+    },
+    {
+      "id": "decision",
+      "kind": "resolve",
+      "startFrame": 162,
+      "endFrame": 240,
+      "meaning": "共同連結收束為可以理解的判斷",
+      "onScreenText": "形成判讀"
+    }
+  ]
+}

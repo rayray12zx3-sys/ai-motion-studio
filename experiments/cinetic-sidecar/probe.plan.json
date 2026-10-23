@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "engine": "cinetic-hyperframes",
+  "contentClass": "public-synthetic",
+  "brief": {
+    "title": "概念建立連結",
+    "intent": "零散概念經過互相呼應而成為完整答案",
+    "trigger": "看到一組分散的提示",
+    "physicalResponse": "線索依次聚集形成共同方向",
+    "audienceUnderstanding": "理解資訊組織帶來清晰認知"
+  },
+  "render": {
+    "width": 1280,
+    "height": 720,
+    "fps": 24,
+    "frames": 48
+  },
+  "direction": {
+    "seed": 138,
+    "techniqueIds": [
+      "tr-velocity-handoff-cut"
+    ],
+    "visualLanguage": "高對比、排版清楚的實驗短片"
+  },
+  "beats": [
+    {
+      "id": "scatter",
+      "kind": "scatter",
+      "startFrame": 0,
+      "endFrame": 16,
+      "meaning": "分散的資訊造成認知負荷",
+      "onScreenText": "零散線索"
+    },
+    {
+      "id": "connect",
+      "kind": "connect",
+      "startFrame": 16,
+      "endFrame": 32,
+      "meaning": "發現線索之間的關係",
+      "onScreenText": "逐漸連結"
+    },
+    {
+      "id": "resolve",
+      "kind": "resolve",
+      "startFrame": 32,
+      "endFrame": 48,
+      "meaning": "關係形成清楚的認知",
+      "onScreenText": "形成理解"
+    }
+  ]
+}

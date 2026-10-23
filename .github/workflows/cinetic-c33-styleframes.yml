@@ -1,0 +1,100 @@
+name: Cinetic C3.3 styleframe-first art gate
+
+on:
+  push:
+    branches:
+      - 'experiment/cinetic-director-adapter-*'
+    paths:
+      - 'experiments/cinetic-sidecar/styleframe-c33.py'
+      - 'experiments/cinetic-sidecar/styleframe-c33.test.py'
+      - '.github/workflows/cinetic-c33-styleframes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: c33-styleframe-review-branch
+  cancel-in-progress: true
+
+jobs:
+  isolated-original-lookdev:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6
+        with:
+          python-version: '3.12'
+      - name: Isolated public-synthetic lookdev preview fonts and renderer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          python -m pip install --disable-pip-version-check --no-cache-dir 'CairoSVG==2.8.2' 'Pillow==11.3.0'
+          fc-match -f '%{family}\n' 'Noto Sans CJK TC' | grep -F 'Noto Sans CJK TC'
+          echo 'This font is ONLY for a preview runner; private approved-font host status remains unverified.'
+      - name: Verify art-first source contract, without film render or art-approval writes
+        run: python experiments/cinetic-sidecar/styleframe-c33.test.py
+      - name: Produce three original editable 1280x720 SVG styleframes
+        run: python experiments/cinetic-sidecar/styleframe-c33.py out/cinetic-c33
+      - name: Actually render, decode, measure and assemble reviewable PNGs
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          import cairosvg
+          from PIL import Image,ImageStat
+          from PIL.ImageOps import contain
+          root=Path('out/cinetic-c33')
+          out=[]
+          strip=Image.new('RGB',(1920,360),'#0d1d27')
+          for i in range(1,4):
+              id=f'{i:02d}'
+              source=root/f'styleframe-{id}.svg'
+              dst=root/f'styleframe-{id}.png'
+              cairosvg.svg2png(url=str(source),write_to=str(dst),output_width=1280,output_height=720)
+              pic=Image.open(dst).convert('RGB')
+              assert pic.size==(1280,720)
+              extrema=pic.getextrema()
+              assert all((hi-lo)>45 for lo,hi in extrema), 'visually empty/flat candidate'
+              thumb=contain(pic,(640,360))
+              strip.paste(thumb,((i-1)*640,0))
+              out.append({'id':id,'svg_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),
+                          'png_sha256':hashlib.sha256(dst.read_bytes()).hexdigest(),
+                          'dimensions':[1280,720],
+                          'stddev_rgb':list(map(lambda z:round(z,2),ImageStat.Stat(pic).stddev))})
+          strip.save(root/'styleframe-triptych.png',optimize=True)
+          report={'status':'THREE_REAL_PNG_PREVIEWS_TECH_PASS_ART_PENDING',
+                  'fonts':'Noto Sans CJK TC on temporary isolated runner only',
+                  'original_visuals':'All source-generated; no copied/reference images',
+                  'independent_visual_qa':'NOT_COMPLETED_BY_THIS_WORKFLOW',
+                  'user_art_approval':'PENDING',
+                  'commercial_and_windows_premiere':'NOT_CLEARED',
+                  'frames':out}
+          (root/'preview-qa.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+          print('C33_THREE_STYLEFRAMES_RENDERED',json.dumps({'frames':len(out),'sizes':[x['dimensions'] for x in out]}))
+          PY
+      - name: Archive actual PNG/SVG and QA, never preview-font binaries
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cinetic-c33-three-original-styleframes
+          path: |
+            out/cinetic-c33/styleframe-01.svg
+            out/cinetic-c33/styleframe-02.svg
+            out/cinetic-c33/styleframe-03.svg
+            out/cinetic-c33/styleframe-01.png
+            out/cinetic-c33/styleframe-02.png
+            out/cinetic-c33/styleframe-03.png
+            out/cinetic-c33/styleframe-triptych.png
+            out/cinetic-c33/styleframes-manifest.json
+            out/cinetic-c33/preview-qa.json
+          retention-days: 7
+          if-no-files-found: error
+      - name: Preserve stop gate
+        run: |
+          echo 'Look development only: no animation was regenerated and no existing approval can transfer.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Independent decoded visual review + owner art sign-off required before motion production.' >> "$GITHUB_STEP_SUMMARY"

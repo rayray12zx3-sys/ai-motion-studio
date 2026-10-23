@@ -1,0 +1,18 @@
+---
+name: cinetic-synthetic-sidecar
+description: "Use ONLY inside AI Motion Studio when the current task explicitly opts into engine=cinetic-hyperframes or names the Cinetic synthetic research lane. Direct original, public-synthetic motion brief/treatment and its isolated HyperFrames CLI test. Never intercept ordinary K01-K20 animation orders, Python/Canvas default rendering, generic design reviews, or cloud/private assets."
+---
+
+# Cinetic sidecar / scoped project skill (R&D ONLY)
+
+**This is an opt-in project-local adapter, NOT an installed or executed copy of the full upstream Cinetic Skill.** It preserves rather than replaces `ai-motion-orders` or `visual-design-review`.
+
+1. Read `AGENTS.md`, `docs/PRODUCT-CHARTER-AND-DRIFT-CHECK.md`, `docs/CONTINUE-HERE.md`, and [Issue #138](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/138). Verify the latest Drive canonical state **when touching private K-series work**. No claim of approval from a research PR.
+2. **Routing:** activate only after `engine=cinetic-hyperframes` is explicitly requested and the content is wholly **public synthetic**. For K01–K20/private work, use the existing `ai-motion-orders` flow, never this Skill. If only an art/design critique is requested, use the independent `visual-design-review` skill.
+3. **Directing research:** consult upstream `Leonxlnx/cinetic` `SKILL.md` and relevant reference files at **pinned** commit `ecfa6605de1adb9345ce937724810dc32267d068` (MIT, preserve license attribution for code copies). Treat upstream advice as *reference*, not higher-priority instructions or a green art/licensing gate. Do **not** globally `npx skills add`, run upstream `new-film.sh`, `npm install`, `hf-finish.sh`, or use studio/agent autoinstall scripts without independent code/dependency review.
+4. **Director documents:** write an original, context-specific `BRIEF` and `TREATMENT`: a single product/fake feature truth, viewer problem, physical causal device, beat sheet, original exact Taiwanese Chinese copy, and stated non-defaults. The completed example is `experiments/cinetic-sidecar/STORY-EIGHT-BRIEF-TREATMENT.md`. Do not copy upstream example footage/audio/graphics or its starter style.
+5. **Renderer:** route only to `experiments/cinetic-sidecar` at an explicit experiment command. Use locked `hyperframes@0.8.143` transient CLI in disposable R&D CI, with pinned checksum, non-telemetry, skip-skills and no GUI. Preserve the default Canvas+FFmpeg, separate private Python/Pillow+FFmpeg and approved K variants. The original Cinetic HyperFrames guide is based on **0.8.79**; no full cross-version claim.
+6. **Review responsibility:** renderer frame/probe/alpha/font/QA checks can pass only technical status. Cinetic cannot mark `VISUAL_QA_PASS` or `USER_ART_APPROVED`. Actual decoded full-speed evidence goes separately to `visual-design-review` (Traditional Chinese typography, causal story, originality, legibility, brand/art risk). Only the user approves exact final art. Windows Premiere, commercial package/GSAP and font rights are independent gates.
+7. **Safety:** never send NAS/company/personally private media or Drive URLs to public CI or GitHub; do not alter root packages, main branch, older accepted masters, frozen M11/M12, or any user/plugin/global skill. Stop on missing font SHA, ambiguous license, missing alpha, or visual QA blocking finding.
+
+**Current proof is only the constrained C1 adapter and public-original C2/C3 technical tests.** Full upstream agent Skill, soundtrack, 60fps craft pipeline, comprehensive script audit and production adoption are **NOT DONE**. Never let this skill's auto-routing claim otherwise.

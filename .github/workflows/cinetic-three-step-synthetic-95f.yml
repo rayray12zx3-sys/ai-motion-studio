@@ -1,0 +1,100 @@
+name: Cinetic 95f fictional three-step true HyperFrames
+
+on:
+  push:
+    branches:
+      - 'experiment/cinetic-director-adapter-*'
+    paths:
+      - 'experiments/cinetic-sidecar/three-step-quiz-synthetic-95f.mjs'
+      - 'experiments/cinetic-sidecar/three-step-quiz-synthetic-95f.test.mjs'
+      - '.github/workflows/cinetic-three-step-synthetic-95f.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/cinetic-sidecar/three-step-quiz-synthetic-95f.mjs'
+      - 'experiments/cinetic-sidecar/three-step-quiz-synthetic-95f.test.mjs'
+      - '.github/workflows/cinetic-three-step-synthetic-95f.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cinetic-fictional-three-step-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-only-95f:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CI: 'true'
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Exact synthetic-source privacy and seek regressions
+        run: |
+          set -euo pipefail
+          node --check experiments/cinetic-sidecar/three-step-quiz-synthetic-95f.mjs
+          node --test experiments/cinetic-sidecar/three-step-quiz-synthetic-95f.test.mjs
+          node experiments/cinetic-sidecar/three-step-quiz-synthetic-95f.mjs out/cinetic-fictional-three-step-95f
+          test "$(grep -c 'public-synthetic' out/cinetic-fictional-three-step-95f/fixture.json)" = "1"
+          if grep -E -i '(VocabKnow|APP_native|resilient|journey|accomplish|Dog_quiz|單字馬拉松|private[_-]source)' out/cinetic-fictional-three-step-95f/index.html; then
+            echo 'PRIVACY_REJECTED: unexpected company identifier'
+            exit 1
+          fi
+      - name: Install locked encoder dependencies without scripts
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          node scripts/setup-encoder.mjs
+          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
+          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
+      - name: Verify pinned real HyperFrames release
+        run: |
+          set -euo pipefail
+          test "$(npm view hyperframes@0.8.143 dist.shasum)" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+      - name: Render fully original three-question scene using REAL HyperFrames
+        run: |
+          set -euo pipefail
+          cd out/cinetic-fictional-three-step-95f
+          npx --yes hyperframes@0.8.143 render -c index.html -o ./actual-hyperframes-95f.mp4 --fps 30 --quality draft
+      - name: Independent decode and 95-frame factual receipt
+        run: |
+          set -euo pipefail
+          cd out/cinetic-fictional-three-step-95f
+          ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_read_frames -of json actual-hyperframes-95f.mp4 > ffprobe.json
+          python3 - <<'PY'
+          import json
+          s=json.load(open('ffprobe.json'))['streams'][0]
+          assert s['codec_name']=='h264',s
+          assert (s['width'],s['height'])==(720,1280),s
+          assert s['r_frame_rate']=='30/1',s
+          assert int(s['nb_read_frames'])==95,s
+          with open('engine-proof.json','w') as f:json.dump({'status':'GENUINE_HYPERFRAMES_RENDER_95F_TECH_PASS','engine':'hyperframes@0.8.143','companyPixels':'NONE','fictionalMotionOnly':True,'visualArtApproval':'PENDING','realS08Test':'NOT_PROVEN','probe':s},f,indent=2)
+          PY
+          ffmpeg -nostdin -hide_banner -loglevel error -i actual-hyperframes-95f.mp4 -vf "select='eq(n,7)+eq(n,21)+eq(n,44)+eq(n,45)+eq(n,47)+eq(n,50)+eq(n,53)+eq(n,65)+eq(n,66)+eq(n,68)+eq(n,72)+eq(n,74)+eq(n,94)'" -vsync 0 -frame_pts 0 review-%02d.png
+          test "$(find . -maxdepth 1 -name 'review-*.png' | wc -l)" -eq 13
+          sha256sum actual-hyperframes-95f.mp4 > actual-hyperframes-95f.sha256
+      - name: Technical proof without passing private or artwork gates
+        run: |
+          echo 'Completed: real HyperFrames 0.8.143 Linux rendering, 95f/30fps H264 fictional 3-question motion only.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Private S08 source is NOT in repo/artifacts/runner. Visual QA and real S08 test remain separate.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cinetic-fictional-three-step-real-hyperframes-95f
+          path: |
+            out/cinetic-fictional-three-step-95f/actual-hyperframes-95f.mp4
+            out/cinetic-fictional-three-step-95f/actual-hyperframes-95f.sha256
+            out/cinetic-fictional-three-step-95f/engine-proof.json
+            out/cinetic-fictional-three-step-95f/ffprobe.json
+            out/cinetic-fictional-three-step-95f/fixture.json
+            out/cinetic-fictional-three-step-95f/review-*.png
+          if-no-files-found: error
+          retention-days: 2
