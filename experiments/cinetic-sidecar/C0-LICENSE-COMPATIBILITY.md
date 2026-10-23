@@ -1,3 +1,45 @@
+# 2026-10-23 C0 bounded static review closure — executable-source surface and actual-MVP license lanes
+
+**Status: UPSTREAM_STATIC_ENTRYPOINT_INVENTORY=COMPLETE_FOR_PINNED_TREE; UPSTREAM_FULL_EXECUTION/DEPENDENCY_SECURITY_AUDIT=NOT_DONE; ISOLATED_HF_PACKAGE_METADATA=VERIFIED_IN_EXISTING_PRIVATE_REPORT; COMMERCIAL_ADOPTION=CONDITIONAL; REMOTION_UPSTREAM=DISABLED.** This is a *source-only* assessment. No upstream code or installer was run and no client content was accessed in this update.
+
+### What was actually inspected
+
+- The immutable upstream `Leonxlnx/cinetic@ecfa6605de1adb9345ce937724810dc32267d068` full Git tree was enumerated without truncation: **201 total entries; 74 .sh/.py/.js/.mjs/.ts/.json candidates** including tests, fixtures, data and config.
+- All **29 direct `skills/cinetic/scripts/**` non-test *.sh, *.py, *.js, *.mjs, *.ts files** were directly retrieved and screened for process launch, dynamic shell, network/install, deletion, FFmpeg, audio and writing patterns. Also directly retrieved both starter package.json manifests, HyperFrames starter setup.mjs and motion.js/timeline.js, and Remotion starter's runtime TypeScript modules/config. This is **file-level source coverage**, not a proof of safe dataflow, dependency closure or execution. Excludes tests/fixtures/data from the "29 runtime scripts" count.
+- **HIGH-RISK direct execution paths:** `scripts/hf-finish.sh` can run `eval` from a preflight variable, clear working paths via `rm -rf`, and its starter invokes `npx -y hyperframes@0.8.79`, not the tested 0.8.143. `scripts/layout-audit.sh` can `rm -rf "$OUTDIR"` and invoke `npx tsx`/`npx remotion`. `scripts/render.sh`, `render-chunks.sh`, `deliver.sh`, `sheet.py` include Remotion/FFmpeg invocation or cleanup. `scripts/new-film.sh` may run `npm install`. `scripts/add-font.mjs` uses child-process/npm with Windows `shell:true`. Other audio/probe/forensics/measure-speed/brand tools perform file IO and some use `subprocess`/FFmpeg.
+- **HyperFrames starter:** `assets/hyperframes-starter/package.json` contains `postinstall: node setup.mjs`, exact `gsap@3.14.2` and `@fontsource-variable/geist@5.3.0` dev dependencies, and unreviewed package lifecycle install semantics. The version-pinned `hyperframes@0.8.79` starter CLI is **not interchangeable with** separately tested 0.8.143 without a synthetic regression.
+- **Remotion starter:** `assets/remotion-starter/package.json` depends on Remotion family `4.0.529`, React and font packages, with render/audio/QA scripts. This alternative is explicitly DISABLED in the present isolated HyperFrames Sidecar and is NOT a fallback when HF fails.
+- Pattern matching found no process-launch keywords in several individual pure-data/graphics utilities; this is **not** an attestation that unexecuted modules have no side effects. Full package install hooks, runtime-supplied inputs, dependency transitive scripts and actual Windows binaries remain outside this static audit.
+
+### Existing exact-pinned 0.8.143 dependency evidence (read from pre-existing private audit, not a new package run)
+
+A previously verified *private, source-free* metadata report dated 2026-10-20 records **73 Linux-x64 nested npm package manifests, 5793 archive entries, 0 missing SPDX license fields, 65/73 with a root LICENSE/COPYING/NOTICE, 0 common-extension font binaries, 1 native shared-library entry and no `gsap` package in that isolated CLI archive**. License declarations: 53 MIT, 9 Apache-2.0, 6 ISC, 2 BSD-3-Clause, 1 0BSD, 1 CC0-1.0, 1 LGPL-3.0-or-later. The LGPL case was `@img/sharp-libvips-linux-x64@1.3.4`; its redistribution notices need checking **if software/native runtime is redistributed**. This does **not** imply that distributing a finished H.264 video redistributes the node_modules archive, and does not cover GSAP if it is later imported by another lane. Windows dependency inventory has **not** been performed. Do not copy private archive hashes, URLs, app data or credentials into this public documentation.
+
+### Updated decision matrix — judge actual use, not license names alone
+
+| Component / lane | Verified official reference | Current bounded-MVP decision | Evidence still required |
+| --- | --- | --- | --- |
+| Pinned Cinetic upstream Skill and 273 metadata entries | Pinned Git tree; MIT `skills/cinetic/LICENSE.txt` | **SOURCE-ONLY**. Technique names are provenance, not 273 reimplemented algorithms | Use only opt-in original sidecar; no default upstream script execution. For full upstream adoption, sandbox actual 29-script and package behavior |
+| Isolated HyperFrames CLI 0.8.143 | https://github.com/heygen-com/hyperframes/blob/main/LICENSE , Apache-2.0 | **ENGINE R&D TECH PASS; bounded commercial-use candidate**, not automatic company-rights release | Exact npm release/notice retention, approved install method, output media rights, Windows host evidence |
+| Native Sharp/libvips shipped with Linux CLI | Existing 73-package Linux inventory identifies LGPL-3.0-or-later native dependency | **CONDITIONAL redistribution**; internal-only rendering vs redistribution are distinct use classes | Native bundle + notices if bundling/redistributing runtime; repeat Windows package inventory for Windows deployment |
+| GSAP optional `3.14.2` starter | https://gsap.com/community/standard-license/ (effective 2025-04-30) | **NOT PART OF VERIFIED MINIMAL CLI DEPENDENCY CLOSURE**. Standard terms permit ordinary commercial work but restrict Webflow-competitive no-code visual animation builders without consent | If activating bundled GSAP or an editor, record exact workflow/product category, source distribution and terms; preserve notices |
+| Noto Sans TC in existing isolated sample | https://fontsource.org/fonts/noto-sans-tc/about , OFL-1.1 | **Font family license identified**, not exact deliverable font file/brand approval | Match exact locked subset/font hashes; preserve required license notices when distributing font software |
+| Geist starter font | `@fontsource-variable/geist@5.3.0` declared in upstream starter | **OPTIONAL, NOT REQUIRED FOR APPROVED TAIWAN BRAND** | Determine package asset license and exact file provenance if enabled |
+| FFmpeg and codecs | https://ffmpeg.org/legal.html | **Decoder/render TECH PASS**, not a pre-approved license to ship software. FFmpeg LGPL/GPL depends on compiled features | Actual `ffmpeg -buildconf` and codec/patent obligations for chosen environment and distribution class; company deliverable rights |
+| Remotion 4.0.529 alternative | https://www.remotion.dev/docs/license/pricing (updated 2026-08-10) | **NOT_APPLICABLE while disabled**. Individuals/orgs up to 3 people can qualify free; larger organizations and automation face company licensing | Obtain explicit separate adoption decision and determine actual operator/company size and workflow category before any run |
+| Private company APP/brand, audio and original content | Private user-authorized provenance only | **USER/RIGHTS PENDING** | Exact rights to transform, publish, use brand and distribute ad assets; human art approval |
+| Native Windows Premiere & user device | No Windows receipt for this candidate | **NOT_TESTED** | Actual import/playback/export, audio/alpha as required and measured 1× mobile review |
+
+### What C0 can and cannot sign off now
+
+- **C0-SOURCE-INVENTORY: PASS (pinned upstream entrypoints enumerated and statically screened).** All direct `scripts/` production-source files and template runtime files were fetched. Treat dangerous patterns as risk flags rather than exploits.
+- **C0-MINIMAL-HF-DEPENDENCY-METADATA: PASS FOR PRIOR LINUX ARCHIVE**, with a specific LGPL redistribution caveat. No new install, hash verification or module execution occurred in this round.
+- **C0-SIDECAR-SCRIPT-ISOLATION: REQUIRED**, keep experimental explicit opt-in, do not promote the full upstream scripts or Remotion silently.
+- **C0-COMMERCIAL_RIGHTS_FINAL: PENDING** for actual company, media, exact production distribution, Windows/FFmpeg build and human rights owner. **C0-ALL-UPSTREAM-SECURITY_AND_LICENSE: NOT_PASS** until reviewed against exact executed commands/dependencies, particularly installer and shell cleanup.
+- **No reason to block further safe C3 source-only QA** because unused upstream scripts have not been adopted; no reason to call commercial production ready based solely on the 73-manifest inventory.
+
+---
+
 ## 2026-10-23 additional upstream source inspection (14 more files, **not executed**)
 
 At immutable upstream `Leonxlnx/cinetic@ecfa6605de1adb9345ce937724810dc32267d068`, Git tree enumeration reconfirmed **201 entries**, including **74 candidate .sh/.py/.js/.mjs/.ts/.json** (many config, fixtures and data). Directly opened 14 additional files and inspected their source for execution, deletion, dependency and output patterns. This is a **bounded source-pattern inventory only**, not a control-flow/taint/dependency/license review.
