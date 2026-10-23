@@ -1,5 +1,31 @@
 # C3 visual/design and technical gate — 2026-10-18
 
+## 2026-10-23 C3 existing-evidence reconciliation and runnable two-brief selection
+
+**Source-only audit complete; comparative render/art acceptance NOT run here.** The following avoids losing already proven genuine-engine results or replaying them just to satisfy a document checkbox.
+
+### Existing footage and immutable claims
+
+| Clip / concept | Exact already-verifiable technical evidence | What it does NOT prove |
+| --- | --- | --- |
+| A. **線索成為判斷** (`story-eight.plan.json`) | 8 s / 240 frames / 1280×720 / 30 fps; [true HyperFrames + alpha CI #39119764010](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39119764010), MP4 SHA256 `0824916a855d93003b86f548db7129bcd152df59c6c1f7e5c0aefc2ddc3afe7c`; original three evidence-card motif with relation→result | User art signoff, full-speed final QA, comparison against same-brief unchanged Canvas+FFmpeg |
+| B. **一滴雨的剪輯故事** (`storyboard-film.plan.json`) | Existing 8 s / 480 frame / 1280×720 / 60fps public-original plan and `storyboard-film.mjs` art-direction source; same Cinetic adapter contract, 3 named beats (144/180/156 frames) | A **matching, verified HF 480f film** or a same-brief default-renderer comparison. Do not label source + tests as a real MP4 |
+| Separate 95f proof: fictional page stacks | [#39272894437](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39272894437), [#39369105739](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39369105739), [#39590661928](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39590661928) are successive real HyperFrames original-synthetic art/transition proofs, 95f/30fps | Not the same A/B two-brief baseline; not private S08 or user-approved art |
+| Separate protected S08 v22u | Protected real app 95f HF engine technical and 16f private parity evidence, [Run #39817250398](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39817250398) | Company UI may **not** be used as public C3 fixture or cross-engine public baseline |
+
+### Precisely controlled next comparison (no workflow dispatch from this document)
+
+1. Freeze **Brief A** immutable `story-eight.plan.json` and **Brief B** `storyboard-film.plan.json` with their respective current source blob SHA recorded by GitHub. Compare each brief against *itself* across the opt-in Cinetic/HF route and the existing default Canvas+FFmpeg route, not A-vs-B as if the difference were caused by engine.
+2. Preserve each brief's 8-second timing and rendered aspect. A is 30fps/240f; B is 60fps/480f. A 30fps vs B 60fps comparison is **not a fair engine performance comparison**; collect within-brief matched fps. If the default backend cannot satisfy 60fps B, report `BASELINE_UNSUPPORTED`, then choose a matched 30fps revision without overwriting the frozen 60fps original, and record the change for both engines.
+3. For A and B, record actual `source_sha`, `engine`, `render_command/runner`, `codec/fps/size/frame_count`, `mp4_sha`, `alpha_mov_sha` (when relevant), `review_at_1x`, `reviewer`, `timecoded_defects`, `iteration_count`, `measured_render_seconds` and `known_cost`; missing metrics must be `NOT_MEASURED`, never zero.
+4. Independent visual reviewer examines normal playback, not just the existing contact-sheet sample: cause/effect, object identity, specificity, opening, Taiwan font coverage, device scale, overlap, source license and authorial aesthetics. Write explicit `TECH`, `VISUAL_QA`, `USER_ART` and `PREMIERE` as separate fields.
+5. **No private Company source** may be copied into the public test fixtures. No automatically triggered renders, paid actions, PR merges, owner approval or claims that all 273 upstream techniques are implemented.
+
+**Already completed by ordinary Chat scope:** existing-plan/fixture identity, run/SHA ledger, fair A/B comparison contract, fail-closed fields and script/source security triage. **Not completed:** second 480f confirmed real output, two matched same-brief default-renderer outputs, actual normal-speed side-by-side playback, and user art acceptance.
+
+---
+
+
 ## 2026-10-23 C3 acceptance matrix (pre-registered; **not yet executed**)
 
 This section defines the missing evidence for the existing Issue #138, **not** another synthetic artifact or an automatic art signoff. The original 8-second 240f, 1280×720/30fps MP4/Alpha evidence remains TECH PASS; its earlier sampled-frame review remains NEEDS_REFINEMENT. No previously approved client art is modified.
