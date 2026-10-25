@@ -3,7 +3,7 @@
   "engine": "cinetic-hyperframes",
   "contentClass": "public-synthetic",
   "brief": {
-    "title": "原創分鏡兩秒動態壓力測試",
+    "title": "原創分鏡八秒60fps動態驗證",
     "intent": "讓觀眾看見零散的三個無聲鏡頭如何被排序並轉換成有因果關係的完整故事",
     "trigger": "天空雨滴與水面漣漪原本是不同的分鏡",
     "physicalResponse": "三張手繪分鏡進入實際剪輯順序並由同一顆紅色雨滴引導到完整畫面",
@@ -13,7 +13,7 @@
     "width": 1280,
     "height": 720,
     "fps": 60,
-    "frames": 120
+    "frames": 480
   },
   "direction": {
     "seed": 142,
@@ -28,23 +28,23 @@
       "id": "fragments",
       "kind": "scatter",
       "startFrame": 0,
-      "endFrame": 40,
+      "endFrame": 144,
       "meaning": "分散的雨雲雨滴漣漪原創畫面從不同角度保留為三個鏡頭",
       "onScreenText": "散落鏡頭"
     },
     {
       "id": "connection",
       "kind": "connect",
-      "startFrame": 40,
-      "endFrame": 80,
+      "startFrame": 144,
+      "endFrame": 324,
       "meaning": "同一批鏡頭移動到影片軌道的順序中產生動作與反應",
       "onScreenText": "剪出節奏"
     },
     {
       "id": "resolution",
       "kind": "resolve",
-      "startFrame": 80,
-      "endFrame": 120,
+      "startFrame": 324,
+      "endFrame": 480,
       "meaning": "一滴紅色雨落下並形成擴散漣漪，三段鏡頭縮成時間軸",
       "onScreenText": "故事成形"
     }

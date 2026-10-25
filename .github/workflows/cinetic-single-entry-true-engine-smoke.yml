@@ -71,7 +71,7 @@ jobs:
         shell: bash
         run: |
           node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/storyboard-film-60fps-smoke.plan.json out/cinetic-single-entry-60fps-real --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA"
-          node -e "const f=require('fs'),r=JSON.parse(f.readFileSync('out/cinetic-single-entry-60fps-real/technical-report.json'));if(r.render.fps!==60||r.render.frames!==120||r.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('60fps full real render not valid')"
+          node -e "const f=require('fs'),r=JSON.parse(f.readFileSync('out/cinetic-single-entry-60fps-real/technical-report.json'));if(r.render.fps!==60||r.render.frames!==480||r.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('60fps full real render not valid')"
       - name: Upload public-original outputs, exclude all font binaries
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
