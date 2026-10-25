@@ -12,7 +12,7 @@ concurrency:
 jobs:
   genuine-engine-public-synthetic-only:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     env:
       CI: 'true'
       HYPERFRAMES_NO_TELEMETRY: '1'
@@ -61,6 +61,12 @@ jobs:
           node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/probe.plan.json out/cinetic-single-entry-real --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA"
           node -e "const f=require('fs'),r=JSON.parse(f.readFileSync('out/cinetic-single-entry-real/technical-report.json'));if(r.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('Actual MP4+alpha tech QA failed')"
           node -e "const f=require('fs'),r=JSON.parse(f.readFileSync('out/cinetic-single-entry-real/flow-receipt.json'));if(r.gates.release!=='BLOCKED'||!r.outputs.mp4||!r.outputs.mov)throw Error('Invalid boundary receipt')"
+      - name: Verify longer 8s same-entry narrative and independent 9-by-16 portrait run
+        shell: bash
+        run: |
+          node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/story-eight.plan.json out/cinetic-single-entry-story8-real --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA"
+          node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/portrait.plan.json out/cinetic-single-entry-portrait-real --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA"
+          node -e "const f=require('fs');for(const p of ['out/cinetic-single-entry-story8-real','out/cinetic-single-entry-portrait-real']){const x=JSON.parse(f.readFileSync(p+'/technical-report.json'));if(x.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('true output failed '+p);const g=JSON.parse(f.readFileSync(p+'/flow-receipt.json'));if(g.gates.userArt!=='PENDING'||g.gates.release!=='BLOCKED')throw Error('invalid approval '+p)}"
       - name: Upload public-original outputs, exclude all font binaries
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -75,6 +81,18 @@ jobs:
             out/cinetic-single-entry-real/validated-plan.json
             out/cinetic-single-entry-real/review-gates.json
             out/cinetic-single-entry-real/font-qa.json
+            out/cinetic-single-entry-story8-real/preview.mp4
+            out/cinetic-single-entry-story8-real/overlay-alpha.mov
+            out/cinetic-single-entry-story8-real/technical-report.json
+            out/cinetic-single-entry-story8-real/flow-receipt.json
+            out/cinetic-single-entry-story8-real/validated-plan.json
+            out/cinetic-single-entry-story8-real/review-gates.json
+            out/cinetic-single-entry-portrait-real/preview.mp4
+            out/cinetic-single-entry-portrait-real/overlay-alpha.mov
+            out/cinetic-single-entry-portrait-real/technical-report.json
+            out/cinetic-single-entry-portrait-real/flow-receipt.json
+            out/cinetic-single-entry-portrait-real/validated-plan.json
+            out/cinetic-single-entry-portrait-real/review-gates.json
       - name: Record boundaries
         run: |
           echo 'True engine C2 public synthetic smoke ONLY. No company media, no upstream 273 technique implementation, no art approval or Windows Premiere proof.' >> "$GITHUB_STEP_SUMMARY"
