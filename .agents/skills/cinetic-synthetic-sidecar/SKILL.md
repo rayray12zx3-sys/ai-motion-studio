@@ -5,6 +5,23 @@ description: "Use ONLY inside AI Motion Studio when the current task explicitly 
 
 # Cinetic sidecar / scoped project skill (R&D ONLY)
 
+## 2026-10-26 current CLI — upstream selection and genuine renderer are both operational
+
+For explicit `Cinetic` creative tasks, **reuse** the EXISTING isolated `experiments/cinetic-sidecar/cinetic-flow.mjs`. Do not create another project-specific toolchain or global Skill. Check [current Cinetic implementation & real technical evidence](../../experiments/cinetic-sidecar/CINETIC_SINGLE_ENTRY_MVP.md) and [source-pinned picker provenance](../../experiments/cinetic-sidecar/upstream-cinetic/PROVENANCE.md). The official MIT Cinetic library has all **273 technique recipes in 14 categories**, but not all 273 executable algorithms; **a picked recipe is a director idea, not a rendered effect**.
+
+When original public synthetic content is explicitly authorized and the runtime/environment has been checked, use the following workflow:
+
+1. Write an original `*.plan.json` using the verified `schemaVersion=1` and `contentClass=public-synthetic` with a truthful physical effect and causal beat frame ranges. Do not automatically approve art.
+2. `node experiments/cinetic-sidecar/cinetic-flow.mjs pick <plan.json> <new-pick-dir> --energy calm --seed 123`. This runs the official SHA-pinned upstream picker via safe Python invocation; the output contains deterministic recommended upstream recipes, not pixels.
+3. `node experiments/cinetic-sidecar/cinetic-flow.mjs treat <plan.json> <same-pick-dir>`. This writes `BRIEF.md`, `TREATMENT.md` and a blocking technique-implementation review receipt. Explain how each selected motion transfers into the film. Do not pretend the current scene has implemented it.
+4. Implement intended motion in the existing scene code only after checking technique timing and the actual user brief; omit unimplemented ideas from render claims. Keep technique provenance and brief-specific scene files separate.
+5. `cinetic-flow.mjs doctor`, then explicitly `--render --hf /absolute/verified/HF.js --hf-sha EXACT_SHA256`. Existing adapter/preparer + HyperFrames v0.8.143 render real H.264 and ProRes4444 alpha; `verify-render.mjs` decodes actual frames, alpha and font coverage. Never run the unreviewed upstream installation scripts or automatically upload any private content to a public CI job.
+6. Actual 1× visual review and client rights/brand approval are independent. User art signoff and Windows Premiere are not implied by technical green tests.
+
+**Proven genuine HF multi-profile tests:** 2s 16:9 24fps, 2s 9:16 24fps, 8s 16:9 30fps, 8s 16:9 60fps 480f, each H.264+ProRes4444 Alpha actual output. [Real CI including authentic picker/BRIEF/TREATMENT #40224622103](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40224622103) passed. Art is still a proposal: `TECH_MVP=PASS; FULL_UPSTREAM_SKILL=NOT_INSTALLED; SELECTED_273_EFFECT_IMPLEMENTATIONS=NOT_VERIFIED; VISUAL/USER/COMMERCIAL=BLOCKED`.
+
+
+
 **This is an opt-in project-local adapter, NOT an installed or executed copy of the full upstream Cinetic Skill.** It preserves rather than replaces `ai-motion-orders` or `visual-design-review`.
 
 1. Read `AGENTS.md`, `docs/PRODUCT-CHARTER-AND-DRIFT-CHECK.md`, `docs/CONTINUE-HERE.md`, and [Issue #138](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/138). Verify the latest Drive canonical state **when touching private K-series work**. No claim of approval from a research PR.
