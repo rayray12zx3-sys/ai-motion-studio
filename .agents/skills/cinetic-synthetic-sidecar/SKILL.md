@@ -5,6 +5,16 @@ description: "Use ONLY inside AI Motion Studio when the current task explicitly 
 
 # Cinetic sidecar / scoped project skill (R&D ONLY)
 
+## 2026-10-26 CURRENT: use the verified full one-command route for explicit public-original Cinetic orders
+
+An explicit Cinetic public-original synthetic job can now execute the **real** one-command path, rather than multiple isolated experiments:
+```bash
+node experiments/cinetic-sidecar/cinetic-flow.mjs full <validated-public-synthetic-plan.json> <NEW-job-root> --render --hf /absolute/audited/hf.js --hf-sha EXACT_SHA256 --energy calm --seed 123
+```
+The command invokes source-pinned 273-technique selection, builds BRIEF/TREATMENT, renders genuine MP4+ProRes4444 Alpha MOV and performs decoded QA. [Real CI success #40225753484](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40225753484). Consult the MIT-pinned original upstream directing instructions at ../../../experiments/cinetic-sidecar/upstream-cinetic/reference/SKILL_UPSTREAM_REFERENCE.md, and load only relevant sections from ../../../experiments/cinetic-sidecar/upstream-cinetic/reference/references/ for story, pacing, brand, typography and transitions. These are source references, not installed scripts. **Never claim picked recipes actually rendered** without a dedicated per-recipe source implementation and framewise evidence. User art approval, protected company assets, Windows Premiere and commercial release do not follow from technical green QA.
+
+
+
 ## 2026-10-26 current CLI — upstream selection and genuine renderer are both operational
 
 For explicit `Cinetic` creative tasks, **reuse** the EXISTING isolated `experiments/cinetic-sidecar/cinetic-flow.mjs`. Do not create another project-specific toolchain or global Skill. Check [current Cinetic implementation & real technical evidence](../../../experiments/cinetic-sidecar/CINETIC_SINGLE_ENTRY_MVP.md) and [source-pinned picker provenance](../../../experiments/cinetic-sidecar/upstream-cinetic/PROVENANCE.md). The official MIT Cinetic library has all **273 technique recipes in 14 categories**, but not all 273 executable algorithms; **a picked recipe is a director idea, not a rendered effect**.

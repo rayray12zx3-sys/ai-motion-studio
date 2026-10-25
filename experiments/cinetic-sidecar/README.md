@@ -1,5 +1,10 @@
 # Cinetic director sidecar — C1 adapter + C2/C3 isolated synthetic render proof
 
+## 2026-10-26 verified FULL one-command Cinetic technical pipeline
+
+Source: [CINETIC_SINGLE_ENTRY_MVP.md](CINETIC_SINGLE_ENTRY_MVP.md). One explicit public-original synthetic command now completes official MIT Cinetic 273-source picker → SHA-pinned BRIEF/TREATMENT → genuine local HyperFrames@0.8.143 H.264+ProRes4444 Alpha → existing full decoded QA, proven by [CI #40225753484](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40225753484) and [private Drive actual media](https://drive.google.com/drive/folders/1cP2wJACEN6kmhvVm6cPmnCMGhX6gy_cB). The upstream original Skill and directing references are included only as pinned MIT source material; unreviewed installers are not executed. Renderer implements the chosen local Cinetic sidecar scene motif, not every technique the picker recommends. Commercial output, audio/music, Windows Premiere, client approvals and full 273 scene implementations remain independent blockers.
+
+
 ## 2026-10-26 CURRENT — single-entry genuine engine and source-backed director workflow
 
 **Primary implementation:** [CINETIC_SINGLE_ENTRY_MVP.md](CINETIC_SINGLE_ENTRY_MVP.md), [project-local scoped skill](../../.agents/skills/cinetic-synthetic-sidecar/SKILL.md), [upstream 273-technique provenance](upstream-cinetic/PROVENANCE.md), [full evidence Issue #138](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/138).
