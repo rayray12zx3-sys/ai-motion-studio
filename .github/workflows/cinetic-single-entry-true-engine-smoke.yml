@@ -1,0 +1,75 @@
+name: Cinetic single-entry true HyperFrames 2s public synthetic smoke
+on:
+  push:
+    branches: ['work/cinetic-single-entry-mvp-20261026']
+    paths:
+      - '.github/workflows/cinetic-single-entry-true-engine-smoke.yml'
+permissions:
+  contents: read
+concurrency:
+  group: cinetic-single-entry-true-engine-public-synthetic
+  cancel-in-progress: true
+jobs:
+  genuine-engine-public-synthetic-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Install only pre-existing locked project dependencies without postinstall
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Regression test single-entry routing and real-media audit
+        run: |
+          node --test experiments/cinetic-sidecar/cinetic-flow.test.mjs experiments/cinetic-sidecar/cinetic-diagnostics.test.mjs experiments/cinetic-sidecar/cinetic-integration.test.mjs
+          node --test experiments/cinetic-sidecar/adapter.test.mjs
+      - name: Validate official HyperFrames v0.8.143 npm tarball version fingerprint
+        run: |
+          actual="$(npm view hyperframes@0.8.143 dist.shasum)"
+          test "$actual" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+      - name: Install isolated pinned runtime, never global or private
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/cinetic-hf-pinned"
+          npm install --prefix "$RUNNER_TEMP/cinetic-hf-pinned" --ignore-scripts --no-audit --no-fund --no-save --package-lock=false hyperframes@0.8.143
+          test "$(node -p "require('$RUNNER_TEMP/cinetic-hf-pinned/node_modules/hyperframes/package.json').version")" = "0.8.143"
+          entry="$(readlink -f "$RUNNER_TEMP/cinetic-hf-pinned/node_modules/.bin/hyperframes")"
+          test -f "$entry"
+          echo "HF_ENTRY=$entry" >> "$GITHUB_ENV"
+          echo "HF_SHA=$(sha256sum "$entry" | cut -d ' ' -f1)" >> "$GITHUB_ENV"
+      - name: Use single entrypoint to verify host before rendering
+        shell: bash
+        run: |
+          node experiments/cinetic-sidecar/cinetic-flow.mjs doctor "$HF_ENTRY" "$HF_SHA" > "$RUNNER_TEMP/cinetic-doctor.json"
+          node -e "const f=require('fs'),r=JSON.parse(f.readFileSync(process.argv[1]));if(r.status!=='READY_TO_ATTEMPT_NOT_RENDERED')throw Error(JSON.stringify(r.issues))" "$RUNNER_TEMP/cinetic-doctor.json"
+      - name: Render genuine pinned HyperFrames MP4 and transparent ProRes4444, then verify
+        shell: bash
+        run: |
+          node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/probe.plan.json out/cinetic-single-entry-real --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA"
+          node -e "const f=require('fs'),r=JSON.parse(f.readFileSync('out/cinetic-single-entry-real/technical-report.json'));if(r.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('Actual MP4+alpha tech QA failed')"
+          node -e "const f=require('fs'),r=JSON.parse(f.readFileSync('out/cinetic-single-entry-real/flow-receipt.json'));if(r.gates.release!=='BLOCKED'||!r.outputs.mp4||!r.outputs.mov)throw Error('Invalid boundary receipt')"
+      - name: Upload public-original outputs, exclude all font binaries
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-single-entry-real-hf-c2-public-original
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            out/cinetic-single-entry-real/preview.mp4
+            out/cinetic-single-entry-real/overlay-alpha.mov
+            out/cinetic-single-entry-real/technical-report.json
+            out/cinetic-single-entry-real/flow-receipt.json
+            out/cinetic-single-entry-real/validated-plan.json
+            out/cinetic-single-entry-real/review-gates.json
+            out/cinetic-single-entry-real/font-qa.json
+      - name: Record boundaries
+        run: |
+          echo 'True engine C2 public synthetic smoke ONLY. No company media, no upstream 273 technique implementation, no art approval or Windows Premiere proof.' >> "$GITHUB_STEP_SUMMARY"
