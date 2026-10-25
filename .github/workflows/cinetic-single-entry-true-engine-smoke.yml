@@ -27,6 +27,11 @@ jobs:
           cache: npm
       - name: Install only pre-existing locked project dependencies without postinstall
         run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Provision repository-pinned FFmpeg and FFprobe for tests and real render
+        run: |
+          node scripts/setup-encoder.mjs
+          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
+          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
       - name: Regression test single-entry routing and real-media audit
         run: |
           node --test experiments/cinetic-sidecar/cinetic-flow.test.mjs experiments/cinetic-sidecar/cinetic-diagnostics.test.mjs experiments/cinetic-sidecar/cinetic-integration.test.mjs
