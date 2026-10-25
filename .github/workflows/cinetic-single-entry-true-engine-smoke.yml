@@ -34,14 +34,15 @@ jobs:
           echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
       - name: Regression test single-entry routing and real-media audit
         run: |
-          node --test experiments/cinetic-sidecar/cinetic-flow.test.mjs experiments/cinetic-sidecar/cinetic-diagnostics.test.mjs experiments/cinetic-sidecar/cinetic-integration.test.mjs experiments/cinetic-sidecar/cinetic-techniques.test.mjs
+          node --test experiments/cinetic-sidecar/cinetic-flow.test.mjs experiments/cinetic-sidecar/cinetic-diagnostics.test.mjs experiments/cinetic-sidecar/cinetic-integration.test.mjs experiments/cinetic-sidecar/cinetic-techniques.test.mjs experiments/cinetic-sidecar/cinetic-treatment.test.mjs
           node --test experiments/cinetic-sidecar/adapter.test.mjs
       - name: Exercise authentic upstream 273-technique director picker, no rendered art approval
         shell: bash
         run: |
           python3 experiments/cinetic-sidecar/upstream-cinetic/scripts/pick.py --validate
           node experiments/cinetic-sidecar/cinetic-flow.mjs pick experiments/cinetic-sidecar/story-eight.plan.json out/cinetic-upstream-directed --energy calm --seed 123
-          node -e "const f=require('fs');const x=JSON.parse(f.readFileSync('out/cinetic-upstream-directed/director-selection.json'));if(x.catalogCount!==273||!x.selectedPicks.length||x.gates.render!=='NOT_RUN'||x.gates.release!=='BLOCKED')throw Error('invalid source-pinned upstream Cinetic selection');"
+          node experiments/cinetic-sidecar/cinetic-flow.mjs treat experiments/cinetic-sidecar/story-eight.plan.json out/cinetic-upstream-directed
+          node -e "const f=require('fs');const x=JSON.parse(f.readFileSync('out/cinetic-upstream-directed/director-selection.json'));if(x.catalogCount!==273||!x.selectedPicks.length||x.gates.render!=='NOT_RUN'||x.gates.release!=='BLOCKED')throw Error('invalid source-pinned upstream Cinetic selection');const t=JSON.parse(f.readFileSync('out/cinetic-upstream-directed/treatment-gates.json'));if(t.status!=='DIRECTOR_TREATMENT_GENERATED_NOT_RENDERED'||t.gates.techniqueImplementation!=='NOT_VERIFIED'||t.gates.release!=='BLOCKED')throw Error('invalid director handoff');"
       - name: Validate official HyperFrames v0.8.143 npm tarball version fingerprint
         run: |
           actual="$(npm view hyperframes@0.8.143 dist.shasum)"
@@ -112,6 +113,9 @@ jobs:
             out/cinetic-single-entry-60fps-real/review-gates.json
             out/cinetic-upstream-directed/director-selection.json
             out/cinetic-upstream-directed/upstream-picked.json
+            out/cinetic-upstream-directed/BRIEF.md
+            out/cinetic-upstream-directed/TREATMENT.md
+            out/cinetic-upstream-directed/treatment-gates.json
       - name: Record boundaries
         run: |
           echo 'True engine C2 public synthetic smoke ONLY. No company media, no upstream 273 technique implementation, no art approval or Windows Premiere proof.' >> "$GITHUB_STEP_SUMMARY"
