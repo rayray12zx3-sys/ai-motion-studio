@@ -92,7 +92,8 @@ export async function run(argv) {
 if(process.argv[1] && import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
   const argv=process.argv.slice(2);
   const operation=argv[0];
-  const report=operation==='doctor' ? Promise.resolve(doctor({hf:argv[1]||null,hfSha:argv[2]||null}))
+  const report=operation==='pick' ? import('./cinetic-techniques.mjs').then(m=>m.selectDirectorTechniques(argv.slice(1)))
+    : operation==='doctor' ? Promise.resolve(doctor({hf:argv[1]||null,hfSha:argv[2]||null}))
     : operation==='audit-video' ? Promise.resolve(auditExistingVideo(argv[1],{
        width:Number(argv[2]),height:Number(argv[3]),fps:Number(argv[4]),
        frames:Number(argv[5]),sha256:argv[6]}))
