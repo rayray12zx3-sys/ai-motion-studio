@@ -1,3 +1,27 @@
+## 2026-10-26 current: authentic upstream Cinetic picker + actual brief/treatment + genuine 60fps pipeline
+
+The single existing Cinetic CLI now has an **operational director-input workflow using authentic Cinetic upstream**: original source-pinned 273 entries / 14 categories `cinetic-flow.mjs pick`, metadata-safe Python source picker, `cinetic-flow.mjs treat` writing `BRIEF.md` and `TREATMENT.md` from the exact original public synthetic plan SHA, and the previously proven `--render` SHA-pinned genuine HyperFrames CLI with existing decoded-video and alpha QA. **No other render engine, global skill, or S08-only QA was added.**
+
+Verified exact CI [#40224622103](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40224622103) PASS: new 7 picker + 5 treatment tests, previous core tests, official `pick.py --validate` shows 273 entries in 14 categories, actual `pick` seed 123 produces five source-backed proposals, actual `treat` creates the beat-locked documents and marks all unimplemented technique pixels `NOT_VERIFIED`, then the **same single entrypoint** truly renders and verifies 2s 16:9, 2s 9:16, 8s 30fps, 8s 60fps (480f), H264 MP4 and ProRes4444 Alpha MOV. Source snapshot MIT-license and exact blob hashes tracked at [PROVENANCE](upstream-cinetic/PROVENANCE.md); license file included.
+
+Actual 8s 60fps ProRes alpha was independently re-fetched from official CI #40217938756 and fully decoded 480/480; **H264 SHA256 `4a5de774c4a6afabadcdb0772834887f8ce1a1be5442bc4bfa00c5ea080ebeaf`**, **ProRes4444 alpha SHA256 `bce0069db290c71d3f02c583a3c573e9c51fffb5332d845268349b06f643654e`**, 1280x720@60. [Persistent MP4 playback](https://drive.google.com/file/d/1ZcT-nfoRpcdRghGIh4SzPoBD0h7V90l8/view); [private Drive evidence](https://drive.google.com/drive/folders/1M_c8KdjO1PR4nqgaxjkRdwox5h0S3Ald). The 105MB original MOV exceeds Drive single-file limit: split into 3 ordered byte-exact parts, each SHA pinned in PRORES4444_SPLIT_MANIFEST, and independently joined bytes reproduced the original SHA exactly. Rejoin all 3 parts in numeric order before Premiere; they are NOT individual MOVs. This is a storage workaround, not native Windows Premiere validation.
+
+From repository root, on an authorized host with already audited local Node 24, pinned Noto Sans TC, ffmpeg and HyperFrames binary, these commands are supported:
+
+```bash
+python3 experiments/cinetic-sidecar/upstream-cinetic/scripts/pick.py --validate
+node experiments/cinetic-sidecar/cinetic-flow.mjs pick experiments/cinetic-sidecar/story-eight.plan.json out/director-selection --energy calm --seed 123
+node experiments/cinetic-sidecar/cinetic-flow.mjs treat experiments/cinetic-sidecar/story-eight.plan.json out/director-selection
+node experiments/cinetic-sidecar/cinetic-flow.mjs doctor /absolute/pinned/hyperframes.js EXACT_SHA256
+node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/story-eight.plan.json out/new-real-render --render --hf /absolute/pinned/hyperframes.js --hf-sha EXACT_SHA256
+```
+
+**Crucial distinction:** upstream picker produces director choices, and `treat` produces plan and recipes; they are NOT transformed automatically into executable SVG/HTML effects. The rendered scene still uses the verified existing visual motif. `PROPOSAL != IMPLEMENTATION`. To genuinely use a selected technique, an editor or agent must intentionally implement the source recipe and independently evaluate the resulting frames. Do not brand these fixed generic probes premium commercial output.
+
+Current completion gates: `REAL_HYPERFRAMES_SINGLE_ENTRY_MULTIFORMAT=PASS`, `UPSTREAM_PICKER=PASS`, `BRIEF_TREATMENT=PASS`, `UPSTREAM_273_PIXEL_IMPLEMENTATIONS=NOT_DONE`, `FULL_UPSTREAM_SKILL_EXECUTION=NOT_DONE`, `SOUND_AND_MOTION_FINISH=NOT_DONE`, `VISUAL_ART=NEEDS_REFINEMENT`, `USER_ART=PENDING`, `WIN_PREMIERE=NOT_TESTED`, `COMMERCIAL_RIGHTS=CONDITIONAL`, `PRODUCTION_RELEASE=BLOCKED`. Public synthetic workflow only. Do not merge Draft PR #140 or replace default production engine.
+
+---
+
 ## 2026-10-26 CURRENT — 60fps TRUE HF PASS + official pinned 273 Cinetic technique selector
 
 Actual real HyperFrames from the EXISTING single Cinetic entrypoint at [public CI #40223006027](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40223006027) PASS in four profiles: 2s 24fps landscape, 2s 24fps portrait, 8s 30fps landscape and 8s 60fps landscape. Each produced real H264 MP4 plus actual ProRes4444 alpha MOV and decoded QA. The true 8s 60fps storyboard had 480/480 real H264 frames and 480/480 real ProRes ap4h yuva444p12le frames, 1280x720, SHA256 MP4 4a5de774c4a6afabadcdb0772834887f8ce1a1be5442bc4bfa00c5ea080ebeaf and MOV bce0069db290c71d3f02c583a3c573e9c51fffb5332d845268349b06f643654e. Downloaded the actual GH artifact, ZIP CRC PASS and independently checked codec/frame count/full video decode and hashes. Some static samples show the original storyboard device; full-speed creative art approval was NOT done.
