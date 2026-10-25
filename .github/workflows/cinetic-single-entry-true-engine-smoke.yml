@@ -34,7 +34,7 @@ jobs:
           echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
       - name: Regression test single-entry routing and real-media audit
         run: |
-          node --test experiments/cinetic-sidecar/cinetic-flow.test.mjs experiments/cinetic-sidecar/cinetic-diagnostics.test.mjs experiments/cinetic-sidecar/cinetic-integration.test.mjs experiments/cinetic-sidecar/cinetic-techniques.test.mjs experiments/cinetic-sidecar/cinetic-treatment.test.mjs
+          node --test experiments/cinetic-sidecar/cinetic-flow.test.mjs experiments/cinetic-sidecar/cinetic-diagnostics.test.mjs experiments/cinetic-sidecar/cinetic-integration.test.mjs experiments/cinetic-sidecar/cinetic-techniques.test.mjs experiments/cinetic-sidecar/cinetic-treatment.test.mjs experiments/cinetic-sidecar/cinetic-full.test.mjs
           node --test experiments/cinetic-sidecar/adapter.test.mjs
       - name: Exercise authentic upstream 273-technique director picker, no rendered art approval
         shell: bash
@@ -79,6 +79,11 @@ jobs:
         run: |
           node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/storyboard-film-60fps-smoke.plan.json out/cinetic-single-entry-60fps-real --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA"
           node -e "const f=require('fs'),r=JSON.parse(f.readFileSync('out/cinetic-single-entry-60fps-real/technical-report.json'));if(r.render.fps!==60||r.render.frames!==480||r.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('60fps full real render not valid')"
+      - name: Prove complete ONE COMMAND director pick, treatment, genuine HF and media QA
+        shell: bash
+        run: |
+          node experiments/cinetic-sidecar/cinetic-flow.mjs full experiments/cinetic-sidecar/probe.plan.json out/cinetic-full-one-command --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA" --seed 123 --energy calm
+          node -e "const f=require('fs'),p='out/cinetic-full-one-command/';const x=JSON.parse(f.readFileSync(p+'full-receipt.json'));if(x.status!=='CINETIC_SINGLE_COMMAND_TRUE_HF_TECH_PASS'||!x.media.mp4||!x.media.movAlpha||x.gates.release!=='BLOCKED'||x.gates.selectedUpstreamRecipesRendered!=='NOT_VERIFIED')throw Error('full flow not proven');for(const n of ['director/BRIEF.md','director/TREATMENT.md','render/preview.mp4','render/overlay-alpha.mov','render/technical-report.json'])if(!f.existsSync(p+n))throw Error('full output missing '+n)"
       - name: Upload public-original outputs, exclude all font binaries
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -116,6 +121,14 @@ jobs:
             out/cinetic-upstream-directed/BRIEF.md
             out/cinetic-upstream-directed/TREATMENT.md
             out/cinetic-upstream-directed/treatment-gates.json
+            out/cinetic-full-one-command/full-receipt.json
+            out/cinetic-full-one-command/director/BRIEF.md
+            out/cinetic-full-one-command/director/TREATMENT.md
+            out/cinetic-full-one-command/director/treatment-gates.json
+            out/cinetic-full-one-command/render/preview.mp4
+            out/cinetic-full-one-command/render/overlay-alpha.mov
+            out/cinetic-full-one-command/render/technical-report.json
+            out/cinetic-full-one-command/render/flow-receipt.json
       - name: Record boundaries
         run: |
           echo 'True engine C2 public synthetic smoke ONLY. No company media, no upstream 273 technique implementation, no art approval or Windows Premiere proof.' >> "$GITHUB_STEP_SUMMARY"
