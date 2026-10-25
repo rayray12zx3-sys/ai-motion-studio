@@ -67,6 +67,11 @@ jobs:
           node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/story-eight.plan.json out/cinetic-single-entry-story8-real --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA"
           node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/portrait.plan.json out/cinetic-single-entry-portrait-real --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA"
           node -e "const f=require('fs');for(const p of ['out/cinetic-single-entry-story8-real','out/cinetic-single-entry-portrait-real']){const x=JSON.parse(f.readFileSync(p+'/technical-report.json'));if(x.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('true output failed '+p);const g=JSON.parse(f.readFileSync(p+'/flow-receipt.json'));if(g.gates.userArt!=='PENDING'||g.gates.release!=='BLOCKED')throw Error('invalid approval '+p)}"
+      - name: Validate true 60fps same entrypoint and ProRes4444 alpha (public original only)
+        shell: bash
+        run: |
+          node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/storyboard-film-60fps-smoke.plan.json out/cinetic-single-entry-60fps-real --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA"
+          node -e "const f=require('fs'),r=JSON.parse(f.readFileSync('out/cinetic-single-entry-60fps-real/technical-report.json'));if(r.render.fps!==60||r.render.frames!==120||r.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('60fps full real render not valid')"
       - name: Upload public-original outputs, exclude all font binaries
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -93,6 +98,12 @@ jobs:
             out/cinetic-single-entry-portrait-real/flow-receipt.json
             out/cinetic-single-entry-portrait-real/validated-plan.json
             out/cinetic-single-entry-portrait-real/review-gates.json
+            out/cinetic-single-entry-60fps-real/preview.mp4
+            out/cinetic-single-entry-60fps-real/overlay-alpha.mov
+            out/cinetic-single-entry-60fps-real/technical-report.json
+            out/cinetic-single-entry-60fps-real/flow-receipt.json
+            out/cinetic-single-entry-60fps-real/validated-plan.json
+            out/cinetic-single-entry-60fps-real/review-gates.json
       - name: Record boundaries
         run: |
           echo 'True engine C2 public synthetic smoke ONLY. No company media, no upstream 273 technique implementation, no art approval or Windows Premiere proof.' >> "$GITHUB_STEP_SUMMARY"
