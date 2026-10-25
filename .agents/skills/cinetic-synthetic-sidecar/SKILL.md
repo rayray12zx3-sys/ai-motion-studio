@@ -7,7 +7,7 @@ description: "Use ONLY inside AI Motion Studio when the current task explicitly 
 
 ## 2026-10-26 current CLI — upstream selection and genuine renderer are both operational
 
-For explicit `Cinetic` creative tasks, **reuse** the EXISTING isolated `experiments/cinetic-sidecar/cinetic-flow.mjs`. Do not create another project-specific toolchain or global Skill. Check [current Cinetic implementation & real technical evidence](../../experiments/cinetic-sidecar/CINETIC_SINGLE_ENTRY_MVP.md) and [source-pinned picker provenance](../../experiments/cinetic-sidecar/upstream-cinetic/PROVENANCE.md). The official MIT Cinetic library has all **273 technique recipes in 14 categories**, but not all 273 executable algorithms; **a picked recipe is a director idea, not a rendered effect**.
+For explicit `Cinetic` creative tasks, **reuse** the EXISTING isolated `experiments/cinetic-sidecar/cinetic-flow.mjs`. Do not create another project-specific toolchain or global Skill. Check [current Cinetic implementation & real technical evidence](../../../experiments/cinetic-sidecar/CINETIC_SINGLE_ENTRY_MVP.md) and [source-pinned picker provenance](../../../experiments/cinetic-sidecar/upstream-cinetic/PROVENANCE.md). The official MIT Cinetic library has all **273 technique recipes in 14 categories**, but not all 273 executable algorithms; **a picked recipe is a director idea, not a rendered effect**.
 
 When original public synthetic content is explicitly authorized and the runtime/environment has been checked, use the following workflow:
 
