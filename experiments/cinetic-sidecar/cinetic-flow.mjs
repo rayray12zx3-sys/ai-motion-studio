@@ -6,6 +6,7 @@ import { readFileSync, existsSync, statSync, realpathSync, writeFileSync } from 
 import { isAbsolute, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { doctor, auditExistingVideo } from './cinetic-diagnostics.mjs';
 
 export const PIN = 'hyperframes@0.8.143';
 export const GATES = Object.freeze({
@@ -82,14 +83,23 @@ export async function run(argv) {
   const technical=JSON.parse(readFileSync(join(dir,'technical-report.json'),'utf8'));
   if(technical.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')
     throw new Error('existing renderer verifier did not pass');
-  const receipt={...base,technical:'ACTUAL_VERIFIER_PASS_AFTER_LOCAL_PINNED_CLI',
+  const receipt={...base,technical:'LOCAL_PINNED_ENTRYPOINT_MEDIA_QA_PASS_ENGINE_PROVENANCE_REQUIRES_EXTERNAL_AUDIT',
     cli:{sha256:o.hash,packageProvenance:'DECLARED_PINNED_ENTRYPOINT; NPM_TARBALL_NOT_INDEPENDENTLY_REVERIFIED'},
     outputs:{mp4:technical.mp4.sha256,mov:technical.alpha.sha256}};
   writeFileSync(join(dir,'flow-receipt.json'),JSON.stringify(receipt,null,2)+'\n',{flag:'wx'});
   return receipt;
 }
 if(process.argv[1] && import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
-  run(process.argv.slice(2)).then(x=>console.log(JSON.stringify(x,null,2))).catch(e=>{
-    console.error('CINETIC_FLOW_BLOCKED:',e.message);process.exitCode=2;
-  });
+  const argv=process.argv.slice(2);
+  const operation=argv[0];
+  const report=operation==='doctor' ? Promise.resolve(doctor({hf:argv[1]||null,hfSha:argv[2]||null}))
+    : operation==='audit-video' ? Promise.resolve(auditExistingVideo(argv[1],{
+       width:Number(argv[2]),height:Number(argv[3]),fps:Number(argv[4]),
+       frames:Number(argv[5]),sha256:argv[6]}))
+    : run(argv);
+  report.then(x=>{console.log(JSON.stringify(x,null,2));
+    if(x.status==='BLOCKED' || x.status==='READY_TO_ATTEMPT_NOT_RENDERED' || x.status==='VIDEO_BYTES_TECH_PASS_ORIGIN_UNVERIFIED')
+      process.exitCode=x.status==='BLOCKED'?2:0;
+    if(x.status==='BLOCKED_MISSING_DEPENDENCIES')process.exitCode=2;
+  }).catch(e=>{console.error('CINETIC_FLOW_BLOCKED:',e.message);process.exitCode=2;});
 }
