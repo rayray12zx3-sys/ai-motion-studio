@@ -1,3 +1,36 @@
+# Cinetic single-entry TRUE ENGINE Technical MVP — 2026-10-26 CURRENT
+
+**Result: C1→C2/HF real engine→MP4+ProRes4444 alpha→existing frame/alpha technical verifier: PASS IN THREE PROFILES.** User still has NOT approved new style, company media, Windows Premiere or production release. This is a scoped real sidecar with existing adapter; **not** full upstream Cinetic 273-technique installation.
+
+## Actual NEW entrypoint results — independently re-fetched, decoded and SHA checked
+
+- New genuine public-original-run [GitHub Actions #40216658677](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40216658677) SUCCESS on work branch SHA `4b5f40e859babbf407dd5f4e0d4f731829cb4684`. Uses Node 24, checked official HyperFrames@0.8.143 npm tarball SHA-1 `8761025aa327993c605a307ec2d9f01fe6bde047`, separate temporary exact-version CLI with entrypoint SHA, locally pinned Noto Sans TC font package, actual headless render, existing FFprobe/FFmpeg full decode and alpha QA. **Only publicly invented synthetic clips**; no client, APP, voice, private fonts or Drive data sent to public Actions.
+- [2s horizontal true MP4](https://drive.google.com/file/d/1yo1l45gHKrSxck-oEHzxIr_O87ttT0Gt/view) SHA256 `1e254461a1a09d115cab52bf0a9f7e5aee160ee9f1c3cefa2693a4d924ab0057`; [genuine ProRes4444 alpha](https://drive.google.com/file/d/1bYNH1FkbatslNzrX4hotmwlA1hunyRis/view) SHA `6ff4a8fe538c2013d3dcff1c2c5378bfa6c0595392cc3056177ef2623ccd4a9e`; 1280×720 24fps, 48/48 complete decode.
+- [2s portrait true MP4](https://drive.google.com/file/d/1yXGpj0wLiWun7ezeNUNvEEjbSzSJ7cfM/view) SHA256 `192ad6d94f7d7c22bdbb392cea982d929ab0a150008893fc50f5e74f5f546824`; [portrait true ProRes4444 Alpha MOV](https://drive.google.com/file/d/1wHeiEut6LpvG4gmWAtn0Z0p23mqoPgVM/view) SHA `275d80b72092548c74b8bc17dc5248e1a9624a4bcd87440788e8819c5f914122`; 720×1280 24fps, 48/48.
+- [8s story MP4](https://drive.google.com/file/d/17byn87kXVSQJTet6LP23gg6zTLOhPCXf/view) SHA256 `0824916a855d93003b86f548db7129bcd152df59c6c1f7e5c0aefc2ddc3afe7c`; [8s true ProRes4444 alpha MOV](https://drive.google.com/file/d/1aFpEvSk-oeJUDSTVLy6PF3JDkielasYS/view) SHA `406e5dcddb36dc90ad8edd81a27fc37ea348ae4983ebc73c3554ea12b369fd7c`; 1280×720 30fps, 240/240.
+- [Separate independent media/SHA/alpha border report](https://drive.google.com/file/d/1kj-0U5ajc-pS7bFS55QNEpgZJsLIB31U/view), [private complete evidence folder](https://drive.google.com/drive/folders/1imD64xiaBUjypukouTiFthk_kfrNoahc), [real storyboard 12 sampled frames](https://drive.google.com/file/d/1AZ1tr8FNiMpLn7xinKYZ2Oj6M06CNIYF/view).
+- Existing 20/20 local tests pass with protected true historical HF v22u; public CI runs 19 PASS / 1 historical PRIVATE optional SKIP plus adapter tests. A first public CI run failed because FFmpeg setup was ordered after tests; final successful pipeline fixes it.
+- Explicitly no new global Skill or competing S08 renderer, no change to approved K effects, no PR merge or main changes. Only isolated public standard hosted GitHub Actions tests; no private Actions minute usage.
+
+## Entry / command interface (within existing repository)
+
+```bash
+node experiments/cinetic-sidecar/cinetic-flow.mjs doctor ABSOLUTE_REVIEWED_HF_ENTRYPOINT SHA256
+node experiments/cinetic-sidecar/cinetic-flow.mjs audit-video EXISTING.mp4 1280 720 30 240 EXPECTED_VIDEO_SHA256
+node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/story-eight.plan.json out/new-artifact --prepare-only
+node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/story-eight.plan.json out/new-render --render --hf /abs/local/reviewed/hf-cli.js --hf-sha SHA256
+```
+
+The general assistant/agent can author the `public-synthetic` plan using upstream Cinetic pinned source as *creative reference*. Existing `adapter.mjs` normalizes text and beats; `prepare-render.mjs` materializes deterministic HTML and licensed CJK fonts; `cinetic-flow.mjs` runs actual pinned HyperFrames and existing `verify-render.mjs` verifies video/alpha. The current schema only covers four proven layout motifs and a narrow set of causal beat forms; **do not claim all upstream techniques are executables**.
+
+## Honest remaining gates
+
+`ENGINE_TECH_MVP=PASS`, `FULL_UPSTREAM_CINETIC_SKILL=NOT_INSTALLED`, `TECHNIQUE_273_FULL_CRAFT=NOT_IMPLEMENTED`, `60FPS_PRODUCTION=NOT_VERIFIED`, `BRANDED_CREATIVE_DESIGN=ART_PENDING`, `SOUNDTRACK=NOT_DONE`, `HUMAN_FULL_SPEED_QA=PENDING`, `WIN_PREMIERE=NOT_TESTED`, `CLIENT_COMMERCIAL_RIGHTS=PENDING`, `USER_APPROVAL=PENDING`, `PRODUCTION_RELEASE=BLOCKED`. Public sample is technically useful but visually sparse/generic and **not a premium branded commercial ad**; do not ask user to approve it as their S08 footage. C0's upstream unsafe installer paths (eval, rm -rf, postinstall) stay disabled, and exact existing company assets must never enter the public test route.
+
+---
+
+## Prior history (superseded by 2026-10-26 true-engine proof)
+
 # Cinetic one-entry sidecar — 2026-10-26 implementation note
 
 STATUS: Orchestration source and 11/11 local Node contract tests PASS. The new entrypoint has NOT yet been run end-to-end using a real HyperFrames CLI. This is a thin opt-in adapter to existing Cinetic code, not another renderer or a full upstream 273-technique Skill.
