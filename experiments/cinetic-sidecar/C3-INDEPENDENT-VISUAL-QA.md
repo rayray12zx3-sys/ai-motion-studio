@@ -4,6 +4,22 @@ The 2026-10-23 note saying the 8-second 480f matching HF film had NOT been rende
 
 # C3 visual/design and technical gate — 2026-10-18
 
+## CURRENT 2026-10-26 — matching 480f true-HyperFrames 60fps technical proof exists; art still needs review
+
+**Supersedes older historical sections below that say Brief B 60fps/480f true output is missing.** Actual fixed-source genuine HyperFrames **8.0s/480f/60fps/1280x720** MP4 and ProRes4444 Alpha MOV were generated with the same single-entry Cinetic command and real decoded technical QA PASS: [public CI #40217938756](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40217938756). This was retested intact in [picker+director workflow CI #40224622103](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40224622103). Independent full file decode and SHA256 check: MP4 `4a5de774c4a6afabadcdb0772834887f8ce1a1be5442bc4bfa00c5ea080ebeaf`; MOV `bce0069db290c71d3f02c583a3c573e9c51fffb5332d845268349b06f643654e`; 480/480 frames each, ProRes4444 `ap4h` with true alpha `yuva444p12le`. [Actual 60fps MP4](https://drive.google.com/file/d/1ZcT-nfoRpcdRghGIh4SzPoBD0h7V90l8/view); [8-frame real contact sheet](https://drive.google.com/file/d/1dUT17U-IJ4GCKFPxqHLEPq3HR1KRUUuk/view).
+
+**Current actual source-backed upstream Cinetic selection:** 273 official recipes in 14 groups + original pinned MIT `pick.py` are vendored in `upstream-cinetic`, with source Git blob verification, deterministic `cinetic-flow.mjs pick` and `treat` writing real BRIEF/TREATMENT source plan. All these checks PASSED public CI. Those five automatically drawn recipe names **are not implemented by the existing scene renderer** and MUST NOT be credited to any rendered video; the renderer still uses locally-authored bespoke storyboard/evidence-card primitives.
+
+**Evidence-limited 60fps visual review (sampled 8 contact frames, not independent normal-speed phone viewing):**
+- 00–02s: 3 film-frame objects are visible along with left Chinese typography, hierarchy is more specific than earlier abstract three dots.
+- 02–05s: physical storyboard frames reorder, cursor/accent travels; this matches the underlying rain-story causal premise but text is fairly static.
+- 05–08s: rain/drop scene appears; hero droplet/ripples resolve into the final frame, with a lot of empty left-hand space. Sampled review is NOT an independently certified premium design or a definitive 1× rhythm judgment.
+- No human Premiere alpha import/export, synchronized soundtrack/SFX, exact branded font/rights and user final art approval evidence. **VISUAL_QA=NEEDS_REFINEMENT**, **USER_ART=PENDING**, **PRODUCTION_RELEASE=BLOCKED**.
+- Fair Cinetic-vs-default Canvas same-brief baseline and measured runtime/cost comparisons are STILL NOT DONE, not automatically implied by these successful new HF runs.
+
+---
+
+
 ## 2026-10-23 C3 existing-evidence reconciliation and runnable two-brief selection
 
 **Source-only audit complete; comparative render/art acceptance NOT run here.** The following avoids losing already proven genuine-engine results or replaying them just to satisfy a document checkbox.
