@@ -1,3 +1,7 @@
+## 2026-10-26 C3 UPDATE: 60fps story-board real render TECH PASS (prior statement below historical)
+
+The 2026-10-23 note saying the 8-second 480f matching HF film had NOT been rendered is now SUPERSEDED. [Real full 60fps CI #40217938756](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40217938756), repeated successfully with official picker [#40223006027](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40223006027). 1280x720, 60 fps, 480/480 complete H264 and genuine ProRes4444 alpha, MP4 SHA 4a5de774c4a6afabadcdb0772834887f8ce1a1be5442bc4bfa00c5ea080ebeaf, MOV SHA bce0069db290c71d3f02c583a3c573e9c51fffb5332d845268349b06f643654e. The actual downloaded ZIP CRC, frame count, codec and full decodability passed. Contact sheet observed (not full-speed human QA). Matched same-brief default Canvas/FFmpeg baseline still NOT_DONE, nor music/rights/Premiere/owner art approval. Pinned 273-entry picker data does not implement all effects automatically.
+
 # C3 visual/design and technical gate — 2026-10-18
 
 ## 2026-10-23 C3 existing-evidence reconciliation and runnable two-brief selection
