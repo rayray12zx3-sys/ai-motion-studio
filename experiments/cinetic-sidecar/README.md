@@ -1,5 +1,19 @@
 # Cinetic director sidecar — C1 adapter + C2/C3 isolated synthetic render proof
 
+## 2026-10-26 CURRENT — single-entry genuine engine and source-backed director workflow
+
+**Primary implementation:** [CINETIC_SINGLE_ENTRY_MVP.md](CINETIC_SINGLE_ENTRY_MVP.md), [project-local scoped skill](../../.agents/skills/cinetic-synthetic-sidecar/SKILL.md), [upstream 273-technique provenance](upstream-cinetic/PROVENANCE.md), [full evidence Issue #138](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/138).
+
+- **True HF technical MVP PASS** on isolated public-original pipeline: 2s 16:9 24fps, 2s 9:16 24fps, 8s 16:9 30fps, 8s 16:9 60fps/480f, **actual MP4 + ProRes4444 alpha MOV**, decoded QA green. [latest exact CI](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40224622103).
+- **Authentic Cinetic director picker PASS:** vendored exact MIT source 273 technique recipes / 14 groups, pinned Python stdlib selector, safe explicit CLI `cinetic-flow.mjs pick <public-plan> <new-dir> --seed 123`; then `treat <plan> <same-dir>` writes plan fingerprint-bound `BRIEF.md` and `TREATMENT.md` with exact selected upstream recipes. No actual pixel effects are falsely credited to selected technique IDs.
+- **Render workflow PASS:** explicit `cinetic-flow.mjs <plan> <new-output> --render --hf /absolute/exact/version/entrypoint --hf-sha SHA256`, using existing C1 adapter, C2 preparer/fonts, true HyperFrames@0.8.143, decoded C2 verifier. `doctor` and `audit-video` modes fail safely. No arbitrary shell, private company data in public CI, full upstream installers, new global plugins, automatic art approval or main changes.
+- Actual 60fps sample: [8s MP4](https://drive.google.com/file/d/1ZcT-nfoRpcdRghGIh4SzPoBD0h7V90l8/view), [full technical/alpha evidence](https://drive.google.com/drive/folders/1M_c8KdjO1PR4nqgaxjkRdwox5h0S3Ald). ProRes 4444 original over Drive upload cap is archived as **3 ordered lossless binary parts** and hash manifest; do not claim individual parts are MOVs.
+- **Scope boundary:** operational limited Cinetic Sidecar, **NOT the full upstream Cinetic Agent Skill**, 273 recipe implementations, complete soundtrack/grade, independently approved visual artistry, native Windows Premiere or final commercial release. Original company S08 v22u source remains protected and separate.
+
+Historical 2026-10-18 and 10-23 source notes below describe earlier milestones. For current completion claims use this block / linked source-of-truth documentation rather than old headings.
+
+---
+
 > **2026-10-23 CURRENT — Cinetic Sidecar R&D, NOT a production-approved renderer.** C1 isolated opt-in adapter, C2 genuine MP4/ProRes Alpha 16:9/9:16 and C3 sample 8s real technical render are evidenced. A separate protected private S08 v22u genuine HyperFrames 95f technical/Drive/16-frame numeric parity succeeded, **not** owner art approval or Windows Premiere acceptance. C0 upstream full executables/rights remains PARTIAL, C3 two-brief normal-speed art comparison PENDING, C4 commercial promotion BLOCKED. Full upstream 273-technique Cinetic Skill is **not installed or implemented**. Current prioritized acceptance is tracked by [Issue #138](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/138); [C3 full-speed review matrix](C3-INDEPENDENT-VISUAL-QA.md); [C0 source/license audit](C0-LICENSE-COMPATIBILITY.md); [private S08 Issue #161](https://github.com/rayray12zx3-sys/rayray12zx3-sys-ai-video-production-state/issues/161). All material below headed 2026-10-18 is historical, not the latest completion state. Existing approved Python and default Canvas routes remain untouched; do not merge this Draft PR on technical CI alone.
 
 
