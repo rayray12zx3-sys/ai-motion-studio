@@ -137,6 +137,68 @@ jobs:
             out/cinetic-full-one-command/render/overlay-alpha.mov
             out/cinetic-full-one-command/render/technical-report.json
             out/cinetic-full-one-command/render/flow-receipt.json
+      - name: Split public-original 60fps ProRes into three SHA-verified exact-byte archive chunks
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          src=Path('out/cinetic-full-60fps-directed/render/overlay-alpha.mov')
+          receipt=json.loads(Path('out/cinetic-full-60fps-directed/full-receipt.json').read_text())
+          assert receipt['gates']['release']=='BLOCKED'
+          assert receipt['director']['selectedPlanRecipesImplemented']==['tr-anchor-overlay-cut']
+          original=src.read_bytes()
+          full_sha=hashlib.sha256(original).hexdigest()
+          assert full_sha==receipt['media']['movAlpha']
+          out=Path('out/cinetic-alpha-archive')
+          out.mkdir(parents=True,exist_ok=False)
+          chunk_size=40_000_000
+          parts=[]
+          for i,start in enumerate(range(0,len(original),chunk_size),start=1):
+              chunk=original[start:start+chunk_size]
+              filename=f'part{i:02d}.bin'
+              (out/filename).write_bytes(chunk)
+              parts.append(dict(filename=filename,order=i,bytes=len(chunk),sha256=hashlib.sha256(chunk).hexdigest()))
+          assert len(parts)==3, 'archive interface expected three <100MB chunks'
+          digest=hashlib.sha256()
+          for part in parts:
+              digest.update((out/part['filename']).read_bytes())
+          assert digest.hexdigest()==full_sha
+          manifest={'schema':'cinetic-alpha-archive-v1','source':'ORIGINAL_PUBLIC_SYNTHETIC_ONLY',
+            'github_workflow_sha_expected_at_run':'GITHUB_SHA_RUNTIME','format':'genuine_ProRes4444_alpha',
+            'original_filename':'overlay-alpha.mov','original_bytes':len(original),
+            'original_sha256':full_sha,'parts':parts,
+            'note':'Raw consecutive binary pieces, NOT independent playable MOVs. Join in numeric order; check full SHA256.'}
+          (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\\n')
+          print('EXACT_ALPHA_3_PARTS_AND_RECONSTRUCTION_SHA_PASS',len(original),full_sha)
+          PY
+      - name: Upload alpha exact-byte part 01 — original public sample only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-8s60-alpha-part01
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            out/cinetic-alpha-archive/part01.bin
+            out/cinetic-alpha-archive/manifest.json
+      - name: Upload alpha exact-byte part 02 — original public sample only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-8s60-alpha-part02
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            out/cinetic-alpha-archive/part02.bin
+            out/cinetic-alpha-archive/manifest.json
+      - name: Upload alpha exact-byte part 03 — original public sample only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-8s60-alpha-part03
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            out/cinetic-alpha-archive/part03.bin
+            out/cinetic-alpha-archive/manifest.json
       - name: Record boundaries
         run: |
           echo 'Explicit plan Cinetic recipe remains in source-pinned director selection and is independently implemented in one storyboard scene; all other upstream picker suggestions remain NOT_APPLIED. True 8s audio+video and alpha only, not owner art or Premiere approval.' >> "$GITHUB_STEP_SUMMARY"
