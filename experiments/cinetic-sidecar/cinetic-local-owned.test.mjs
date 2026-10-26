@@ -94,7 +94,7 @@ test('reject in-repo private sources or delivery, malformed paths and untrusted 
  assert.throws(()=>preflightOwnerLocal([...f.argv.slice(0,2),join(bridge,'private-ad-output'),...f.argv.slice(3)],{}),/resolves through a link/);
  assert.throws(()=>parseLocalOptions([...f.argv,'--extra']),/unknown flags|mandatory/);
  mkdirSync(f.out);
- assert.throws(()=>preflightOwnerLocal(f.argv,{}),/overwrite/);
+ assert.throws(()=>preflightOwnerLocal(f.argv,{}),/overwrit/);
 });
 test('owner-local input cannot smuggle paths, arbitrary HTML, or third-party media fields',t=>{
  const f=fixture(t);
