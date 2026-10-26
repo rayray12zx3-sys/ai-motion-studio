@@ -4,6 +4,8 @@ on:
     branches: ['work/cinetic-single-entry-mvp-20261026']
     paths:
       - '.github/workflows/cinetic-single-entry-true-engine-smoke.yml'
+      - 'experiments/cinetic-sidecar/**/*.mjs'
+      - 'experiments/cinetic-sidecar/**/*.json'
 permissions:
   contents: read
 concurrency:

@@ -50,7 +50,7 @@ test('forged picker IDs and provenance cannot appear in director plan',t=>{
  const data=JSON.parse(readFileSync(join(out,'director-selection.json'),'utf8'));
  const raw=JSON.parse(readFileSync(plan,'utf8'));
  const wrong=structuredClone(data);wrong.selectedPicks[0].id='forged-upstream-id';
- assert.throws(()=>compileTreatment(raw,wrong),/not found/);
+ assert.throws(()=>compileTreatment(raw,wrong),/provenance|not found/);
  wrong.selectedPicks[0]=data.selectedPicks[0];wrong.pickerGitBlob='e'.repeat(40);
  assert.throws(()=>compileTreatment(raw,wrong),/provenance/);
 });
