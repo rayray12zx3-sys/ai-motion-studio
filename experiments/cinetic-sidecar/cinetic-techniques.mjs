@@ -77,7 +77,7 @@ export function selectDirectorTechniques(argv) {
     '--seed',String(effectiveSeed),'--json',pickedFile];
   const r=spawnSync(process.platform==='win32'?'python':'python3',args,{shell:false,encoding:'utf8',timeout:30000,maxBuffer:1048576,
     env:{PATH:process.env.PATH||'/usr/bin:/bin',PYTHONNOUSERSITE:'1',PYTHONDONTWRITEBYTECODE:'1',PYTHONIOENCODING:'utf-8'}});
-  if (r.error || r.status!==0) throw Error('pinned upstream technique selector failed: '+String(r.error||r.stderr).slice(0,300));
+  if (r.error || r.status!==0) throw Error('pinned upstream technique selector failed: '+String(r.error||r.stderr).slice(-1600));
   if (!existsSync(pickedFile) || statSync(pickedFile).size>100000) throw Error('upstream selector missing or oversized output');
   const selected=JSON.parse(readFileSync(pickedFile,'utf8'));
   if (!Array.isArray(selected.picks) || selected.picks.length<1 || selected.picks.length>16 ||
