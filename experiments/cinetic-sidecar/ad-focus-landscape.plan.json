@@ -23,7 +23,12 @@
     "visualLanguage": "電影感夜色幾何及溫暖精準的圓弧節奏",
     "visualMotif": "ad-film",
     "adDevice": "focus-clock",
-    "adAccent": "#E8B66C"
+    "adAccent": "#E8B66C",
+    "adBreakAt": [
+      4,
+      null,
+      3
+    ]
   },
   "beats": [
     {

@@ -28,6 +28,9 @@ test('two ad briefs have genuinely different custom shapes and independent aspec
  assert.match(habitHtml,/#composition \.connect\{top:76%/);
  assert.match(habitHtml,/#composition \.resolve\{top:76%/);
  assert.match(focusHtml,/__adFilmFrame/);
+ assert.match(focusHtml,/<span class="ad-line">注意力，<\/span><span class="ad-line">正在流失<\/span>/);
+ const revised=compile(from('ad-focus-revision'));
+ assert.match(addAdFilm(revised.html,revised.plan),/<span class="ad-line">把今天<\/span><span class="ad-line">留給自己<\/span>/);
  assert.deepEqual(AD_DEVICES,['focus-clock','habit-path']);
 });
 test('a revised real brief changes frame artwork and copy, without changing other work',()=>{

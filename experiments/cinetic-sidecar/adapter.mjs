@@ -58,15 +58,23 @@ export function normalizeDirectorPlan(input) {
   assert([24, 30].includes(fps) || (fps === 60 && input.direction?.visualMotif === "storyboard-film"), "unsupported fps");
   const frames = integer(render.frames, "render.frames", 48, fps === 60 ? 600 : 300);
   const direction = input.direction;
-  record(direction, ["seed", "techniqueIds", "visualLanguage", "visualMotif", "adDevice", "adAccent"], "direction");
+  record(direction, ["seed", "techniqueIds", "visualLanguage", "visualMotif", "adDevice", "adAccent", "adBreakAt"], "direction");
   const motif = direction.visualMotif ?? "semantic-graph";
   assert(["semantic-graph", "evidence-cards", "signal-ledger", "storyboard-film", "ad-film"].includes(motif), "unsupported visualMotif");
   if (motif === "ad-film") {
     assert(["focus-clock", "habit-path"].includes(direction.adDevice), "ad-film requires original approved device");
     assert(typeof direction.adAccent === "string" && /^#[0-9a-fA-F]{6}$/.test(direction.adAccent), "ad-film requires six-digit hex accent");
     assert(input.beats?.length === 3, "ad-film requires exactly three causal beats");
+    const lineBreaks = direction.adBreakAt ?? [null, null, null];
+    assert(Array.isArray(lineBreaks) && lineBreaks.length === 3, "adBreakAt must contain exactly three explicit copy positions");
+    lineBreaks.forEach((at, i) => {
+      const chars = Array.from(input.beats[i]?.onScreenText ?? "");
+      assert(at === null || (Number.isInteger(at) && at > 0 && at < chars.length), "invalid adBreakAt for beat " + i);
+      const pieces = at === null ? [chars] : [chars.slice(0, at), chars.slice(at)];
+      assert(pieces.every(x => x.length <= (width > height ? 7 : 10)), "ad copy too long for guaranteed safe line layout; use explicit adBreakAt/shorter copy");
+    });
   } else {
-    assert(direction.adDevice === undefined && direction.adAccent === undefined, "ad-specific art options forbidden on another motif");
+    assert(direction.adDevice === undefined && direction.adAccent === undefined && direction.adBreakAt === undefined, "ad-specific art options forbidden on another motif");
   }
   assert(Array.isArray(direction.techniqueIds) && direction.techniqueIds.length >= 1 && direction.techniqueIds.length <= 4, "direction.techniqueIds must contain 1-4 items");
   const techniqueIds = direction.techniqueIds.map((id, i) => {
@@ -105,7 +113,7 @@ export function normalizeDirectorPlan(input) {
       techniqueIds,
       visualLanguage: text(direction.visualLanguage, "direction.visualLanguage", 48),
       visualMotif: motif,
-      ...(motif === "ad-film" ? { adDevice: direction.adDevice, adAccent: direction.adAccent } : {}),
+      ...(motif === "ad-film" ? { adDevice: direction.adDevice, adAccent: direction.adAccent, adBreakAt: direction.adBreakAt ?? [null,null,null] } : {}),
     },
     beats,
   };

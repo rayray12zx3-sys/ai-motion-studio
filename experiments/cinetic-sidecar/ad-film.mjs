@@ -11,6 +11,22 @@ export function addAdFilm(html,plan) {
   if(!AD_DEVICES.includes(adDevice) || !safeColor(adAccent) || plan.beats.length!==3)
     throw Error('ad-film requires three beats, approved device and #RRGGBB accent');
   const vertical=H>W;
+  // Intentional line grouping avoids orphan CJK glyphs and keeps the artwork
+  // free of large captions. The original exact copy is not changed.
+  let withCopy=html;
+  plan.beats.forEach((beat,i)=>{
+    const breakAt=plan.direction.adBreakAt?.[i];
+    if(breakAt===null || breakAt===undefined)return;
+    const marker=' id="'+beat.id+'" ';
+    const point=withCopy.indexOf(marker);
+    if(point<0)throw Error('missing exact beat id for ad copy');
+    const start=withCopy.indexOf('>',point)+1,end=withCopy.indexOf('</div>',start);
+    if(start<=point || end<start || withCopy.slice(start,end)!==att(beat.onScreenText))
+      throw Error('unsafe or mismatched beat copy in HTML');
+    const characters=Array.from(beat.onScreenText);
+    const left=att(characters.slice(0,breakAt).join('')),right=att(characters.slice(breakAt).join(''));
+    withCopy=withCopy.slice(0,start)+'<span class="ad-line">'+left+'</span><span class="ad-line">'+right+'</span>'+withCopy.slice(end);
+  });
   const cx=vertical?360:835,cy=vertical?625:356,r=vertical?205:226;
   const accent=att(adAccent);
   const pts=vertical?[[135,818],[265,577],[452,425],[596,216]]:[[562,575],[664,415],[874,370],[1095,177]];
@@ -51,6 +67,7 @@ export function addAdFilm(html,plan) {
   ].join('');
   const style = [
     '#ad-film{position:absolute;inset:0;z-index:1;pointer-events:none}',
+    '#composition .ad-line{display:block;white-space:nowrap}',
     '#composition .clip{z-index:3;left:'+(vertical?'10%':'7%')+';width:'+(vertical?'80%':'38%')+';font-size:'+(vertical?'63px':'68px')+';font-weight:400;line-height:1.16;letter-spacing:-.045em;text-align:'+(vertical?'center':'left')+';border:none;padding:0;white-space:normal;text-shadow:0 8px 28px rgba(0,0,0,.32)}',
     '#composition .scatter{top:'+(vertical?'76%':'22%')+'}',
     '#composition .connect{top:'+(vertical?'76%':'28%')+'}',
@@ -93,7 +110,7 @@ export function addAdFilm(html,plan) {
   const root='data-fps="'+fps+'">\n';
   if(!html.includes(root)||!html.includes('</div><script>'))
     throw Error('expected frame seek composition markers missing');
-  return html.replace('</style>',style+'</style>')
+  return withCopy.replace('</style>',style+'</style>')
     .replace(root,root+art+'\n')
     .replace('</div><script>','</div><script>'+script+'</script><script>');
 }
