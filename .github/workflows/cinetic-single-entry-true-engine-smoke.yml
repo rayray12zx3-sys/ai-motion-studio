@@ -135,4 +135,4 @@ jobs:
             out/cinetic-full-one-command/render/flow-receipt.json
       - name: Record boundaries
         run: |
-          echo 'Original source-backed tr-anchor-overlay-cut with scene-driven non-sidebar layout was truly rendered, NOT art approved. No company media, no automatic upstream 273 implementations, no Premiere proof.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Original source-backed tr-anchor-overlay-cut with scene-driven non-sidebar layout scene-regressed with actual HyperFrames, NOT art approved. No company media, no automatic upstream 273 implementations, no Premiere proof.' >> "$GITHUB_STEP_SUMMARY"
