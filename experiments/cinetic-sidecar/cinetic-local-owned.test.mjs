@@ -89,6 +89,9 @@ test('reject in-repo private sources or delivery, malformed paths and untrusted 
  assert.throws(()=>preflightOwnerLocal([...f.argv.slice(0,2),inRepo,...f.argv.slice(3)],{}),/outside the public repository/);
  assert.throws(()=>preflightOwnerLocal(['relative.json',...f.argv.slice(1)],{}),/absolute local path/);
  assert.throws(()=>preflightOwnerLocal([...f.argv.slice(0,5),'0'.repeat(64)],{}),/SHA mismatch/);
+ const bridge=join(f.dir,'outside-link-to-public-checkout');
+ symlinkSync(repoRoot,bridge,'dir');
+ assert.throws(()=>preflightOwnerLocal([...f.argv.slice(0,2),join(bridge,'private-ad-output'),...f.argv.slice(3)],{}),/resolves through a link/);
  assert.throws(()=>parseLocalOptions([...f.argv,'--extra']),/unknown flags|mandatory/);
  mkdirSync(f.out);
  assert.throws(()=>preflightOwnerLocal(f.argv,{}),/overwrite/);
