@@ -169,7 +169,8 @@ jobs:
             'original_filename':'overlay-alpha.mov','original_bytes':len(original),
             'original_sha256':full_sha,'parts':parts,
             'note':'Raw consecutive binary pieces, NOT independent playable MOVs. Join in numeric order; check full SHA256.'}
-          (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\\n')
+          (out/'manifest.json').write_text(json.dumps(manifest,indent=2))
+          assert json.loads((out/'manifest.json').read_text())==manifest, 'archive manifest must be strict JSON'
           print('EXACT_ALPHA_3_PARTS_AND_RECONSTRUCTION_SHA_PASS',len(original),full_sha)
           PY
       - name: Upload alpha exact-byte part 01 — original public sample only
