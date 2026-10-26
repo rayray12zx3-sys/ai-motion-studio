@@ -4,7 +4,7 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, existsSync, statSync, realpathSync, writeFileSync } from 'node:fs';
 import { isAbsolute, join, resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { doctor, auditExistingVideo } from './cinetic-diagnostics.mjs';
 
@@ -79,7 +79,7 @@ export async function run(argv) {
   execute(bin,['render','-c','index.html','-o','./preview.mp4','--fps',String(plan.render.fps),'--quality','draft'],dir);
   execute(bin,['render','-c','index-alpha.html','-o','./overlay-alpha.mov','--format','mov','--fps',String(plan.render.fps)],dir);
   // Delegate all real video/alpha/font/frame checks to the EXISTING verifier; do not duplicate the S08 QA stack.
-  execute(process.execPath,[resolve(new URL('./verify-render.mjs',import.meta.url).pathname),dir],dir,180000);
+  execute(process.execPath,[fileURLToPath(new URL('./verify-render.mjs',import.meta.url)),dir],dir,180000);
   const technical=JSON.parse(readFileSync(join(dir,'technical-report.json'),'utf8'));
   if(technical.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')
     throw new Error('existing renderer verifier did not pass');

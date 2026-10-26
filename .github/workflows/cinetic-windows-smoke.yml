@@ -1,0 +1,97 @@
+name: Cinetic native Windows technical compatibility (NOT Premiere)
+on:
+  push:
+    branches: ['work/cinetic-single-entry-mvp-20261026']
+    paths:
+      - '.github/workflows/cinetic-windows-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cinetic-native-windows-isolated-synthetic
+  cancel-in-progress: true
+jobs:
+  windows-native-public-synthetic:
+    runs-on: windows-2025
+    timeout-minutes: 30
+    env:
+      CI: 'true'
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+        with:
+          python-version: '3.11'
+      - name: Install existing locked project packages without lifecycle scripts
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'locked dependency install failed' }
+      - name: Verify and stage pinned native Windows FFmpeg plus locked FFprobe
+        run: |
+          node scripts/setup-encoder.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'pinned FFmpeg setup failed' }
+          $ffmpeg = node -p "require('ffmpeg-static')"
+          $ffprobe = node -p "require('ffprobe-static').path"
+          if (!(Test-Path $ffmpeg) -or !(Test-Path $ffprobe)) { throw 'Windows native encoders missing' }
+          (Split-Path $ffmpeg) >> $env:GITHUB_PATH
+          (Split-Path $ffprobe) >> $env:GITHUB_PATH
+          Write-Output "Pinned Windows encoder and probe on PATH"
+      - name: Verify cross-platform source regression without private fixtures
+        run: |
+          node --test experiments/cinetic-sidecar/cinetic-flow.test.mjs experiments/cinetic-sidecar/cinetic-techniques.test.mjs experiments/cinetic-sidecar/cinetic-full.test.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'Windows source regression failed' }
+      - name: Validate publisher tarball fingerprint and install isolated exact CLI
+        run: |
+          $actual = npm view hyperframes@0.8.143 dist.shasum
+          if ($actual.Trim() -ne '8761025aa327993c605a307ec2d9f01fe6bde047') { throw 'unexpected HF package integrity' }
+          $root = Join-Path $env:RUNNER_TEMP 'cinetic-hf-windows-private'
+          npm install --prefix "$root" --ignore-scripts --no-audit --no-fund --no-save --package-lock=false hyperframes@0.8.143
+          if ($LASTEXITCODE -ne 0) { throw 'exact CLI package install failed' }
+          $pkg = Get-Content (Join-Path $root 'node_modules/hyperframes/package.json') -Raw | ConvertFrom-Json
+          if ($pkg.version -ne '0.8.143') { throw 'unexpected HyperFrames version' }
+          $rel = $pkg.bin.hyperframes
+          if (!$rel) { throw 'expected publisher CLI entrypoint missing' }
+          $entry = (Resolve-Path (Join-Path $root "node_modules/hyperframes/$rel")).Path
+          if (!(Test-Path $entry)) { throw 'CLI entrypoint missing' }
+          $sha = (Get-FileHash -Algorithm SHA256 $entry).Hash.ToLowerInvariant()
+          "HF_ENTRY=$entry" >> $env:GITHUB_ENV
+          "HF_SHA=$sha" >> $env:GITHUB_ENV
+      - name: Real one-command native Windows synthetic 2-second H264 and Alpha test
+        run: |
+          node experiments/cinetic-sidecar/cinetic-flow.mjs full experiments/cinetic-sidecar/probe.plan.json out/cinetic-windows-2s-public-synthetic --render --hf "$env:HF_ENTRY" --hf-sha "$env:HF_SHA" --seed 138 --energy calm
+          if ($LASTEXITCODE -ne 0) { throw 'real native Windows Cinetic pipeline failed' }
+          $dir = 'out/cinetic-windows-2s-public-synthetic'
+          $receipt = Get-Content "$dir/full-receipt.json" -Raw | ConvertFrom-Json
+          $qa = Get-Content "$dir/render/technical-report.json" -Raw | ConvertFrom-Json
+          if ($receipt.status -ne 'CINETIC_SINGLE_COMMAND_TRUE_HF_TECH_PASS') { throw 'bad full receipt' }
+          if ($qa.status -ne 'SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL') { throw 'Windows real video QA failed' }
+          if ($qa.render.frames -ne 48 -or $qa.render.fps -ne 24) { throw 'Windows frame count differs' }
+          if ($receipt.gates.windowsPremiere -ne 'NOT_TESTED' -or $receipt.gates.release -ne 'BLOCKED') { throw 'improper art/commercial promotion' }
+          ffmpeg -nostdin -v error -i "$dir/render/preview.mp4" -f null NUL
+          if ($LASTEXITCODE -ne 0) { throw 'Windows H264 decode failed' }
+          ffmpeg -nostdin -v error -i "$dir/render/overlay-alpha.mov" -f null NUL
+          if ($LASTEXITCODE -ne 0) { throw 'Windows ProRes Alpha decode failed' }
+      - name: Archive machine QA only — never company media or production approval
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-windows-native-public-synthetic-technical-receipts
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            out/cinetic-windows-2s-public-synthetic/full-receipt.json
+            out/cinetic-windows-2s-public-synthetic/render/technical-report.json
+            out/cinetic-windows-2s-public-synthetic/director/BRIEF.md
+            out/cinetic-windows-2s-public-synthetic/director/TREATMENT.md
+      - name: Windows result is native code/media only, NOT Premiere or creative signoff
+        run: |
+          'Windows-native 2s synthetic renderer test only. No Premiere import/export, company footage, official art approval, licensing release, or engine promotion.' >> $env:GITHUB_STEP_SUMMARY

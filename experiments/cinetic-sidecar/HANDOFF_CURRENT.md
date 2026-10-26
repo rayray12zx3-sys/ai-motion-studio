@@ -1,3 +1,9 @@
+## 2026-10-26 Windows native compatibility check — awaiting exact-head CI
+
+A narrowly scoped Windows GitHub runner smoke workflow was added to exercise the *existing* isolated public-synthetic Cinetic `full` command: Node 24, Python 3.11, current locked local dependencies, publisher-pin HyperFrames 0.8.143, SHA-verified FFmpeg on Windows, real 24fps/48-frame H264 MP4 + ProRes4444 Alpha MOV and Windows FFprobe/decoder QA. Fixed platform-specific `file://` → path handling of the verifier and selects `python` on Windows / `python3` on Linux rather than assuming POSIX. It does **not** install Premiere or expose company assets. A passing Windows-native GitHub run will close only `WINDOWS_NATIVE_ENGINE_SMOKE`; **`WINDOWS_PREMIERE_IMPORT=NOT_TESTED` remains unchanged**. Do not claim this change passed until the exact new CI run completes and its logs are read.
+
+---
+
 # Cinetic CURRENT — 2026-10-26 VERIFIED
 
 **Scope completed: original-public-synthetic single-entry Cinetic film technical MVP. Full production-grade Cinetic / client release NOT COMPLETE.**
