@@ -41,3 +41,33 @@ jobs:
       - name: Never claim owner machine/rights QA from public CI
         run: |
           echo 'Public CI exercises fictional fixture preflight ONLY. Actual owner local rendering, privacy, editor import, codec and commercial rights require independent validation.' >> "$GITHUB_STEP_SUMMARY"
+
+  windows-owner-local-source-contract-no-private-render:
+    runs-on: windows-2025
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Install preexisting locked packages, never execute package lifecycle scripts
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw 'Locked dependency install failed' }
+      - name: Real Windows Node source-only and private-path negative tests
+        run: |
+          node --check experiments/cinetic-sidecar/cinetic-local-owned.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'Windows source syntax failed' }
+          node --test experiments/cinetic-sidecar/cinetic-local-owned.test.mjs experiments/cinetic-sidecar/adapter.test.mjs experiments/cinetic-sidecar/ad-film.test.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'Windows owner-local input safeguards failed' }
+      - name: Preserve strict actual host boundary
+        run: |
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value 'Windows native Node security source tests only; owner-media rendering is intentionally blocked in CI; no Windows Premiere, owner permission or commercial release has been granted.'
