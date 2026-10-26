@@ -39,7 +39,7 @@ test('a revised real brief changes frame artwork and copy, without changing othe
  assert.notEqual(artA,artB);
  assert.match(artA,/#E8B66C/);
  assert.match(artB,/#DDB6F2/);
- assert.match(artB,/把今天留給自己/);
+ assert.match(artB,/<span class="ad-line">把今天<\/span><span class="ad-line">留給自己<\/span>/);
  assert.equal(b.plan.render.frames,a.plan.render.frames);
 });
 test('outside media, font tags, HTML and unsupported art directions are rejected before render',()=>{
