@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "engine": "cinetic-hyperframes",
+  "contentClass": "public-synthetic",
+  "brief": {
+    "title": "原創習慣養成廣告樣片",
+    "intent": "以虛構習慣養成工具示範小步累積成長，不宣稱真實商品效能",
+    "trigger": "虛構習慣養成器把零散的一步連成向上生長的路線",
+    "physicalResponse": "原創曲線逐點描出進展，最後生長出嫩葉",
+    "audienceUnderstanding": "每天的一步可以累積成新的習慣"
+  },
+  "render": {
+    "width": 720,
+    "height": 1280,
+    "fps": 24,
+    "frames": 144
+  },
+  "direction": {
+    "seed": 618,
+    "techniqueIds": [
+      "tr-anchor-overlay-cut"
+    ],
+    "visualLanguage": "自然有機線條與清新生長節奏",
+    "visualMotif": "ad-film",
+    "adDevice": "habit-path",
+    "adAccent": "#8ED7AF"
+  },
+  "beats": [
+    {
+      "id": "open",
+      "kind": "scatter",
+      "startFrame": 0,
+      "endFrame": 42,
+      "meaning": "以具象物件提出觀眾可理解的需求",
+      "onScreenText": "只需要一小步"
+    },
+    {
+      "id": "build",
+      "kind": "connect",
+      "startFrame": 42,
+      "endFrame": 100,
+      "meaning": "把產品主張轉譯為逐格動畫物理反應",
+      "onScreenText": "讓每一天都有軌跡"
+    },
+    {
+      "id": "finish",
+      "kind": "resolve",
+      "startFrame": 100,
+      "endFrame": 144,
+      "meaning": "以可視完成動作與簡潔行動語句結束",
+      "onScreenText": "小習慣，慢慢長大"
+    }
+  ]
+}

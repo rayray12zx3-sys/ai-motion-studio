@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "engine": "cinetic-hyperframes",
+  "contentClass": "public-synthetic",
+  "brief": {
+    "title": "原創專注計時器廣告樣片",
+    "intent": "以虛構專注計時器示範時間掌握與注意力集中，不宣稱真實商品效能",
+    "trigger": "虛構計時器把碎片化注意力化為一個可見的圓形節拍",
+    "physicalResponse": "原創時計圓弧隨時間完成並以指針標示聚焦的時刻",
+    "audienceUnderstanding": "專注有節奏並能被自己掌握"
+  },
+  "render": {
+    "width": 1280,
+    "height": 720,
+    "fps": 24,
+    "frames": 144
+  },
+  "direction": {
+    "seed": 416,
+    "techniqueIds": [
+      "tr-anchor-overlay-cut"
+    ],
+    "visualLanguage": "電影感夜色幾何及溫暖精準的圓弧節奏",
+    "visualMotif": "ad-film",
+    "adDevice": "focus-clock",
+    "adAccent": "#E8B66C"
+  },
+  "beats": [
+    {
+      "id": "open",
+      "kind": "scatter",
+      "startFrame": 0,
+      "endFrame": 42,
+      "meaning": "以具象物件提出觀眾可理解的需求",
+      "onScreenText": "注意力，正在流失"
+    },
+    {
+      "id": "build",
+      "kind": "connect",
+      "startFrame": 42,
+      "endFrame": 100,
+      "meaning": "把產品主張轉譯為逐格動畫物理反應",
+      "onScreenText": "把時間重新聚攏"
+    },
+    {
+      "id": "finish",
+      "kind": "resolve",
+      "startFrame": 100,
+      "endFrame": 144,
+      "meaning": "以可視完成動作與簡潔行動語句結束",
+      "onScreenText": "現在，回到專注"
+    }
+  ]
+}

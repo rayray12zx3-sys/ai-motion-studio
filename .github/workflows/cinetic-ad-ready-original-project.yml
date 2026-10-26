@@ -1,0 +1,98 @@
+name: Cinetic ad-ready original public project render and lossless alpha delivery
+on:
+  push:
+    branches: ['work/cinetic-single-entry-mvp-20261026']
+    paths:
+      - '.github/workflows/cinetic-ad-ready-original-project.yml'
+      - 'experiments/cinetic-sidecar/ad-film.mjs'
+      - 'experiments/cinetic-sidecar/ad-ready-png.mjs'
+      - 'experiments/cinetic-sidecar/ad-film.test.mjs'
+      - 'experiments/cinetic-sidecar/ad-*.plan.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cinetic-original-ad-campaign-smoke
+  cancel-in-progress: true
+jobs:
+  original-no-paid-engine-project:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CI: 'true'
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Install only existing locked free local production dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Provision SHA-verified existing Linux FFmpeg/FFprobe
+        run: |
+          node scripts/setup-encoder.mjs
+          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
+          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
+      - name: Verify no network/media inputs and three editable original ad briefs
+        run: |
+          node --test experiments/cinetic-sidecar/ad-film.test.mjs
+          python3 experiments/cinetic-sidecar/upstream-cinetic/scripts/pick.py --validate
+      - name: Verify publisher exact tarball fingerprint before isolated HyperFrames install
+        run: |
+          actual="$(npm view hyperframes@0.8.143 dist.shasum)"
+          test "$actual" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+          mkdir -p "$RUNNER_TEMP/cinetic-hf-pinned"
+          npm install --prefix "$RUNNER_TEMP/cinetic-hf-pinned" --ignore-scripts --no-audit --no-fund --no-save --package-lock=false hyperframes@0.8.143
+          test "$(node -p "require('$RUNNER_TEMP/cinetic-hf-pinned/node_modules/hyperframes/package.json').version")" = "0.8.143"
+          entry="$(readlink -f "$RUNNER_TEMP/cinetic-hf-pinned/node_modules/.bin/hyperframes")"
+          test -f "$entry"
+          echo "HF_ENTRY=$entry" >> "$GITHUB_ENV"
+          echo "HF_SHA=$(sha256sum "$entry" | cut -d ' ' -f1)" >> "$GITHUB_ENV"
+      - name: Real original 6-second focus clock landscape ad — no company footage
+        run: |
+          node experiments/cinetic-sidecar/cinetic-flow.mjs full experiments/cinetic-sidecar/ad-focus-landscape.plan.json out/cinetic-ad-focus-original --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA" --energy calm --seed 416
+      - name: Real original 6-second organic growth vertical ad — independent artwork
+        run: |
+          node experiments/cinetic-sidecar/cinetic-flow.mjs full experiments/cinetic-sidecar/ad-habit-vertical.plan.json out/cinetic-ad-habit-original --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA" --energy calm --seed 618
+      - name: Actually rerender revised focus campaign copy and color
+        run: |
+          node experiments/cinetic-sidecar/cinetic-flow.mjs full experiments/cinetic-sidecar/ad-focus-revision.plan.json out/cinetic-ad-focus-v2-original --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA" --energy calm --seed 416
+      - name: Decode original transparent PNG sequences through pinned local FFmpeg
+        run: |
+          node --input-type=module -e "import {exportTransparentPngSequence} from './experiments/cinetic-sidecar/ad-ready-png.mjs';for(const n of ['focus-original','habit-original']){const root='out/cinetic-ad-'+n;const r=exportTransparentPngSequence(root+'/render',root+'/alpha-png');if(r.frames!==144)throw Error('real PNG frame sequence incomplete '+n);console.log(n,r.status,r.manifestSha256)}"
+      - name: Cross-brief true-engine and revision checks are distinct from art or commercial approval
+        run: |
+          node --input-type=module -e "import fs from 'node:fs';const names=['focus-original','habit-original','focus-v2-original'];const results=names.map(n=>{const p='out/cinetic-ad-'+n+'/';const a=JSON.parse(fs.readFileSync(p+'full-receipt.json'));const v=JSON.parse(fs.readFileSync(p+'render/technical-report.json'));if(a.status!=='CINETIC_SINGLE_COMMAND_TRUE_HF_TECH_PASS'||a.gates.release!=='BLOCKED'||v.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL'||v.render.frames!==144||v.render.fps!==24)throw Error('real cinema QA failed '+n);if(!fs.existsSync(p+'render/overlay-alpha.mov')||!fs.existsSync(p+'render/preview.mp4'))throw Error('no actual videos '+n);return {mp4:a.media.mp4,alpha:a.media.movAlpha}});if(results[0].mp4===results[2].mp4||results[0].alpha===results[2].alpha)throw Error('revision was not visually rendered');if(results[0].mp4===results[1].mp4)throw Error('different briefs produced identical pixels');console.log('REAL_2_ORIGINAL_AD_BRIEFS_REVISION_24FPS_AND_ALPHA_PASS',results)"
+      - name: Publish original fictional campaign evidence, no bundled font files or customer data
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-no-fee-original-ads-focal-habit-actual-revision
+          retention-days: 3
+          if-no-files-found: error
+          path: |
+            out/cinetic-ad-focus-original/render/preview.mp4
+            out/cinetic-ad-focus-original/render/overlay-alpha.mov
+            out/cinetic-ad-focus-original/render/technical-report.json
+            out/cinetic-ad-focus-original/full-receipt.json
+            out/cinetic-ad-focus-original/director/BRIEF.md
+            out/cinetic-ad-focus-original/director/TREATMENT.md
+            out/cinetic-ad-focus-original/alpha-png/*.png
+            out/cinetic-ad-focus-original/alpha-png/manifest.json
+            out/cinetic-ad-habit-original/render/preview.mp4
+            out/cinetic-ad-habit-original/render/overlay-alpha.mov
+            out/cinetic-ad-habit-original/render/technical-report.json
+            out/cinetic-ad-habit-original/full-receipt.json
+            out/cinetic-ad-habit-original/director/BRIEF.md
+            out/cinetic-ad-habit-original/director/TREATMENT.md
+            out/cinetic-ad-habit-original/alpha-png/*.png
+            out/cinetic-ad-habit-original/alpha-png/manifest.json
+            out/cinetic-ad-focus-v2-original/render/preview.mp4
+            out/cinetic-ad-focus-v2-original/render/overlay-alpha.mov
+            out/cinetic-ad-focus-v2-original/render/technical-report.json
+            out/cinetic-ad-focus-v2-original/full-receipt.json
+            out/cinetic-ad-focus-v2-original/director/BRIEF.md
+            out/cinetic-ad-focus-v2-original/director/TREATMENT.md

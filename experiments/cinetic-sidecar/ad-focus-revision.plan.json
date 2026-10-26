@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "engine": "cinetic-hyperframes",
+  "contentClass": "public-synthetic",
+  "brief": {
+    "title": "原創專注計時器第二版",
+    "intent": "以不同色彩與廣告字句重新剪輯虛構專注工具展示，證明修改後能真正重製影片",
+    "trigger": "虛構計時器把碎片化注意力化為一個可見的圓形節拍",
+    "physicalResponse": "原創時計圓弧隨時間完成並以指針標示聚焦的時刻",
+    "audienceUnderstanding": "專注有節奏並能被自己掌握"
+  },
+  "render": {
+    "width": 1280,
+    "height": 720,
+    "fps": 24,
+    "frames": 144
+  },
+  "direction": {
+    "seed": 416,
+    "techniqueIds": [
+      "tr-anchor-overlay-cut"
+    ],
+    "visualLanguage": "電影感夜色幾何及溫暖精準的圓弧節奏",
+    "visualMotif": "ad-film",
+    "adDevice": "focus-clock",
+    "adAccent": "#DDB6F2"
+  },
+  "beats": [
+    {
+      "id": "open",
+      "kind": "scatter",
+      "startFrame": 0,
+      "endFrame": 42,
+      "meaning": "以具象物件提出觀眾可理解的需求",
+      "onScreenText": "日常太多雜音"
+    },
+    {
+      "id": "build",
+      "kind": "connect",
+      "startFrame": 42,
+      "endFrame": 100,
+      "meaning": "把產品主張轉譯為逐格動畫物理反應",
+      "onScreenText": "留一段清晰時間"
+    },
+    {
+      "id": "finish",
+      "kind": "resolve",
+      "startFrame": 100,
+      "endFrame": 144,
+      "meaning": "以可視完成動作與簡潔行動語句結束",
+      "onScreenText": "把今天留給自己"
+    }
+  ]
+}
