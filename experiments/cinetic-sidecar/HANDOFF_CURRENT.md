@@ -1,3 +1,32 @@
+# 2026-10-26 CURRENT — Cinetic private original-ad workflow now source-validated on Linux and Windows
+
+**Owner definition of finished Cinetic:** usable for real animation projects, with mandatory animation-engine/asset/per-render licence cost ZERO and NO attribution mandated in the final paid advertisement. Scope-specific permission must be checked against all actual media; fake test ad does not certify arbitrary customer footage. Preserve all older handoff, accepted K01–K20, main and Draft PR #140.
+
+## Changes performed this turn (additive, opt-in, real source)
+
+- NEW experiments/cinetic-sidecar/cinetic-local-owned.mjs is an optional local original advertising CLI. The user stores plan and exact SHA256-bound commercial rights declaration in private absolute filesystem paths OUTSIDE the public GitHub checkout. Its schema admits first-party original artwork/copy and pinned Noto SIL-OFL font, but refuses third-party photography, footage, music, voice, trademark inputs, mandatory paid subscriptions or screen credit.
+- It rejects output in the Git working copy, symlink alias into the repo, existing output, mismatched plan/rights SHA, untrusted CLI SHA, HTML/URL injection and all CI/GitHub Actions contexts (including a second guard inside the existing low-level renderer). The existing public full/normal API retains public-synthetic-only default. Neither private plan nor rendered media is automatically uploaded by this CLI.
+- Local output on an authorised owner machine would use the already proven actual HyperFrames + FFmpeg engine, verification and 144-frame (for the reference 6s 24fps plan) lossless RGBA PNG extraction with SHA manifest. The new privacy-aware owner-local route is preserved in machine receipt, which explicitly marks rights OWNER_ASSERTED_NOT_INDEPENDENTLY_VERIFIED, creative PENDING and full release NOT_AUTO_APPROVED.
+- The exact local Windows PowerShell setup, SHA-computation, attestation fields, privacy and input limitations are at [LOCAL_OWNED_AD_GUIDE.md](LOCAL_OWNED_AD_GUIDE.md). Normal personal hardware, electricity, storage and network cost can still apply; only licensed engine/asset/per-clip fees are nonmandatory in this explicitly limited original-vector + PNG pathway.
+
+## Latest independently verified facts
+
+- Executable engine/private-boundary code SHA **5ac102a4d1217c10443efd4d44345f8ab2eee029**: [Linux owner-private unit and safety checks #40288028200](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40288028200) SUCCESS; [real Windows-native HyperFrames/FFmpeg/alpha regression #40288028201](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40288028201) SUCCESS; [real Linux full original video/sound/alpha regression #40288028206](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40288028206) SUCCESS.
+- Later Windows+Linux source-only security workflow commit 5798face41eacc2111877ee4c9459d65794c4b74: [Actions #40288542174](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40288542174) completed SUCCESS, both ubuntu-24.04 and windows-2025 jobs. Exact source preflight accepts only fictional fixture and rejects CI, unmatched SHA, attribution, payment, unsafe files/URLs, existing outputs or wrong engine fingerprint. The test itself does not execute private media.
+- Earlier true 6s focus/habit advertising samples + revised focus sample, two 144-frame genuine transparent PNG archives remain technically verified and unchanged; see lower sections of handoff. They are stylised original fiction, not high-end user-approved real client artwork.
+
+## Release gate truth, do NOT overstate
+
+- First-party source/render engine, 3 public original project outputs, and transparent PNG delivery: verified true synthetic technical samples.
+- Native Windows and Linux owner-local PRE-FLIGHT and negative security validation: PASS.
+- **Real owner-local private ad job on user's own Windows PC: NOT EXECUTED.** This is deliberately blocked in public CI, so there is no exact private-runtime end-to-end report.
+- Human full-speed aesthetic approval for these exact ads; Premiere/native editor import/export; actual client logos/sound/claims; distribution-region final video codec or platform rights: not cleared or not tested. No blanket royalty-free H.264/ProRes assertion; PNG frames are the preferred image-sequence handoff.
+- **AD_READY_ZERO_FEE_NO_CREDIT_FULL_PRODUCT: NOT DONE**, but a first-party-original no-paid-engine/no-credit-image-workflow candidate now has a local runner and strict owner rights gate. No unreviewed paid tools, network uploads or automatic release override were added.
+
+**Next**: obtain an authorised purely original ad plan/attestation in a locally controlled private folder and run the pinned local CLI when the owner Windows machine is available. Validate actual frame sequence import and artistic readability, then independently clear all non-original customer assets and target ad encoding/distribution permissions before declaring a particular client delivery ready. Never send their private source to public Actions.
+
+---
+
 # 2026-10-26 FINAL ARCHIVAL UPDATE — both actual transparent image sequences re-downloaded and verified
 
 - Last real executable animation/code CI pass remains `3c8f886923d4ac2a42cbf11c1264e62d680d5b1b`: 3 genuine original-ad MP4s, two 144f RGBA PNG sequences, true codec alpha tests, and legacy Cinetic full regressions PASS. Latest compact user movie: [Actions #40283569518 artifact #12633118713](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40283569518/artifacts/12633118713). **No additional video render after that SHA**; newer docs/workflows are not executable animation validation.
