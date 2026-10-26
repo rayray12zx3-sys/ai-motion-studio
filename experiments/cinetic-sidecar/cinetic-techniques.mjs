@@ -72,11 +72,11 @@ export function selectDirectorTechniques(argv) {
   if (seconds<=0 || seconds>10) throw Error('unsupported director proposal duration');
   mkdirSync(out,{recursive:true});
   const pickedFile=join(out,'upstream-picked.json');
-  const args=['-I',pickerFile,'--library',libraryFile,
+  const args=['-I','-X','utf8',pickerFile,'--library',libraryFile,
     '--format',format,'--energy',energy,'--seconds',String(seconds),
     '--seed',String(effectiveSeed),'--json',pickedFile];
   const r=spawnSync(process.platform==='win32'?'python':'python3',args,{shell:false,encoding:'utf8',timeout:30000,maxBuffer:1048576,
-    env:{PATH:process.env.PATH||'/usr/bin:/bin',PYTHONNOUSERSITE:'1',PYTHONDONTWRITEBYTECODE:'1',PYTHONIOENCODING:'utf-8'}});
+    env:{PATH:process.env.PATH||'/usr/bin:/bin',PYTHONNOUSERSITE:'1',PYTHONDONTWRITEBYTECODE:'1'}});
   if (r.error || r.status!==0) throw Error('pinned upstream technique selector failed: '+String(r.error||r.stderr).slice(-1600));
   if (!existsSync(pickedFile) || statSync(pickedFile).size>100000) throw Error('upstream selector missing or oversized output');
   const selected=JSON.parse(readFileSync(pickedFile,'utf8'));
