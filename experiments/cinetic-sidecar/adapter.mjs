@@ -58,9 +58,16 @@ export function normalizeDirectorPlan(input) {
   assert([24, 30].includes(fps) || (fps === 60 && input.direction?.visualMotif === "storyboard-film"), "unsupported fps");
   const frames = integer(render.frames, "render.frames", 48, fps === 60 ? 600 : 300);
   const direction = input.direction;
-  record(direction, ["seed", "techniqueIds", "visualLanguage", "visualMotif"], "direction");
+  record(direction, ["seed", "techniqueIds", "visualLanguage", "visualMotif", "adDevice", "adAccent"], "direction");
   const motif = direction.visualMotif ?? "semantic-graph";
-  assert(["semantic-graph", "evidence-cards", "signal-ledger", "storyboard-film"].includes(motif), "unsupported visualMotif");
+  assert(["semantic-graph", "evidence-cards", "signal-ledger", "storyboard-film", "ad-film"].includes(motif), "unsupported visualMotif");
+  if (motif === "ad-film") {
+    assert(["focus-clock", "habit-path"].includes(direction.adDevice), "ad-film requires original approved device");
+    assert(typeof direction.adAccent === "string" && /^#[0-9a-fA-F]{6}$/.test(direction.adAccent), "ad-film requires six-digit hex accent");
+    assert(input.beats?.length === 3, "ad-film requires exactly three causal beats");
+  } else {
+    assert(direction.adDevice === undefined && direction.adAccent === undefined, "ad-specific art options forbidden on another motif");
+  }
   assert(Array.isArray(direction.techniqueIds) && direction.techniqueIds.length >= 1 && direction.techniqueIds.length <= 4, "direction.techniqueIds must contain 1-4 items");
   const techniqueIds = direction.techniqueIds.map((id, i) => {
     assert(typeof id === "string" && /^[a-z][a-z0-9-]{2,64}$/.test(id), "invalid technique ID " + i);
@@ -98,6 +105,7 @@ export function normalizeDirectorPlan(input) {
       techniqueIds,
       visualLanguage: text(direction.visualLanguage, "direction.visualLanguage", 48),
       visualMotif: motif,
+      ...(motif === "ad-film" ? { adDevice: direction.adDevice, adAccent: direction.adAccent } : {}),
     },
     beats,
   };
@@ -130,7 +138,7 @@ function buildHtml(plan) {
     "(function(){",
     "  'use strict';",
     "  const FPS = " + fps + ";",
-    "  const EDITORIAL = " + (["signal-ledger", "storyboard-film"].includes(plan.direction.visualMotif) ? "true" : "false") + ";",
+    "  const EDITORIAL = " + (["signal-ledger", "storyboard-film", "ad-film"].includes(plan.direction.visualMotif) ? "true" : "false") + ";",
     "  const beats = " + seekData + ";",
     "  const elements = beats.map(b => document.getElementById(b.id));",
     "  const clamp = x => Math.max(0, Math.min(1, x));",

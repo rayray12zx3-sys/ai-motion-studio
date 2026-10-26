@@ -9,6 +9,7 @@ import { addSemanticGraph } from "./semantic-graph.mjs";
 import { addEvidenceCards } from "./evidence-cards.mjs";
 import { addSignalLedger } from "./signal-ledger.mjs";
 import { addStoryboardFilm } from "./storyboard-film.mjs";
+import { addAdFilm } from "./ad-film.mjs";
 
 function fail(message) { throw new Error(message); }
 function covered(cp, rangeText) {
@@ -63,7 +64,9 @@ export function prepareSyntheticRender(input, dir) {
   html = html.replace("font-family:sans-serif", "font-family:'PinnedNotoTC'")
     .replace("font-weight:700", "font-weight:400")
     .replace("</style>", fontCss + "</style>");
-  html = plan.direction.visualMotif === "storyboard-film"
+  html = plan.direction.visualMotif === "ad-film"
+    ? addAdFilm(html, plan)
+    : plan.direction.visualMotif === "storyboard-film"
     ? addStoryboardFilm(html, plan)
     : plan.direction.visualMotif === "signal-ledger"
       ? addSignalLedger(html, plan)
