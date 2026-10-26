@@ -5,7 +5,7 @@
 // continues to reject owner-authored-local materials by default.
 import {readFileSync,existsSync,realpathSync,mkdirSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {relative,resolve,isAbsolute,sep,join} from 'node:path';
+import {relative,resolve,isAbsolute,sep,join,dirname} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {normalizeDirectorPlan} from './adapter.mjs';
 import {pinnedBinary,run} from './cinetic-flow.mjs';
@@ -32,8 +32,19 @@ function isWithinRepo(path){
 }
 function assertPrivatePath(path,kind){
   if(!isAbsolute(path))throw Error(kind+' must be an absolute local path outside the public repository');
-  if(isWithinRepo(resolve(path)))throw Error(kind+' must live outside the public repository');
-  return resolve(path);
+  const target=resolve(path);
+  if(isWithinRepo(target))throw Error(kind+' must live outside the public repository');
+  // Inspect the nearest real existing ancestor. Otherwise an outside symlink
+  // pointing back into the public checkout would leak future private outputs.
+  let existing=target;
+  while(!existsSync(existing)){
+    const parent=dirname(existing);
+    if(parent===existing)throw Error('no existing ancestor for '+kind);
+    existing=parent;
+  }
+  const actual=resolve(realpathSync(existing),relative(existing,target));
+  if(isWithinRepo(actual))throw Error(kind+' resolves through a link into the public repository');
+  return target;
 }
 function exactRecord(obj, keys, name){
   if(!obj||typeof obj!=='object'||Array.isArray(obj))
