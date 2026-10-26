@@ -1,3 +1,22 @@
+# Cinetic｜正式完成定義（使用者 2026-10-26 明確修正）
+
+**完成 = 能在實際動畫／廣告專案使用，產出的動畫可免費商業使用於廣告，且廣告成片不必註明製作工具、開源作者或素材來源。** 此標準優先於原本把技術 MVP、安裝 273 種技法、特定 Premiere 實機測試或「完成所有上游腳本」當作產品完成的推論。
+
+| 必要驗收 | 達標條件 | 2026-10-26 狀態 |
+|---|---|---|
+| REAL_PROJECT | 至少一個真正有用途的動畫/廣告 brief，可按內容製作、修改、交付及供實際剪輯/投放；不是只跑固定 public synthetic 範例。完整 1× 成片具可用品質。可接 Premiere 或其他已確認的剪輯途徑，不強制特定編輯器。 | **未證實**；僅原創合成樣片與多格式技術 PASS |
+| ZERO_REQUIRED_FEE | 不依賴付費 Cinetic/渲染引擎/AI API/音效庫/專利素材訂閱，不需逐支影片授權、付費去水印或付費買免署名權；採用可自行免費重跑的合法流程。自有硬體、電力、網路與可選的雲端服務仍有營運成本，不宣稱所有執行費用絕對為零。 | Cinetic MIT、HyperFrames Apache-2.0 與原創測試素材已有支持；**正式工作流程尚未逐項簽核** |
+| AD_COMMERCIAL_RIGHTS | 所有實際使用的字體/素材/音效/程式依賴/輸出編碼與使用地域、廣告發行途徑允許商用；客戶/使用者素材由相應權利人確認。不得以一支合成測試片推論所有未來客戶素材均有授權。 | **待實際專案與編碼/授權範圍釐清** |
+| NO_END_VIDEO_CREDIT | 廣告成片及廣告說明不被任何已使用的素材/工具授權強制要求署名、LOGO、水印或片尾感謝。MIT/Apache/OFL 若**散布軟體或字型檔本體**仍須保留 LICENSE/NOTICE，這不同於在成片署名。排除需署名的 CC BY 素材、NC 素材或條款不明來源。 | 核心 MIT/Apache/OFL 工具原則上不要求**成片**署名；其餘素材逐案審查 |
+
+**重要：**「免費商用＋成片免署名」應審查實際選擇的輸出路線，並非要求所有 273 種技巧必須程式化、整套上游安裝或強制 Windows Premiere 通過才符合使用者定義。不要為了虛構完全完成而替代商用安全材質、引入付費 AI、GSAP/Remotion 或股權不清楚的素材。商業授權與品質完成後可按 *特定輸出路線* 宣告達標；其餘功能是擴充項。
+
+**官方依據**：Cinetic [MIT](https://github.com/Leonxlnx/cinetic)、HyperFrames [Apache-2.0／無逐支輸出授權費](https://github.com/heygen-com/hyperframes)、[Apache 2.0 軟體再散布 NOTICE](https://apache.org/licenses/LICENSE-2.0.html)、[SIL OFL 字型商用作品免署名 FAQ](https://software.sil.org/oflt/)、[FFmpeg 官方法律/編碼專利注意事項](https://ffmpeg.org/legal.html)。FFmpeg 開源不等同保證 H.264/ProRes 在所有國家與散布模式均無個別編碼／專利義務。完整細項見 [C0](C0-LICENSE-COMPATIBILITY.md)。
+
+**後續最高優先級：** 對實際授權素材與具體廣告 brief 完成一個有內容差異、可重複修改的真實作品與免付費/免署名稽核；不在此之前稱為已完成商用工具。固定作品的 USER_ART 和 Windows Premiere 只是品質/工作流程證據，不是所有形式的必要前提。**AD_READY_ZERO_FEE_NO_CREDIT=NOT_VERIFIED**，此前 Linux/Windows 技術 PASS 不變。
+
+---
+
 # 2026-10-26 CURRENT: real Linux + native Windows Cinetic engine QA PASSED; commercial final release still BLOCKED
 
 **Exact code and workflow SHA tested:** [`3e3ef8fdf598b1b372628d18650033bca787e024`](https://github.com/rayray12zx3-sys/ai-motion-studio/commit/3e3ef8fdf598b1b372628d18650033bca787e024).
