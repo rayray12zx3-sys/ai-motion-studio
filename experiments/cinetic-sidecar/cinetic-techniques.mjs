@@ -87,6 +87,19 @@ export function selectDirectorTechniques(argv) {
     if (!lib.ids.has(p.id) || chosenIds.has(p.id)) throw Error('selector returned invalid/duplicate ID');
     chosenIds.add(p.id);
   }
+  // A filmmaker's explicit plan must survive upstream random exploration.
+  // Preserve the unmodified original picker result separately as evidence;
+  // never relabel manually requested IDs as random upstream choices.
+  const requiredIds=new Set(plan.direction.techniqueIds);
+  const byId=new Map(lib.data.techniques.map(x=>[x.id,x]));
+  const requiredPicks=plan.direction.techniqueIds.map(id=>{
+    const x=byId.get(id);
+    if(!x.formats.includes('any')&&!x.formats.includes(format))
+      throw Error('requested Cinetic technique not suitable for chosen format: '+id);
+    return {id:x.id,name:x.name,role:x.role,category:x.category};
+  });
+  const directedPicks=[...requiredPicks,
+    ...selected.picks.filter(p=>!requiredIds.has(p.id))].slice(0,16);
   const report={
     status:'CINETIC_UPSTREAM_DIRECTOR_PICKS_PROPOSALS_ONLY',
     source:'ORIGINAL_PUBLIC_SYNTHETIC_ONLY',
@@ -99,7 +112,9 @@ export function selectDirectorTechniques(argv) {
     render:plan.render,
     format,energy,seed:effectiveSeed,
     existingPlanTechniqueIds:plan.direction.techniqueIds,
-    selectedPicks:selected.picks,
+    selectionPolicy:'REQUESTED_PLAN_IDS_FIRST_PLUS_VERIFIED_ORIGINAL_PICKER',
+    originalPickerIds:selected.picks.map(p=>p.id),
+    selectedPicks:directedPicks,
     techniqueImplementation:'NOT_VERIFIED_AND_NOT_AUTO_APPLIED',
     gates:{art:'PENDING_USER_APPROVAL',independentVisualReview:'PENDING',render:'NOT_RUN',release:'BLOCKED'}
   };

@@ -19,7 +19,8 @@ export function compileTreatment(input,selection) {
     selection.render?.height!==plan.render.height ||
     selection.render?.fps!==plan.render.fps ||
     !Array.isArray(selection.selectedPicks) ||
-    selection.selectedPicks.length<1 || selection.selectedPicks.length>16)
+    selection.selectedPicks.length<1 || selection.selectedPicks.length>16 ||
+    !plan.direction.techniqueIds.every(id=>selection.selectedPicks.some(p=>p.id===id)))
     throw Error('selection provenance/plan mismatch');
   const byId=new Map(library.data.techniques.map(x=>[x.id,x]));
   const seen=new Set();

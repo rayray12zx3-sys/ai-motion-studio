@@ -67,6 +67,7 @@ export async function fullPipeline(argv) {
   const appliedIds=plan.direction.visualMotif==='storyboard-film'
     ? plan.direction.techniqueIds.filter(id=>SOURCE_IMPLEMENTED_STORYBOARD_TECHNIQUES.includes(id))
     : [];
+  const selectedIds=new Set(selected.selectedPicks.map(p=>p.id));
   const planRecipeEvidence=appliedIds.map(id=>({
     id,scene:'storyboard-film',
     cutFrame:plan.beats[plan.beats.length-1].startFrame,
@@ -90,11 +91,13 @@ export async function fullPipeline(argv) {
       selectedTechniqueIds:selected.selectedPicks.map(x=>x.id),
       implementation:'RECOMMENDED_NOT_AUTO_APPLIED',
       originalPlanRecipeImplementations:planRecipeEvidence,
+      selectedPlanRecipesImplemented:planRecipeEvidence.filter(x=>selectedIds.has(x.id)).map(x=>x.id),
       treatment:documentReceipt.status},
     media:{mp4:rendered.outputs.mp4,movAlpha:rendered.outputs.mov,
       mp4WithOriginalSound:sound?.muxedMp4Sha256||null},
     gates:{technical:'REAL_RENDER_AND_DECODE_QA_PASS',
-      selectedUpstreamRecipesRendered:'NOT_VERIFIED',
+      selectedUpstreamRecipesRendered:planRecipeEvidence.some(x=>selectedIds.has(x.id))
+        ? 'PARTIAL_ONLY_EXPLICIT_PLAN_RECIPE_SOURCE_AND_MEDIA_QA' : 'NOT_VERIFIED',
       originalPlanRecipesApplied:appliedIds.length?'SOURCE_APPLIED_TECHNICAL_QA_PASS_ART_PENDING':'NO_VERIFIED_SCENE_IMPLEMENTATIONS',
       originalSound:sound?.status||'NOT_CREATED',
       visual:'PENDING_INDEPENDENT_REVIEW',

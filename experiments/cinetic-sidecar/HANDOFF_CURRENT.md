@@ -1,3 +1,11 @@
+## 2026-10-26 director-to-pixel correspondence fix (verify new exact-head action)
+
+Previous full workflow produced authentic random upstream technique suggestions **disconnected** from the one scene-implemented technique in the plan. That contradicted the product goal. The selector now keeps requested, catalog-validated Cinetic plan IDs first in its output, then retains unmodified original `pick.py` suggestions separately with `originalPickerIds` provenance. The director BRIEF/TREATMENT therefore includes the **exact intended** `tr-anchor-overlay-cut` and the machine receipt can assert that **only that one** selected source-backed recipe has a corresponding scene implementation and real-media technical pass. Remaining random suggestions remain unimplemented, not silently credited. This is a change in selection policy, **not** proof of automatically rendering the entire technique catalog.
+
+Still: user creative review, commercial rights, independent full-speed device-scale viewing and native Windows Premiere not approved. All outputs public-original synthetic. Validate the new exact-head CI before crediting this fix.
+
+---
+
 ## 2026-10-26 original synthetic sound finishing (scope-limited)
 
 - New deterministic `cinetic-soundscape.mjs` synthesizes **no third-party recordings**: restrained tone, edit cue, and raindrop/ripple sound on the 8s 60fps fictional storyboard frame grid. It runs **only** for `storyboard-film` with the scene-implemented `tr-anchor-overlay-cut` in the same `full` CLI.

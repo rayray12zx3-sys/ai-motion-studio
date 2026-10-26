@@ -41,6 +41,9 @@ test('official upstream picker produces deterministic actual picks and never imp
   const second=selectDirectorTechniques([plan,join(dir,'second'),'--seed','123','--energy','calm']);
   assert.deepEqual(first.selectedPicks,second.selectedPicks);
   assert.ok(first.selectedPicks.length>=1);
+  assert.equal(first.selectedPicks[0].id,source().direction.techniqueIds[0]);
+  assert.equal(first.selectionPolicy,'REQUESTED_PLAN_IDS_FIRST_PLUS_VERIFIED_ORIGINAL_PICKER');
+  assert.ok(first.originalPickerIds.length>0);
   assert.equal(first.catalogCount,273);
   assert.equal(first.status,'CINETIC_UPSTREAM_DIRECTOR_PICKS_PROPOSALS_ONLY');
   assert.equal(first.gates.render,'NOT_RUN');
@@ -79,4 +82,15 @@ test('private text, URLs, markup and invalid plan fail before output creation',t
  writeFileSync(plan,JSON.stringify(bad));
  assert.throws(()=>selectDirectorTechniques([plan,join(dir,'url')]),/forbidden/);
  assert.equal(existsSync(join(dir,'url')),false);
+});
+
+test('explicit storyboard technique is included in treatment proposals; other random picks stay unrendered',t=>{
+ const {dir,plan}=sandbox(t);
+ const input=JSON.parse(read(new URL('./storyboard-film-60fps-smoke.plan.json',import.meta.url),'utf8'));
+ writeFileSync(plan,JSON.stringify(input));
+ const selected=selectDirectorTechniques([plan,join(dir,'storyboard'),'--seed','142']);
+ assert.equal(selected.selectedPicks[0].id,'tr-anchor-overlay-cut');
+ assert.ok(selected.originalPickerIds.length>0);
+ assert.ok(selected.selectedPicks.every((x,i,a)=>a.findIndex(y=>y.id===x.id)===i));
+ assert.equal(selected.gates.render,'NOT_RUN');
 });

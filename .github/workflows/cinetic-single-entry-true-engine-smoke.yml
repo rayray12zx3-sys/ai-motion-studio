@@ -78,7 +78,7 @@ jobs:
         shell: bash
         run: |
           node experiments/cinetic-sidecar/cinetic-flow.mjs full experiments/cinetic-sidecar/storyboard-film-60fps-smoke.plan.json out/cinetic-full-60fps-directed --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA" --seed 142 --energy calm
-          node -e "const f=require('fs'),p='out/cinetic-full-60fps-directed/',r=JSON.parse(f.readFileSync(p+'render/technical-report.json')),x=JSON.parse(f.readFileSync(p+'full-receipt.json'));if(r.render.fps!==60||r.render.frames!==480||r.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('60fps real render not valid');if(x.director.originalPlanRecipeImplementations?.[0]?.id!=='tr-anchor-overlay-cut'||x.gates.originalPlanRecipesApplied!=='SOURCE_APPLIED_TECHNICAL_QA_PASS_ART_PENDING'||x.gates.selectedUpstreamRecipesRendered!=='NOT_VERIFIED'||!x.media.mp4WithOriginalSound||x.gates.originalSound!=='ORIGINAL_SYNTHETIC_8S_PICTURE_SOUND_QA_PASS_NOT_ART_APPROVAL'||x.gates.release!=='BLOCKED')throw Error('technique-to-source-to-media evidence missing')"
+          node -e "const f=require('fs'),p='out/cinetic-full-60fps-directed/',r=JSON.parse(f.readFileSync(p+'render/technical-report.json')),x=JSON.parse(f.readFileSync(p+'full-receipt.json'));if(r.render.fps!==60||r.render.frames!==480||r.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('60fps real render not valid');if(x.director.originalPlanRecipeImplementations?.[0]?.id!=='tr-anchor-overlay-cut'||x.gates.originalPlanRecipesApplied!=='SOURCE_APPLIED_TECHNICAL_QA_PASS_ART_PENDING'||x.gates.selectedUpstreamRecipesRendered!=='PARTIAL_ONLY_EXPLICIT_PLAN_RECIPE_SOURCE_AND_MEDIA_QA'||x.director.selectedPlanRecipesImplemented?.[0]!=='tr-anchor-overlay-cut'||!x.media.mp4WithOriginalSound||x.gates.originalSound!=='ORIGINAL_SYNTHETIC_8S_PICTURE_SOUND_QA_PASS_NOT_ART_APPROVAL'||x.gates.release!=='BLOCKED')throw Error('technique-to-source-to-media evidence missing')"
       - name: Prove complete ONE COMMAND director pick, treatment, genuine HF and media QA
         shell: bash
         run: |
@@ -137,4 +137,4 @@ jobs:
             out/cinetic-full-one-command/render/flow-receipt.json
       - name: Record boundaries
         run: |
-          echo 'Original source-backed tr-anchor-overlay-cut with 8s frame-grid deterministic original synthetic sound rendered and media-tested; no final sound/art approval, rights clearance or Windows Premiere proof.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Explicit plan Cinetic recipe remains in source-pinned director selection and is independently implemented in one storyboard scene; all other upstream picker suggestions remain NOT_APPLIED. True 8s audio+video and alpha only, not owner art or Premiere approval.' >> "$GITHUB_STEP_SUMMARY"
