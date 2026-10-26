@@ -4,6 +4,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { normalizeDirectorPlan } from './adapter.mjs';
+import { fileURLToPath } from 'node:url';
+import { SOURCE_IMPLEMENTED_STORYBOARD_TECHNIQUES } from './storyboard-film.mjs';
 import { parseSelectionArgs, selectDirectorTechniques } from './cinetic-techniques.mjs';
 import { writeTreatment } from './cinetic-treatment.mjs';
 import { pinnedBinary, run } from './cinetic-flow.mjs';
@@ -59,6 +61,18 @@ export async function fullPipeline(argv) {
   if(!rendered?.outputs?.mp4 || !rendered.outputs.mov ||
     !String(rendered.technical).includes('MEDIA_QA_PASS'))
     throw Error('genuine HyperFrames result did not pass decoder-based QA');
+  // Fail-closed: a selected upstream suggestion never counts as rendered. Only
+  // explicitly requested, locally implemented motif-specific recipes are attributed.
+  const appliedIds=plan.direction.visualMotif==='storyboard-film'
+    ? plan.direction.techniqueIds.filter(id=>SOURCE_IMPLEMENTED_STORYBOARD_TECHNIQUES.includes(id))
+    : [];
+  const planRecipeEvidence=appliedIds.map(id=>({
+    id,scene:'storyboard-film',
+    cutFrame:plan.beats[plan.beats.length-1].startFrame,
+    implementationFile:'experiments/cinetic-sidecar/storyboard-film.mjs',
+    sourceSha256:sha256(readFileSync(fileURLToPath(new URL('./storyboard-film.mjs',import.meta.url)))),
+    proof:'SOURCE_APPLIED_AND_GENUINE_MEDIA_QA_PASS__NO_INDEPENDENT_FULL_SPEED_ART_PASS'
+  }));
   const receipt={
     status:'CINETIC_SINGLE_COMMAND_TRUE_HF_TECH_PASS',
     sourceClass:'ORIGINAL_PUBLIC_SYNTHETIC_ONLY',
@@ -69,10 +83,12 @@ export async function fullPipeline(argv) {
     director:{upstreamTechniqueCount:selected.catalogCount,selectedSeed:seed,
       selectedTechniqueIds:selected.selectedPicks.map(x=>x.id),
       implementation:'RECOMMENDED_NOT_AUTO_APPLIED',
+      originalPlanRecipeImplementations:planRecipeEvidence,
       treatment:documentReceipt.status},
     media:{mp4:rendered.outputs.mp4,movAlpha:rendered.outputs.mov},
     gates:{technical:'REAL_RENDER_AND_DECODE_QA_PASS',
       selectedUpstreamRecipesRendered:'NOT_VERIFIED',
+      originalPlanRecipesApplied:appliedIds.length?'SOURCE_APPLIED_TECHNICAL_QA_PASS_ART_PENDING':'NO_VERIFIED_SCENE_IMPLEMENTATIONS',
       visual:'PENDING_INDEPENDENT_REVIEW',
       art:'PENDING_USER_APPROVAL',
       windowsPremiere:'NOT_TESTED',commercial:'BLOCKED_PENDING_RIGHTS',

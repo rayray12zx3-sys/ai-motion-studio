@@ -1,6 +1,7 @@
 // Original art direction: a raindrop story told through three physical film frames.
 // Fully synthetic SVG scenes; no remote media, clocks, GSAP or Cinetic code copied.
 // A red visual cue and the same cut-outs persist across the storyboard and final shot.
+export const SOURCE_IMPLEMENTED_STORYBOARD_TECHNIQUES = Object.freeze(['tr-anchor-overlay-cut']);
 export function addStoryboardFilm(html, plan) {
   if (!html.includes("</div><script>") || html.includes('id="storyboard-film"'))
     throw new TypeError("unexpected storyboard-film composition");
@@ -10,6 +11,9 @@ export function addStoryboardFilm(html, plan) {
       plan.beats.length !== 3 ||
       !["scatter","connect","resolve"].every((kind,i)=>plan.beats[i].kind===kind))
     throw new TypeError("storyboard-film requires opt-in original 8s 60fps landscape storyboard");
+  // Only this exact opt-in Cinetic recipe has a scene-level, frame-seek implementation.
+  // Other catalog IDs remain director proposals, not automatically rendered effects.
+  const anchoredOverlay=plan.direction.techniqueIds.includes('tr-anchor-overlay-cut');
   const ends=plan.beats.map(x=>x.endFrame);
   const style=[
     "#composition .clip{left:82px;top:271px;width:415px;max-height:220px;",
@@ -45,7 +49,7 @@ export function addStoryboardFilm(html, plan) {
     '</g>'].join("");
   };
   const stage=[
-    '<svg id="storyboard-film" viewBox="0 0 1280 720" width="1280" height="720" ',
+    '<svg id="storyboard-film"'+(anchoredOverlay?' data-applied-upstream-technique="tr-anchor-overlay-cut"':'')+' viewBox="0 0 1280 720" width="1280" height="720" ',
       'xmlns="http://www.w3.org/2000/svg" aria-hidden="true">',
     '<defs><clipPath id="story-hero-clip"><rect x="556" y="140" width="624" height="388" rx="3"/></clipPath></defs>',
     // Editorial title architecture, using hand-placed lines, never a dashboard grid.
@@ -94,6 +98,7 @@ export function addStoryboardFilm(html, plan) {
     "(function(){",
     " 'use strict';",
     " const FPS="+fps+",ENDS="+JSON.stringify(ends)+";",
+    " const ANCHOR_CUT="+String(anchoredOverlay)+";",
     " const cells=[0,1,2].map(i=>document.getElementById('story-cell-'+i));",
     " const steps=[0,1,2].map(i=>document.getElementById('story-step-'+i));",
     " const rail=document.getElementById('story-filmrail');",
@@ -125,12 +130,16 @@ export function addStoryboardFilm(html, plan) {
     "   el.setAttribute('transform','translate('+x.toFixed(3)+' '+y.toFixed(3)+') rotate('+angle.toFixed(3)+') scale('+size.toFixed(4)+')');",
     "   el.setAttribute('opacity',String(stage===2?Math.max(.70,1-p*.30):1));",
     "  });",
-    "  rail.setAttribute('opacity',String(stage===0?0:stage===1?Math.min(1,p*2):Math.max(0,1-p*3)));",
-    "  const cueX=stage===0?653:stage===1?mix(657,1065,q):mix(1065,753,q);",
-    "  const cueY=stage===0?273:stage===1?453:mix(453,413,q);",
+    "  rail.setAttribute('opacity',String(stage===0?0:stage===1?Math.min(1,p*2):ANCHOR_CUT?0:Math.max(0,1-p*3)));",
+    "  // Upstream tr-anchor-overlay-cut: absolute foreground cue survives the exact act boundary.",
+    "  // World behind changes at ENDS[1]; overlay begins at the identical 1065,453 pixel anchor.",
+    "  // Then the cue glides into the new scene over 40 frames (bounded, deterministic).",
+    "  const cueTravel=ANCHOR_CUT && stage===2?ease(clamp((f-first)/40)):q;",
+    "  const cueX=stage===0?653:stage===1?mix(657,1065,q):mix(1065,753,cueTravel);",
+    "  const cueY=stage===0?273:stage===1?453:mix(453,413,cueTravel);",
     "  cue.setAttribute('cx',cueX.toFixed(2));cue.setAttribute('cy',cueY.toFixed(2));",
-    "  cue.setAttribute('opacity',String(stage===2?1-clamp(p*3):1));",
-    "  const h=stage===2?Math.min(1,p*5):0;",
+    "  cue.setAttribute('opacity',String(stage===2?(ANCHOR_CUT?1-clamp((f-first)/52):1-clamp(p*3)):1));",
+    "  const h=stage===2?(ANCHOR_CUT?1:Math.min(1,p*5)):0;",
     "  hero.setAttribute('opacity',String(h));",
     "  const dropP=clamp((p-.08)/.43);",
     "  const dropY=mix(265,395,ease(dropP));",

@@ -35,7 +35,7 @@ jobs:
       - name: Regression test single-entry routing and real-media audit
         run: |
           node --test experiments/cinetic-sidecar/cinetic-flow.test.mjs experiments/cinetic-sidecar/cinetic-diagnostics.test.mjs experiments/cinetic-sidecar/cinetic-integration.test.mjs experiments/cinetic-sidecar/cinetic-techniques.test.mjs experiments/cinetic-sidecar/cinetic-treatment.test.mjs experiments/cinetic-sidecar/cinetic-full.test.mjs
-          node --test experiments/cinetic-sidecar/adapter.test.mjs
+          node --test experiments/cinetic-sidecar/adapter.test.mjs experiments/cinetic-sidecar/storyboard-film.test.mjs
       - name: Exercise authentic upstream 273-technique director picker, no rendered art approval
         shell: bash
         run: |
@@ -77,8 +77,8 @@ jobs:
       - name: Validate true 60fps same entrypoint and ProRes4444 alpha (public original only)
         shell: bash
         run: |
-          node experiments/cinetic-sidecar/cinetic-flow.mjs experiments/cinetic-sidecar/storyboard-film-60fps-smoke.plan.json out/cinetic-single-entry-60fps-real --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA"
-          node -e "const f=require('fs'),r=JSON.parse(f.readFileSync('out/cinetic-single-entry-60fps-real/technical-report.json'));if(r.render.fps!==60||r.render.frames!==480||r.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('60fps full real render not valid')"
+          node experiments/cinetic-sidecar/cinetic-flow.mjs full experiments/cinetic-sidecar/storyboard-film-60fps-smoke.plan.json out/cinetic-full-60fps-directed --render --hf "$HF_ENTRY" --hf-sha "$HF_SHA" --seed 142 --energy calm
+          node -e "const f=require('fs'),p='out/cinetic-full-60fps-directed/',r=JSON.parse(f.readFileSync(p+'render/technical-report.json')),x=JSON.parse(f.readFileSync(p+'full-receipt.json'));if(r.render.fps!==60||r.render.frames!==480||r.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')throw Error('60fps real render not valid');if(x.director.originalPlanRecipeImplementations?.[0]?.id!=='tr-anchor-overlay-cut'||x.gates.originalPlanRecipesApplied!=='SOURCE_APPLIED_TECHNICAL_QA_PASS_ART_PENDING'||x.gates.selectedUpstreamRecipesRendered!=='NOT_VERIFIED'||x.gates.release!=='BLOCKED')throw Error('technique-to-source-to-media evidence missing')"
       - name: Prove complete ONE COMMAND director pick, treatment, genuine HF and media QA
         shell: bash
         run: |
@@ -110,12 +110,16 @@ jobs:
             out/cinetic-single-entry-portrait-real/flow-receipt.json
             out/cinetic-single-entry-portrait-real/validated-plan.json
             out/cinetic-single-entry-portrait-real/review-gates.json
-            out/cinetic-single-entry-60fps-real/preview.mp4
-            out/cinetic-single-entry-60fps-real/overlay-alpha.mov
-            out/cinetic-single-entry-60fps-real/technical-report.json
-            out/cinetic-single-entry-60fps-real/flow-receipt.json
-            out/cinetic-single-entry-60fps-real/validated-plan.json
-            out/cinetic-single-entry-60fps-real/review-gates.json
+            out/cinetic-full-60fps-directed/render/preview.mp4
+            out/cinetic-full-60fps-directed/render/overlay-alpha.mov
+            out/cinetic-full-60fps-directed/render/technical-report.json
+            out/cinetic-full-60fps-directed/render/flow-receipt.json
+            out/cinetic-full-60fps-directed/render/validated-plan.json
+            out/cinetic-full-60fps-directed/render/review-gates.json
+            out/cinetic-full-60fps-directed/full-receipt.json
+            out/cinetic-full-60fps-directed/director/director-selection.json
+            out/cinetic-full-60fps-directed/director/BRIEF.md
+            out/cinetic-full-60fps-directed/director/TREATMENT.md
             out/cinetic-upstream-directed/director-selection.json
             out/cinetic-upstream-directed/upstream-picked.json
             out/cinetic-upstream-directed/BRIEF.md

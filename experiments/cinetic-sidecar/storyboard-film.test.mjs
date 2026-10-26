@@ -58,3 +58,35 @@ test("a moving visible first frame, edit re-order, hero raindrop and out-of-orde
  assert.equal(pose(241),montage);
  assert.equal(pose(470),film);
 });
+
+
+// The first source-implemented Cinetic recipe is scoped to the opt-in 8s public
+// synthetic storyboard; old velocity-handoff plans are NOT falsely credited.
+test("upstream tr-anchor-overlay-cut: cue is identical across cut, world swaps, cue glides",()=>{
+ const upgraded=JSON.parse(readFileSync(new URL("./storyboard-film-60fps-smoke.plan.json",import.meta.url),"utf8"));
+ const original=normalizeDirectorPlan(upgraded);
+ assert.deepEqual(original.direction.techniqueIds,["tr-anchor-overlay-cut"]);
+ const html=addStoryboardFilm(compile(upgraded).html,original);
+ assert.match(html,/data-applied-upstream-technique="tr-anchor-overlay-cut"/);
+ const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
+ const names=[
+   ...[0,1,2].flatMap(i=>["story-cell-"+i,"story-step-"+i]),
+   "story-filmrail","story-cue","story-hero","story-raindrop",
+   "story-ripple-0","story-ripple-1","story-splash","story-playhead"
+ ];
+ const nodes=new Map(names.map(id=>[id,{attrs:{},setAttribute(k,val){this.attrs[k]=val}}]));
+ const listeners={};
+ runInNewContext(script,{window:{addEventListener(k,fn){listeners[k]=fn}},document:{getElementById(id){return nodes.get(id)}}});
+ const pose=f=>{listeners["hf-seek"]({detail:{time:f/60}});return {...nodes.get("story-cue").attrs}};
+ const outgoing=pose(323),incoming=pose(324);
+ assert.equal(outgoing.cx,"1065.00");assert.equal(outgoing.cy,"453.00");
+ assert.equal(incoming.cx,outgoing.cx);assert.equal(incoming.cy,outgoing.cy);
+ assert.equal(nodes.get("story-hero").attrs.opacity,"1");
+ assert.equal(nodes.get("story-filmrail").attrs.opacity,"0");
+ const resolved=pose(364);
+ assert.equal(resolved.cx,"753.00");assert.equal(resolved.cy,"413.00");
+ assert.ok(Number(resolved.opacity)>0);
+ assert.deepEqual(pose(324),incoming);
+ const historic=generated();
+ assert.doesNotMatch(historic,/data-applied-upstream-technique/);
+});

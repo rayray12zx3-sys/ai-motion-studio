@@ -1,3 +1,12 @@
+## 2026-10-26 Implementation continuation — new evidence requires new CI
+
+- The isolated source branch now targets a **real source-applied** original Cinetic `tr-anchor-overlay-cut` on the **8s/60fps public-synthetic storyboard**: a persistent red foreground cue is frame-position-matched at act 1→2, the scene underneath hard-swaps, and the cue glides to its scene slot over 40f. This is one genuine implemented recipe only, not all 273.
+- `storyboard-film.mjs` implements pixel-time scene behavior; `storyboard-film.test.mjs` checks exact cut boundary continuity, first-frame world swap and deterministic destination. `cinetic-full.mjs` records the exact plan technique ID, source SHA and cut frame **only after genuine decoder-based media QA**, while keeping randomly selected `pick.py` proposals separately **NOT_VERIFIED**.
+- The pre-existing public-original workflow has been changed to run **full** on the existing 8s/60fps case instead of duplicate render paths; it now tests and uploads one matched source-and-media receipt, original BRIEF/TREATMENT, actual MP4 and Alpha MOV. This was not a production-engine switch, no new third-party dependencies and no public private/company media.
+- **Do not mark this implementation or the 60fps media PASS until the new exact-head Action has actually completed SUCCESS and original output is checked.** Design quality, 1x human visual review, matched Canvas baseline, audio, Windows Premiere, licensed commercial use and art approval remain open.
+
+---
+
 # Cinetic｜HANDOFF_CURRENT（2026-10-26，Asia/Taipei）
 
 > **交接已建立 ≠ 作品或商用系統完成。** 本檔是 Cinetic 隔離實驗路線的精簡續接入口；現行證據與變動以 GitHub Live PR／Issue／CI 為準。勿複製私人素材或 Google Drive 檔案 ID 到公開 Repo。
