@@ -1,0 +1,71 @@
+name: Cinetic split verified two original transparent PNG advertising assets
+on:
+  push:
+    branches: ['work/cinetic-single-entry-mvp-20261026']
+    paths:
+      - '.github/workflows/cinetic-original-alpha-png-small-packets.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  two-deliverable-rgba-image-sequences:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Download fixed successful genuine 3-ad synthetic render artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: 12632849159
+          run-id: 40283569518
+          github-token: ${{ github.token }}
+          path: downloaded
+      - name: Repack only exact-byte PNG alpha frames, validate original per-frame SHA and no source font binaries
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,shutil
+          from pathlib import Path
+          root=Path('downloaded')
+          for label in ('focus-original','habit-original'):
+              needle='cinetic-ad-'+label
+              ms=[p for p in root.rglob('manifest.json') if p.parent.name=='alpha-png' and p.parent.parent.name==needle]
+              assert len(ms)==1,(needle,len(ms))
+              source=ms[0].parent
+              manifest=json.loads(ms[0].read_text(encoding='utf-8'))
+              assert manifest['schema']=='cinetic-original-vector-rgba-png-sequence-v1'
+              assert manifest['origin']=='ORIGINAL_PROJECT_AUTHORED_ART_ONLY_NO_EXTERNAL_MEDIA'
+              assert manifest['deliveredFrames']==144
+              assert manifest['render']['frames']==144
+              assert len(manifest['files'])==144
+              out=Path('deliverables')/needle
+              out.mkdir(parents=True,exist_ok=False)
+              for i,item in enumerate(manifest['files']):
+                  name='frame-'+str(i).zfill(6)+'.png'
+                  assert item['name']==name and item['frame']==i
+                  src=source/name
+                  data=src.read_bytes()
+                  assert item['bytes']==len(data) and item['sha256']==hashlib.sha256(data).hexdigest()
+                  assert data[:8]==bytes((137,80,78,71,13,10,26,10))
+                  assert data[25]==6 and data[24]==8, '8bit RGBA required'
+                  shutil.copyfile(src,out/name)
+              shutil.copyfile(ms[0],out/'manifest.json')
+              (out/'README_IMPORT.txt').write_text('Original fictional vector advertisement, 144 sequential 24fps lossless RGBA PNG frames.\nStart with frame-000000.png, import as image sequence at 24fps.\nManifest lists all SHA256 frame checksums. No music, logos, footage, font binaries, mandatory finished-ad credits or paid engine license.\nThis is not a blanket clearance for any client media, editor or final video codec.\n',encoding='utf-8')
+              assert len(list(out.glob('*.png')))==144
+              print('AD_ALPHA_RGBA_144_FRAMES_SHA_VERIFIED',label,sum(x.stat().st_size for x in out.glob('*.png')))
+          PY
+      - name: Upload original focus-clock transparent lossless sequence under connector size cap
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-focus-clock-6s24fps-transparent-PNG-144
+          retention-days: 7
+          compression-level: 4
+          if-no-files-found: error
+          path: deliverables/cinetic-ad-focus-original/*
+      - name: Upload original habit-growth transparent lossless sequence under connector size cap
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-habit-growth-6s24fps-transparent-PNG-144
+          retention-days: 7
+          compression-level: 4
+          if-no-files-found: error
+          path: deliverables/cinetic-ad-habit-original/*
