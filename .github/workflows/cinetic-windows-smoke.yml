@@ -5,6 +5,8 @@ on:
     paths:
       - '.github/workflows/cinetic-windows-smoke.yml'
       - '.gitattributes'
+      - 'experiments/cinetic-sidecar/cinetic-flow.mjs'
+      - 'experiments/cinetic-sidecar/cinetic-techniques.mjs'
   workflow_dispatch:
 permissions:
   contents: read
