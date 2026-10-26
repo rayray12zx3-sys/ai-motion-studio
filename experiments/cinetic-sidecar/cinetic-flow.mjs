@@ -33,8 +33,8 @@ export function options(argv) {
   if(opt.mode==='render' && (!opt.hf || !/^[0-9a-f]{64}$/.test(opt.hash||'')))throw new Error('render requires --hf and --hf-sha');
   return opt;
 }
-export function assertSynthetic(plan) {
-  if(plan?.schemaVersion!==1 || plan.engine!=='cinetic-hyperframes' || plan.contentClass!=='public-synthetic')
+export function assertSynthetic(plan, options = {}) {
+  if(plan?.schemaVersion!==1 || plan.engine!=='cinetic-hyperframes' || (plan.contentClass!=='public-synthetic' && !(options.allowOwnerAuthoredLocal===true && plan.contentClass==='owner-authored-local')))
     throw new Error('explicit public-synthetic Cinetic v1 plan required; private company data prohibited');
   if('userArt' in plan || 'approval' in plan || 'privateAssets' in plan)throw new Error('approval/private media overrides forbidden');
   return plan;
@@ -55,21 +55,22 @@ export function execute(bin,args,dir,timeout=600000) {
   if(r.error||r.status!==0)throw new Error('command failed: '+String(r.error||r.stderr).slice(0,400));
   return r.stdout;
 }
-export async function run(argv) {
-  const o=options(argv), input=assertSynthetic(JSON.parse(readFileSync(resolve(o.plan),'utf8')));
+export async function run(argv, trust = {}) {
+  const o=options(argv), input=assertSynthetic(JSON.parse(readFileSync(resolve(o.plan),'utf8')), trust);
   const dir=resolve(o.output);
   if(existsSync(dir))throw new Error('refuse existing output directory or overwrite');
   // Existing strict plan contract validates semantic beats, bounded text, source class, deterministic poses.
   const { normalizeDirectorPlan }=await import('./adapter.mjs');
-  const plan=normalizeDirectorPlan(input);
+  const plan=normalizeDirectorPlan(input, trust);
   // Verify CLI BEFORE writing outputs so a mistyped/unauthenticated tool cannot create a job.
   const bin=o.mode==='render'?pinnedBinary(o.hf,o.hash):null;
   // Existing font SHA evidence and source-only storyboard; no new renderer or font fallback.
   const { prepareSyntheticRender }=await import('./prepare-render.mjs');
-  const prepared=prepareSyntheticRender(input,dir);
-  const base={schema:'cinetic-flow-v0.1',route:'EXPLICIT_PUBLIC_SYNTHETIC_ONLY',
+  const prepared=prepareSyntheticRender(input,dir,trust);
+  const locallyOwned=plan.contentClass==='owner-authored-local';
+  const base={schema:'cinetic-flow-v0.1',route:locallyOwned?'EXPLICIT_LOCAL_OWNER_ORIGINAL_ONLY':'EXPLICIT_PUBLIC_SYNTHETIC_ONLY',
     director:'CINETIC_ADAPTER_NOT_FULL_273_TECHNIQUES',expectedEngine:PIN,
-    render:plan.render,source:'ORIGINAL_SYNTHETIC',gates:GATES};
+    render:plan.render,source:locallyOwned?'LOCAL_ORIGINAL_OWNER_ATTESTED_NOT_INDEPENDENTLY_CLEARED':'ORIGINAL_SYNTHETIC',gates:GATES};
   if(o.mode==='prepare-only') {
     const receipt={...base,technical:'PREPARED_NOT_RENDERED'};
     writeFileSync(join(dir,'flow-receipt.json'),JSON.stringify(receipt,null,2)+'\n',{flag:'wx'});
@@ -79,7 +80,7 @@ export async function run(argv) {
   execute(bin,['render','-c','index.html','-o','./preview.mp4','--fps',String(plan.render.fps),'--quality','draft'],dir);
   execute(bin,['render','-c','index-alpha.html','-o','./overlay-alpha.mov','--format','mov','--fps',String(plan.render.fps)],dir);
   // Delegate all real video/alpha/font/frame checks to the EXISTING verifier; do not duplicate the S08 QA stack.
-  execute(process.execPath,[fileURLToPath(new URL('./verify-render.mjs',import.meta.url)),dir],dir,180000);
+  execute(process.execPath,[fileURLToPath(new URL('./verify-render.mjs',import.meta.url)),dir,...(locallyOwned?['--owner-original-local']:[])],dir,180000);
   const technical=JSON.parse(readFileSync(join(dir,'technical-report.json'),'utf8'));
   if(technical.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')
     throw new Error('existing renderer verifier did not pass');

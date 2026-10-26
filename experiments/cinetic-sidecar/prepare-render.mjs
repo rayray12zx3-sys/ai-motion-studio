@@ -21,9 +21,9 @@ function covered(cp, rangeText) {
 }
 const sha256 = (s) => createHash("sha256").update(s).digest("hex");
 
-export function prepareSyntheticRender(input, dir) {
+export function prepareSyntheticRender(input, dir, options = {}) {
   const output = resolve(dir);
-  const { dir: written } = writeArtifacts(input, output);
+  const { dir: written } = writeArtifacts(input, output, options);
   const plan = JSON.parse(readFileSync(join(written, "validated-plan.json"), "utf8"));
   const pkg = fileURLToPath(import.meta.resolve("@fontsource/noto-sans-tc/package.json"));
   const root = dirname(pkg);

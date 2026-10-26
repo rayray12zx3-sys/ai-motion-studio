@@ -35,11 +35,11 @@ function escapeHtml(value) {
 function seconds(frames, fps) {
   return Number((frames / fps).toFixed(6));
 }
-export function normalizeDirectorPlan(input) {
+export function normalizeDirectorPlan(input, options = {}) {
   record(input, ["schemaVersion", "engine", "contentClass", "brief", "render", "direction", "beats"], "plan");
   assert(input.schemaVersion === 1, "unsupported schemaVersion");
   assert(input.engine === ENGINE, "Cinetic sidecar requires explicit opt-in engine");
-  assert(input.contentClass === "public-synthetic", "only original public synthetic examples are permitted");
+  assert(input.contentClass === "public-synthetic" || (options.allowOwnerAuthoredLocal === true && input.contentClass === "owner-authored-local"), "only original public synthetic examples are permitted without explicit owner-local mode");
   const brief = input.brief;
   record(brief, ["title", "intent", "trigger", "physicalResponse", "audienceUnderstanding"], "brief");
   const normalizedBrief = {
@@ -106,7 +106,7 @@ export function normalizeDirectorPlan(input) {
   assert(!beats.some((b) => ["composition", "root", "main"].includes(b.id)), "reserved beat ID");
   assert(beats[0].kind === "scatter" && beats[beats.length - 1].kind === "resolve", "narrative must begin scattered and end resolved");
   return {
-    schemaVersion: 1, engine: ENGINE, contentClass: "public-synthetic", brief: normalizedBrief,
+    schemaVersion: 1, engine: ENGINE, contentClass: input.contentClass, brief: normalizedBrief,
     render: { width, height, fps, frames },
     direction: {
       seed: integer(direction.seed, "direction.seed", 0, 2147483647),
@@ -196,8 +196,8 @@ function buildHtml(plan) {
     "</div><script>", seekScript, "</script></body></html>",
   ].join("\n") + "\n";
 }
-export function compile(input) {
-  const plan = normalizeDirectorPlan(input);
+export function compile(input, options = {}) {
+  const plan = normalizeDirectorPlan(input, options);
   const timeline = {
     engine: plan.engine, render: plan.render, beats: plan.beats,
     causalChain: { intent: plan.brief.intent, trigger: plan.brief.trigger, kineticResponse: plan.brief.physicalResponse, audienceConsequence: plan.brief.audienceUnderstanding },
@@ -214,8 +214,8 @@ export function compile(input) {
   };
   return { plan, timeline, html: buildHtml(plan), review };
 }
-export function writeArtifacts(input, outputDirectory) {
-  const { plan, timeline, html, review } = compile(input);
+export function writeArtifacts(input, outputDirectory, options = {}) {
+  const { plan, timeline, html, review } = compile(input, options);
   const dir = resolve(outputDirectory);
   assert(!existsSync(dir), "output directory already exists: refusing overwrite of prior review artifacts");
   mkdirSync(dir, { recursive: true });

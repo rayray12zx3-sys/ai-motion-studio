@@ -16,12 +16,12 @@ export function pngHeader(buf) {
    depth:buf[24],colorType:buf[25]};
 }
 
-export function exportTransparentPngSequence(renderDirectory,newOutputDirectory) {
+export function exportTransparentPngSequence(renderDirectory,newOutputDirectory, options = {}) {
  const render=resolve(renderDirectory),out=resolve(newOutputDirectory);
  if(existsSync(out))throw Error('refuse to overwrite existing PNG delivery');
  const input=JSON.parse(readFileSync(join(render,'validated-plan.json'),'utf8'));
- const plan=normalizeDirectorPlan(input);
- if(plan.direction.visualMotif!=='ad-film'||plan.contentClass!=='public-synthetic')
+ const plan=normalizeDirectorPlan(input,options);
+ if(plan.direction.visualMotif!=='ad-film'||(plan.contentClass!=='public-synthetic' && !(options.allowOwnerAuthoredLocal===true && plan.contentClass==='owner-authored-local')))
    throw Error('PNG commercial-interchange pilot is for original public ad-film only');
  const technical=JSON.parse(readFileSync(join(render,'technical-report.json'),'utf8'));
  if(technical.status!=='SYNTHETIC_RENDER_TECHNICAL_QA_PASS_NOT_ART_APPROVAL')
@@ -75,7 +75,7 @@ export function exportTransparentPngSequence(renderDirectory,newOutputDirectory)
  }
  const manifest={
   schema:'cinetic-original-vector-rgba-png-sequence-v1',
-  origin:'ORIGINAL_PROJECT_AUTHORED_ART_ONLY_NO_EXTERNAL_MEDIA',
+  origin:plan.contentClass==='owner-authored-local'?'LOCAL_OWNER_ATTESTED_ORIGINAL_COPY_NO_EXTERNAL_MEDIA':'ORIGINAL_PROJECT_AUTHORED_ART_ONLY_NO_EXTERNAL_MEDIA',
   render:{width,height,fps,frames,seconds:frames/fps},
   mediaSha256:technical.alpha.sha256,
   sourcePlanSha256:SHA(readFileSync(join(render,'validated-plan.json'))),

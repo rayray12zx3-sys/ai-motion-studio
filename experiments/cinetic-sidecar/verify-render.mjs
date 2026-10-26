@@ -13,7 +13,7 @@ const review = JSON.parse(readFileSync(join(folder, "review-gates.json"), "utf8"
 const font = JSON.parse(readFileSync(join(folder, "font-qa.json"), "utf8"));
 const { width: W, height: H, fps, frames } = plan.render;
 assert.equal(plan.engine, "cinetic-hyperframes");
-assert.equal(plan.contentClass, "public-synthetic");
+assert.ok(plan.contentClass === "public-synthetic" || (plan.contentClass === "owner-authored-local" && process.argv[3] === "--owner-original-local"), "local project verification requires explicit owner-original-local mode");
 assert.equal(review.visual.status, "PENDING_INDEPENDENT_REVIEW");
 assert.equal(review.artisticApproval.status, "PENDING_USER_APPROVAL");
 assert.equal(review.commercialRights.status, "BLOCKED_PENDING_RUNTIME_AUDIT");
