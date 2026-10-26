@@ -4,6 +4,7 @@ on:
     branches: ['work/cinetic-single-entry-mvp-20261026']
     paths:
       - '.github/workflows/cinetic-windows-smoke.yml'
+      - '.gitattributes'
   workflow_dispatch:
 permissions:
   contents: read
