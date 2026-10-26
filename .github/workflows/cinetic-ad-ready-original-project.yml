@@ -96,3 +96,31 @@ jobs:
             out/cinetic-ad-focus-v2-original/full-receipt.json
             out/cinetic-ad-focus-v2-original/director/BRIEF.md
             out/cinetic-ad-focus-v2-original/director/TREATMENT.md
+      - name: Produce tiny independently SHA-checked video review set, no fonts
+        shell: bash
+        run: |
+          mkdir -p out/cinetic-ad-review-compact
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,shutil
+          out=Path('out/cinetic-ad-review-compact')
+          for name in ('focus-original','habit-original','focus-v2-original'):
+              root=Path('out/cinetic-ad-'+name)
+              movie=root/'render/preview.mp4'
+              receipt=json.loads((root/'full-receipt.json').read_text())
+              assert hashlib.sha256(movie.read_bytes()).hexdigest()==receipt['media']['mp4']
+              shutil.copy2(movie,out/('ad-'+name+'.mp4'))
+              if name in ('focus-original','habit-original'):
+                  for frame in (20,65,120):
+                      source=root/'alpha-png'/('frame-'+str(frame).zfill(6)+'.png')
+                      assert source.exists()
+                      shutil.copy2(source,out/('ad-'+name+'-frame-'+str(frame)+'.png'))
+          print('COMPACT_AD_MEDIA_AND_TEXT_AT_VISIBLE_MIDBEATS_QA_PACKET_PASS')
+          PY
+      - name: Upload compact 3 playable previews + readable-timing stills for human art QA
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-original-ad-compact-visual-review
+          retention-days: 7
+          if-no-files-found: error
+          path: out/cinetic-ad-review-compact/*

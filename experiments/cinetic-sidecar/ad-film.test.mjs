@@ -21,6 +21,12 @@ test('two ad briefs have genuinely different custom shapes and independent aspec
  assert.match(focus.html,/注意力，正在流失/);
  assert.match(habit.html,/小習慣，慢慢長大/);
  assert.notEqual(focusHtml,habitHtml);
+ // Text does not cross the illustrative focal region in the two reference
+ // creative formats: horizontal clock begins at x=609, copy right edge <577;
+ // vertical habit path ends at y≈844, captions start at 76% of 1280=973.
+ assert.match(focusHtml,/#composition \.clip\{[^}]*width:38%/);
+ assert.match(habitHtml,/#composition \.connect\{top:76%/);
+ assert.match(habitHtml,/#composition \.resolve\{top:76%/);
  assert.match(focusHtml,/__adFilmFrame/);
  assert.deepEqual(AD_DEVICES,['focus-clock','habit-path']);
 });

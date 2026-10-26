@@ -51,10 +51,10 @@ export function addAdFilm(html,plan) {
   ].join('');
   const style = [
     '#ad-film{position:absolute;inset:0;z-index:1;pointer-events:none}',
-    '#composition .clip{z-index:3;left:'+(vertical?'10%':'7%')+';width:'+(vertical?'80%':'86%')+';font-size:'+(vertical?'67px':'86px')+';font-weight:400;line-height:1.16;letter-spacing:-.045em;text-align:'+(vertical?'center':'left')+';border:none;padding:0;white-space:normal;text-shadow:0 8px 28px rgba(0,0,0,.32)}',
-    '#composition .scatter{top:'+(vertical?'14%':'22%')+'}',
-    '#composition .connect{top:'+(vertical?'23%':'28%')+'}',
-    '#composition .resolve{top:'+(vertical?'75%':'60%')+';font-size:'+(vertical?'72px':'92px')+';color:'+accent+'}',
+    '#composition .clip{z-index:3;left:'+(vertical?'10%':'7%')+';width:'+(vertical?'80%':'38%')+';font-size:'+(vertical?'63px':'68px')+';font-weight:400;line-height:1.16;letter-spacing:-.045em;text-align:'+(vertical?'center':'left')+';border:none;padding:0;white-space:normal;text-shadow:0 8px 28px rgba(0,0,0,.32)}',
+    '#composition .scatter{top:'+(vertical?'76%':'22%')+'}',
+    '#composition .connect{top:'+(vertical?'76%':'28%')+'}',
+    '#composition .resolve{top:'+(vertical?'76%':'59%')+';font-size:'+(vertical?'68px':'78px')+';color:'+accent+'}',
   ].join('');
   const beatData=JSON.stringify(plan.beats.map(b=>[b.startFrame,b.endFrame]));
   const length=(2*Math.PI*r).toFixed(3);
