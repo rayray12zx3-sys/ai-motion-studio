@@ -12,3 +12,8 @@
 - This repository/branch is PUBLIC. Real S08 application images, company questions and private derivative runner MUST NOT be inserted or pushed here; the actual S08 style-directed video is made only in isolated private storage with an original Python/Pillow renderer.
 - Official pinned 273 Cinetic technique picks are still planning proposals, not auto-applied pixels. A future genuine HyperFrames integration needs a separately approved full rendering contract and binary SHA verification.
 - Do not merge main/Draft PRs or launch paid workflows just from this experiment. User visual approval, native Premiere and commercial rights are still blocked.
+
+
+## Actual style-token-to-pixel proof (private owner-local project)
+- A private owner-local original S08 renderer consumes `LOOK` exported to `style_tokens.json`, rather than merely writing a style name to a README. Reproducing original F44 after changing `look.yellow` temporarily changed **177,691 output pixels**; token restored. Private source and records are stored in the existing restricted Drive S08 owner folder and documented on owner production [Issue #161](https://github.com/rayray12zx3-sys/rayray12zx3-sys-ai-video-production-state/issues/161).
+- This proof only validates **style token → original Pillow pixel renderer**, not a pinned HyperFrames execution. The existing Cinetic sidecar is unchanged; registering this adapter as a fully native Cinetic render backend and proving Windows Premiere import remain separate gates. No company content/assets/filenames are in this public code.
