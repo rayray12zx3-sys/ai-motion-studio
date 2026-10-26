@@ -1,0 +1,53 @@
+# Cinetic｜HANDOFF_CURRENT（2026-10-26，Asia/Taipei）
+
+> **交接已建立 ≠ 作品或商用系統完成。** 本檔是 Cinetic 隔離實驗路線的精簡續接入口；現行證據與變動以 GitHub Live PR／Issue／CI 為準。勿複製私人素材或 Google Drive 檔案 ID 到公開 Repo。
+
+## 1. 第一個讀取點與決策邊界
+
+1. 本 Repo 的 [產品憲章](../../docs/PRODUCT-CHARTER-AND-DRIFT-CHECK.md) 與 [整體續接入口](../../docs/CONTINUE-HERE.md)：核心目標是對話驅動的高品質、可重複影片，而非不斷新增工具或測試。
+2. [Issue #138](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/138)：Cinetic 最新里程碑、真實渲染證據、私人交付資料索引及此前使用者美術回饋。
+3. 本資料夾 [CINETIC_SINGLE_ENTRY_MVP.md](CINETIC_SINGLE_ENTRY_MVP.md)、[C3-INDEPENDENT-VISUAL-QA.md](C3-INDEPENDENT-VISUAL-QA.md)、[C0-LICENSE-COMPATIBILITY.md](C0-LICENSE-COMPATIBILITY.md)：執行方式、視覺驗收、授權限制。
+4. [專案限定 Skill](../../.agents/skills/cinetic-synthetic-sidecar/SKILL.md)：**僅**限明確選擇 Cinetic 原創公開合成素材時使用，不取代已核准 K 系列／Canvas+FFmpeg。
+
+## 2. 已查核之程式碼與遠端狀態
+
+- Repo：`rayray12zx3-sys/ai-motion-studio`；Cinetic 工作分支：`work/cinetic-single-entry-mvp-20261026`。
+- 本次驗證前工作分支 HEAD：`705954b5b5c4bceeb73bfc2927fcbe8ff571873f`（2026-10-26 台灣時間）；main：`8db999ace933ebe0ad7204384deec6472934904b`。本檔提交僅增加交接文字，不使 `main` 或正式渲染引擎發生變更。
+- [Draft PR #140](https://github.com/rayray12zx3-sys/ai-motion-studio/pull/140)：OPEN／DRAFT／NOT MERGED，原 head `experiment/cinetic-director-adapter-20261018`，**不是**上述較新的 work 分支。勿把兩條分支或 PR 的驗證當作同一 SHA；不可擅自合併。
+- [真實一鍵 CI #40225753484](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40225753484)：COMPLETED/SUCCESS；測試的**程式碼／workflow commit** 是 `4df533a38c112340e284cce1ca7430b0c8fb2f9f`，作業 `genuine-engine-public-synthetic-only` 全部步驟成功。來源記錄：36 個主測試中 35 PASS、1 個可選私有 fixture SKIP，加上 10 個 adapter 測試 PASS。
+- 比較上述 CI SHA → 本次驗證前工作分支 SHA：**ahead 2／behind 0**，變動限 Skill、README、單入口文件與上游導演參考資料，無執行程式碼修改。**因此通過的是已執行的 CI 版本；未宣稱文件後繼 HEAD 重新跑過 exact-head CI。**
+
+## 3. 真正已完成的能力（有條件 TECH_PASS）
+
+- 單一 `experiments/cinetic-sidecar/cinetic-flow.mjs full` 已在授權的公開原創合成計畫上實測：SHA 受控原始 plan → MIT 上游 Cinetic **273 筆技法資料／14 類**與原版 `pick.py` 選技 → 依原始 plan 指紋產生 `BRIEF.md`、`TREATMENT.md` → 真實 `hyperframes@0.8.143` 渲染 H.264 MP4＋ProRes4444 透明 MOV → FFprobe/FFmpeg 解碼、影格、透明度與字形檢核 → 機器收據。
+- 已跑真實技術輪廓：2 秒橫式 24fps／48f；2 秒直式 24fps／48f；8 秒橫式 30fps／240f；8 秒橫式 60fps／480f。單指令 full 實例為 2 秒／48f；技術證據與媒體索引見 Issue #138，不在本檔重貼私人連結。
+- 上游配方選取**僅是導演建議**，沒有自動轉換為 273 個實際像素技法。不得把 `pick/treat` 或真實渲染成功描述成「完整 Cinetic Skill 已安裝」或「選中的效果已全部出現在影片」。
+- 現有已核准的 K 系列版本、私人專案、主引擎、M11/M12 決策不變。無公開公司影片／聲音／字型檔／私人 state，無預設商用部署。
+
+## 4. 最新精確狀態與驗收阻礙
+
+| 項目 | 狀態 |
+| --- | --- |
+| Cinetic 原創合成單入口／選技／Treatment／真實 MP4＋Alpha／技術 QA | **PASS**（上述固定 CI 及樣本） |
+| 273 項配方逐項可執行並對應渲染畫面 | **NOT_COMPLETE** |
+| 原版完整 Agent Skill 自動安裝／未審核上游腳本執行 | **NO／禁止隱式執行** |
+| 指定影片 1× 全速／裝置尺寸／與現行 Canvas 同 brief 公平比對 | **PENDING** |
+| C3 舊版卡片風格 | **USER_ART_NOT_APPROVED**；使用者反饋「有意義，但排版、美術、設計普通、陽春」 |
+| 後續 C3.2 故事板與 60fps 樣片 | **TECH_PASS，USER_ART_PENDING／VISUAL_NEEDS_REFINEMENT** |
+| 音樂、SFX、調色、正式品牌與素材商用授權 | **NOT_DONE／CONDITIONAL** |
+| 於使用者 Windows Premiere 本機實際匯入／Alpha／輸出 | **NOT_TESTED** |
+| 正式專案上線、替換預設引擎、合併 Draft #140 | **BLOCKED／NOT_AUTHORIZED** |
+
+## 5. 接續執行次序：先補影片品質，不再堆新工具
+
+1. **P0（下一輪最有價值）**：在既有 Cinetic Sidecar 選一個**原創公開合成、真正有主題**的 brief，依 `BRIEF/TREATMENT` 明確選 **1–2 個**上游動效原理並在既有場景作實際 source-backed choreography；留下「被選配方 ID → 實作原始碼 → 影片時間碼／影格 → QA」的可追蹤對照。不要為此另開新 Skill／renderer／S08 工具；不得假裝所有 273 個配方都已實作。
+2. **P0 真正觀影驗收**：保留一支完整可播放影片與透明 MOV；在相同公開合成 brief 下產出現行 Canvas/FFmpeg 基準版（若未建立，標記未建立），實際全速觀看並紀錄時碼問題：動作因果、字卡遮擋、視覺主體、排版辨識、動線、停留節奏、特效與故事一致性，以及手機尺寸。缺少實際視訊觀影證據不得給出通過分數。
+3. **P1**：針對本次審查的最大美術落差在相同素材／分支做一輪小幅可逆改進、重新輸出及比較，避免只改微裝飾或再添 dashboard/card 版型；待真實成果可供使用者核對才標示 `USER_ART_REVIEW_PENDING`。
+4. **P2 人工／外部驗收**：商用實際品牌/字型/音訊/第三方 dependency／編碼授權；Windows Premiere 實機、Alpha 合成與回輸出；使用者明確逐版本美術認可。上述關卡未過，禁止稱 production release 或移入日常引擎。
+
+## 6. 每次交接驗證法
+
+- 以最新 GitHub **live** work 分支 HEAD、Issue #138、PR #140 和與程式碼 SHA 完全對應的 Actions 重查；不要以本文截至 2026-10-26 的快照取代新資料。
+- 區分 `TECH_PASS`、`VISUAL_REVIEW`、`USER_ART_APPROVED`、`WIN_PREMIERE_PASS` 與 `PRODUCTION_RELEASE`，不可跨越推論。
+- 更新本檔與 Issue #138 的精簡指標即可，**不新建第二份執行權威、不改 main、不新增未經核准的外部服務／付費步驟／私有媒體上傳**。
+- 交接完成條件是：本文件可從工作分支讀回、Issue #138 提供連結、分支 commit 與來源 CI 可核對。這只代表**上下文交接完成**，不代表產品完成。
