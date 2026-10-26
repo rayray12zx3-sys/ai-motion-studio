@@ -1,3 +1,11 @@
+## 2026-10-26 Windows native runtime proof after C0 source review
+
+The same exact isolated public-synthetic Cinetic executable SHA `3e3ef8fdf598b1b372628d18650033bca787e024` passed **Linux [#40277155799](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40277155799) AND native Windows [#40277155743](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40277155743)**. On a real Windows GitHub runner the pinned upstream catalog and original `pick.py`, local Node 24/Python 3.11, SHA-verified ffmpeg/ffprobe and publisher fingerprinted `hyperframes@0.8.143` executed one complete 2s/24fps/48f public-original MP4 + ProRes4444 Alpha render and media decode checks. Source/Unicode portability bugs were fixed with targeted checkout LF rules, `-I -X utf8`, and `fileURLToPath`. The [Windows artifact #12630313774](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/40277155743/artifacts/12630313774) contains read-back machine receipts, without client media or fonts. This proves **technical Windows OS portability on hosted hardware**, not Adobe Premiere Pro compatibility.
+
+Commercial license status is **unchanged / CONDITIONAL**, not green: upstream Cinetic source is MIT, CLI HyperFrames metadata Apache-2.0, installed source is not a cleared commercial third-party bundle or an attestation of royalty-free H264 in all markets. A synthetic test that does not copy a company's artwork cannot certify that company's brand, footage, fonts, score, license notices, software redistribution and final client's intended use. Neither a Windows hosted VM nor alpha codec verification constitutes a native Premiere project import/alpha compositing/render receipt. Required explicit owner and local gates remain open. Do **not** interpret the Windows PASS as production authorization.
+
+---
+
 # 2026-10-23 C0 bounded static review closure — executable-source surface and actual-MVP license lanes
 
 **Status: UPSTREAM_STATIC_ENTRYPOINT_INVENTORY=COMPLETE_FOR_PINNED_TREE; UPSTREAM_FULL_EXECUTION/DEPENDENCY_SECURITY_AUDIT=NOT_DONE; ISOLATED_HF_PACKAGE_METADATA=VERIFIED_IN_EXISTING_PRIVATE_REPORT; COMMERCIAL_ADOPTION=CONDITIONAL; REMOTION_UPSTREAM=DISABLED.** This is a *source-only* assessment. No upstream code or installer was run and no client content was accessed in this update.
