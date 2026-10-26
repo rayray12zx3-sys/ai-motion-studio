@@ -43,7 +43,7 @@ export function addAdFilm(html,plan) {
   const art = [
     '<svg id="ad-film" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">',
     '<defs><radialGradient id="ad-aura"><stop offset="0" stop-color="'+accent+'" stop-opacity=".20"/><stop offset="1" stop-color="'+accent+'" stop-opacity="0"/></radialGradient></defs>',
-    '<ellipse id="ad-glow" cx="'+cx+'" cy="'+cy+'" rx="'+(r+205)+'" ry="'+(r+198)+'" fill="url(#ad-aura)" opacity=".7"/>',
+    '<ellipse id="ad-glow" cx="'+cx+'" cy="'+cy+'" rx="'+(vertical?r+115:r+205)+'" ry="'+(r+198)+'" fill="url(#ad-aura)" opacity=".7"/>',
     '<path d="'+(vertical?'M72 102 H648':'M72 74 H1208')+'" stroke="'+accent+'" stroke-width="3" stroke-opacity=".7"/>',
     '<circle cx="'+(vertical?648:1208)+'" cy="'+(vertical?102:74)+'" r="5" fill="'+accent+'"/>',
     rings,path,
