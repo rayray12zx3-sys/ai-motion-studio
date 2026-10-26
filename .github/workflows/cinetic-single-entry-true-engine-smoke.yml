@@ -142,7 +142,7 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import json,hashlib
+          import json,hashlib,os
           src=Path('out/cinetic-full-60fps-directed/render/overlay-alpha.mov')
           receipt=json.loads(Path('out/cinetic-full-60fps-directed/full-receipt.json').read_text())
           assert receipt['gates']['release']=='BLOCKED'
@@ -165,7 +165,7 @@ jobs:
               digest.update((out/part['filename']).read_bytes())
           assert digest.hexdigest()==full_sha
           manifest={'schema':'cinetic-alpha-archive-v1','source':'ORIGINAL_PUBLIC_SYNTHETIC_ONLY',
-            'github_workflow_sha_expected_at_run':'GITHUB_SHA_RUNTIME','format':'genuine_ProRes4444_alpha',
+            'workflow_commit':os.environ['GITHUB_SHA'],'format':'genuine_ProRes4444_alpha',
             'original_filename':'overlay-alpha.mov','original_bytes':len(original),
             'original_sha256':full_sha,'parts':parts,
             'note':'Raw consecutive binary pieces, NOT independent playable MOVs. Join in numeric order; check full SHA256.'}
