@@ -1,0 +1,62 @@
+name: Cinetic original ad compact visual review from verified run
+on:
+  push:
+    branches: ['work/cinetic-single-entry-mvp-20261026']
+    paths:
+      - '.github/workflows/cinetic-ad-review-small-artifact.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verified-original-preview-packet:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Retrieve only successful original synthetic media artifact by fixed run
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: 12631653627
+          run-id: 40281195377
+          github-token: ${{ github.token }}
+          path: downloaded
+      - name: Build compact SHA-verified playable previews and selected genuine PNG frames
+        shell: bash
+        run: |
+          mkdir -p compact
+          python3 - <<'PY'
+          from pathlib import Path
+          from hashlib import sha256
+          import json, shutil
+          root=Path('downloaded');dst=Path('compact')
+          record=[]
+          for n in ('focus-original','habit-original','focus-v2-original'):
+              folder='cinetic-ad-'+n
+              hits=[p for p in root.rglob('preview.mp4') if p.parent.parent.name==folder]
+              assert len(hits)==1, (folder,len(hits))
+              mp4=hits[0]
+              receipts=[p for p in root.rglob('full-receipt.json') if p.parent.name==folder]
+              assert len(receipts)==1
+              receipt=json.loads(receipts[0].read_text())
+              actual=sha256(mp4.read_bytes()).hexdigest()
+              assert actual==receipt['media']['mp4'],(folder,actual)
+              target=dst/('ad-'+n+'.mp4')
+              shutil.copy2(mp4,target)
+              record.append(dict(file=target.name,sha256=actual,bytes=target.stat().st_size))
+              if n in ('focus-original','habit-original'):
+                  for idx in (0,41,99,143):
+                      frame='frame-'+str(idx).zfill(6)+'.png'
+                      hits=[p for p in root.rglob(frame) if p.parent.name=='alpha-png' and p.parent.parent.name==folder]
+                      assert len(hits)==1,(folder,frame,len(hits))
+                      dest=dst/('ad-'+n+'-'+frame)
+                      shutil.copy2(hits[0],dest)
+                      record.append(dict(file=dest.name,sha256=sha256(dest.read_bytes()).hexdigest(),bytes=dest.stat().st_size))
+          (dst/'compact-manifest.json').write_text(json.dumps({'schema':'cinetic-compact-ad-review-v1','origin_run_id':40281195377,'files':record,'art':'USER_REVIEW_NOT_APPROVED','commercial':'NOT_A_RIGHTS_CERTIFICATE'},ensure_ascii=False,indent=2)+'\n')
+          print('THREE_REAL_CAMPAIGN_MP4S_AND_SELECTED_LOSSLESS_FRAMES_SHA_PASS',len(record))
+          PY
+      - name: Upload user-playable compact video and art samples only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-compact-review-three-actual-ad-mp4s
+          retention-days: 7
+          if-no-files-found: error
+          path: compact/*
