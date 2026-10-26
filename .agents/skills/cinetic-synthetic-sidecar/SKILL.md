@@ -5,6 +5,19 @@ description: "Use ONLY inside AI Motion Studio when the current task explicitly 
 
 # Cinetic sidecar / scoped project skill (R&D ONLY)
 
+
+## 2026-10-27 opt-in Game Show Flat producer — original source-safe pixels, not metadata alone
+
+When a user EXPLICITLY chooses Game Show Flat / Lemo-Opuscar in a Cinetic public-synthetic experiment, inspect [the independent pixel-producing bridge](../../../experiments/cinetic-sidecar/lemo-style-bridge/README.md). Preserve Cinetic existing main engine/routing unchanged.
+
+- Provenance: Lemo-Opuscar official source commit 413a6bd6d78ebd3bdd5abaec9538a26867f890df, style game-show. Consult upstream STYLE.md for visual grammar, but do not install/run setup.sh, import excluded demo voice tracks, or copy upstream demo people/brand/designs.
+- Actual style runtime: import makeContract, frameState and frameSvg from experiments/cinetic-sidecar/lemo-style-bridge/style_bridge_public.mjs. Supply contentClass=public-synthetic and exactly three FICTIONAL ORIGINAL rounds. frameSvg returns deterministic, complete SVG pixels; render selected frames to a safe temporary output outside repository, inspect the pictures and run node --test experiments/cinetic-sidecar/lemo-style-bridge/style_bridge_public.test.mjs.
+- A good-looking production result is the required target. Source checks, centroid or pixel delta alone cannot establish beauty. Reject an awkward composition even when tests pass; only the user approves final art.
+- Private owner S08 APP words, screenshots and original/derivative runner are PROHIBITED from this public repo and CI. Their independently written owner-local Python/Pillow renderer may consume style_tokens.json exported from the public bridge; the private source and video stay solely in authorized PRIVATE Drive. No public bridge source should contain private S08 words or images.
+- Proven boundary: Node synthetic bridge renders visible SVG graphics, and a separate private Pillow source ingests its style tokens. Temporary yellow palette override changed 177,691 pixels in private frame 44, then restored. Thus style is applied to pixels, not just written on a QA checklist.
+- Still BLOCKED: this style is NOT registered as a native prepare-render.mjs motif and HAS NOT been rendered by pinned HyperFrames 0.8.143. Do not call source-safe SVG or Pillow media a genuine HF render. Windows Premiere, 1× social UI, brand rights and human artwork approval remain NOT TESTED/PENDING.
+- Treat the exact 95f S08 clip and the 300f/10s readable extension as different editorial timelines. Never silently substitute the latter into an approved S07/S09 edit.
+
 ## 2026-10-26 CURRENT: use the verified full one-command route for explicit public-original Cinetic orders
 
 An explicit Cinetic public-original synthetic job can now execute the **real** one-command path, rather than multiple isolated experiments:
