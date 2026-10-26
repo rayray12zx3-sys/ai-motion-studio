@@ -48,7 +48,7 @@ test('outside media, font tags, HTML and unsupported art directions are rejected
  assert.throws(()=>normalizeDirectorPlan(p),/approved device/);
  p.direction.adDevice='habit-path';p.direction.adAccent='url(https://attacker.example)';
  assert.throws(()=>normalizeDirectorPlan(p),/accent/);
- p.direction.adAccent='#8ED7AF';p.beats[1].onScreenText='<img src=x>';
+ p.direction.adAccent='#8ED7AF';p.beats[1].onScreenText='<x>';
  assert.throws(()=>normalizeDirectorPlan(p),/forbidden/);
  const q=from('ad-focus-landscape');q.direction.visualMotif='storyboard-film';
  assert.throws(()=>normalizeDirectorPlan(q),/ad-specific art options forbidden/);
