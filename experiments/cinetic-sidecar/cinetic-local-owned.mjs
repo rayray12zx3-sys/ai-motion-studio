@@ -99,6 +99,9 @@ export function preflightOwnerLocal(argv,env=process.env){
 }
 export async function renderOwnerLocal(argv){
   const ok=preflightOwnerLocal(argv);
+  if(hash(readFileSync(ok.source))!==ok.sourceSha256||
+     hash(readFileSync(ok.rightsPath))!==ok.rightsSha256)
+    throw Error('source or rights changed after local authorisation preflight');
   mkdirSync(ok.out,{recursive:false});
   const media=await run([ok.source,join(ok.out,'render'),'--render',
     '--hf',ok.hf,'--hf-sha',ok.hfsha],{allowOwnerAuthoredLocal:true});
@@ -109,6 +112,9 @@ export async function renderOwnerLocal(argv){
     join(ok.out,'alpha-png'),{allowOwnerAuthoredLocal:true});
   if(frames.frames!==ok.plan.render.frames)
     throw Error('local lossless RGBA sequence incomplete');
+  if(hash(readFileSync(ok.source))!==ok.sourceSha256||
+     hash(readFileSync(ok.rightsPath))!==ok.rightsSha256)
+    throw Error('source or rights changed while rendering; no auditable release');
   const receipt={
     status:'OWNER_LOCAL_AD_MOTION_AND_TRANSPARENT_SEQUENCE_TECH_PASS',
     origin:'OWNER_ATTESTED_LOCAL_CONTENT_NEVER_SENT_TO_PUBLIC_GITHUB_BY_THIS_CLI',

@@ -33,6 +33,11 @@ export function options(argv) {
   if(opt.mode==='render' && (!opt.hf || !/^[0-9a-f]{64}$/.test(opt.hash||'')))throw new Error('render requires --hf and --hf-sha');
   return opt;
 }
+export function assertOwnerLocalRuntime(environment = process.env) {
+  if(environment.CI==='true'||environment.GITHUB_ACTIONS==='true'||
+     environment.GITLAB_CI==='true'||environment.TF_BUILD==='True'||environment.TF_BUILD==='true')
+    throw Error('owner-authored local render is forbidden on automated CI');
+}
 export function assertSynthetic(plan, options = {}) {
   if(plan?.schemaVersion!==1 || plan.engine!=='cinetic-hyperframes' || (plan.contentClass!=='public-synthetic' && !(options.allowOwnerAuthoredLocal===true && plan.contentClass==='owner-authored-local')))
     throw new Error('explicit public-synthetic Cinetic v1 plan required; private company data prohibited');
@@ -56,6 +61,7 @@ export function execute(bin,args,dir,timeout=600000) {
   return r.stdout;
 }
 export async function run(argv, trust = {}) {
+  if(trust.allowOwnerAuthoredLocal===true)assertOwnerLocalRuntime();
   const o=options(argv), input=assertSynthetic(JSON.parse(readFileSync(resolve(o.plan),'utf8')), trust);
   const dir=resolve(o.output);
   if(existsSync(dir))throw new Error('refuse existing output directory or overwrite');

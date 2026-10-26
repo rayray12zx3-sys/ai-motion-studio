@@ -9,7 +9,7 @@ import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
 import {preflightOwnerLocal,parseLocalOptions} from './cinetic-local-owned.mjs';
 import {normalizeDirectorPlan} from './adapter.mjs';
-import {assertSynthetic} from './cinetic-flow.mjs';
+import {assertSynthetic,assertOwnerLocalRuntime} from './cinetic-flow.mjs';
 const SHA=bytes=>createHash('sha256').update(bytes).digest('hex');
 const original=JSON.parse(readFileSync(new URL('./ad-focus-landscape.plan.json',import.meta.url),'utf8'));
 const repoRoot=fileURLToPath(new URL('../../',import.meta.url));
@@ -67,6 +67,9 @@ test('fail-closed on public or automated CI, never produce a user job on Actions
  assert.throws(()=>preflightOwnerLocal(f.argv,{CI:'true'}),/CI/);
  assert.throws(()=>preflightOwnerLocal(f.argv,{GITLAB_CI:'true'}),/CI/);
  assert.equal(existsSync(f.out),false);
+ assert.throws(()=>assertOwnerLocalRuntime({GITHUB_ACTIONS:'true'}),/forbidden on automated CI/);
+ assert.throws(()=>assertOwnerLocalRuntime({CI:'true'}),/forbidden on automated CI/);
+ assert.doesNotThrow(()=>assertOwnerLocalRuntime({}));
 });
 test('reject plan mutation after signature, invalid rights, required fees, and attribution',t=>{
  const f=fixture(t);
