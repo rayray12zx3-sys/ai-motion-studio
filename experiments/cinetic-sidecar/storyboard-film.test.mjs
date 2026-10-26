@@ -68,6 +68,10 @@ test("upstream tr-anchor-overlay-cut: cue is identical across cut, world swaps, 
  assert.deepEqual(original.direction.techniqueIds,["tr-anchor-overlay-cut"]);
  const html=addStoryboardFilm(compile(upgraded).html,original);
  assert.match(html,/data-applied-upstream-technique="tr-anchor-overlay-cut"/);
+ assert.match(html,/#composition \\.scatter\\{left:84px;top:528px;/);
+ assert.match(html,/#composition \\.connect\\{left:84px;top:92px;/);
+ assert.match(html,/#composition \\.resolve\\{left:84px;top:88px;/);
+ assert.doesNotMatch(html,/M82 106 H474/);
  const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
  const names=[
    ...[0,1,2].flatMap(i=>["story-cell-"+i,"story-step-"+i]),

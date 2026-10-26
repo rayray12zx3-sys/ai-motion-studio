@@ -15,13 +15,20 @@ export function addStoryboardFilm(html, plan) {
   // Other catalog IDs remain director proposals, not automatically rendered effects.
   const anchoredOverlay=plan.direction.techniqueIds.includes('tr-anchor-overlay-cut');
   const ends=plan.beats.map(x=>x.endFrame);
-  const style=[
+  const style=(anchoredOverlay?[
+    "#composition .clip{width:900px;max-height:160px;text-align:left;color:#e9efec;",
+      "font-size:88px;font-weight:400;line-height:1.16;letter-spacing:-.045em;border:0;padding:0;z-index:5}",
+    "#composition .scatter{left:84px;top:528px;}",
+    "#composition .connect{left:84px;top:92px;}",
+    "#composition .resolve{left:84px;top:88px;}",
+    "#storyboard-film{position:absolute;inset:0;z-index:2;pointer-events:none}"
+  ]:[
     "#composition .clip{left:82px;top:271px;width:415px;max-height:220px;",
       "text-align:left;color:#e9efec;font-size:76px;font-weight:400;",
       "line-height:1.22;letter-spacing:-.055em;border:0;padding:0;z-index:5}",
     "#composition .scatter,#composition .connect,#composition .resolve{left:82px;top:271px;border:0;padding:0;letter-spacing:-.055em;}",
-    "#storyboard-film{position:absolute;inset:0;z-index:2;pointer-events:none}",
-  ].join("");
+    "#storyboard-film{position:absolute;inset:0;z-index:2;pointer-events:none}"
+  ]).join("");
   const cell=(i)=>{
     const color=["#9ecbc8","#f36e63","#77b8bd"][i];
     const art=[
@@ -52,7 +59,14 @@ export function addStoryboardFilm(html, plan) {
     '<svg id="storyboard-film"'+(anchoredOverlay?' data-applied-upstream-technique="tr-anchor-overlay-cut"':'')+' viewBox="0 0 1280 720" width="1280" height="720" ',
       'xmlns="http://www.w3.org/2000/svg" aria-hidden="true">',
     '<defs><clipPath id="story-hero-clip"><rect x="556" y="140" width="624" height="388" rx="3"/></clipPath></defs>',
-    // Editorial title architecture, using hand-placed lines, never a dashboard grid.
+    // Historic sidebar-and-box treatment is preserved ONLY for earlier samples.
+    // The new opt-in scene removes the repeated PPT-like stage scaffolding and
+    // allows the story itself to occupy different parts of the full frame.
+    ...(anchoredOverlay?[
+      '<rect id="story-step-0" width="1" height="1" opacity="0"/>',
+      '<rect id="story-step-1" width="1" height="1" opacity="0"/>',
+      '<rect id="story-step-2" width="1" height="1" opacity="0"/>',
+    ]:[
     '<path d="M82 106 H474" stroke="#566a69" stroke-width="2"/>',
     '<path d="M82 103 H166" stroke="#f36e63" stroke-width="6"/>',
     '<path d="M82 240 H474" stroke="#526a68" stroke-width="1"/>',
@@ -68,14 +82,15 @@ export function addStoryboardFilm(html, plan) {
     '<path d="M556 148 V140 H583 M1153 140 H1180 V166 M556 498 V528 H583 M1153 528 H1180 V501" ',
        'stroke="#bfd2d0" stroke-width="2" fill="none" opacity=".75"/>',
     '<path d="M535 565 H1200" stroke="#52696c" stroke-width="1"/>',
+    ]),
     '<g id="story-filmrail" opacity="0">',
-    '<path d="M581 453 H1169" stroke="#dbe7e4" stroke-width="11" opacity=".95"/>',
-    '<path d="M581 447 H1169 M581 459 H1169" stroke="#192c2c" stroke-width="1.5"/>',
-    '<path d="M581 453 H1169" stroke="#f36e63" stroke-width="3" stroke-dasharray="18 14"/>',
+    anchoredOverlay
+      ? '<path d="M200 453 H1092" stroke="#dbe7e4" stroke-width="12"/><path d="M200 447 H1092 M200 459 H1092" stroke="#192c2c" stroke-width="1.5"/><path d="M200 453 H1092" stroke="#f36e63" stroke-width="3" stroke-dasharray="18 14"/>'
+      : '<path d="M581 453 H1169" stroke="#dbe7e4" stroke-width="11" opacity=".95"/><path d="M581 447 H1169 M581 459 H1169" stroke="#192c2c" stroke-width="1.5"/><path d="M581 453 H1169" stroke="#f36e63" stroke-width="3" stroke-dasharray="18 14"/>',
     '</g>',
     '<circle id="story-cue" cx="620" cy="453" r="8" fill="#f36e63" stroke="#fff3e5" stroke-width="2"/>',
     // Large FINAL visual scene: recognizable rain impact, not abstract generic metrics.
-    '<g id="story-hero" opacity="0" clip-path="url(#story-hero-clip)">',
+    '<g id="story-hero" opacity="0"'+(anchoredOverlay?' transform="translate(-590 -110) scale(1.50)"':'')+' clip-path="url(#story-hero-clip)">',
     '<rect x="556" y="140" width="624" height="388" fill="#1b3036"/>',
     '<path d="M556 409 C669 387 767 419 878 401 S1082 398 1180 415 V528 H556Z" fill="#386770"/>',
     '<path d="M556 417 C670 403 781 437 880 418 S1082 422 1180 430" stroke="#9ad5d3" fill="none" stroke-width="3"/>',
@@ -110,9 +125,9 @@ export function addStoryboardFilm(html, plan) {
     " const clamp=x=>Math.min(1,Math.max(0,x));",
     " const ease=x=>1-Math.pow(1-clamp(x),3);",
     " const mix=(a,b,t)=>a+(b-a)*t;",
-    " const A=[[653,273,-9],[1051,304,8],[873,434,-4]];",
-    " const B=[[657,327,0],[861,327,0],[1065,327,0]];",
-    " const C=[[665,617,0],[863,617,0],[1061,617,0]];",
+    " const A=ANCHOR_CUT?[[380,225,-12],[925,251,9],[640,448,-5]]:[[653,273,-9],[1051,304,8],[873,434,-4]];",
+    " const B=ANCHOR_CUT?[[300,355,0],[630,355,0],[960,355,0]]:[[657,327,0],[861,327,0],[1065,327,0]];",
+    " const C=ANCHOR_CUT?[[320,630,0],[610,630,0],[900,630,0]]:[[665,617,0],[863,617,0],[1061,617,0]];",
     " function setFrame(frame){",
     "  if(!Number.isFinite(frame))return;",
     "  const f=Math.max(0,Math.floor(frame));",
@@ -123,7 +138,7 @@ export function addStoryboardFilm(html, plan) {
     "  steps.forEach((el,i)=>el.setAttribute('fill',i===stage?'#f36e63':'#536662'));",
     "  const src=stage===0?A:stage===1?A:B;",
     "  const dst=stage===0?A:stage===1?B:C;",
-    "  const size=stage===0?1:stage===1?mix(1,.90,q):mix(.90,.52,q);",
+    "  const size=ANCHOR_CUT?(stage===0?1.28:stage===1?mix(1.28,1.15,q):mix(1.15,.52,q)):(stage===0?1:stage===1?mix(1,.90,q):mix(.90,.52,q));",
     "  cells.forEach((el,i)=>{",
     "   const x=mix(src[i][0],dst[i][0],q),y=mix(src[i][1],dst[i][1],q);",
     "   const angle=mix(src[i][2],dst[i][2],q);",

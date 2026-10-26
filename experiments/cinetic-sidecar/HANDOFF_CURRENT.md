@@ -1,3 +1,9 @@
+## 2026-10-26 art-correction iteration (must be validated by exact-head CI)
+
+Independent decoded actual MP4 contact frames from commit `10de3d75` showed the **same left caption / right framed panel layout in all three beats**, the known operator-rejected PPT-like direction. No creative approval was given. This follow-up isolates a second original synthetic style pass **only for the opted-in `tr-anchor-overlay-cut` smoke plan**: beat-specific full-canvas typography, freer physical film placements, an expanded concluding weather scene, no persistent sidebar box or fake dashboard dividers. Earlier `storyboard-film.plan.json` remains an unchanged legacy comparison. The same source-applied technique/first-frame shape marker/production-release BLOCKED gates remain. Re-evaluate from actual new decoded media; no style PASS before independent review and user signoff.
+
+---
+
 ## 2026-10-26 Implementation continuation — new evidence requires new CI
 
 - The isolated source branch now targets a **real source-applied** original Cinetic `tr-anchor-overlay-cut` on the **8s/60fps public-synthetic storyboard**: a persistent red foreground cue is frame-position-matched at act 1→2, the scene underneath hard-swaps, and the cue glides to its scene slot over 40f. This is one genuine implemented recipe only, not all 273.
