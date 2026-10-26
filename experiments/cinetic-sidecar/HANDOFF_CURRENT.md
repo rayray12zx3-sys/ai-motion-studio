@@ -1,3 +1,12 @@
+## 2026-10-26 original synthetic sound finishing (scope-limited)
+
+- New deterministic `cinetic-soundscape.mjs` synthesizes **no third-party recordings**: restrained tone, edit cue, and raindrop/ripple sound on the 8s 60fps fictional storyboard frame grid. It runs **only** for `storyboard-film` with the scene-implemented `tr-anchor-overlay-cut` in the same `full` CLI.
+- Existing transparent ProRes4444 Alpha MOV remains **silent and unmodified**. A separate H.264+AAC `preview-with-original-sound.mp4` is generated after true media QA with a non-overwriting deterministic WAV, isolated FFmpeg loudnorm target, actual ffprobe video/audio stream checks, and an `originalSound` receipt gate. No new npm dependency, sample pack or paid service.
+- The soundtrack is a **prototype, not a licensed/approved commercial score**; final sound-design taste, independently measured LUFS/true peak, user full-speed listening, Windows Premiere, all-media client rights and production approval remain open. The source-backed user brief and 273 proposal list remain unchanged.
+- Current evidence requires a new exact-head Action check and actual decoder/audio validation; do not mark this audio feature PASS before CI and media inspection.
+
+---
+
 ## 2026-10-26 art-correction iteration (must be validated by exact-head CI)
 
 Independent decoded actual MP4 contact frames from commit `10de3d75` showed the **same left caption / right framed panel layout in all three beats**, the known operator-rejected PPT-like direction. No creative approval was given. This follow-up isolates a second original synthetic style pass **only for the opted-in `tr-anchor-overlay-cut` smoke plan**: beat-specific full-canvas typography, freer physical film placements, an expanded concluding weather scene, no persistent sidebar box or fake dashboard dividers. Earlier `storyboard-film.plan.json` remains an unchanged legacy comparison. The same source-applied technique/first-frame shape marker/production-release BLOCKED gates remain. Re-evaluate from actual new decoded media; no style PASS before independent review and user signoff.

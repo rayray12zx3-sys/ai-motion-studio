@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { normalizeDirectorPlan } from './adapter.mjs';
 import { fileURLToPath } from 'node:url';
 import { SOURCE_IMPLEMENTED_STORYBOARD_TECHNIQUES } from './storyboard-film.mjs';
+import { finishStoryboardWithOriginalSound } from './cinetic-soundscape.mjs';
 import { parseSelectionArgs, selectDirectorTechniques } from './cinetic-techniques.mjs';
 import { writeTreatment } from './cinetic-treatment.mjs';
 import { pinnedBinary, run } from './cinetic-flow.mjs';
@@ -73,6 +74,11 @@ export async function fullPipeline(argv) {
     sourceSha256:sha256(readFileSync(fileURLToPath(new URL('./storyboard-film.mjs',import.meta.url)))),
     proof:'SOURCE_APPLIED_AND_GENUINE_MEDIA_QA_PASS__NO_INDEPENDENT_FULL_SPEED_ART_PASS'
   }));
+  // Sound is original, deterministic and only for this exact storyboard study.
+  // Keep silent transparent overlay independent for Premiere and downstream re-timing.
+  const sound=plan.direction.visualMotif==='storyboard-film'&&
+    plan.direction.techniqueIds.includes('tr-anchor-overlay-cut')
+      ? finishStoryboardWithOriginalSound(movie) : null;
   const receipt={
     status:'CINETIC_SINGLE_COMMAND_TRUE_HF_TECH_PASS',
     sourceClass:'ORIGINAL_PUBLIC_SYNTHETIC_ONLY',
@@ -85,10 +91,12 @@ export async function fullPipeline(argv) {
       implementation:'RECOMMENDED_NOT_AUTO_APPLIED',
       originalPlanRecipeImplementations:planRecipeEvidence,
       treatment:documentReceipt.status},
-    media:{mp4:rendered.outputs.mp4,movAlpha:rendered.outputs.mov},
+    media:{mp4:rendered.outputs.mp4,movAlpha:rendered.outputs.mov,
+      mp4WithOriginalSound:sound?.muxedMp4Sha256||null},
     gates:{technical:'REAL_RENDER_AND_DECODE_QA_PASS',
       selectedUpstreamRecipesRendered:'NOT_VERIFIED',
       originalPlanRecipesApplied:appliedIds.length?'SOURCE_APPLIED_TECHNICAL_QA_PASS_ART_PENDING':'NO_VERIFIED_SCENE_IMPLEMENTATIONS',
+      originalSound:sound?.status||'NOT_CREATED',
       visual:'PENDING_INDEPENDENT_REVIEW',
       art:'PENDING_USER_APPROVAL',
       windowsPremiere:'NOT_TESTED',commercial:'BLOCKED_PENDING_RIGHTS',
