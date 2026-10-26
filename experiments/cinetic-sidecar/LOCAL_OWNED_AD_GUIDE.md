@@ -44,3 +44,36 @@ Output includes `render/preview.mp4`, `render/overlay-alpha.mov` and `alpha-png/
 **Privacy warnings**: the render folder **contains the full local copyrighted text** in `render/validated-plan.json` and HTML, plus possibly fonts used for local rendering. Keep that folder private and don't commit it, attach it to a public Issue/Action, or share it externally. The final PNGs and selected video should be shared only after copy/brand/codec/recipient rights review; don't ship a ZIP that accidentally includes source/fonts. The tool does not contact an app, install skills, buy credits, or approve artwork. The runtime's publisher provenance must be checked separately; matching a supplied SHA alone is NOT official verification.
 
 **Evidence boundary**: source-level positive and negative tests may run on public CI using entirely fake original content, but the real private-job render by design cannot be tested on a public CI runner. Therefore `OWNER_PRIVATE_LOCAL_RENDER=NOT_TESTED_ON_ACTUAL_OWNER_MACHINE` until explicit local results are checked. Public existing HTML/MP4/MOV/PNG runs continue as before.
+
+## Windows local setup — no administrator rights or paid engine licence required
+
+These are INSTRUCTIONS for the owner's machine, not proof these commands have run. From the reviewed repository checkout in Windows PowerShell:
+
+    node --version
+    npm ci --ignore-scripts --no-audit --no-fund
+    if ($LASTEXITCODE -ne 0) { throw 'Locked npm modules failed' }
+    node scripts/setup-encoder.mjs
+    if ($LASTEXITCODE -ne 0) { throw 'Pinned FFmpeg install failed' }
+
+    $publisherSha = (npm view hyperframes@0.8.143 dist.shasum).Trim()
+    if ($publisherSha -ne '8761025aa327993c605a307ec2d9f01fe6bde047') { throw 'Publisher package changed; STOP' }
+    $hfRoot = Join-Path $env:LOCALAPPDATA 'CineticHF-0.8.143'
+    npm install --prefix "$hfRoot" --ignore-scripts --no-audit --no-fund --no-save --package-lock=false hyperframes@0.8.143
+    if ($LASTEXITCODE -ne 0) { throw 'Pinned CLI install failed' }
+    $pkg = Get-Content (Join-Path $hfRoot 'node_modules/hyperframes/package.json') -Raw | ConvertFrom-Json
+    if ($pkg.version -ne '0.8.143') { throw 'Incorrect CLI version' }
+    $cliRelative = $pkg.bin.hyperframes
+    if (!$cliRelative) { throw 'Expected publisher CLI entrypoint missing' }
+    $hfEntry = (Resolve-Path (Join-Path $hfRoot "node_modules/hyperframes/$cliRelative")).Path
+    $hfHash = (Get-FileHash -Algorithm SHA256 $hfEntry).Hash.ToLowerInvariant()
+    $ownerDir = 'D:\private-ad-jobs\job1'
+    $plan = Join-Path $ownerDir 'plan.json'
+    $rights = Join-Path $ownerDir 'rights.json'
+    (Get-FileHash -Algorithm SHA256 $plan).Hash.ToLowerInvariant()
+
+After reading and affirming all exact rights fields, place the printed lowercase plan SHA256 in the private rights.json file, then run:
+
+    node experiments/cinetic-sidecar/cinetic-local-owned.mjs $plan $rights (Join-Path $ownerDir 'render-v001') --hf $hfEntry --hf-sha $hfHash
+    if ($LASTEXITCODE -ne 0) { throw 'Local commercial project NOT validated; do not distribute' }
+
+The work branch remains opt-in, with no modification to the existing approved main/K01-K20 delivery. Keep all original client copy, rights and output folders OUTSIDE the public repository. npm downloads/network requests, owned hardware, power and storage can have normal costs; this is not an assertion that every cloud/external service is free. A successful local command proves exact media and PNG alpha technical QA, not visual art approval or blanket commercial distribution rights for third-party material and final video codec.
