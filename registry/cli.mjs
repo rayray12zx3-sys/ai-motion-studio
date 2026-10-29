@@ -22,6 +22,8 @@ const aliases=[
   [/色調|光線|打光/,["lighting","photo","tone","shadow"]],
   [/遮罩|揭露/,["mask","reveal","clip"]],
   [/網頁|按鈕|卡片/,["ui","button","card","hover"]],
+  [/微互動|微動效|互動細節/,["interaction","microinteraction","gesture","ui","motion"]],
+  [/視覺|美術|風格|品牌動效/,["visual","design","branding","typography","motion"]],
 ];
 const norm=s=>String(s??"").normalize("NFKC").toLocaleLowerCase("en-US");
 export function tokenize(query){
@@ -82,6 +84,8 @@ export function validate(input=registry){
   if(input.entries.filter(e=>e.provider==="motion-prompt").length!==144)errors.push("not 144 canonical entries");
   if(input.entries.filter(e=>e.provider==="kittenjam").length!==8)errors.push("not 8 Kittenjam root/facet references");
   if(input.entries.filter(e=>e.provider==="prompt-motion").length!==5)errors.push("not 5 Prompt Motion page references");
+  if(input.entries.filter(e=>e.provider==="recent-design").length!==1)errors.push("not 1 Recent Motion gallery entry");
+  if(input.entries.filter(e=>e.provider==="60fps-design").length!==2)errors.push("not 2 60fps gallery facets");
   return errors;
 }
 const argv=process.argv.slice(2);
