@@ -6,7 +6,11 @@ AI Motion Studio 的**唯讀來源索引**，供動畫導演與美術審查 Agen
 - **Motion Prompt**：從 [official catalog.tsv](https://github.com/showheyohtaki/motion-prompt/blob/main/api/v1/en/catalog.tsv) 固定擷取 144 筆；6 packs（motion/camera/ui/lp/photo/motion2），原始欄位 id、分類、名稱、tags、摘要。上游 blob SHA：`8e1d64533ce3fbfa509a7619e972ff58bdffb3c6`，2026-10-21。原作 [MIT License © 2026 Shohei Ohtaki](https://github.com/showheyohtaki/motion-prompt/blob/main/LICENSE)。Prompt/規格/Canvas 參考**只存官方連結**；若使用原始程式碼必須保留 MIT 著作權授權聲明。
 - **Kittenjam Motion Library**：8 張入口／分類卡片（1 個根入口加 7 種分類；分類不代表 7 個可獨立下載的動畫），**未查證重製許可**，不複製 Prompt、預覽或程式碼。
 - **Prompt Motion 3D customize**：5 張實際公開頁面參考卡（3D 與作品集模板、UI 形變、網頁運鏡、產品宣傳），作者自有內容，**未查證重製許可**，不複製 Prompt、預覽或程式碼。
-- 資料含 157 張卡；`REFERENCE_ONLY` 表示查詢參考，**不是商用素材/美術核准/渲染支援證明**。兩站的完整批量索引仍需逐項驗證來源與權利；Kittenjam 分類卡不得當成獨立動效數量，Prompt Motion 個別頁面不得視為授權重用。
+- **Recent.design Motion**：1 張 Motion 策展入口卡，供動畫美術、品牌與排版研究；未實測個別作品的動態或授權。
+- **60fps.design**：2 張分開的入口卡（UI 微互動 Shots、Motion 品牌美術），只供來源查詢；官方付費 PRO MCP **未安裝／未整合**，不承諾自動取得時序、程式碼或媒體。
+- 資料含 160 張卡；`REFERENCE_ONLY` 表示查詢參考，**不是商用素材/美術核准/渲染支援證明**。外部網站的完整批量索引仍需逐項驗證來源與權利；Kittenjam 分類卡不得當成獨立動效數量，Prompt Motion 個別頁面不得視為授權重用；60fps/Recent 的策展入口也不代表實際逐件分析或授權下載。
+
+**資料存放**：公開且權利安全的索引維持此 repo 的 `registry/catalog.json`；私人 Kittenjam 271 筆 metadata 留在既有私人 ChatGPT Library，不同步進公開 GitHub。日後 Motion Gallery 為此索引的**唯讀視覺介面**，不是第二套資料庫；未取得重製/嵌入許可時直接導向原站。
 
 ## 本地查詢
 ```sh
