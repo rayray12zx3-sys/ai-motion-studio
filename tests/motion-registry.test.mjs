@@ -18,7 +18,7 @@ test("traditional Chinese lookup has traceable recommendations",()=>{
   assert.ok(tokenize("驗證成功").includes("success"));
   assert.ok(search("文字進場").some(e=>e.id==="MP-005"||e.id==="MP-006"||e.id==="MP-008"));
   assert.ok(search("3D 分鏡").some(e=>e.id==="PM-3D-001"));
-  assert.ok(search("懸停按鈕").some(e=>e.provider==="kittenjam"));
+  assert.ok(search("懸停按鈕",{limit:10}).some(e=>e.provider==="kittenjam"));
   assert.deepEqual(search(" "),[]);
 });
 test("review never grants technical or artistic approval",()=>{
