@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "snapshot_date": "2026-10-21",
+  "snapshot_date": "2026-10-29",
   "sources": [
     {
       "provider": "motion-prompt",
@@ -21,6 +21,18 @@
       "url": "https://prompt-motion.com/templates/realtime/customize",
       "license": "NOT_VERIFIED",
       "rights_note": "Creator-owned examples; link and original summary only"
+    },
+    {
+      "provider": "recent-design",
+      "url": "https://recent.design/?category=motion",
+      "license": "NOT_VERIFIED",
+      "rights_note": "Reference only; no license for reusing any creator's motion media, code, font, or prompts was verified. Link out rather than mirror."
+    },
+    {
+      "provider": "60fps-design",
+      "url": "https://60fps.design/",
+      "license": "NOT_VERIFIED",
+      "rights_note": "Curated third-party motion/interaction gallery; no reuse permission verified. Official AI MCP requires PRO authorization; no MCP connection or paid adoption."
     }
   ],
   "entries": [
@@ -5668,6 +5680,136 @@
         "授權來源、字型/媒體個別權利、目標裝置及輸出格式"
       ],
       "reference_kind": "VERIFIED_GALLERY_PAGE"
+    },
+    {
+      "id": "RD-MOTION-001",
+      "provider": "recent-design",
+      "source_id": null,
+      "pack": "visual-style-reference",
+      "category": "Curated motion design",
+      "title": "Recent Motion Design",
+      "title_zh": "Recent 動態美術作品",
+      "source_summary": "策展式 Motion 設計作品入口，適合尋找文字動效、抽象形體、UI 動畫與品牌視覺方向；尚未逐件檢查原始動態影格。",
+      "tags": [
+        "motion",
+        "design",
+        "branding",
+        "typography",
+        "visual",
+        "art",
+        "style",
+        "transition",
+        "文字",
+        "美術",
+        "風格",
+        "品牌"
+      ],
+      "semantic_purpose": "可用於視覺美術提案與設計語言比較，實際時序與可重現性需逐作品核驗。",
+      "semantic_purpose_status": "EDITORIAL_SUMMARY",
+      "motion_spec_status": "LINK_ONLY",
+      "motion_spec_url": null,
+      "prompt_url": null,
+      "source_url": "https://recent.design/?category=motion",
+      "source_license": "NOT_VERIFIED",
+      "source_author": null,
+      "source_code_reuse": "DO_NOT_COPY",
+      "art_status": "NOT_REVIEWED",
+      "production_status": "REFERENCE_ONLY",
+      "review_rules": [
+        "實際完整動態與時間碼尚未驗證，選用前需打開來源頁觀看",
+        "核對目標畫幅、可讀性、遮擋、動作因果與美術差異化",
+        "第三方媒體、程式、Prompt 與字型未驗證重用授權，僅作來源連結",
+        "正式製作、使用者美術核准與 Windows Premiere 實測須獨立驗收"
+      ],
+      "reference_kind": "COLLECTION_FACET"
+    },
+    {
+      "id": "FPS-SHOTS-001",
+      "provider": "60fps-design",
+      "source_id": null,
+      "pack": "interaction-reference",
+      "category": "Product UI micro-interactions",
+      "title": "60fps UI Animation Shots",
+      "title_zh": "60fps 介面動效案例",
+      "source_summary": "真實 App 與網站互動錄影的策展入口；分類包含 Button、Swipe、Loading、Spring Physics 與 Morph 等，非可直接重用的開源動畫素材。",
+      "tags": [
+        "ui",
+        "interaction",
+        "microinteraction",
+        "motion",
+        "button",
+        "swipe",
+        "loading",
+        "spring",
+        "morph",
+        "gesture",
+        "app",
+        "介面",
+        "互動",
+        "彈性",
+        "微動效"
+      ],
+      "semantic_purpose": "支援 UI 互動狀態、觸發事件、動作回饋與節奏的參考檢索；需觀看單項實際動作後才能寫時序規格。",
+      "semantic_purpose_status": "EDITORIAL_SUMMARY",
+      "motion_spec_status": "LINK_ONLY",
+      "motion_spec_url": null,
+      "prompt_url": null,
+      "source_url": "https://60fps.design/",
+      "source_license": "NOT_VERIFIED",
+      "source_author": null,
+      "source_code_reuse": "DO_NOT_COPY",
+      "art_status": "NOT_REVIEWED",
+      "production_status": "REFERENCE_ONLY",
+      "review_rules": [
+        "實際完整動態與時間碼尚未驗證，選用前需打開來源頁觀看",
+        "核對目標畫幅、可讀性、遮擋、動作因果與美術差異化",
+        "第三方媒體、程式、Prompt 與字型未驗證重用授權，僅作來源連結",
+        "正式製作、使用者美術核准與 Windows Premiere 實測須獨立驗收"
+      ],
+      "reference_kind": "COLLECTION_FACET"
+    },
+    {
+      "id": "FPS-MOTION-001",
+      "provider": "60fps-design",
+      "source_id": null,
+      "pack": "visual-style-reference",
+      "category": "Curated motion brand design",
+      "title": "60fps Motion Gallery",
+      "title_zh": "60fps 動態品牌美術",
+      "source_summary": "獨立 Motion 分類展示品牌與視覺設計作品，包含 3D、字體、幾何、色彩等篩選方向；這不是 UI Shots 的同一份項目索引。",
+      "tags": [
+        "motion",
+        "branding",
+        "design",
+        "typography",
+        "3d",
+        "color",
+        "geometric",
+        "visual",
+        "style",
+        "品牌",
+        "美術",
+        "3D",
+        "風格"
+      ],
+      "semantic_purpose": "支援品牌動態美術、構圖與視覺語言搜尋；只保留來源連結，不複製第三方影片。",
+      "semantic_purpose_status": "EDITORIAL_SUMMARY",
+      "motion_spec_status": "LINK_ONLY",
+      "motion_spec_url": null,
+      "prompt_url": null,
+      "source_url": "https://60fps.design/motion",
+      "source_license": "NOT_VERIFIED",
+      "source_author": null,
+      "source_code_reuse": "DO_NOT_COPY",
+      "art_status": "NOT_REVIEWED",
+      "production_status": "REFERENCE_ONLY",
+      "review_rules": [
+        "實際完整動態與時間碼尚未驗證，選用前需打開來源頁觀看",
+        "核對目標畫幅、可讀性、遮擋、動作因果與美術差異化",
+        "第三方媒體、程式、Prompt 與字型未驗證重用授權，僅作來源連結",
+        "正式製作、使用者美術核准與 Windows Premiere 實測須獨立驗收"
+      ],
+      "reference_kind": "COLLECTION_FACET"
     }
   ]
 }
