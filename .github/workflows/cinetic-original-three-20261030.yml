@@ -74,6 +74,47 @@ jobs:
           cd experiments/cinetic-sidecar/public-original-s07s09
           npx --yes hyperframes@0.8.143 render -c s07.html -o ../../../out/cinetic-s07s09-3d/S07_HF_THREE_71f.mp4 --fps 30 --quality draft
           npx --yes hyperframes@0.8.143 render -c s09.html -o ../../../out/cinetic-s07s09-3d/S09_HF_THREE_107f.mp4 --fps 30 --quality draft
+      - name: Render actual alpha ProRes4444 for both isolated original Three.js scenes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          d=Path('experiments/cinetic-sidecar/public-original-s07s09')
+          for shot in ('s07','s09'):
+            s=(d/f'{shot}.html').read_text()
+            assert '</style>' in s
+            # Only public original motion geometry and text, no company pixels or private footage.
+            s=s.replace('</style>','html,body,#stage{background:transparent!important}</style>')
+            (d/f'{shot}_alpha.html').write_text(s)
+          PY
+          cd experiments/cinetic-sidecar/public-original-s07s09
+          npx --yes hyperframes@0.8.143 render -c s07_alpha.html -o ../../../out/cinetic-s07s09-3d/S07_HF_THREE_ALPHA_71f.mov --format mov --fps 30
+          npx --yes hyperframes@0.8.143 render -c s09_alpha.html -o ../../../out/cinetic-s07s09-3d/S09_HF_THREE_ALPHA_107f.mov --format mov --fps 30
+      - name: Independently verify ProRes4444 71/107 and actual nonopaque alpha pixels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,subprocess,pathlib,hashlib
+          from PIL import Image
+          root=pathlib.Path('out/cinetic-s07s09-3d')
+          details={}
+          for shot,num in [('S07',71),('S09',107)]:
+            p=root/f'{shot}_HF_THREE_ALPHA_{num}f.mov'
+            o=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-select_streams','v:0','-show_entries','stream=codec_name,codec_tag_string,width,height,r_frame_rate,nb_read_frames,pix_fmt','-of','json',str(p)],text=True))['streams'][0]
+            assert (o['codec_name'],o['width'],o['height'],o['r_frame_rate'],int(o['nb_read_frames']))==('prores',1080,1920,'30/1',num),o
+            assert o['pix_fmt'].startswith('yuva'),o
+            subprocess.run(['ffmpeg','-nostdin','-v','error','-i',str(p),'-f','null','-'],check=True)
+            # Alpha extracted by FFmpeg actual decoded ProRes, not inferred from filename.
+            raw=subprocess.check_output(['ffmpeg','-nostdin','-v','error','-i',str(p),'-vf',f'select=eq(n\\,{num//2}),alphaextract,scale=64:96','-frames:v','1','-pix_fmt','gray','-f','rawvideo','-'])
+            assert len(raw)==64*96,len(raw)
+            mn,mx=min(raw),max(raw)
+            assert mn<64 and mx>180,(shot,mn,mx)
+            details[shot]={'frames':num,'codec':o,'alphaSampleMin':mn,'alphaSampleMax':mx,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+          (root/'ENGINE_ALPHA_QA.json').write_text(json.dumps(details,indent=2))
+          print(json.dumps(details,indent=2))
+          PY
       - name: Decode, verify 71 + 107 real frames and motion, record hashes
         shell: bash
         run: |
@@ -104,6 +145,9 @@ jobs:
             out/cinetic-s07s09-3d/S07_HF_THREE_71f.mp4
             out/cinetic-s07s09-3d/S09_HF_THREE_107f.mp4
             out/cinetic-s07s09-3d/ENGINE_MEDIA_QA.json
+            out/cinetic-s07s09-3d/S07_HF_THREE_ALPHA_71f.mov
+            out/cinetic-s07s09-3d/S09_HF_THREE_ALPHA_107f.mov
+            out/cinetic-s07s09-3d/ENGINE_ALPHA_QA.json
             out/cinetic-s07s09-3d/director/BRIEF.md
             out/cinetic-s07s09-3d/director/TREATMENT.md
       - name: Non-approval and private compositing boundary
