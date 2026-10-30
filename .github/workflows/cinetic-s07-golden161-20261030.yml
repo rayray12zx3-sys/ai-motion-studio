@@ -45,6 +45,15 @@ jobs:
           echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
           echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
           test "$(npm view hyperframes@0.8.143 dist.shasum)" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+      - name: Stage exact Three.js 0.180.0 modules locally for HyperFrames browser capture
+        run: |
+          set -euo pipefail
+          d=experiments/cinetic-sidecar/public-original-s07s09
+          mkdir -p "$d/vendor"
+          cp node_modules/three/build/three.module.js node_modules/three/build/three.core.js "$d/vendor/"
+          sed -i 's#../../../node_modules/three/build/three.module.js#./vendor/three.module.js#g' "$d/s07_golden161.html"
+          test -s "$d/vendor/three.module.js"
+          test -s "$d/vendor/three.core.js"
       - name: Authentic Cinetic source-backed pick and treatment (not auto-applied pixel effects)
         run: |
           set -euo pipefail
