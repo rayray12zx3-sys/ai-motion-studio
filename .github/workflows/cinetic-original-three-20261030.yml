@@ -45,7 +45,7 @@ jobs:
           set -euo pipefail
           npm ci --ignore-scripts --no-audit --no-fund
           npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund three@0.180.0
-          node -e "if(require('three/package.json').version!=='0.180.0')process.exit(2)"
+          node -e "if(JSON.parse(require('node:fs').readFileSync('node_modules/three/package.json','utf8')).version!=='0.180.0')process.exit(2)"
           node scripts/setup-encoder.mjs
           echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
           echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
