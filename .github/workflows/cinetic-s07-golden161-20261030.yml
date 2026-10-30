@@ -1,0 +1,88 @@
+name: Cinetic S07 Golden 161f genuine HyperFrames Three.js public-original
+on:
+  push:
+    branches:
+      - work/cinetic-s07-golden-rule-161f-20261030
+    paths:
+      - .github/workflows/cinetic-s07-golden161-20261030.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cinetic-s07-golden161-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  genuine-original-webgl:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CI: 'true'
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+      HYPERFRAMES_NO_UPDATE_CHECK: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Assert zero private source in public-original scene
+        run: |
+          set -euo pipefail
+          p=experiments/cinetic-sidecar/public-original-s07s09/s07_golden161.html
+          test -s "$p"
+          grep -q 'original-golden-learning-161f' "$p"
+          if grep -E -i 'VocabKnow|APP_native|MOM_003|drive.google.com|private.media|單字馬拉松|認知科學公認' "$p"; then echo 'PRIVACY_REJECTED'; exit 1; fi
+      - name: Prepare locked Three.js and encoder dependencies
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund three@0.180.0
+          node -e "if(JSON.parse(require('node:fs').readFileSync('node_modules/three/package.json','utf8')).version!=='0.180.0')process.exit(2)"
+          node scripts/setup-encoder.mjs
+          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
+          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
+          test "$(npm view hyperframes@0.8.143 dist.shasum)" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+      - name: Authentic Cinetic source-backed pick and treatment (not auto-applied pixel effects)
+        run: |
+          set -euo pipefail
+          mkdir -p out/cinetic-s07-golden161
+          node experiments/cinetic-sidecar/cinetic-flow.mjs pick experiments/cinetic-sidecar/probe.plan.json out/cinetic-s07-golden161/director --seed 123 --energy calm
+          node experiments/cinetic-sidecar/cinetic-flow.mjs treat experiments/cinetic-sidecar/probe.plan.json out/cinetic-s07-golden161/director
+      - name: GENUINE HyperFrames 0.8.143 WebGL render, Three.js 0.180.0, 161 frames
+        run: |
+          set -euo pipefail
+          cd experiments/cinetic-sidecar/public-original-s07s09
+          npx --yes hyperframes@0.8.143 render -c s07_golden161.html -o ../../../out/cinetic-s07-golden161/S07_GOLDEN161_ORIGINAL_HF_THREE.mp4 --fps 30 --quality draft
+      - name: Decode every frame, validate exact duration and live motion, source SHA
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,subprocess,pathlib
+          p=pathlib.Path('out/cinetic-s07-golden161/S07_GOLDEN161_ORIGINAL_HF_THREE.mp4')
+          d=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-select_streams','v:0','-show_entries','stream=codec_name,width,height,r_frame_rate,nb_read_frames','-of','json',str(p)],text=True))['streams'][0]
+          assert (d['codec_name'],d['width'],d['height'],d['r_frame_rate'],int(d['nb_read_frames']))==('h264',1080,1920,'30/1',161),d
+          subprocess.run(['ffmpeg','-nostdin','-v','error','-i',str(p),'-f','null','-'],check=True)
+          lines=subprocess.check_output(['ffmpeg','-nostdin','-v','error','-i',str(p),'-f','framemd5','-'],text=True).splitlines()
+          hashes=[s.split(',')[-1].strip() for s in lines if s and not s.startswith('#')]
+          assert len(hashes)==161 and len(set(hashes))>=145,(len(hashes),len(set(hashes)))
+          receipt={'engine':'hyperframes@0.8.143','webgl':'three@0.180.0','frames':161,'fps':30,'width':1080,'height':1920,'contentClass':'PUBLIC_ORIGINAL_SYNTHETIC_ONLY','sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'uniqueDecodedFrames':len(set(hashes)),'realRender':'TECH_PASS','art':'USER_REVIEW_PENDING','voice':'PRIVATE_STAGE_ONLY','cinematicRecipes':'PROPOSED_NOT_AUTO_PIXEL_APPLIED'}
+          (p.parent/'HF_THREE_161_QA.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(receipt,ensure_ascii=False,indent=2))
+          PY
+      - name: Store original real engine preview, director treatment, and technical proof
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-s07-golden161-original-hyperframes-webgl
+          retention-days: 3
+          if-no-files-found: error
+          path: |
+            out/cinetic-s07-golden161/S07_GOLDEN161_ORIGINAL_HF_THREE.mp4
+            out/cinetic-s07-golden161/HF_THREE_161_QA.json
+            out/cinetic-s07-golden161/director/BRIEF.md
+            out/cinetic-s07-golden161/director/TREATMENT.md
+      - run: |
+          echo 'Only original 3D motion in public CI. Private voice, Chinese commercial copy, and APP pixels are NOT here.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Full Cinetic 273 pixel recipe automation NOT claimed; creative art and rights remain pending.' >> "$GITHUB_STEP_SUMMARY"
