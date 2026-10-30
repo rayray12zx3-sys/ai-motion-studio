@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Original learning process · golden orbit · retrieval graph</title>
+<style>
+*{box-sizing:border-box} html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
+body{background:#edf5fa}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 1250px 1300px at 41% 38%,#fffef8 0%,#f1f8fa 48%,#d9eaf3 100%)}
+#three{position:absolute;inset:0;display:block;width:1080px;height:1920px}
+#topline{position:absolute;z-index:3;top:93px;left:90px;width:900px;height:4px;background:#27638b25;border-radius:5px}
+#topfill{width:0;height:100%;background:#d5a354;transition:none}
+#outer{position:absolute;top:120px;left:90px;height:100px;width:10px;border-radius:10px;background:#d5a354}
+#bottomline{position:absolute;bottom:165px;left:89px;width:900px;height:2px;background:#27638b25}
+#endline{position:absolute;bottom:163px;left:89px;width:0;height:6px;background:#2475a4;border-radius:3px}
+</style></head><body><main id="stage" data-composition-id="original-golden-learning-161f" data-width="1080" data-height="1920" data-fps="30" data-duration="5.36666666666667" data-renderer="three">
+<canvas id="three"></canvas><div id="topline"><div id="topfill"></div></div><div id="outer"></div><div id="bottomline"></div><div id="endline"></div></main>
+<script type="module">
+import * as T from '../../../node_modules/three/build/three.module.js';
+const W=1080,H=1920,FPS=30,N=161;
+const stage=document.getElementById('stage'),canvas=document.getElementById('three');
+const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(1);renderer.setSize(W,H,false);renderer.setClearColor(0xffffff,0);
+renderer.outputColorSpace=T.SRGBColorSpace;
+const scene=new T.Scene(),cam=new T.PerspectiveCamera(33,W/H,.1,100);
+cam.position.set(0,0,19);cam.lookAt(0,0,0);
+scene.add(new T.HemisphereLight(0xffffff,0xc4dcf3,2.7));
+const key=new T.DirectionalLight(0xffffff,4.4);key.position.set(-6,7,11);scene.add(key);
+const fill=new T.DirectionalLight(0xe4fbff,2.2);fill.position.set(6,-3,8);scene.add(fill);
+const blue=new T.MeshPhysicalMaterial({color:0x246fa8,metalness:.24,roughness:.28,clearcoat:.65});
+const navy=new T.MeshPhysicalMaterial({color:0x154269,metalness:.2,roughness:.42,clearcoat:.4});
+const teal=new T.MeshPhysicalMaterial({color:0x26b8ac,metalness:.24,roughness:.3,clearcoat:.55});
+const gold=new T.MeshPhysicalMaterial({color:0xe5ad54,metalness:.54,roughness:.22,clearcoat:.88});
+const softgold=new T.MeshPhysicalMaterial({color:0xf8d592,metalness:.15,roughness:.42,clearcoat:.54});
+const white=new T.MeshPhysicalMaterial({color:0xffffff,metalness:.04,roughness:.36,clearcoat:.45});
+const opaqueMats=[blue,navy,teal,gold,softgold,white];
+const smooth=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v)};
+const range=(f,a,b)=>smooth((f-a)/(b-a));const easeOut=(f,a,b)=>1-(1-range(f,a,b))**3;
+const cardGeo=new T.BoxGeometry(2.7,1.65,.12),smallBar=new T.BoxGeometry(1.82,.10,.04),blockGeo=new T.BoxGeometry(.29,.29,.13);
+const cards=[];
+for(let i=0;i<7;i++){
+ const g=new T.Group(),face=new T.Mesh(cardGeo,white);g.add(face);
+ const line=new T.Mesh(new T.BoxGeometry(2.08,.11,.022),i%3===0?teal:blue);line.position.set(0,.38,.085);g.add(line);
+ for(let j=0;j<3;j++){const d=new T.Mesh(new T.BoxGeometry(.41,.095,.018),j===0?gold:navy);d.position.set(-.79+j*.50,-.02,.086);g.add(d)}
+ const stripe=new T.Mesh(new T.BoxGeometry(.24,1.65,.16),i%2?gold:teal);stripe.position.set(-1.24,0,.015);g.add(stripe);
+ scene.add(g);cards.push(g);
+}
+// Semantic convergence: the scattered cards disappear as a unified loop and two pathways emerge.
+const ringGroup=new T.Group();scene.add(ringGroup);
+const ringOuter=new T.Mesh(new T.TorusGeometry(2.05,.125,22,142),gold);ringGroup.add(ringOuter);
+const ringInner=new T.Mesh(new T.TorusGeometry(1.51,.087,18,132),teal);ringInner.rotation.y=.68;ringInner.rotation.x=.30;ringGroup.add(ringInner);
+const ringCore=new T.Mesh(new T.IcosahedronGeometry(.74,3),white);ringGroup.add(ringCore);
+const core2=new T.Mesh(new T.IcosahedronGeometry(.52,2),blue);ringGroup.add(core2);
+const ringDots=[];for(let j=0;j<15;j++){const obj=new T.Mesh(new T.SphereGeometry(.105,j%2?14:10,12),j%3===0?teal:softgold);ringGroup.add(obj);ringDots.push(obj)}
+const branchA=new T.Group(),branchB=new T.Group();scene.add(branchA,branchB);
+for(const [group,col] of [[branchA,teal],[branchB,gold]]){
+ const arc=new T.Mesh(new T.TorusGeometry(.83,.057,12,84,Math.PI*1.65),col);group.add(arc);
+ for(let j=0;j<5;j++){let s=new T.Mesh(new T.SphereGeometry(.11,13,12),j===4?white:col);let a=(j/4)*Math.PI*1.65;s.position.set(Math.cos(a)*.83,Math.sin(a)*.83,.1);group.add(s)}
+}
+const graph=new T.Group();scene.add(graph);
+const centers=[];
+for(let i=0;i<9;i++){const m=new T.Mesh(new T.IcosahedronGeometry(i===4?.29:.16,i===4?2:1),i%3===0?gold:blue);graph.add(m);centers.push(m)}
+const edges=[];const edgeMat=new T.MeshStandardMaterial({color:0x31b5b0,roughness:.4,metalness:.3});
+for(let i=0;i<8;i++){const m=new T.Mesh(new T.CylinderGeometry(.035,.035,1,8),edgeMat);graph.add(m);edges.push(m)}
+const pulses=[];for(let i=0;i<6;i++){const m=new T.Mesh(new T.SphereGeometry(.12,16,16),i%2?softgold:teal);graph.add(m);pulses.push(m)}
+function setCylinder(mesh,a,b){const av=new T.Vector3(...a),bv=new T.Vector3(...b);mesh.position.copy(av).add(bv).multiplyScalar(.5);const dir=bv.sub(av);mesh.scale.set(1,dir.length(),1);mesh.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),dir.normalize());}
+function positionFor(i,turn){if(i===4)return [0,0,.15];let angle=(i/8)*Math.PI*2+turn;return [Math.cos(angle)*2.2,Math.sin(angle)*1.65,Math.sin(angle*1.4)*.22]}
+function pose(f){
+ f=Math.min(N-1,Math.max(0,Math.round(f)));
+ const dis=range(f,3,18),collapse=range(f,20,40),emerge=range(f,28,58),paths=range(f,67,87),graphOn=range(f,87,118);
+ cards.forEach((o,i)=>{
+  const angle=i*2.39996322972865;const x=Math.cos(angle)*2.65,y=Math.sin(angle)*2.05;
+  o.visible=f<45;
+  o.position.set(x*(1-.87*collapse),y*(1-.9*collapse)+.22*Math.sin(f*.13+i),-1+1.9*(i%3)/3);
+  o.rotation.set(.08*Math.sin(i+f*.04),.23*Math.sin(i)+.52*collapse,.08*Math.cos(i*1.5)+.45*collapse);
+  const scale=(.53+.13*dis)*(1-.88*collapse);o.scale.setScalar(Math.max(.005,scale));
+ });
+ ringGroup.visible=f>=27&&f<126;
+ ringGroup.position.set(0,-.25+.38*emerge-.55*graphOn,.1);
+ ringGroup.scale.setScalar(Math.max(.0001,emerge*(1-.86*graphOn)));
+ ringOuter.rotation.z=-f*.019;ringOuter.rotation.y=.23*Math.sin(f*.019);
+ ringInner.rotation.z=f*.023;ringInner.rotation.y=.25+.5*Math.sin(f*.01);
+ ringCore.rotation.y=f*.017;core2.rotation.x=f*.024;
+ ringDots.forEach((o,i)=>{const a=i/15*Math.PI*2+f*.027;o.position.set(Math.cos(a)*2.05,Math.sin(a)*2.05,Math.sin(a*2)*.32)});
+ for(const [g,sign] of [[branchA,-1],[branchB,1]]){g.visible=f>=67&&f<121;g.scale.setScalar(Math.max(.0001,paths*(1-.94*graphOn)));g.position.set(sign*2.5,-2.9+.5*paths,.6);g.rotation.z=sign*.29+.02*f}
+ graph.visible=f>=83;
+ graph.position.set(0,-.45,.5);
+ graph.scale.setScalar(Math.max(.001,graphOn*.95));
+ const coords=centers.map((o,i)=>{let p=positionFor(i,f*.007);o.position.set(...p);o.rotation.y=f*.015+i*.19;o.scale.setScalar(i===4?1+.12*Math.sin(f*.15):.85+.15*Math.sin(f*.08+i));return p});
+ edges.forEach((o,i)=>{setCylinder(o,coords[4],coords[i<4?i:i+1]);o.visible=f>=103+i*2});
+ pulses.forEach((o,i)=>{const dst=coords[(i%8)+(i>=4?1:0)];const p=Math.max(0,Math.min(1,(f-107-i*5)/18));o.visible=f>=107+i*5;o.position.set(dst[0]*p,dst[1]*p,dst[2]*p+.3);o.scale.setScalar(.7+.5*(1-p))});
+ document.getElementById('topfill').style.width=(900*(f+1)/N)+'px';
+ document.getElementById('endline').style.width=(900*range(f,133,160))+'px';
+ // camera move is motivated by switching from collecting ideas into active retrieval network.
+ cam.position.z=19-.9*graphOn;cam.rotation.z=.011*Math.sin(f*.037);
+ renderer.render(scene,cam);
+ window.__poseProof={frame:f,seconds:f/FPS,phase:f<27?'scattered-cards':f<67?'golden-convergence':f<88?'two-learning-paths':'active-retrieval-graph',engine:'three-webgl'};
+}
+window.__s07Seek=pose;
+window.addEventListener('hf-seek',e=>{const t=Number(e?.detail?.time);if(Number.isFinite(t))pose(t*FPS)});
+pose(0);
+</script></body></html>
