@@ -97,7 +97,6 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import json,subprocess,pathlib,hashlib
-          from PIL import Image
           root=pathlib.Path('out/cinetic-s07s09-3d')
           details={}
           for shot,num in [('S07',71),('S09',107)]:
