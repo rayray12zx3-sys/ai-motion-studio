@@ -1,0 +1,112 @@
+name: Cinetic Three original 71f 107f real HyperFrames (public synthetic)
+on:
+  push:
+    branches:
+      - work/cinetic-s07s09-three-public-staging-20261030
+    paths:
+      - '.github/workflows/cinetic-original-three-20261030.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cinetic-three-s07s09-public-original-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  hyperframes-three-original:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CI: 'true'
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+      HYPERFRAMES_NO_UPDATE_CHECK: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Assert source classification and source JS syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          for s in s07 s09; do
+            f="experiments/cinetic-sidecar/public-original-s07s09/$s.html"
+            test -f "$f"
+            if grep -E -i '(VocabKnow|APP_native|MOM_003|drive.google.com|docs.google.com|private[_-]asset|customer[_-]data|單字馬拉松|腦力攻防戰)' "$f"; then
+              echo 'PRIVATE_SOURCE_REJECTED'; exit 1
+            fi
+          done
+      - name: Install existing locked project dependencies and exact Three.js
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund three@0.180.0
+          node -e "if(require('three/package.json').version!=='0.180.0')process.exit(2)"
+          node scripts/setup-encoder.mjs
+          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
+          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
+      - name: Local module vendoring and pinned true-engine supply check
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(npm view hyperframes@0.8.143 dist.shasum)" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+          d=experiments/cinetic-sidecar/public-original-s07s09
+          mkdir -p "$d/vendor"
+          cp node_modules/three/build/three.module.js node_modules/three/build/three.core.js "$d/vendor/"
+          sed -i 's#../../../node_modules/three/build/three.module.js#./vendor/three.module.js#g' "$d/s07.html" "$d/s09.html"
+          test -s "$d/vendor/three.core.js"
+          test -s "$d/vendor/three.module.js"
+          mkdir -p out/cinetic-s07s09-3d
+      - name: Execute actual Cinetic upstream picker and treatment (metadata, not proof of recipe pixels)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node experiments/cinetic-sidecar/cinetic-flow.mjs pick experiments/cinetic-sidecar/probe.plan.json out/cinetic-s07s09-3d/director --seed 123 --energy calm
+          node experiments/cinetic-sidecar/cinetic-flow.mjs treat experiments/cinetic-sidecar/probe.plan.json out/cinetic-s07s09-3d/director
+      - name: Render two original Three.js WebGL scenes with genuine pinned HyperFrames CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/cinetic-sidecar/public-original-s07s09
+          npx --yes hyperframes@0.8.143 render -c s07.html -o ../../../out/cinetic-s07s09-3d/S07_HF_THREE_71f.mp4 --fps 30 --quality draft
+          npx --yes hyperframes@0.8.143 render -c s09.html -o ../../../out/cinetic-s07s09-3d/S09_HF_THREE_107f.mp4 --fps 30 --quality draft
+      - name: Decode, verify 71 + 107 real frames and motion, record hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,hashlib,subprocess,pathlib
+          root=pathlib.Path('out/cinetic-s07s09-3d')
+          result={'engine':'hyperframes@0.8.143','sceneBackend':'three@0.180.0 WebGL','contentClass':'PUBLIC_ORIGINAL_SYNTHETIC_ONLY','status':'TECH_PASS_NOT_ART_APPROVAL','cinematicRecipes':'METADATA_TREATMENT_NOT_AUTOMATIC_PIXEL_APPLICATION','shots':{}}
+          for shot,frames in [('S07',71),('S09',107)]:
+            f=root/f'{shot}_HF_THREE_{frames}f.mp4'
+            j=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-select_streams','v:0','-show_entries','stream=width,height,codec_name,r_frame_rate,nb_read_frames','-of','json',str(f)],text=True))['streams'][0]
+            assert (j['width'],j['height'],j['codec_name'],j['r_frame_rate'],int(j['nb_read_frames']))==(1080,1920,'h264','30/1',frames),(shot,j)
+            subprocess.run(['ffmpeg','-nostdin','-v','error','-i',str(f),'-f','null','-'],check=True)
+            md5=subprocess.check_output(['ffmpeg','-nostdin','-v','error','-i',str(f),'-f','framemd5','-'],text=True)
+            unique=len({line.split(',')[-1].strip() for line in md5.splitlines() if not line.startswith('#') and ',' in line})
+            assert unique>frames//2,(shot,unique,frames)
+            result['shots'][shot]={'frameCount':frames,'uniqueDecodedFrames':unique,'width':1080,'height':1920,'fps':30,'sha256':hashlib.sha256(f.read_bytes()).hexdigest()}
+          (root/'ENGINE_MEDIA_QA.json').write_text(json.dumps(result,indent=2))
+          print(json.dumps(result,indent=2))
+          PY
+      - name: Archive genuine original Three+HyperFrames media and receipts; never company assets or fonts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinetic-public-original-three-s07s09-71f-107f
+          retention-days: 3
+          if-no-files-found: error
+          path: |
+            out/cinetic-s07s09-3d/S07_HF_THREE_71f.mp4
+            out/cinetic-s07s09-3d/S09_HF_THREE_107f.mp4
+            out/cinetic-s07s09-3d/ENGINE_MEDIA_QA.json
+            out/cinetic-s07s09-3d/director/BRIEF.md
+            out/cinetic-s07s09-3d/director/TREATMENT.md
+      - name: Non-approval and private compositing boundary
+        run: |
+          echo 'Actual original Three.js and HyperFrames engine technical outputs only. Private APP/voice will be composited outside public runner.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Cinetic picker metadata does not implement all selected techniques. Art, Windows Premiere and company-use rights remain pending.' >> "$GITHUB_STEP_SUMMARY"
