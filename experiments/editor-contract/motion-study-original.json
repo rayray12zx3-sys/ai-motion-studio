@@ -1,0 +1,390 @@
+{
+  "version": 1,
+  "kind": "editable-scene-v1",
+  "id": "motion-study-original",
+  "fps": 30,
+  "duration_frames": 180,
+  "canvas": {
+    "width": 360,
+    "height": 640
+  },
+  "assets": [],
+  "layers": [
+    {
+      "id": "intro-accent",
+      "type": "rect",
+      "z": 1,
+      "start_frame": 0,
+      "end_frame": 88,
+      "color": "#5fd6b9",
+      "text": null,
+      "keys": [
+        {
+          "frame": 0,
+          "x": 0.25,
+          "y": 0.32,
+          "scale": 0.75,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 18,
+          "x": 0.46,
+          "y": 0.32,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.9,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 66,
+          "x": 0.5,
+          "y": 0.32,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.9,
+          "ease": "linear"
+        },
+        {
+          "frame": 87,
+          "x": 0.64,
+          "y": 0.32,
+          "scale": 0.8,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ]
+    },
+    {
+      "id": "intro-title",
+      "type": "text",
+      "z": 3,
+      "start_frame": 6,
+      "end_frame": 86,
+      "color": "#f4f8fa",
+      "text": "MOVE WITH INTENT",
+      "keys": [
+        {
+          "frame": 6,
+          "x": 0.33,
+          "y": 0.41,
+          "scale": 0.93,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 26,
+          "x": 0.5,
+          "y": 0.41,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 61,
+          "x": 0.5,
+          "y": 0.41,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "ease": "linear"
+        },
+        {
+          "frame": 85,
+          "x": 0.63,
+          "y": 0.41,
+          "scale": 0.93,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ]
+    },
+    {
+      "id": "intro-subtitle",
+      "type": "text",
+      "z": 3,
+      "start_frame": 18,
+      "end_frame": 84,
+      "color": "#acd8d7",
+      "text": "FORM FOLLOWS TIME",
+      "keys": [
+        {
+          "frame": 18,
+          "x": 0.34,
+          "y": 0.51,
+          "scale": 0.92,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 35,
+          "x": 0.5,
+          "y": 0.51,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.92,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 62,
+          "x": 0.5,
+          "y": 0.51,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.92,
+          "ease": "linear"
+        },
+        {
+          "frame": 83,
+          "x": 0.6,
+          "y": 0.51,
+          "scale": 0.94,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ]
+    },
+    {
+      "id": "intro-bar",
+      "type": "rect",
+      "z": 2,
+      "start_frame": 18,
+      "end_frame": 88,
+      "color": "#3a9ab0",
+      "text": null,
+      "keys": [
+        {
+          "frame": 18,
+          "x": 0.21,
+          "y": 0.63,
+          "scale": 0.7,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 37,
+          "x": 0.49,
+          "y": 0.63,
+          "scale": 0.95,
+          "rotation": 0,
+          "opacity": 0.86,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 67,
+          "x": 0.49,
+          "y": 0.63,
+          "scale": 0.95,
+          "rotation": 0,
+          "opacity": 0.86,
+          "ease": "linear"
+        },
+        {
+          "frame": 87,
+          "x": 0.62,
+          "y": 0.63,
+          "scale": 0.75,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ]
+    },
+    {
+      "id": "second-accent",
+      "type": "rect",
+      "z": 1,
+      "start_frame": 89,
+      "end_frame": 168,
+      "color": "#e5b875",
+      "text": null,
+      "keys": [
+        {
+          "frame": 89,
+          "x": 0.72,
+          "y": 0.32,
+          "scale": 0.7,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 110,
+          "x": 0.51,
+          "y": 0.32,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.95,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 144,
+          "x": 0.51,
+          "y": 0.32,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.95,
+          "ease": "linear"
+        },
+        {
+          "frame": 167,
+          "x": 0.32,
+          "y": 0.32,
+          "scale": 0.8,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ]
+    },
+    {
+      "id": "second-title",
+      "type": "text",
+      "z": 3,
+      "start_frame": 89,
+      "end_frame": 166,
+      "color": "#f4f8fa",
+      "text": "TIMING MATTERS",
+      "keys": [
+        {
+          "frame": 89,
+          "x": 0.68,
+          "y": 0.43,
+          "scale": 0.9,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 110,
+          "x": 0.5,
+          "y": 0.43,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 145,
+          "x": 0.5,
+          "y": 0.43,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "ease": "linear"
+        },
+        {
+          "frame": 165,
+          "x": 0.33,
+          "y": 0.43,
+          "scale": 0.9,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ]
+    },
+    {
+      "id": "second-subtitle",
+      "type": "text",
+      "z": 3,
+      "start_frame": 101,
+      "end_frame": 163,
+      "color": "#acd8d7",
+      "text": "A SECOND TO NOTICE",
+      "keys": [
+        {
+          "frame": 101,
+          "x": 0.67,
+          "y": 0.53,
+          "scale": 0.9,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 122,
+          "x": 0.5,
+          "y": 0.53,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.88,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 143,
+          "x": 0.5,
+          "y": 0.53,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.88,
+          "ease": "linear"
+        },
+        {
+          "frame": 162,
+          "x": 0.34,
+          "y": 0.53,
+          "scale": 0.92,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ]
+    },
+    {
+      "id": "outro-credit",
+      "type": "text",
+      "z": 4,
+      "start_frame": 165,
+      "end_frame": 180,
+      "color": "#d9e6e9",
+      "text": "S1 MOTION STUDY",
+      "keys": [
+        {
+          "frame": 165,
+          "x": 0.5,
+          "y": 0.76,
+          "scale": 0.92,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 171,
+          "x": 0.5,
+          "y": 0.76,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.85,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 174,
+          "x": 0.5,
+          "y": 0.76,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.85,
+          "ease": "linear"
+        },
+        {
+          "frame": 179,
+          "x": 0.5,
+          "y": 0.76,
+          "scale": 0.98,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ]
+    }
+  ]
+}
