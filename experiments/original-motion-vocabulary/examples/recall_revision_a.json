@@ -1,0 +1,9 @@
+{
+  "mode": "recall_cycle",
+  "heading": "探究與回顧",
+  "subheading": "原創教學資訊動畫",
+  "question": "提出問題",
+  "recall": "想一想",
+  "revisit_labels": ["現在", "稍後", "再次"],
+  "finish": "再次回顧"
+}

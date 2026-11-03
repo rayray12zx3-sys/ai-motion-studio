@@ -1,0 +1,9 @@
+{
+  "mode": "recall_cycle",
+  "heading": "設計迭代",
+  "subheading": "原創創作流程動畫",
+  "question": "提出概念",
+  "recall": "快速實驗",
+  "revisit_labels": ["構想", "修改", "驗證"],
+  "finish": "回饋改進"
+}
