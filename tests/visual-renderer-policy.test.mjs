@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {validateManifest,changedSourceViolations} from '../scripts/visual-renderer-gate.mjs';
+const setup=()=>{const r=fs.mkdtempSync(path.join(os.tmpdir(),'visual-render-gate-'));fs.writeFileSync(path.join(r,'scene.mjs'),'const frame = () => "Canvas";\n');fs.writeFileSync(path.join(r,'render.py'),'from PIL import Image\n');fs.writeFileSync(path.join(r,'verify.py'),'import hashlib\n');return r;};
+const base={kind:'new-animation-visual-production',requested_engine:'canvas-js+ffmpeg',actual_engine:'canvas-js+ffmpeg',sources:[{path:'scene.mjs',role:'visual'},{path:'verify.py',role:'qa'}]};
+test('JS Canvas and nonvisual Python QA allowed',()=>{const r=setup();try{assert.equal(validateManifest(base,r).status,'PASS')}finally{fs.rmSync(r,{recursive:true,force:true})}});
+test('Python/Pillow visual disallowed',()=>{const r=setup();try{assert.throws(()=>validateManifest({...base,sources:[{path:'render.py',role:'visual'}]},r),/PYTHON_PILLOW_VISUAL_FORBIDDEN/)}finally{fs.rmSync(r,{recursive:true,force:true})}});
+test('silent renderer downgrade disallowed',()=>{const r=setup();try{assert.throws(()=>validateManifest({...base,actual_engine:'hyperframes+threejs'},r),/SILENT_RENDERER_DOWNGRADE_FORBIDDEN/)}finally{fs.rmSync(r,{recursive:true,force:true})}});
+test('nondefault engine needs task-specific explicit authorization',()=>{const r=setup();try{const m={...base,actual_engine:'hyperframes+threejs',requested_engine:'hyperframes+threejs'};assert.throws(()=>validateManifest(m,r),/NONDEFAULT_ENGINE_AUTH_REQUIRED/);assert.equal(validateManifest({...m,engine_authorization:'explicit-task-only',authorization_evidence:'recorded operator approval'},r).status,'PASS')}finally{fs.rmSync(r,{recursive:true,force:true})}});
+test('release needs actual runtime proof',()=>{const r=setup();try{assert.throws(()=>validateManifest({...base,status:'release'},r),/ENGINE_RUNTIME_PROOF_REQUIRED/)}finally{fs.rmSync(r,{recursive:true,force:true})}});
+test('new changed visual Python blocked, QA preserved',()=>{assert.deepEqual(changedSourceViolations(['src/three/render_s07.py','experiments/animations/new_motion.py','scripts/render_animated.py','tests/render_demo.py','scripts/qa/verify.py','src/free/scene.mjs']),['src/three/render_s07.py: NEW_OR_MODIFIED_PYTHON_VISUAL_RENDER_FORBIDDEN','experiments/animations/new_motion.py: NEW_OR_MODIFIED_PYTHON_VISUAL_RENDER_FORBIDDEN','scripts/render_animated.py: NEW_OR_MODIFIED_PYTHON_VISUAL_RENDER_FORBIDDEN'])});
