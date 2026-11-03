@@ -1,0 +1,101 @@
+name: Cinetic and Earshot licensed-audio experimental check
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/cinetic-earshot-public-audio-probe.yml'
+permissions:
+  contents: read
+jobs:
+  licensed-public-audio:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - name: Execute original upstream tools on public licensed music only
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          git clone --quiet https://github.com/Leonxlnx/cinetic.git cinetic
+          git -C cinetic checkout --quiet ecfa6605de1adb9345ce937724810dc32267d068
+          git clone --quiet https://github.com/Leonxlnx/earshot.git earshot
+          git -C earshot checkout --quiet 591fa3e028032e6dce56620a20e932e35667e8d8
+          python3 -m venv probe-env
+          source probe-env/bin/activate
+          python -m pip install --no-input --disable-pip-version-check --quiet -e ./earshot
+          python - <<'PY'
+          import hashlib, json, subprocess, sys, urllib.request
+          from pathlib import Path
+          W=Path.cwd()
+          tracks={
+            "secret_garden": "https://assets.mixkit.co/music/preview/mixkit-secret-garden-595.mp3",
+            "cat_walk": "https://assets.mixkit.co/music/371/371.mp3",
+            "silent_descent": "https://assets.mixkit.co/music/614/614.mp3",
+          }
+          files={}
+          for name,url in tracks.items():
+              p=W/(name+".mp3")
+              try:
+                  req=urllib.request.Request(url, headers={"User-Agent":"Mozilla/5.0"})
+                  with urllib.request.urlopen(req,timeout=35) as r:
+                      data=r.read(20000000)
+                  if len(data)<100000 or not (data[:3]==b"ID3" or data[0]==0xff):
+                      raise ValueError("not MP3 audio")
+                  p.write_bytes(data)
+                  print("SOURCE_OK",name,len(data),hashlib.sha256(data).hexdigest(),flush=True)
+                  files[name]=p
+              except Exception as e:
+                  print("SOURCE_FAILED",name,str(e)[:250],flush=True)
+          if not files:
+              raise SystemExit("NO_LICENSED_SOURCE_AUDIO")
+          cues={"fps":30,"bpm":120,"total":600,
+                "acts":{"all":{"from":0,"dur":600}},
+                "cue":{"payoff":510},
+                "events":[
+                  {"f":42,"kind":"tick","id":"synthetic:attention"},
+                  {"f":120,"kind":"pop","id":"synthetic:reaction"},
+                  {"f":240,"kind":"whoosh","dur":25,"apexFrac":0.5,"id":"synthetic:shift"},
+                  {"f":310,"kind":"hit","id":"synthetic:change"},
+                  {"f":430,"kind":"click","id":"synthetic:choice"},
+                  {"f":510,"kind":"land","id":"synthetic:resolution"}]}
+          (W/"public-synthetic.cues.json").write_text(json.dumps(cues))
+          for name,mp3 in files.items():
+              pcm=W/(name+".wav")
+              cmd=["ffmpeg","-hide_banner","-loglevel","error","-nostdin","-y","-i",str(mp3),
+                   "-t","25","-ar","48000","-ac","2","-c:a","pcm_s24le",str(pcm)]
+              p=subprocess.run(cmd,capture_output=True,text=True)
+              if p.returncode:
+                  print("DECODE_FAIL",name,p.stderr[-250:],flush=True);continue
+              result=subprocess.run(["earshot","measure",str(pcm),"--json"],capture_output=True,text=True,timeout=160)
+              print("EARSHOT_MEASURE",name,"code",result.returncode,
+                    (result.stdout or result.stderr)[-2400:],flush=True)
+              if result.returncode: continue
+              score={"key":"G major","bpm":120,"music":str(pcm),"sfx":{"engine":"synth"},
+                     "payoff":510,"master":{"lufs":-18,"ceiling":0.77,"fade":1.0},
+                     "mix":{"music":1.0,"sfx":0.38,"duck_db":4}}
+              spec=W/(name+".score.json");spec.write_text(json.dumps(score))
+              out=W/(name+".cinetic.wav");rep=W/(name+".cinetic.json")
+              proc=subprocess.run([sys.executable,
+                  str(W/"cinetic/skills/cinetic/scripts/audio/score.py"),
+                  "--cues",str(W/"public-synthetic.cues.json"),
+                  "--score",str(spec),"--out",str(out),"--json",str(rep),"--quiet"],
+                  capture_output=True,text=True,timeout=160)
+              print("CINETIC_SCORE",name,"code",proc.returncode,(proc.stderr or proc.stdout)[-1000:],flush=True)
+              if rep.exists():
+                  d=json.loads(rep.read_text())
+                  print("CINETIC_REPORT",name,json.dumps({
+                      "lufs":d.get("lufs"),"warnings":d.get("warnings"),
+                      "sfx":d.get("sfx",{}).get("source"),
+                      "music":d.get("target_lufs",{}).get("music")},default=str),flush=True)
+          if len(files)>1:
+              for query in ("playful light plucked strings and understated comedy",
+                            "bright upbeat electronic technology product demonstration",
+                            "warm positive relaxed reassuring family commercial"):
+                  cmd=["earshot","rank",query]+[str(x) for x in files.values()]+["--json"]
+                  try:
+                      p=subprocess.run(cmd,capture_output=True,text=True,timeout=225)
+                      print("EARSHOT_RANK",query,"code",p.returncode,
+                            (p.stdout or p.stderr)[-2400:],flush=True)
+                  except Exception as e:
+                      print("EARSHOT_RANK_BLOCKED",query,str(e)[:160],flush=True)
+          print("RESULT_BOUNDARY: no private user video, audio, or music assets included in CI/artifacts",flush=True)
+          PY
