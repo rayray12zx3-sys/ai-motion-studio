@@ -1,0 +1,50 @@
+name: Cinetic isolated director contract
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/cinetic-sidecar/**'
+      - '.github/workflows/cinetic-director-contract.yml'
+  push:
+    branches:
+      - 'experiment/cinetic-director-adapter-*'
+    paths:
+      - 'experiments/cinetic-sidecar/**'
+      - '.github/workflows/cinetic-director-contract.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cinetic-contract-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7; matches existing repository CI
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+      - name: Offline contract and rejection tests (no npm, browser or media)
+        run: node --test experiments/cinetic-sidecar/adapter.test.mjs experiments/cinetic-sidecar/semantic-graph.test.mjs
+      - name: Compile approved original synthetic fixture only
+        run: node experiments/cinetic-sidecar/adapter.mjs experiments/cinetic-sidecar/sample.plan.json out/cinetic-contract
+      - name: Assert independent human and licensing gates remain closed
+        run: |
+          node --input-type=module -e '
+          import fs from "node:fs";
+          const q = JSON.parse(fs.readFileSync("out/cinetic-contract/review-gates.json","utf8"));
+          if (q.visual.status !== "PENDING_INDEPENDENT_REVIEW" || q.artisticApproval.status !== "PENDING_USER_APPROVAL" || q.commercialRights.status !== "BLOCKED_PENDING_RUNTIME_AUDIT" || q.upstreamSelfCritiqueCanApprove !== false) process.exit(1);
+          '
+      - name: Archive synthetic contract only (NO media, private assets or licenses)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cinetic-contract-synthetic-only
+          path: out/cinetic-contract/
+          retention-days: 2
+          if-no-files-found: error

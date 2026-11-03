@@ -1,0 +1,101 @@
+name: Cinetic C3 8s synthetic narrative
+
+on:
+  push:
+    branches:
+      - 'experiment/cinetic-director-adapter-*'
+    paths:
+      - 'experiments/cinetic-sidecar/story-eight.plan.json'
+      - 'experiments/cinetic-sidecar/semantic-graph.mjs'
+      - 'experiments/cinetic-sidecar/evidence-cards.mjs'
+      - 'experiments/cinetic-sidecar/evidence-cards.test.mjs'
+      - 'experiments/cinetic-sidecar/audit-upstream.mjs'
+      - 'experiments/cinetic-sidecar/prepare-render.mjs'
+      - 'experiments/cinetic-sidecar/verify-render.mjs'
+      - '.github/workflows/cinetic-c3-story-rnd.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cinetic-story-8s-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-synthetic-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Fetch ONLY pinned upstream Cinetic source into ignored disposable workspace
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: Leonxlnx/cinetic
+          ref: ecfa6605de1adb9345ce937724810dc32267d068
+          path: out/upstream-cinetic-source
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Install only repository-locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Check bounded agent contract and original source
+        run: |
+          node --test experiments/cinetic-sidecar/adapter.test.mjs experiments/cinetic-sidecar/semantic-graph.test.mjs experiments/cinetic-sidecar/evidence-cards.test.mjs
+          node --check experiments/cinetic-sidecar/prepare-render.mjs
+          node --check experiments/cinetic-sidecar/verify-render.mjs
+          node experiments/cinetic-sidecar/prepare-render.mjs experiments/cinetic-sidecar/story-eight.plan.json out/cinetic-story8
+          node --check experiments/cinetic-sidecar/audit-upstream.mjs
+          node experiments/cinetic-sidecar/audit-upstream.mjs out/upstream-cinetic-source out/cinetic-story8/upstream-provenance.json
+      - name: Expose verified local FFmpeg and FFprobe
+        run: |
+          node scripts/setup-encoder.mjs
+          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
+          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
+      - name: Exact HyperFrames CLI artifact pin check
+        run: |
+          test "$(npm view hyperframes@0.8.143 dist.shasum)" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+          echo 'Package pin checked; runtime/transitive commercial rights remain unresolved.'
+      - name: Render original 8s 16:9 MP4 motion at 30fps
+        run: |
+          cd out/cinetic-story8
+          npx --yes hyperframes@0.8.143 render -c index.html -o ./preview.mp4 --fps 30 --quality draft
+      - name: Render separate real alpha ProRes 4444 MOV
+        run: |
+          cd out/cinetic-story8
+          npx --yes hyperframes@0.8.143 render -c index-alpha.html -o ./overlay-alpha.mov --format mov --fps 30
+      - name: Decode all stage boundaries and assert independent approval gates
+        run: node experiments/cinetic-sidecar/verify-render.mjs out/cinetic-story8
+      - name: Make reviewable lightweight animated GIF from actual MP4
+        run: |
+          ffmpeg -nostdin -y -v error -i out/cinetic-story8/preview.mp4 \
+            -filter_complex '[0:v]fps=10,scale=640:-2:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer' \
+            -loop 0 out/cinetic-story8/review-only.gif
+          test -s out/cinetic-story8/review-only.gif
+      - name: Upload original synthetic media and independent technical evidence ONLY
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cinetic-c3-eight-second-original-synthetic
+          path: |
+            out/cinetic-story8/preview.mp4
+            out/cinetic-story8/overlay-alpha.mov
+            out/cinetic-story8/review-only.gif
+            out/cinetic-story8/technical-report.json
+            out/cinetic-story8/upstream-provenance.json
+            out/cinetic-story8/font-qa.json
+            out/cinetic-story8/review-gates.json
+            out/cinetic-story8/validated-plan.json
+            out/cinetic-story8/timeline.json
+          retention-days: 2
+          if-no-files-found: error
+      - name: Label external acceptance as outstanding
+        run: |
+          echo 'C3 is a synthetic renderer benchmark, not an installed Cinetic agent pipeline or production adoption.' >> "$GITHUB_STEP_SUMMARY"
+          echo '30fps is below Cinetic preferred 60fps. No automatic Visual Design QA or user art approval; Windows Premiere and transitive commercial rights not cleared.' >> "$GITHUB_STEP_SUMMARY"

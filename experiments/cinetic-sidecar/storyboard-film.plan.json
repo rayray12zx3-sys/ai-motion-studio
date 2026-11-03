@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "engine": "cinetic-hyperframes",
+  "contentClass": "public-synthetic",
+  "brief": {
+    "title": "一滴雨的剪輯故事",
+    "intent": "讓觀眾看見零散的三個無聲鏡頭如何被排序並轉換成有因果關係的完整故事",
+    "trigger": "天空雨滴與水面漣漪原本是不同的分鏡",
+    "physicalResponse": "三張手繪分鏡進入實際剪輯順序並由同一顆紅色雨滴引導到完整畫面",
+    "audienceUnderstanding": "知道剪輯不是把畫面排在一起而是建立動作與反應"
+  },
+  "render": {
+    "width": 1280,
+    "height": 720,
+    "fps": 60,
+    "frames": 480
+  },
+  "direction": {
+    "seed": 142,
+    "techniqueIds": [
+      "tr-velocity-handoff-cut"
+    ],
+    "visualLanguage": "電影分鏡設計與不對稱編輯式字卡，墨綠與冷白搭配紅色敘事焦點",
+    "visualMotif": "storyboard-film"
+  },
+  "beats": [
+    {
+      "id": "fragments",
+      "kind": "scatter",
+      "startFrame": 0,
+      "endFrame": 144,
+      "meaning": "分散的雨雲雨滴漣漪原創畫面從不同角度保留為三個鏡頭",
+      "onScreenText": "散落鏡頭"
+    },
+    {
+      "id": "connection",
+      "kind": "connect",
+      "startFrame": 144,
+      "endFrame": 324,
+      "meaning": "同一批鏡頭移動到影片軌道的順序中產生動作與反應",
+      "onScreenText": "剪出節奏"
+    },
+    {
+      "id": "resolution",
+      "kind": "resolve",
+      "startFrame": 324,
+      "endFrame": 480,
+      "meaning": "一滴紅色雨落下並形成擴散漣漪，三段鏡頭縮成時間軸",
+      "onScreenText": "故事成形"
+    }
+  ]
+}

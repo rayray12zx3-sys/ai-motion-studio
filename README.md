@@ -144,6 +144,8 @@ CI uploads only synthetic review assets. Real renders belong in approved private
 
 <!-- PROJECT_PROGRESS:START -->
 Current milestone: free local renderer reliability. REQUIRED_NOW: locked install, input guards, explicit fonts, render smoke and artifact review. Active path: local validation → PR/Ubuntu CI → human visual review. Current gate: candidate awaiting CI and creative review. Blockers: final scene design/visual approval; public branch-protection configuration. Next action: inspect synthetic artifacts and exact-head CI. Exit condition: required checks pass and reviewed scenes are accepted; no production approval is inferred. No lifetime percentage is claimed.
+
+S08 experimental lane (Draft #140, REQUIRED_NOW): CURRENT gate = exact per-file Drive grant. Offline refresh is saved in the protected environment as PENDING_FILE_GRANT; live owner metadata probe [39782440325](https://github.com/rayray12zx3-sys/ai-motion-studio/actions/runs/39782440325) reports OAUTH_REFRESH_PASS but source and destination metadata access BLOCKED (probe exit 3). Offline fictional tests 42/42 and isolated synthetic engine PASS; real-s08 SKIPPED. Actual private render / Drive SHA readback / real visual QA NOT_DONE. Next action: resolve the official Picker blank-document failure and verify BOTH exact file grants, without credential refills or removing preflight. See [S08 handoff](experiments/cinetic-sidecar/S08_AUTHENTIC_PUBLIC_RUNNER_HANDOFF_20261022.md).
 <!-- PROJECT_PROGRESS:END -->
 
 

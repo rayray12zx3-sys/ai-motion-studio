@@ -1,0 +1,92 @@
+name: Cinetic C3.2 storyboard film R&D
+
+on:
+  push:
+    branches:
+      - 'experiment/cinetic-director-adapter-*'
+    paths:
+      - 'experiments/cinetic-sidecar/storyboard-film*'
+      - 'experiments/cinetic-sidecar/adapter.mjs'
+      - 'experiments/cinetic-sidecar/prepare-render.mjs'
+      - 'experiments/cinetic-sidecar/verify-render.mjs'
+      - '.github/workflows/cinetic-c32-storyboard-rnd.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cinetic-c32-storyboard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-storyboard-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      HYPERFRAMES_NO_TELEMETRY: '1'
+      HYPERFRAMES_SKIP_SKILLS: '1'
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Install existing locked root deps without npm lifecycle code
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: R&D-only contract regression, 60fps story and actual font-set check
+        run: |
+          node --test experiments/cinetic-sidecar/adapter.test.mjs experiments/cinetic-sidecar/semantic-graph.test.mjs experiments/cinetic-sidecar/evidence-cards.test.mjs experiments/cinetic-sidecar/signal-ledger.test.mjs experiments/cinetic-sidecar/storyboard-film.test.mjs
+          node --check experiments/cinetic-sidecar/storyboard-film.mjs
+          node --check experiments/cinetic-sidecar/prepare-render.mjs
+          node experiments/cinetic-sidecar/prepare-render.mjs experiments/cinetic-sidecar/storyboard-film.plan.json out/cinetic-c32-film
+      - name: Confirm only repository-pinned FFmpeg and FFprobe executables
+        run: |
+          node scripts/setup-encoder.mjs
+          echo "$(dirname "$(node -p "require('ffmpeg-static')")")" >> "$GITHUB_PATH"
+          echo "$(dirname "$(node -p "require('ffprobe-static').path")")" >> "$GITHUB_PATH"
+      - name: Assert pinned third-party renderer tarball registry hash
+        run: |
+          test "$(npm view hyperframes@0.8.143 dist.shasum)" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+      - name: Render original 8s film-storyboard H.264 MP4 at 60fps
+        run: |
+          cd out/cinetic-c32-film
+          npx --yes hyperframes@0.8.143 render -c index.html -o preview.mp4 --fps 60 --quality draft
+      - name: Render same scene as real ProRes 4444 alpha MOV at 60fps
+        run: |
+          cd out/cinetic-c32-film
+          npx --yes hyperframes@0.8.143 render -c index-alpha.html -o overlay-alpha.mov --format mov --fps 60
+      - name: Decode H264 and ProRes alpha actual stage frames independently of creative review
+        run: node experiments/cinetic-sidecar/verify-render.mjs out/cinetic-c32-film
+      - name: Produce watchable GIF and 8-frame CONTACT from decoded MP4
+        run: |
+          ffmpeg -nostdin -y -v error -i out/cinetic-c32-film/preview.mp4 \
+            -filter_complex '[0:v]fps=10,scale=640:-2:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer' \
+            -loop 0 out/cinetic-c32-film/review.gif
+          ffmpeg -nostdin -y -v error -i out/cinetic-c32-film/preview.mp4 \
+            -vf 'fps=1,scale=480:-2:flags=lanczos,tile=4x2' -frames:v 1 -update 1 out/cinetic-c32-film/contact.png
+          test -s out/cinetic-c32-film/review.gif
+          test -s out/cinetic-c32-film/contact.png
+      - name: Archive only original public synthetic media, manifests, no binary fonts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cinetic-c32-original-film-storyboard-60fps
+          path: |
+            out/cinetic-c32-film/preview.mp4
+            out/cinetic-c32-film/overlay-alpha.mov
+            out/cinetic-c32-film/review.gif
+            out/cinetic-c32-film/contact.png
+            out/cinetic-c32-film/technical-report.json
+            out/cinetic-c32-film/font-qa.json
+            out/cinetic-c32-film/review-gates.json
+            out/cinetic-c32-film/validated-plan.json
+            out/cinetic-c32-film/timeline.json
+          retention-days: 2
+          if-no-files-found: error
+      - name: Keep art, ownership, Studio licensing and Windows gates closed
+        run: |
+          echo 'This isolated 60fps visual exploration is user-art PENDING. 60fps technical completion does not prove full upstream Cinetic choreography.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'No private material, new production engine, Studio/GSAP GUI, paid runtime, root dependency migration or Windows Premiere native acceptance.' >> "$GITHUB_STEP_SUMMARY"

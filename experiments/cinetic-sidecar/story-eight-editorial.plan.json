@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "engine": "cinetic-hyperframes",
+  "contentClass": "public-synthetic",
+  "brief": {
+    "title": "訊號現場觀察",
+    "intent": "以視覺化波形比對呈現分離訊號建立共同關聯的過程",
+    "trigger": "三條虛構訊號在不同位置出現峰值",
+    "physicalResponse": "同一量測介面中的波峰隨比對移動對齊最後聚合為一個判讀重點",
+    "audienceUnderstanding": "觀眾看到三組訊號對齊形成共同的判讀結果"
+  },
+  "render": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "frames": 240
+  },
+  "direction": {
+    "seed": 141,
+    "techniqueIds": [
+      "tr-velocity-handoff-cut"
+    ],
+    "visualLanguage": "非對稱編輯式排版搭配持續訊號量測畫面",
+    "visualMotif": "signal-ledger"
+  },
+  "beats": [
+    {
+      "id": "fragments",
+      "kind": "scatter",
+      "startFrame": 0,
+      "endFrame": 72,
+      "meaning": "開場用三個分離的物件展示難以理解的片段",
+      "onScreenText": "分散訊號"
+    },
+    {
+      "id": "evidence",
+      "kind": "connect",
+      "startFrame": 72,
+      "endFrame": 162,
+      "meaning": "資訊節點重新排列，顯示它們具有共同來源",
+      "onScreenText": "找到關聯"
+    },
+    {
+      "id": "decision",
+      "kind": "resolve",
+      "startFrame": 162,
+      "endFrame": 240,
+      "meaning": "共同連結收束為可以理解的判斷",
+      "onScreenText": "形成判讀"
+    }
+  ]
+}

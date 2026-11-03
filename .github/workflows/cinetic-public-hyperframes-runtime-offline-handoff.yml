@@ -1,0 +1,48 @@
+name: Cinetic public HyperFrames pinned offline runtime transfer
+
+on:
+  push:
+    branches:
+      - experiment/cinetic-director-adapter-20261018
+    paths:
+      - '.github/workflows/cinetic-public-hyperframes-runtime-offline-handoff.yml'
+
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/cinetic-public-hyperframes-runtime-offline-handoff.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  open-source-runtime-only:
+    if: github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == 'rayray12zx3-sys/ai-motion-studio' && github.actor_id == '307835058')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.16.0'
+      - name: Install pinned public npm runtime without scripts or any private S08 inputs
+        run: |
+          set -euo pipefail
+          npm ci --prefix experiments/cinetic-sidecar/s08-runtime --ignore-scripts --no-audit --no-fund >/dev/null
+          test "$(npm view hyperframes@0.8.143 dist.shasum)" = "8761025aa327993c605a307ec2d9f01fe6bde047"
+          test -x experiments/cinetic-sidecar/s08-runtime/node_modules/.bin/hyperframes
+      - name: Package public OSS JavaScript modules only (no media, token or fonts)
+        run: |
+          set -euo pipefail
+          cd experiments/cinetic-sidecar/s08-runtime
+          tar -czf "$RUNNER_TEMP/pinned-hyperframes-public-linux-x64.tgz" package.json package-lock.json node_modules
+          test "$(stat -c%s "$RUNNER_TEMP/pinned-hyperframes-public-linux-x64.tgz")" -lt 200000000
+          sha256sum "$RUNNER_TEMP/pinned-hyperframes-public-linux-x64.tgz" | sed 's|.*/|FILE: |'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pinned-hyperframes-0_8_143-public-linux-x64
+          path: ${{ runner.temp }}/pinned-hyperframes-public-linux-x64.tgz
+          if-no-files-found: error
+          retention-days: 1
