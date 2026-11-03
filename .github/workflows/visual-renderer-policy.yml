@@ -1,0 +1,29 @@
+name: New animation visual renderer policy
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  renderer-policy:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Test fail-closed renderer declarations, Python visual ban and QA exception
+        run: node --test tests/visual-renderer-policy.test.mjs
+      - name: Block newly changed Python visual renderers, preserve unchanged legacy
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            git diff --name-only "origin/$GITHUB_BASE_REF...HEAD" | node scripts/visual-renderer-gate.mjs --changed-list-stdin
+          else
+            git diff --name-only HEAD^ HEAD | node scripts/visual-renderer-gate.mjs --changed-list-stdin
+          fi
