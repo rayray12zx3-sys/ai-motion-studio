@@ -1,0 +1,43 @@
+name: Premium CJK font weight-axis and alpha motion review
+
+on:
+  push:
+    branches:
+      - experiment/helios-actions-synthetic-20261015
+    paths:
+      - 'experiments/font-premium/premium_font_review.py'
+      - '.github/workflows/font-premium-verified-synthetic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  four-licensed-fonts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up dependencies
+        shell: bash
+        run: |
+          python3 -m venv "$RUNNER_TEMP/font-premium-venv"
+          "$RUNNER_TEMP/font-premium-venv/bin/python" -m pip install --disable-pip-version-check --quiet pillow fonttools
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+      - name: Independent official source download, real axis animation, transparent ProRes4444
+        shell: bash
+        run: |
+          "$RUNNER_TEMP/font-premium-venv/bin/python" experiments/font-premium/premium_font_review.py
+      - name: Upload synthetic GIF and MOV only - exclude all font binaries
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: premium-four-synthetic-preview-and-QA-no-font-software
+          path: |
+            out/premium-font-v1/ONE_GIF_PREMIUM_FONTS.gif
+            out/premium-font-v1/qa.json
+            out/premium-font-v1/*-alpha.mov
+          retention-days: 7
+          if-no-files-found: error

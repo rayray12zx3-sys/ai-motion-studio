@@ -1,0 +1,69 @@
+name: Helios ten distinct kinetic typography tests
+
+on:
+  push:
+    branches:
+      - experiment/helios-actions-synthetic-20261015
+    paths:
+      - 'experiments/helios-actions/gallery.html'
+      - 'experiments/helios-actions/motion-recipes.json'
+      - 'experiments/helios-actions/render-ten.mjs'
+      - '.github/workflows/helios-isolated-technical.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Replacing an unfinished experiment run is cheaper than rendering obsolete heads.
+concurrency:
+  group: helios-synthetic-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  helios-render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout original synthetic-only branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+
+      - name: Install existing pinned font and root dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Isolated version-pinned Helios renderer (NOT root dependency)
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/helios-install"
+          printf '{"private":true,"type":"module"}\n' > "$RUNNER_TEMP/helios-install/package.json"
+          npm install --prefix "$RUNNER_TEMP/helios-install" --no-save --ignore-scripts --no-audit --no-fund @helios-project/renderer@1.79.0
+          node "$RUNNER_TEMP/helios-install/node_modules/playwright/cli.js" install --with-deps chromium
+
+      - name: Provision system FFmpeg and ffprobe for explicit ProRes profile
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+
+      - name: Render original synthetic motion and verify real Alpha
+        shell: bash
+        run: |
+          node --check experiments/helios-actions/render-ten.mjs
+          HELIOS_INSTALL_DIR="$RUNNER_TEMP/helios-install" node experiments/helios-actions/render-ten.mjs
+
+      - name: Publish short-lived synthetic technical evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: helios-ten-original-motion-alpha
+          path: |
+            out/helios-ten/acceptance.json
+            out/helios-ten/*-alpha.mov
+            out/helios-ten/*-preview.mp4
+            out/helios-ten/00_ten_motion_preview.mp4
+          if-no-files-found: error
+          retention-days: 2
