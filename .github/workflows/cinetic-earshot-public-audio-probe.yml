@@ -15,6 +15,8 @@ jobs:
         run: |
           set -euo pipefail
           cd "$RUNNER_TEMP"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
           git clone --quiet https://github.com/Leonxlnx/cinetic.git cinetic
           git -C cinetic checkout --quiet ecfa6605de1adb9345ce937724810dc32267d068
           git clone --quiet https://github.com/Leonxlnx/earshot.git earshot
@@ -27,9 +29,11 @@ jobs:
           from pathlib import Path
           W=Path.cwd()
           tracks={
-            "secret_garden": "https://assets.mixkit.co/music/preview/mixkit-secret-garden-595.mp3",
+            "secret_garden": "https://assets.mixkit.co/music/595/595.mp3",
             "cat_walk": "https://assets.mixkit.co/music/371/371.mp3",
             "silent_descent": "https://assets.mixkit.co/music/614/614.mp3",
+            "happy_home": "https://assets.mixkit.co/music/801/801.mp3",
+            "i_believe_in_us": "https://assets.mixkit.co/music/1030/1030.mp3",
           }
           files={}
           for name,url in tracks.items():
