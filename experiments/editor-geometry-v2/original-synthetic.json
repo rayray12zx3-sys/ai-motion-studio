@@ -1,0 +1,220 @@
+{
+  "version": 2,
+  "kind": "editable-scene-geometry-v2",
+  "id": "geometry-v2-original",
+  "fps": 30,
+  "duration_frames": 60,
+  "canvas": {
+    "width": 360,
+    "height": 640
+  },
+  "assets": [],
+  "layers": [
+    {
+      "id": "panel",
+      "type": "rect",
+      "z": 1,
+      "start_frame": 0,
+      "end_frame": 60,
+      "color": "#205f70",
+      "text": null,
+      "keys": [
+        {
+          "frame": 0,
+          "x": 0.5,
+          "y": 0.43,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 14,
+          "x": 0.5,
+          "y": 0.43,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 45,
+          "x": 0.5,
+          "y": 0.43,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "ease": "linear"
+        },
+        {
+          "frame": 59,
+          "x": 0.5,
+          "y": 0.43,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ],
+      "geometry": {
+        "width": 0.78,
+        "height": 0.255
+      }
+    },
+    {
+      "id": "accent",
+      "type": "rect",
+      "z": 2,
+      "start_frame": 0,
+      "end_frame": 60,
+      "color": "#5fd6b9",
+      "text": null,
+      "keys": [
+        {
+          "frame": 0,
+          "x": 0.5,
+          "y": 0.57,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 20,
+          "x": 0.5,
+          "y": 0.57,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.9,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 43,
+          "x": 0.5,
+          "y": 0.57,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.9,
+          "ease": "linear"
+        },
+        {
+          "frame": 59,
+          "x": 0.5,
+          "y": 0.57,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ],
+      "geometry": {
+        "width": 0.4,
+        "height": 0.027
+      }
+    },
+    {
+      "id": "headline",
+      "type": "text",
+      "z": 3,
+      "start_frame": 0,
+      "end_frame": 60,
+      "color": "#f5f7f8",
+      "text": "GEOMETRY FIRST",
+      "keys": [
+        {
+          "frame": 0,
+          "x": 0.5,
+          "y": 0.4,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 18,
+          "x": 0.5,
+          "y": 0.4,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 45,
+          "x": 0.5,
+          "y": 0.4,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 1,
+          "ease": "linear"
+        },
+        {
+          "frame": 59,
+          "x": 0.5,
+          "y": 0.4,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ],
+      "geometry": {
+        "font_size": 0.064,
+        "max_width": 0.69,
+        "align": "center"
+      }
+    },
+    {
+      "id": "caption",
+      "type": "text",
+      "z": 4,
+      "start_frame": 0,
+      "end_frame": 60,
+      "color": "#d0e1e9",
+      "text": "DIMENSIONS MATTER",
+      "keys": [
+        {
+          "frame": 0,
+          "x": 0.5,
+          "y": 0.47,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        },
+        {
+          "frame": 21,
+          "x": 0.5,
+          "y": 0.47,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.9,
+          "ease": "ease-out-cubic"
+        },
+        {
+          "frame": 43,
+          "x": 0.5,
+          "y": 0.47,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0.9,
+          "ease": "linear"
+        },
+        {
+          "frame": 59,
+          "x": 0.5,
+          "y": 0.47,
+          "scale": 1,
+          "rotation": 0,
+          "opacity": 0,
+          "ease": "linear"
+        }
+      ],
+      "geometry": {
+        "font_size": 0.036,
+        "max_width": 0.6,
+        "align": "left"
+      }
+    }
+  ]
+}
