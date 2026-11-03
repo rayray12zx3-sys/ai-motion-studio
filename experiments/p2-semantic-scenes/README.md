@@ -79,3 +79,27 @@ From **actual fully encoded** silent review MP4 contact samples, both previous f
 - Slightly larger and deliberately foregrounded product entity label/state.
 
 These are purposeful product-story improvements, **not a new style copied from any reference video**. They still lack licensed real product footage/photos, sophisticated hierarchy/materials and cinematic quality. Per-shot visual change/legibility/temporal fit must be inspected again using decoded full MP4 contact samples. The internal art verdict must remain **REJECTED / human approval PENDING** until actual film viewing supports improvement; never infer it from test success.
+
+
+## P2 soundtrack reuse + semantic cue sheet (Draft-only, after #118)
+
+Both Atlas and Index now have a shared **authored-film cue exporter**, not per-film handwritten audio timings. It derives film shot changes and the actual causal UI gesture/impact frames from the semantic scene compiler:
+
+    node experiments/p2-semantic-scenes/scripts/score-cues.mjs board
+    node experiments/p2-semantic-scenes/scripts/score-cues.mjs caption
+
+Each command writes a bounded \`artifacts/<film-id>/score-cues.json\` for the existing \`av_audit.py --cues\` interface. The cue list includes shot purpose, gesture initiation and actual state-change event. This is a storyboard-specific *intent map*, not a musical performance/phrase detector.
+
+For **private/local only** full H.264 engineering renders, use an already independently verified source MP3 plus the associated CC BY 4.0 publication credits, never a remote URL or an AI audio model. Example with the existing source-verified Kevin MacLeod **Floating Cities** recording:
+
+    python3 experiments/p2-semantic-scenes/scripts/score_soundtrack.py \
+      --video /private/atlas-silent.mp4 \
+      --music /private/Floating_Cities_verified.mp3 \
+      --credits /private/MUSIC-CREDITS.md \
+      --cues experiments/p2-semantic-scenes/artifacts/atlas-board-to-date/score-cues.json \
+      --track floating-cities \
+      --output /private/atlas-music-review.mp4
+
+For Index, use the distinct \`cipher\` track key with the verified Cipher MP3; its exact SHA, official source and original 12s excerpt offset are separately pinned. The offline mixer (a) refuses mismatched MP3 hashes or missing attribution/source/modification notice, (b) refuses overwriting originals, (c) **copies the original video bitstream** while replacing/adding genuine licensed soundtrack audio, (d) confirms actual AAC and full-frame H.264 decode via \`av_audit\`, and (e) records beat-grid distances as **unverified hypotheses**, not claims of true musical synchronization. Final public posting must carry attribution and change notice with the work.
+
+**Rights and quality:** verifying the bytes against the two earlier downloaded official sources and scanning credit text does not establish every downstream commercial right; it only checks one documented music lane. No song files, private video, private Google Drive references, receipts, artifacts or soundtrack waveforms are committed. CC BY license credits do not clear client footage, product UI, fonts or ad claims. Neither waveform RMS proximity nor theoretical BPM-grid proximity validates full-speed audible beat/phrase match. The existing two synthetic product films remain **INTERNALLY NOT ART-READY**; do not ask the owner to judge this engineering soundtrack test as a polished creative film. This addition affects neither the approved production engine nor prior v3 ARC/FOCUS.
