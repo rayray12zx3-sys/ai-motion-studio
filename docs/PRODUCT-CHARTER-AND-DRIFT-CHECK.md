@@ -60,3 +60,17 @@ At **end**: put links, exact head SHA, evidence status `PASS/FAIL/BLOCKED/PENDIN
 To **change the product's north star, engine/editor priority, license posture, media boundary or frozen creative gate**: obtain an explicit operator decision; add a dated *decision delta* with what changed, why, authorized scope and source link; update this charter and its pointers using a reviewed PR. Technical CI alone may never amend creative decisions. Routine backwards-compatible documentation fixes still follow the delegated narrow exact-head CI/diff review process.
 
 **Current baseline**: product north star DECIDED; Canvas/FFmpeg and optional Konva-v1 APPROVED for bounded roles; two-brief AI production quality gate PENDING; Draft #96 only R&D; source LICENSE and human visual/native Premiere approval still open. No new license, new engine, new art direction, v2 rollout or migration is approved by this charter.
+
+## 6. Cinetic opt-in sidecar — 2026-10-18 operator decision delta (PLANNING)
+
+**Source:** [Issue #138](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/138); linked from original [roadmap #4](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/4).
+
+**Changed:** operator requested an **additional Cinetic-directed motion pipeline alongside the existing Python/Pillow+FFmpeg animation workflow**, *not* a renderer replacement. Cinetic is an Agent Skill/directing pipeline; a proposed sidecar render backend is **isolated HyperFrames CLI**. The repository's approved Canvas+FFmpeg default and opt-in Konva S1 stay unchanged, with historical HyperFrames/Helios R&D Drafts preserved. No new production runtime dependency, art style, project schema, client assets, credentials or remote service is authorized by this planning decision.
+
+**Why:** strengthen meaning-first visual storytelling and multi-scene animation without jeopardizing accepted K-series assets or existing deterministic alpha deliverables. Reuse *existing* isolated HyperFrames code/alpha research in Drafts #33/#39, and retain the separate GSAP/Studio/license warning in Draft #46. Keep Remotion conditional, not the default, and never install/merge HyperFrames Studio's GUI into the product.
+
+**Current status:** `PLAN_TRACKED_ISSUE_138__NOT_IMPLEMENTED`. Research (source/provenance/licensing/version compatibility) → isolated, opt-in Cinetic-director adapter → original synthetic two-brief comparison (real MP4 and alpha validation, full-speed visual review) → only then a fresh explicit production/rights/Windows Premiere approval decision. No upstream packages or code were installed by this decision note. The same operator artistic gates and one-combined-GIF review policy continue to apply; Windows Premiere native acceptance is not implied.
+
+**Source/evidence boundary:** any public GitHub Issue, PR or CI carries only original synthetic text/media and public-source technical metadata; private Python implementation, user/company content and private Drive identifiers remain outside GitHub. Do not alter `ai-video-template`, main's renderer, approved v9/K artwork or frozen M11/M12 directions. Upstream version, transitive rights and Cinetic-specific alpha behavior must be verified from execution rather than extrapolated from earlier HyperFrames trials.
+
+**Next handoff pointer:** [Issue #138](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/138) for C0–C4 tasks and gates; this is an **operator-approved direction to plan a sidecar**, not proof of integrated production capability or a broad consent to new licensing/install/runtime behavior.

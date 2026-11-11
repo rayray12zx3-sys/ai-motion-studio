@@ -1,5 +1,7 @@
 # AI Motion Studio — Continue here (single conversation handoff entry)
 
+> **Latest decision, 2026-10-18 — Cinetic opt-in sidecar (planning only):** The operator wants to add a Cinetic-directed HyperFrames motion lane alongside the existing Python animation workflow, without replacing existing production/Canvas paths. Work and gates: [Issue #138](https://github.com/rayray12zx3-sys/ai-motion-studio/issues/138), linked from original roadmap #4. Status `PLANNED / NOT_IMPLEMENTED`; old approvals, frozen M11/M12 and private/public separation are unchanged. A reviewed decision delta is proposed in this Draft, not an engine adoption.
+
 ## PERMANENT FIRST READ — product charter, deviation detection and decision provenance
 
 **Before every future conversation, Agent run, plan, task, PR or continuation, first open [PRODUCT-CHARTER-AND-DRIFT-CHECK.md](PRODUCT-CHARTER-AND-DRIFT-CHECK.md).** This is the durable decision and anti-drift gateway: its START/FINISH check asks how a task contributes to an actual AI/Codex-created animation, a reusable motion technique, visible quality, iterative review, or a necessary technical/license blocker, and distinguishes user-approved direction from assistant-only suggestions.
