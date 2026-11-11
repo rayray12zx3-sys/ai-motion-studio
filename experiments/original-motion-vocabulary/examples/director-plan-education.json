@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "shots": [
+    {"id":"question-flow", "spec":{"mode":"recall_cycle","heading":"知識回顧","question":"提出問題","recall":"回想資訊","revisit_labels":["現在","稍後","再次"],"finish":"再回顧"}},
+    {"id":"action-highlight", "spec":{"mode":"interaction_focus","heading":"操作視覺提示","indicator":"注意重點","target_x":520,"target_y":960,"target_radius":205,"active_until_seconds":3.5}}
+  ]
+}
