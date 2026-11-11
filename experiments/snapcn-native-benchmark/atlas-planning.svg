@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1536" viewBox="0 0 720 1536">
+<rect width="720" height="1536" fill="#F8F9FB"/>
+<rect x="0" y="0" width="720" height="200" fill="#13233D"/>
+<text x="52" y="106" font-family="sans-serif" font-size="44" font-weight="700" fill="#FFFFFF">Plan Tomorrow</text>
+<text x="52" y="154" font-family="sans-serif" font-size="21" fill="#AED0ED">FICTIONAL ORIGINAL UI · TEST ONLY</text>
+<text x="52" y="290" font-family="sans-serif" font-size="40" font-weight="700" fill="#12203A">Tuesday  ·  Today</text>
+<rect x="52" y="340" rx="30" width="616" height="192" fill="#E3ECFF"/>
+<rect x="52" y="340" rx="8" width="12" height="192" fill="#406FEB"/>
+<text x="90" y="410" font-family="sans-serif" font-size="29" font-weight="700" fill="#143264">Organize notes</text>
+<text x="90" y="463" font-family="sans-serif" font-size="22" fill="#41678F">09:00 – 09:40</text>
+<rect x="52" y="570" rx="30" width="616" height="192" fill="#F1E7D9"/>
+<rect x="52" y="570" rx="8" width="12" height="192" fill="#D18A42"/>
+<text x="90" y="640" font-family="sans-serif" font-size="29" font-weight="700" fill="#493924">Review storyboard</text>
+<text x="90" y="693" font-family="sans-serif" font-size="22" fill="#866A48">11:30 – 12:00</text>
+<text x="52" y="872" font-family="sans-serif" font-size="27" font-weight="700" fill="#2D3A50">NEXT</text>
+<rect x="52" y="914" rx="30" width="616" height="208" fill="#FFFFFF" stroke="#DBE2EC" stroke-width="4"/>
+<text x="90" y="988" font-family="sans-serif" font-size="30" font-weight="700" fill="#253A59">Export preview</text>
+<text x="90" y="1042" font-family="sans-serif" font-size="22" fill="#718096">Ready for review</text>
+<circle cx="615" cy="1016" r="27" fill="#D9E7FF"/><path d="M602 1018L613 1028L632 1004" stroke="#4475DF" stroke-width="6" fill="none"/>
+<rect x="52" y="1210" rx="26" width="616" height="94" fill="#25477B"/>
+<text x="360" y="1270" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="700" fill="white">View schedule</text>
+<text x="360" y="1450" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#8A97A8">ORIGINAL SYNTHETIC PLATE</text>
+</svg>
