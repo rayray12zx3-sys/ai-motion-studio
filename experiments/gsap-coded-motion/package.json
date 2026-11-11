@@ -1,0 +1,11 @@
+{
+  "name": "ai-motion-studio-gsap-coded-rnd",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check src/scene-engine.mjs && node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "gsap": "3.15.0"
+  }
+}
