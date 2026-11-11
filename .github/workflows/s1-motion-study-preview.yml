@@ -1,0 +1,57 @@
+name: Optional S1 original motion-study preview
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/editor-contract/motion-study-original.json'
+      - 'tests/editor-motion-study.test.mjs'
+      - 'docs/S1-ORIGINAL-MOTION-STUDY-2026-10-11.md'
+      - '.github/workflows/s1-motion-study-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: s1-motion-study-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-synthetic-preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      EXPECTED_STUDY_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+      - name: Verify exact head and existing root lockfile only
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_STUDY_HEAD"
+          npm ci --ignore-scripts --no-audit --no-fund
+          node --test tests/editor-motion-study.test.mjs
+      - name: Provision existing SHA-256-verified FFmpeg
+        run: node scripts/setup-encoder.mjs
+      - name: Render opt-in six-second original synthetic MP4 and Alpha MOV
+        run: |
+          node scripts/render-editable.mjs experiments/editor-contract/motion-study-original.json ci-s1-motion-study-mp4 mp4
+          node scripts/render-editable.mjs experiments/editor-contract/motion-study-original.json ci-s1-motion-study-alpha alpha
+      - name: Seven-day synthetic videos and event-aware review samples
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: optional-s1-original-motion-study-6s
+          path: |
+            out/editable-ci-s1-motion-study-mp4/
+            out/editable-ci-s1-motion-study-alpha/
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Explicit limitation
+        run: |
+          echo 'Original synthetic six-second motion study only. This does not modify legacy/default S1 fixtures, verify Premiere import, prove Konva WYSIWYG or approve creative direction.' >> "$GITHUB_STEP_SUMMARY"
