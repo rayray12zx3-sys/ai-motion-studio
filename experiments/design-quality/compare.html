@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-Hant">
+<meta charset="utf-8"><title>Original synthetic motion design A/B</title>
+<style>html,body{margin:0;background:#10151e}canvas{display:block;width:1280px;height:720px}</style>
+<canvas id="stage" width="1280" height="720" role="img" aria-label="Generic-card and design-first synthetic motion study"></canvas>
+<button id="play" type="button" style="margin:12px 18px;padding:10px 16px;background:#f3f2ed;color:#151923;border:0;border-radius:6px;font:600 16px sans-serif;cursor:pointer">播放 A/B 動畫</button>
+<script>
+// Original public-synthetic A/B study ONLY. Browser JS Canvas, not locked @napi-rs/canvas.
+// Inspect 0..95 at 24 fps with renderFrame(frame). No network, company media or assets.
+const cv=document.getElementById('stage'),c=cv.getContext('2d');
+const W=1280,H=720,FPS=24,COUNT=96;
+const clamp=v=>Math.min(1,Math.max(0,v));
+const smooth=v=>{v=clamp(v);return v*v*(3-2*v)};
+const alpha=(v,fn)=>{c.save();c.globalAlpha*=clamp(v);fn();c.restore()};
+function text(str,x,y,size,color,weight='700',align='left'){
+ c.fillStyle=color;c.textAlign=align;c.textBaseline='middle';
+ c.font=weight+' '+size+'px "Noto Sans CJK TC", "Noto Sans TC", sans-serif';
+ c.fillText(str,x,y);
+}
+function round(x,y,w,h,r,fill){c.beginPath();c.roundRect(x,y,w,h,r);c.fillStyle=fill;c.fill()}
+function line(x1,y1,x2,y2,color,width=1){c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.strokeStyle=color;c.lineWidth=width;c.stroke()}
+function draw(t){
+ c.clearRect(0,0,W,H);c.fillStyle='#151923';c.fillRect(0,0,W,H);
+ // Review-only labels OUTSIDE both compositions. Left is NOT an actual old v6 frame.
+ text('A / GENERIC TEMPLATE',44,34,15,'#9CA6BC','600');
+ text('B / DESIGN-LED MOTION',685,34,15,'#9CA6BC','600');
+ line(640,0,640,H,'#3B4150');
+ const grad=c.createLinearGradient(20,66,605,684);
+ grad.addColorStop(0,'#201A42');grad.addColorStop(1,'#342263');
+ round(18,70,604,632,20,grad);
+ text('您的消息',64,138,42,'#FFF','750');
+ text('簡單・快速・高效',64,184,17,'#C5B7F5','400');
+ const cards=[['01','正在處理','系統正在確認您的訊息'],['02','即時同步','所有狀態都可以追蹤'],['03','已送達','操作順利完成']];
+ for(let i=0;i<3;i++){
+   const appear=smooth((t-.25-i*.35)/.65),y=244+i*126+30*(1-appear);
+   alpha(appear,()=>{
+     round(58,y,524,103,18,'rgba(255,255,255,.12)');
+     round(78,y+24,52,52,14,'rgba(172,145,255,.28)');
+     text(cards[i][0],104,y+50,22,'#F0E5FF','700','center');
+     text(cards[i][1],147,y+35,24,'#F7F4FF','700');
+     text(cards[i][2],147,y+70,14,'#BAACDA','400');
+   });
+ }
+ // Design-led: two-state send/arrival semantics and a single motivated reveal.
+ c.fillStyle='#F3F2ED';c.fillRect(657,70,605,632);
+ c.fillStyle='#14191B';c.fillRect(689,117,4,75);
+ text('送出後，',714,144,21,'#14191B','500');
+ text('結果必須清楚。',714,177,21,'#14191B','500');
+ const pathY=277,from=731,to=1180,progress=smooth((t-.25)/1.6),pos=from+(to-from)*progress;
+ line(from,pathY,to,pathY,'#CCD0CB',3);
+ line(from,pathY,pos,pathY,'#086B58',5);
+ c.beginPath();c.arc(from,pathY,7,0,2*Math.PI);c.fillStyle='#14191B';c.fill();
+ c.beginPath();c.arc(pos,pathY,11,0,2*Math.PI);c.fillStyle='#086B58';c.fill();
+ const flash=Math.max(0,1-Math.abs(t-1.82)/.25);
+ c.beginPath();c.arc(to,pathY,15+flash*18,0,2*Math.PI);
+ c.strokeStyle='rgba(8,107,88,'+(.3*flash)+')';c.lineWidth=3;c.stroke();
+ text('傳送',731,320,17,'#515D56','500');
+ text('抵達',1180,320,17,'#515D56','500','right');
+ const reveal=smooth((t-1.4)/.68);
+ c.save();c.beginPath();c.rect(688,356,540,188*reveal);c.clip();
+ text('已送達',693,441+46*(1-reveal),90,'#151B1B','800');
+ c.restore();
+ alpha(smooth((t-1.9)/.55),()=>{
+   round(695,543,135,4,2,'#086B58');
+   text('訊息確認完成',696,583,23,'#32463C','500');
+ });
+ text('動態只說明一次狀態改變',698,654,15,'#69736B','400');
+}
+function renderFrame(frame){
+ if(!Number.isInteger(frame)||frame<0||frame>=COUNT)throw Error('invalid frame');
+ draw(frame/FPS);return {frame,seconds:frame/FPS};
+}
+window.renderFrame=renderFrame;
+window.reviewMeta={fps:FPS,frames:COUNT,width:W,height:H,engine:'browser-js-canvas-design-study',art:'UNAPPROVED',baseline:'illustrative-not-v6'};
+renderFrame(0);
+let playing=false;
+document.getElementById("play").addEventListener("click",()=>{
+ if(playing)return;
+ playing=true;
+ const start=performance.now();
+ const tick=now=>{
+  const elapsed=(now-start)/1000;
+  renderFrame(Math.min(COUNT-1,Math.floor(elapsed*FPS)));
+  if(elapsed<COUNT/FPS)requestAnimationFrame(tick);
+  else playing=false;
+ };
+ requestAnimationFrame(tick);
+});
+</script>
+</html>
