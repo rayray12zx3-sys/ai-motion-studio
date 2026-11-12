@@ -3,6 +3,7 @@
 <meta charset="utf-8"><title>Original synthetic motion design A/B</title>
 <style>html,body{margin:0;background:#10151e}canvas{display:block;width:1280px;height:720px}</style>
 <canvas id="stage" width="1280" height="720" role="img" aria-label="Generic-card and design-first synthetic motion study"></canvas>
+<button id="play" type="button" style="margin:12px 18px;padding:10px 16px;background:#f3f2ed;color:#151923;border:0;border-radius:6px;font:600 16px sans-serif;cursor:pointer">播放 A/B 動畫</button>
 <script>
 // Original public-synthetic A/B study ONLY. Browser JS Canvas, not locked @napi-rs/canvas.
 // Inspect 0..95 at 24 fps with renderFrame(frame). No network, company media or assets.
@@ -72,5 +73,18 @@ function renderFrame(frame){
 window.renderFrame=renderFrame;
 window.reviewMeta={fps:FPS,frames:COUNT,width:W,height:H,engine:'browser-js-canvas-design-study',art:'UNAPPROVED',baseline:'illustrative-not-v6'};
 renderFrame(0);
+let playing=false;
+document.getElementById("play").addEventListener("click",()=>{
+ if(playing)return;
+ playing=true;
+ const start=performance.now();
+ const tick=now=>{
+  const elapsed=(now-start)/1000;
+  renderFrame(Math.min(COUNT-1,Math.floor(elapsed*FPS)));
+  if(elapsed<COUNT/FPS)requestAnimationFrame(tick);
+  else playing=false;
+ };
+ requestAnimationFrame(tick);
+});
 </script>
 </html>
